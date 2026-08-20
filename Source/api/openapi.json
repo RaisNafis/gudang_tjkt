@@ -1,0 +1,444 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Gudang Sekolah REST API Specification",
+    "description": "Dokumentasi Resmi OpenAPI 3.0 & Swagger UI Route Explorer untuk Sistem Informasi Inventaris Gudang Sekolah",
+    "version": "1.5.0",
+    "contact": {
+      "name": "Belmoti Tech Support",
+      "email": "support@smk2pangkalpinang.sch.id"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://100.48.185.113",
+      "description": "Production VPS Server"
+    },
+    {
+      "url": "http://localhost:8000",
+      "description": "Local Development Server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "1. Authentication",
+      "description": "Otentikasi & Session Login Pengguna"
+    },
+    {
+      "name": "2. Peminjaman Barang",
+      "description": "Pengajuan Peminjaman Alat Inventaris & Tahun Ajaran Siswa"
+    },
+    {
+      "name": "3. Pengembalian Barang",
+      "description": "Pengajuan Pengembalian Alat & Unggah Bukti Foto (Status Pending)"
+    },
+    {
+      "name": "4. Persetujuan Pengembalian",
+      "description": "Persetujuan Pengembalian Alat oleh Admin/Petugas (Status Dikembalikan & Restorasi Stok)"
+    },
+    {
+      "name": "5. Info Barang",
+      "description": "Pencarian & Informasi Detail Alat Inventaris by ID / Jurusan ID"
+    },
+    {
+      "name": "6. Info Rak & Barang",
+      "description": "Informasi Rak Penyimpanan beserta Daftar Barang di Dalamnya by ID Rak"
+    },
+    {
+      "name": "7. Aktivitas Peminjaman",
+      "description": "Riwayat & Log Aktivitas Peminjaman Alat"
+    }
+  ],
+  "paths": {
+    "/api/login.php": {
+      "post": {
+        "tags": ["1. Authentication"],
+        "summary": "1. Login API Pengguna",
+        "description": "Melakukan otentikasi username & password pengguna dan mengembalikan data profil pengguna.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nama_pengguna": { "type": "string", "example": "admin" },
+                  "password": { "type": "string", "example": "AdminPass123!" }
+                },
+                "required": ["nama_pengguna", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Login berhasil" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string" },
+                        "nama_pengguna": { "type": "string" },
+                        "nama_lengkap": { "type": "string" },
+                        "email": { "type": "string" },
+                        "peran": { "type": "string" },
+                        "jurusan_id": { "type": "string", "nullable": true }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Kredensial salah"
+          }
+        }
+      }
+    },
+    "/api/peminjaman.php": {
+      "post": {
+        "tags": ["2. Peminjaman Barang"],
+        "summary": "2. Peminjaman Barang API (Pengajuan Peminjaman)",
+        "description": "Menyimpan transaksi peminjaman barang inventaris baru beserta data siswa, jurusan, dan tahun ajaran.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "barang_id": { "type": "string", "example": "brg-001" },
+                  "nama_peminjam": { "type": "string", "example": "Ahmad Rizki (XI TKJ 1)" },
+                  "jumlah": { "type": "integer", "example": 1 },
+                  "tugas": { "type": "string", "example": "Praktik Jaringan Komputer" },
+                  "tahun_ajaran": { "type": "string", "example": "2025/2026" },
+                  "tanggal_pinjam": { "type": "string", "example": "2026-08-05 08:00:00" },
+                  "tanggal_kembali": { "type": "string", "example": "2026-08-05 15:00:00" }
+                },
+                "required": ["barang_id", "nama_peminjam", "jumlah"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Peminjaman barang berhasil diajukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Peminjaman alat berhasil disimpan!" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["7. Aktivitas Peminjaman"],
+        "summary": "7. Aktivitas & Riwayat Peminjaman API",
+        "description": "Mengambil seluruh riwayat aktivitas transaksi peminjaman alat inventaris dengan filter status (dipinjam/pending/dikembalikan), jurusan, pencarian, dan paginasi.",
+        "parameters": [
+          {
+            "name": "jurusan_id",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "enum": ["dipinjam", "pending", "dikembalikan"] }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 50 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar peminjaman berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "total": { "type": "integer" },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string" },
+                          "nama_peminjam": { "type": "string" },
+                          "nama_barang": { "type": "string" },
+                          "jumlah": { "type": "integer" },
+                          "tahun_ajaran": { "type": "string", "example": "2025/2026" },
+                          "status": { "type": "string", "enum": ["dipinjam", "pending", "ditolak", "dikembalikan"] },
+                          "tanggal_pinjam": { "type": "string" },
+                          "tanggal_kembali": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/return_peminjaman.php": {
+      "post": {
+        "tags": ["3. Pengembalian Barang"],
+        "summary": "3. Pengembalian Barang API (Status: Pending Approval)",
+        "description": "Mengajukan pengembalian barang pinjaman beserta unggah foto bukti. Status transaksi akan berubah menjadi 'pending' menunggu persetujuan Admin/Petugas.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string", "example": "pm-001" },
+                  "bukti_foto": { "type": "string", "example": "data:image/png;base64,...", "description": "Base64 foto bukti pengembalian" }
+                },
+                "required": ["id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pengembalian berhasil diajukan (Pending Approval)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Pengajuan pengembalian berhasil diunggah! Menunggu persetujuan admin/petugas." }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/approve_peminjaman.php": {
+      "post": {
+        "tags": ["4. Persetujuan Pengembalian"],
+        "summary": "4. Persetujuan Pengembalian API (Status: Dikembalikan & Restorasi Stok)",
+        "description": "Menyetujui pengembalian barang pinjaman yang berstatus pending. Status transaksi akan berubah menjadi 'dikembalikan' dan stok barang otomatis dikembalikan ke inventaris.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string", "example": "pm-001" }
+                },
+                "required": ["id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pengembalian barang disetujui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "message": { "type": "string", "example": "Pengembalian barang berhasil disetujui! Stok barang telah dikembalikan." },
+                    "id": { "type": "string", "example": "pm-001" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reject_peminjaman.php": {
+      "post": {
+        "tags": ["4. Persetujuan Pengembalian"],
+        "summary": "Penolakan Pengembalian API (Status: Ditolak)",
+        "description": "Menolak pengembalian barang pinjaman yang berstatus pending. Status transaksi akan berubah menjadi 'ditolak' dan peminjam diminta mengunggah foto bukti pengembalian ulang.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string", "example": "pm-001" }
+                },
+                "required": ["id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pengembalian barang ditolak",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "message": { "type": "string", "example": "Pengajuan pengembalian barang berhasil ditolak. Peminjam perlu mengunggah foto bukti ulang." },
+                    "id": { "type": "string", "example": "pm-001" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/barang.php": {
+      "get": {
+        "tags": ["5. Info Barang"],
+        "summary": "5. Info Barang API (Detail Barang by ID / Jurusan ID)",
+        "description": "Mendapatkan informasi detail barang inventaris, stok tersedia, posisi rak, dan kategori barang berdasarkan ID Barang atau Filter ID Jurusan.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "description": "ID Barang Inventaris" }
+          },
+          {
+            "name": "jurusan_id",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "description": "ID Jurusan untuk filter daftar barang" }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "description": "Kata kunci pencarian nama barang atau merek" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Informasi barang berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string" },
+                        "nama_barang": { "type": "string" },
+                        "stok_total": { "type": "integer" },
+                        "stok_tersedia": { "type": "integer" },
+                        "nama_rak": { "type": "string" },
+                        "nama_kategori": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rak.php": {
+      "get": {
+        "tags": ["6. Info Rak & Barang"],
+        "summary": "6. Info Rak & Daftar Barang di Dalamnya by ID Rak",
+        "description": "Mengambil informasi detail rak penyimpanan beserta seluruh daftar barang inventaris yang tersimpan di dalam rak tersebut berdasarkan ID Rak.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "description": "ID Rak Penyimpanan" }
+          },
+          {
+            "name": "jurusan_id",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "description": "ID Jurusan untuk filter daftar rak" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data rak dan daftar barang berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string" },
+                        "nama_rak": { "type": "string" },
+                        "barcode": { "type": "string" },
+                        "kategori_rak": { "type": "string" },
+                        "total_barang": { "type": "integer" },
+                        "barang_list": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": { "type": "string" },
+                              "nama_barang": { "type": "string" },
+                              "stok_total": { "type": "integer" },
+                              "stok_tersedia": { "type": "integer" }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

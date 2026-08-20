@@ -1,0 +1,22 @@
+{
+  "name": "Gudang Sekolah - Sistem Inventaris & Peminjaman",
+  "short_name": "GudangSekolah",
+  "description": "Sistem Informasi Inventaris, Transaksi Barang, & Peminjaman Alat Sekolah / TKJ",
+  "start_url": "./index.php",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2e7d32",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "assets/img/belmoti.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/img/belmoti.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
