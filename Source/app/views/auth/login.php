@@ -7,13 +7,13 @@ require_once __DIR__ . '/../layouts/header.php';
     <div class="w-full max-w-4xl bg-white rounded-3xl shadow-xl border border-sage-100 grid grid-cols-1 md:grid-cols-12 overflow-hidden animate-fade-in-up">
         
         <!-- Left Banner -->
-        <div class="md:col-span-5 bg-sage-700 p-8 sm:p-10 text-white flex flex-col items-center justify-between text-center relative overflow-hidden">
+        <div class="md:col-span-5 p-8 sm:p-10 text-white flex flex-col items-center justify-between text-center relative overflow-hidden" style="background: linear-gradient(135deg, <?= $activeThemePalette['700'] ?? '#ca8a04'; ?>, <?= $activeThemePalette['800'] ?? '#a16207'; ?>);">
             <div></div>
 
             <!-- Centered Belmoti Icon & Title -->
             <div class="relative z-10 flex flex-col items-center justify-center my-auto py-8">
-                <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 p-3 shadow-2xl shadow-sage-900/40 mb-5 flex items-center justify-center group hover:scale-105 transition-transform duration-300">
-                    <img src="assets/img/belmoti.png" alt="Belmoti Logo" class="w-full h-full object-contain filter drop-shadow-md" loading="lazy" decoding="async">
+                <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl border border-white/30 p-4 shadow-2xl mb-5 flex items-center justify-center group hover:scale-105 transition-transform duration-300" style="background: linear-gradient(135deg, <?= $activeThemePalette['600'] ?? '#eab308'; ?>, <?= $activeThemePalette['700'] ?? '#ca8a04'; ?>); box-shadow: 0 12px 30px -5px rgba(<?= implode(',', sscanf($activeThemePalette['600'] ?? '#eab308', "#%02x%02x%02x")); ?>, 0.45);">
+                    <img src="assets/img/belmoti.svg" alt="Belmoti Logo" class="w-full h-full object-contain filter drop-shadow-md" loading="lazy" decoding="async">
                 </div>
                 <h1 class="text-2xl sm:text-3xl font-black tracking-wide text-white drop-shadow-sm">
                     Gudang Sekolah
@@ -21,7 +21,7 @@ require_once __DIR__ . '/../layouts/header.php';
             </div>
 
             <!-- Footer -->
-            <div class="relative z-10 text-xs text-sage-200 font-medium">
+            <div class="relative z-10 text-xs text-white/80 font-medium">
                 © 2026 Belmoti Tech All rights reserved.
             </div>
         </div>

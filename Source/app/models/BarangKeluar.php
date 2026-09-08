@@ -70,10 +70,10 @@ class BarangKeluar {
 
             $upd = $db->prepare("
                 UPDATE barang 
-                SET stok_total = GREATEST(0, stok_total - :jml1), stok_tersedia = GREATEST(0, stok_tersedia - :jml2) 
+                SET stok_tersedia = GREATEST(0, stok_tersedia - :jml) 
                 WHERE id = :bid
             ");
-            $upd->execute([':jml1' => $jumlah, ':jml2' => $jumlah, ':bid' => $barang_id]);
+            $upd->execute([':jml' => $jumlah, ':bid' => $barang_id]);
 
             $db->commit();
             return ['success' => true, 'message' => 'Transaksi barang keluar berhasil disimpan!'];
@@ -103,8 +103,8 @@ class BarangKeluar {
                 }
             }
 
-            $updStok = $db->prepare("UPDATE barang SET stok_total = GREATEST(0, stok_total - :diff1), stok_tersedia = GREATEST(0, stok_tersedia - :diff2) WHERE id = :bid");
-            $updStok->execute([':diff1' => $diff, ':diff2' => $diff, ':bid' => $old['barang_id']]);
+            $updStok = $db->prepare("UPDATE barang SET stok_tersedia = GREATEST(0, stok_tersedia - :diff) WHERE id = :bid");
+            $updStok->execute([':diff' => $diff, ':bid' => $old['barang_id']]);
 
             $upd = $db->prepare("UPDATE barang_keluar SET nama_penerima = :penerima, jumlah = :jumlah, updated_at = CURRENT_TIMESTAMP WHERE id = :id");
             $upd->execute([':penerima' => $nama_penerima, ':jumlah' => $jumlah, ':id' => $id]);
@@ -126,8 +126,8 @@ class BarangKeluar {
 
         $db->beginTransaction();
         try {
-            $updStok = $db->prepare("UPDATE barang SET stok_total = stok_total + :j1, stok_tersedia = stok_tersedia + :j2 WHERE id = :bid");
-            $updStok->execute([':j1' => $old['jumlah'], ':j2' => $old['jumlah'], ':bid' => $old['barang_id']]);
+            $updStok = $db->prepare("UPDATE barang SET stok_tersedia = stok_tersedia + :j WHERE id = :bid");
+            $updStok->execute([':j' => $old['jumlah'], ':bid' => $old['barang_id']]);
 
             $del = $db->prepare("DELETE FROM barang_keluar WHERE id = :id");
             $del->execute([':id' => $id]);

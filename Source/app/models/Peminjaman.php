@@ -7,8 +7,7 @@ class Peminjaman {
         $db = Database::getInstance()->getConnection();
         if (!empty($jurusan_id)) {
             $stmt = $db->prepare("
-                SELECT pm.*, b.nama_barang, b.satuan, j.nama_jurusan,
-                       COALESCE(NULLIF(pm.nama_peminjam, ''), p.nama_lengkap, p.nama_pengguna) as nama_peminjam,
+                SELECT pm.*, b.nama_barang, b.satuan, b.jenis, j.nama_jurusan,
                        COALESCE(NULLIF(p.nama_lengkap, ''), p.nama_pengguna, 'Admin') as nama_petugas
                 FROM peminjaman pm
                 JOIN barang b ON pm.barang_id = b.id
@@ -20,8 +19,7 @@ class Peminjaman {
             $stmt->execute([':jid1' => $jurusan_id, ':jid2' => $jurusan_id]);
         } else {
             $stmt = $db->query("
-                SELECT pm.*, b.nama_barang, b.satuan, j.nama_jurusan,
-                       COALESCE(NULLIF(pm.nama_peminjam, ''), p.nama_lengkap, p.nama_pengguna) as nama_peminjam,
+                SELECT pm.*, b.nama_barang, b.satuan, b.jenis, j.nama_jurusan,
                        COALESCE(NULLIF(p.nama_lengkap, ''), p.nama_pengguna, 'Admin') as nama_petugas
                 FROM peminjaman pm
                 JOIN barang b ON pm.barang_id = b.id
@@ -36,8 +34,7 @@ class Peminjaman {
     public static function findById($id) {
         $db = Database::getInstance()->getConnection();
         $stmt = $db->prepare("
-            SELECT pm.*, b.nama_barang, b.satuan, j.nama_jurusan,
-                   COALESCE(NULLIF(pm.nama_peminjam, ''), p.nama_lengkap, p.nama_pengguna) as nama_peminjam,
+            SELECT pm.*, b.nama_barang, b.satuan, b.jenis, j.nama_jurusan,
                    COALESCE(NULLIF(p.nama_lengkap, ''), p.nama_pengguna, 'Admin') as nama_petugas
             FROM peminjaman pm
             JOIN barang b ON pm.barang_id = b.id
@@ -50,7 +47,7 @@ class Peminjaman {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public static function create($barang_id, $pengguna_id, $jumlah, $nama_peminjam = null, $catatan = null, $tanggal_pinjam = null, $tanggal_kembali = null, $tugas = null, $tahun_ajaran = '2025/2026') {
+    public static function create($barang_id, $pengguna_id, $jumlah, $nama_peminjam = null, $catatan = null, $tanggal_pinjam = null, $tanggal_kembali = null, $tugas = null, $tahun_ajaran = '2026/2027', $guru_peminjam = null, $nisn = null, $status = 'dipinjam') {
         $db = Database::getInstance()->getConnection();
         $id = generateUuid();
 
@@ -73,7 +70,7 @@ class Peminjaman {
 
         $db->beginTransaction();
         try {
-            $check = $db->prepare("SELECT stok_tersedia, jurusan_id FROM barang WHERE id = :bid LIMIT 1");
+            $check = $db->prepare("SELECT stok_tersedia, satuan, jurusan_id FROM barang WHERE id = :bid LIMIT 1");
             $check->execute([':bid' => $barang_id]);
             $brg = $check->fetch();
 
@@ -81,24 +78,29 @@ class Peminjaman {
 
             $tglPinjam = !empty($tanggal_pinjam) ? date('Y-m-d H:i:s', strtotime($tanggal_pinjam)) : date('Y-m-d H:i:s');
             $tglKembali = !empty($tanggal_kembali) ? date('Y-m-d H:i:s', strtotime($tanggal_kembali)) : null;
-            $status = !empty($tglKembali) ? 'dikembalikan' : 'dipinjam';
-            $thnAjaran = !empty($tahun_ajaran) ? $tahun_ajaran : '2025/2026';
+            if (empty($status) || !in_array($status, ['dipinjam', 'dikembalikan', 'pending', 'ditolak'])) {
+                $status = 'dipinjam';
+            }
+            $thnAjaran = !empty($nama_peminjam) ? (!empty($tahun_ajaran) ? $tahun_ajaran : '2026/2027') : null;
 
             if ($status === 'dipinjam' && (!$brg || $brg['stok_tersedia'] < $jumlah)) {
                 $db->rollBack();
-                return ['success' => false, 'message' => 'Stok alat tidak mencukupi untuk dipinjam! (Tersedia: ' . ($brg['stok_tersedia'] ?? 0) . ' Unit)'];
+                $satuanLabel = $brg['satuan'] ?? 'Unit';
+                return ['success' => false, 'message' => "Stok alat tidak mencukupi untuk dipinjam! (Tersedia: " . ($brg['stok_tersedia'] ?? 0) . " $satuanLabel)"];
             }
 
             $stmt = $db->prepare("
-                INSERT INTO peminjaman (id, jurusan_id, barang_id, pengguna_id, nama_peminjam, jumlah, status, catatan, tugas, tahun_ajaran, tanggal_pinjam, tanggal_kembali)
-                VALUES (:id, :jid, :bid, :pid, :peminjam, :jumlah, :status, :catatan, :tugas, :thn_ajaran, :tgl_pinjam, :tgl_kembali)
+                INSERT INTO peminjaman (id, jurusan_id, barang_id, pengguna_id, guru_peminjam, nama_peminjam, nisn, jumlah, status, catatan, tugas, tahun_ajaran, tanggal_pinjam, tanggal_kembali)
+                VALUES (:id, :jid, :bid, :pid, :guru_peminjam, :peminjam, :nisn, :jumlah, :status, :catatan, :tugas, :thn_ajaran, :tgl_pinjam, :tgl_kembali)
             ");
             $stmt->execute([
                 ':id' => $id,
                 ':jid' => $jurusan_id,
                 ':bid' => $barang_id,
                 ':pid' => $pengguna_id,
-                ':peminjam' => $nama_peminjam,
+                ':guru_peminjam' => $guru_peminjam,
+                ':peminjam' => !empty($nama_peminjam) ? $nama_peminjam : null,
+                ':nisn' => !empty($nama_peminjam) ? $nisn : null,
                 ':jumlah' => $jumlah,
                 ':status' => $status,
                 ':catatan' => $catatan,
@@ -189,7 +191,7 @@ class Peminjaman {
 
             $upd = $db->prepare("
                 UPDATE barang 
-                SET stok_tersedia = LEAST(stok_total, stok_tersedia + :jml) 
+                SET stok_tersedia = stok_tersedia + :jml 
                 WHERE id = :bid
             ");
             $upd->execute([':jml' => $pinjam['jumlah'], ':bid' => $pinjam['barang_id']]);
@@ -235,7 +237,7 @@ class Peminjaman {
         }
     }
 
-    public static function update($id, $nama_peminjam, $jumlah, $tanggal_pinjam = null, $tanggal_kembali = null, $tugas = null, $status = null, $tahun_ajaran = null) {
+    public static function update($id, $nama_peminjam, $jumlah, $tanggal_pinjam = null, $tanggal_kembali = null, $tugas = null, $status = null, $tahun_ajaran = null, $guru_peminjam = null, $nisn = null) {
         $db = Database::getInstance()->getConnection();
         $db->beginTransaction();
         try {
@@ -253,7 +255,7 @@ class Peminjaman {
             $newStatus = !empty($status) ? $status : (!empty($tglKembali) ? 'dikembalikan' : 'dipinjam');
 
             if ($old['status'] === 'dipinjam' && $newStatus === 'dikembalikan') {
-                $updStok = $db->prepare("UPDATE barang SET stok_tersedia = LEAST(stok_total, stok_tersedia + :jml) WHERE id = :bid");
+                $updStok = $db->prepare("UPDATE barang SET stok_tersedia = stok_tersedia + :jml WHERE id = :bid");
                 $updStok->execute([':jml' => $old['jumlah'], ':bid' => $old['barang_id']]);
             } else if (($old['status'] === 'dikembalikan' || $old['status'] === 'pending' || $old['status'] === 'ditolak') && $newStatus === 'dipinjam') {
                 if ($old['status'] === 'dikembalikan') {
@@ -286,16 +288,32 @@ class Peminjaman {
                 }
             }
 
-            $stmt = $db->prepare("UPDATE peminjaman SET nama_peminjam = :peminjam, jumlah = :jumlah, status = :status, tugas = :tugas, tahun_ajaran = COALESCE(:thn_ajaran, tahun_ajaran), tanggal_pinjam = :tgl_pinjam, tanggal_kembali = :tgl_kembali WHERE id = :id");
+            $thnAjaran = !empty($nama_peminjam) ? $tahun_ajaran : null;
+
+            $stmt = $db->prepare("
+                UPDATE peminjaman SET 
+                    guru_peminjam = :guru_peminjam, 
+                    nama_peminjam = :peminjam, 
+                    nisn = :nisn, 
+                    jumlah = :jumlah, 
+                    status = :status, 
+                    tugas = :tugas, 
+                    tahun_ajaran = :thn_ajaran, 
+                    tanggal_pinjam = :tgl_pinjam, 
+                    tanggal_kembali = :tgl_kembali 
+                WHERE id = :id
+            ");
             $stmt->execute([
-                ':peminjam' => $nama_peminjam, 
-                ':jumlah' => $jumlah, 
+                ':id' => $id,
+                ':guru_peminjam' => $guru_peminjam,
+                ':peminjam' => !empty($nama_peminjam) ? $nama_peminjam : null,
+                ':nisn' => !empty($nama_peminjam) ? $nisn : null,
+                ':jumlah' => $jumlah,
                 ':status' => $newStatus,
                 ':tugas' => $tugas,
-                ':thn_ajaran' => $tahun_ajaran,
+                ':thn_ajaran' => $thnAjaran,
                 ':tgl_pinjam' => $tglPinjam,
-                ':tgl_kembali' => $tglKembali,
-                ':id' => $id
+                ':tgl_kembali' => $tglKembali
             ]);
 
             $db->commit();
@@ -315,7 +333,7 @@ class Peminjaman {
             $old = $check->fetch();
 
             if ($old && $old['status'] === 'dipinjam') {
-                $upd = $db->prepare("UPDATE barang SET stok_tersedia = LEAST(stok_total, stok_tersedia + :jml) WHERE id = :bid");
+                $upd = $db->prepare("UPDATE barang SET stok_tersedia = stok_tersedia + :jml WHERE id = :bid");
                 $upd->execute([':jml' => $old['jumlah'], ':bid' => $old['barang_id']]);
             }
 

@@ -12,6 +12,7 @@
     <script src="assets/js/chart.min.js"></script>
     <script src="assets/js/JsBarcode.all.min.js"></script>
     <script src="assets/js/qrcode.min.js"></script>
+    <script src="assets/js/html5-qrcode.min.js"></script>
     <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -19,9 +20,6 @@
         });
     }
     </script>
-    <!-- Swagger UI Dist CSS & JS -->
-    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.css" />
-    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
     <?php
     if (!function_exists('generateTailwindPaletteFromHex')) {
         function generateTailwindPaletteFromHex($hex) {

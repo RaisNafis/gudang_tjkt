@@ -5,8 +5,8 @@ $user = currentUser();
 <header class="bg-white dark:bg-slate-900 border-b border-sage-200/80 dark:border-slate-800 px-4 sm:px-6 py-3.5 flex items-center justify-between shadow-sm sticky top-0 z-30">
     <!-- Brand Logo & Title -->
     <div class="flex items-center gap-3 min-w-0">
-        <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-            <img src="assets/img/belmoti.svg" alt="Belmoti Logo" class="w-6 h-6 object-contain" onerror="this.style.display='none'; document.getElementById('fallbackNavLogo').style.display='block';">
+        <div class="w-9 h-9 rounded-xl text-white flex items-center justify-center shrink-0 shadow-md transition-all duration-300" style="background: linear-gradient(135deg, <?= $activeThemePalette['600'] ?? '#eab308'; ?>, <?= $activeThemePalette['700'] ?? '#ca8a04'; ?>); box-shadow: 0 4px 14px 0 rgba(<?= implode(',', sscanf($activeThemePalette['600'] ?? '#eab308', "#%02x%02x%02x")); ?>, 0.35);">
+            <img src="assets/img/belmoti.svg" alt="Belmoti Logo" class="w-6 h-6 object-contain filter drop-shadow-sm" onerror="this.style.display='none'; document.getElementById('fallbackNavLogo').style.display='block';">
             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display:none;" id="fallbackNavLogo">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
             </svg>

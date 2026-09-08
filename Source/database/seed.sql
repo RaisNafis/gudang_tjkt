@@ -24,10 +24,10 @@ VALUES
 (UUID(), (SELECT `id` FROM `kategori` WHERE `kode_kategori` = 'KAT-ELEK' LIMIT 1), 'BRG-003', 'Digital Multimeter / Avometer', 'Sanwa', '899100100003', 8, 8, 8, 'Multitester Digital untuk Pengukuran Arus & Tegangan');
 
 -- 4. SEED TRANSAKSI BARANG MASUK
-INSERT INTO `barang_masuk` (`id`, `barang_id`, `pengguna_id`, `nama_pemasok`, `jumlah`, `catatan`)
+INSERT INTO `barang_masuk` (`id`, `barang_id`, `pengguna_id`, `jumlah`, `catatan`)
 VALUES
-(UUID(), (SELECT `id` FROM `barang` WHERE `kode_barang` = 'BRG-001' LIMIT 1), (SELECT `id` FROM `pengguna` WHERE `nama_pengguna` = 'petugas_gudang' LIMIT 1), 'PT Indo Network Supplier', 10, 'Pengadaan Barang Baru Lab TKJ 2026'),
-(UUID(), (SELECT `id` FROM `barang` WHERE `kode_barang` = 'BRG-002' LIMIT 1), (SELECT `id` FROM `pengguna` WHERE `nama_pengguna` = 'petugas_gudang' LIMIT 1), 'Toko Utama Alat Teknik', 15, 'Pembelian Peralatan Praktik Siswa');
+(UUID(), (SELECT `id` FROM `barang` WHERE `kode_barang` = 'BRG-001' LIMIT 1), (SELECT `id` FROM `pengguna` WHERE `nama_pengguna` = 'petugas_gudang' LIMIT 1), 10, 'Pengadaan Barang Baru Lab TKJ 2026'),
+(UUID(), (SELECT `id` FROM `barang` WHERE `kode_barang` = 'BRG-002' LIMIT 1), (SELECT `id` FROM `pengguna` WHERE `nama_pengguna` = 'petugas_gudang' LIMIT 1), 15, 'Pembelian Peralatan Praktik Siswa');
 
 -- 5. SEED TRANSAKSI PEMINJAMAN
 INSERT INTO `peminjaman` (`id`, `barang_id`, `pengguna_id`, `jumlah`, `status`, `catatan`)

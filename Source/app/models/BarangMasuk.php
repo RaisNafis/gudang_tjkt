@@ -29,7 +29,7 @@ class BarangMasuk {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function create($barang_id, $pengguna_id, $nama_pemasok, $jumlah, $catatan = null) {
+    public static function create($barang_id, $pengguna_id, $jumlah, $catatan = null) {
         $db = Database::getInstance()->getConnection();
         $id = generateUuid();
         
@@ -48,15 +48,14 @@ class BarangMasuk {
         $db->beginTransaction();
         try {
             $stmt = $db->prepare("
-                INSERT INTO barang_masuk (id, jurusan_id, barang_id, pengguna_id, nama_pemasok, jumlah, catatan)
-                VALUES (:id, :jid, :bid, :pid, :pemasok, :jumlah, :catatan)
+                INSERT INTO barang_masuk (id, jurusan_id, barang_id, pengguna_id, jumlah, catatan)
+                VALUES (:id, :jid, :bid, :pid, :jumlah, :catatan)
             ");
             $stmt->execute([
                 ':id' => $id,
                 ':jid' => $jurusan_id,
                 ':bid' => $barang_id,
                 ':pid' => $pengguna_id,
-                ':pemasok' => $nama_pemasok,
                 ':jumlah' => $jumlah,
                 ':catatan' => $catatan
             ]);
@@ -64,10 +63,10 @@ class BarangMasuk {
             // Update stok barang
             $upd = $db->prepare("
                 UPDATE barang 
-                SET stok_total = stok_total + :jml1, stok_tersedia = stok_tersedia + :jml2 
+                SET stok_tersedia = stok_tersedia + :jml 
                 WHERE id = :bid
             ");
-            $upd->execute([':jml1' => $jumlah, ':jml2' => $jumlah, ':bid' => $barang_id]);
+            $upd->execute([':jml' => $jumlah, ':bid' => $barang_id]);
 
             $db->commit();
             return true;
@@ -77,7 +76,7 @@ class BarangMasuk {
         }
     }
 
-    public static function update($id, $nama_pemasok, $jumlah) {
+    public static function update($id, $jumlah, $catatan = null) {
         $db = Database::getInstance()->getConnection();
         $stmt = $db->prepare("SELECT * FROM barang_masuk WHERE id = :id LIMIT 1");
         $stmt->execute([':id' => $id]);
@@ -97,11 +96,11 @@ class BarangMasuk {
                 }
             }
 
-            $updStok = $db->prepare("UPDATE barang SET stok_total = GREATEST(0, stok_total + :diff1), stok_tersedia = GREATEST(0, stok_tersedia + :diff2) WHERE id = :bid");
-            $updStok->execute([':diff1' => $diff, ':diff2' => $diff, ':bid' => $old['barang_id']]);
+            $updStok = $db->prepare("UPDATE barang SET stok_tersedia = GREATEST(0, stok_tersedia + :diff) WHERE id = :bid");
+            $updStok->execute([':diff' => $diff, ':bid' => $old['barang_id']]);
 
-            $upd = $db->prepare("UPDATE barang_masuk SET nama_pemasok = :pemasok, jumlah = :jumlah, updated_at = CURRENT_TIMESTAMP WHERE id = :id");
-            $upd->execute([':pemasok' => $nama_pemasok, ':jumlah' => $jumlah, ':id' => $id]);
+            $upd = $db->prepare("UPDATE barang_masuk SET jumlah = :jumlah, updated_at = CURRENT_TIMESTAMP WHERE id = :id");
+            $upd->execute([':jumlah' => $jumlah, ':id' => $id]);
 
             $db->commit();
             return ['success' => true, 'message' => 'Transaksi barang masuk berhasil diperbarui!'];
@@ -120,8 +119,8 @@ class BarangMasuk {
 
         $db->beginTransaction();
         try {
-            $updStok = $db->prepare("UPDATE barang SET stok_total = GREATEST(0, stok_total - :j1), stok_tersedia = GREATEST(0, stok_tersedia - :j2) WHERE id = :bid");
-            $updStok->execute([':j1' => $old['jumlah'], ':j2' => $old['jumlah'], ':bid' => $old['barang_id']]);
+            $updStok = $db->prepare("UPDATE barang SET stok_tersedia = GREATEST(0, stok_tersedia - :j) WHERE id = :bid");
+            $updStok->execute([':j' => $old['jumlah'], ':bid' => $old['barang_id']]);
 
             $del = $db->prepare("DELETE FROM barang_masuk WHERE id = :id");
             $del->execute([':id' => $id]);

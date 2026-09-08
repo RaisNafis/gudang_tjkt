@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../../models/Pengguna.php';
+require_once __DIR__ . '/../../models/Guru.php';
+require_once __DIR__ . '/../../models/Siswa.php';
 require_once __DIR__ . '/../../models/Jurusan.php';
 require_once __DIR__ . '/../../models/Kategori.php';
 require_once __DIR__ . '/../../models/Rak.php';
@@ -19,6 +21,8 @@ $currentJurusanId = (!empty($user['peran']) && $user['peran'] === 'admin_sekolah
 $dbJurusan = Jurusan::getAll();
 $stats = Barang::getStats($currentJurusanId);
 $dbPengguna = Pengguna::getAll($currentJurusanId);
+$dbGuru = Guru::getAll($currentJurusanId);
+$dbSiswa = Siswa::getAll($currentJurusanId);
 $dbKategori = Kategori::getAll($currentJurusanId);
 $dbRak = Rak::getAll($currentJurusanId);
 $dbBarang = Barang::getAll($currentJurusanId);
@@ -40,6 +44,8 @@ foreach ($dbJurusan as $jItem) {
 
 $isSuperAdmin = (!empty($user['peran']) && $user['peran'] === 'admin_sekolah');
 $totalUsersCount = count($dbPengguna);
+$totalGuruCount = count($dbGuru);
+$totalSiswaCount = count($dbSiswa);
 $totalJurusanCount = count($dbJurusan);
 $totalKategoriCount = count($dbKategori);
 $totalBarangCount = $stats['total_items'] ?? 0;
@@ -48,12 +54,14 @@ $totalStokTersedia = $stats['total_available'] ?? 0;
 $cntAdminSekolah = 0;
 $cntAdminJurusan = 0;
 $cntPetugas = 0;
+$cntGuruUmum = 0;
 $cntSiswa = 0;
 foreach ($dbPengguna as $pUser) {
     $r = $pUser['peran'] ?? 'siswa';
     if ($r === 'admin_sekolah') $cntAdminSekolah++;
     elseif ($r === 'admin_jurusan') $cntAdminJurusan++;
     elseif ($r === 'petugas') $cntPetugas++;
+    elseif ($r === 'guru_umum') $cntGuruUmum++;
     else $cntSiswa++;
 }
 
@@ -113,6 +121,8 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                     $topRoleText = 'Admin Jurusan' . ($jName ? ' (' . $jName . ')' : '');
                 } elseif ($topRole === 'petugas') {
                     $topRoleText = 'Petugas Gudang';
+                } elseif ($topRole === 'guru_umum') {
+                    $topRoleText = 'Guru Umum';
                 } else {
                     $topRoleText = 'Siswa';
                 }
@@ -147,147 +157,221 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
             <div id="tab-dashboard" class="tab-content animate-fade-in-up space-y-6">
                 <!-- Statistics Cards Row Live from MySQL Database -->
                 <?php if ($isSuperAdmin): ?>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                        <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Users</span>
-                                <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    <div class="space-y-5">
+                        <!-- ROW 1: Siswa, Guru, Jurusan (3 Kolom) -->
+                        <!-- ROW 1: Siswa, Guru, Jurusan (3 Kolom) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Siswa</span>
+                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                    </div>
                                 </div>
+                                <h3 id="statSuperTotalSiswa" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalSiswaCount); ?> Siswa</h3>
                             </div>
-                            <h3 class="text-2xl font-extrabold text-slate-800"><?= $totalUsersCount; ?> User</h3>
+
+                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Guru</span>
+                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+                                    </div>
+                                </div>
+                                <h3 id="statSuperTotalGuru" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalGuruCount); ?> Guru</h3>
+                            </div>
+
+                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Jurusan</span>
+                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                    </div>
+                                </div>
+                                <h3 id="statSuperTotalJurusan" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalJurusanCount); ?> Jurusan</h3>
+                            </div>
                         </div>
 
-                        <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Jurusan</span>
-                                <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        <!-- ROW 2: Users, Kategori Barang, Total Barang, Log Aktivitas (4 Kolom) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Users</span>
+                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                                    </div>
                                 </div>
+                                <h3 id="statSuperTotalUsers" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalUsersCount); ?> User</h3>
                             </div>
-                            <h3 id="statSuperTotalJurusan" class="text-2xl font-extrabold text-slate-800"><?= $totalJurusanCount; ?> Jurusan</h3>
+
+                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Kategori Barang</span>
+                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 11h.01M7 15h.01M11 7h8M11 11h8M11 15h8"/></svg>
+                                    </div>
+                                </div>
+                                <h3 id="statSuperTotalKategori" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalKategoriCount); ?> Kategori</h3>
+                            </div>
+
+                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Alat & Bahan</span>
+                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                    </div>
+                                </div>
+                                <h3 id="statSuperTotalBarang" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalBarangCount); ?> Item</h3>
+                            </div>
+
+                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Log Aktivitas</span>
+                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    </div>
+                                </div>
+                                <h3 id="statSuperTotalLogs" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalLogsCount); ?> Catatan</h3>
+                            </div>
                         </div>
 
-                        <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Kategori Barang</span>
-                                <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 11h.01M7 15h.01M11 7h8M11 11h8M11 15h8"/></svg>
+                        <!-- ROW 3: Stok Tersedia, Belum Dikembalikan, Sudah Dikembalikan (3 Kolom) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Stok Tersedia</span>
+                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
                                 </div>
+                                <h3 id="statSuperStokTersedia" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalStokTersedia); ?> Unit</h3>
                             </div>
-                            <h3 id="statSuperTotalKategori" class="text-2xl font-extrabold text-slate-800"><?= $totalKategoriCount; ?> Kategori</h3>
-                        </div>
 
-                        <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Barang</span>
-                                <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Belum Dikembalikan</span>
+                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
                                 </div>
+                                <h3 id="statSuperBelumKembali" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($pinjamBelumKembali); ?> Transaksi</h3>
                             </div>
-                            <h3 id="statSuperTotalBarang" class="text-2xl font-extrabold text-slate-800"><?= $totalBarangCount; ?> Item</h3>
-                        </div>
 
-                        <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Stok Tersedia</span>
-                                <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Sudah Dikembalikan</span>
+                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
                                 </div>
+                                <h3 id="statSuperSudahKembali" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($pinjamSudahKembali); ?> Transaksi</h3>
                             </div>
-                            <h3 id="statSuperStokTersedia" class="text-2xl font-extrabold text-slate-800"><?= $totalStokTersedia; ?> Unit</h3>
                         </div>
-
-                        <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Belum Dikembalikan</span>
-                                <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                <?php elseif (!empty($user['peran']) && $user['peran'] === 'siswa'): ?>
+                    <div class="space-y-5">
+                        <!-- Stat Cards Siswa: Belum Dikembalikan, Sudah Dikembalikan (2 Kolom) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Belum Dikembalikan</span>
+                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
                                 </div>
+                                <h3 id="statBelumKembali" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($pinjamBelumKembali); ?> Transaksi</h3>
                             </div>
-                            <h3 id="statSuperBelumKembali" class="text-2xl font-extrabold text-slate-800"><?= $pinjamBelumKembali; ?> Transaksi</h3>
-                        </div>
 
-                        <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Sudah Dikembalikan</span>
-                                <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Sudah Dikembalikan</span>
+                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
                                 </div>
+                                <h3 id="statSudahKembali" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($pinjamSudahKembali); ?> Transaksi</h3>
                             </div>
-                            <h3 id="statSuperSudahKembali" class="text-2xl font-extrabold text-slate-800"><?= $pinjamSudahKembali; ?> Transaksi</h3>
-                        </div>
-
-                        <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Log Aktivitas</span>
-                                <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                </div>
-                            </div>
-                            <h3 id="statSuperTotalLogs" class="text-2xl font-extrabold text-slate-800"><?= $totalLogsCount; ?> Catatan</h3>
                         </div>
                     </div>
                 <?php else: ?>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                        <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Barang</span>
-                                <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                    <div class="space-y-5">
+                        <!-- ROW 1: Siswa, Guru (2 Kolom) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Siswa</span>
+                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                    </div>
                                 </div>
+                                <h3 id="statJurusanTotalSiswa" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalSiswaCount); ?> Siswa</h3>
                             </div>
-                            <h3 id="statTotalBarang" class="text-2xl font-extrabold text-slate-800"><?= $totalBarangCount; ?> Item</h3>
+
+                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Guru</span>
+                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+                                    </div>
+                                </div>
+                                <h3 id="statJurusanTotalGuru" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalGuruCount); ?> Guru</h3>
+                            </div>
                         </div>
 
-                        <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Stok Tersedia</span>
-                                <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <!-- ROW 2: Kategori Barang, Total Barang, Log Aktivitas (3 Kolom) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Kategori Barang</span>
+                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 11h.01M7 15h.01M11 7h8M11 11h8M11 15h8"/></svg>
+                                    </div>
                                 </div>
+                                <h3 id="statTotalKategori" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalKategoriCount); ?> Kategori</h3>
                             </div>
-                            <h3 id="statStokTersedia" class="text-2xl font-extrabold text-slate-800"><?= $totalStokTersedia; ?> Unit</h3>
+
+                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Alat & Bahan</span>
+                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                    </div>
+                                </div>
+                                <h3 id="statTotalBarang" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalBarangCount); ?> Item</h3>
+                            </div>
+
+                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Log Aktivitas</span>
+                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    </div>
+                                </div>
+                                <h3 id="statTotalLogs" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalLogsCount); ?> Catatan</h3>
+                            </div>
                         </div>
 
-                        <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Kategori Barang</span>
-                                <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 11h.01M7 15h.01M11 7h8M11 11h8M11 15h8"/></svg>
+                        <!-- ROW 3: Belum Dikembalikan, Sudah Dikembalikan (2 Kolom) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Belum Dikembalikan</span>
+                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
                                 </div>
+                                <h3 id="statBelumKembali" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($pinjamBelumKembali); ?> Transaksi</h3>
                             </div>
-                            <h3 id="statTotalKategori" class="text-2xl font-extrabold text-slate-800"><?= $totalKategoriCount; ?> Kategori</h3>
-                        </div>
 
-                        <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Belum Dikembalikan</span>
-                                <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Sudah Dikembalikan</span>
+                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
                                 </div>
+                                <h3 id="statSudahKembali" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($pinjamSudahKembali); ?> Transaksi</h3>
                             </div>
-                            <h3 id="statBelumKembali" class="text-2xl font-extrabold text-slate-800"><?= $pinjamBelumKembali; ?> Transaksi</h3>
-                        </div>
-
-                        <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Sudah Dikembalikan</span>
-                                <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                </div>
-                            </div>
-                            <h3 id="statSudahKembali" class="text-2xl font-extrabold text-slate-800"><?= $pinjamSudahKembali; ?> Transaksi</h3>
-                        </div>
-
-                        <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Log Aktivitas</span>
-                                <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                </div>
-                            </div>
-                            <h3 id="statTotalLogs" class="text-2xl font-extrabold text-slate-800"><?= $totalLogsCount; ?> Catatan</h3>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -303,15 +387,15 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                     <?= $isSuperAdmin ? 'Grafik Sirkulasi & Stok Inventaris per Jurusan' : 'Grafik Sirkulasi Inventaris & Peminjaman'; ?>
                                 </h3>
                                 <p class="text-xs text-slate-500">
-                                    <?= $isSuperAdmin ? 'Perbandingan Barang Masuk, Barang Keluar, dan Peminjaman Alat per Jurusan' : 'Perbandingan Barang Masuk, Barang Keluar, dan Peminjaman Alat per Bulan'; ?>
+                                    <?= $isSuperAdmin ? 'Perbandingan Alat & Bahan Masuk, Bahan Keluar, dan Peminjaman Alat per Jurusan' : 'Perbandingan Alat & Bahan Masuk, Bahan Keluar, dan Peminjaman Alat per Bulan'; ?>
                                 </p>
                             </div>
                             <div class="flex items-center gap-4 text-xs font-semibold text-slate-600">
                                 <span class="inline-flex items-center gap-1.5">
-                                    <span class="w-3 h-3 rounded-sm bg-sage-600 inline-block"></span> Masuk
+                                    <span class="w-3 h-3 rounded-sm bg-sage-600 inline-block"></span> Alat & Bahan Masuk
                                 </span>
                                 <span class="inline-flex items-center gap-1.5">
-                                    <span class="w-3 h-3 rounded-sm bg-amber-500 inline-block"></span> Keluar
+                                    <span class="w-3 h-3 rounded-sm bg-amber-500 inline-block"></span> Bahan Keluar
                                 </span>
                                 <span class="inline-flex items-center gap-1.5">
                                     <span class="w-3 h-3 rounded-sm bg-sky-500 inline-block"></span> Peminjaman
@@ -353,11 +437,14 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                             <button onclick="switchTab('peminjaman')" class="text-xs font-bold text-sage-600 hover:text-sage-700">Lihat Semua &rarr;</button>
                         </div>
                         <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100">
-                            <table class="w-full text-left text-xs text-slate-600">
+                            <table id="tableDashboardRecentPeminjaman" class="w-full text-left text-xs text-slate-600">
                                 <thead class="bg-sage-50 text-slate-700 font-bold border-b border-sage-200">
                                     <tr>
                                         <th class="py-3 px-4">Nama Barang</th>
-                                        <th class="py-3 px-4">Peminjam (Siswa)</th>
+                                        <th class="py-3 px-4">Jenis Barang</th>
+                                        <th class="py-3 px-4">Siswa Peminjam</th>
+                                        <th class="py-3 px-4">Guru Peminjam</th>
+                                        <th class="py-3 px-4">Petugas</th>
                                         <th class="py-3 px-4">Jumlah</th>
                                         <th class="py-3 px-4">Status</th>
                                     </tr>
@@ -366,18 +453,43 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                     <?php if (!empty($dbPeminjaman)): ?>
                                         <?php foreach (array_slice($dbPeminjaman, 0, 5) as $pm): ?>
                                             <tr class="hover:bg-sage-50/50">
-                                                <td class="py-3.5 px-4 font-bold text-slate-800"><?= htmlspecialchars($pm['nama_barang']); ?></td>
-                                                <td class="py-3.5 px-4"><?= htmlspecialchars($pm['nama_peminjam']); ?></td>
-                                                <td class="py-3.5 px-4 font-semibold"><?= htmlspecialchars($pm['jumlah']); ?> <?= htmlspecialchars($pm['satuan'] ?? 'Unit'); ?></td>
+                                                <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-white"><?= htmlspecialchars($pm['nama_barang']); ?></td>
+                                                <td class="py-3.5 px-4 font-semibold capitalize text-slate-700 dark:text-slate-300"><?= htmlspecialchars(ucfirst($pm['jenis'] ?? 'Alat')); ?></td>
                                                 <td class="py-3.5 px-4">
-                                                    <span class="<?= $pm['status'] === 'dipinjam' ? 'text-amber-500 font-bold' : 'text-emerald-500 font-bold'; ?>">
-                                                        <?= htmlspecialchars(ucfirst($pm['status'])); ?>
-                                                    </span>
+                                                    <?php if (!empty($pm['nama_peminjam'])): ?>
+                                                        <div class="font-bold text-slate-800 dark:text-white"><?= htmlspecialchars($pm['nama_peminjam']); ?></div>
+                                                        <?php if (!empty($pm['nisn'])): ?>
+                                                            <span class="inline-flex items-center gap-1 font-mono text-[10px] text-slate-500"><span class="font-bold">NISN:</span> <?= htmlspecialchars($pm['nisn']); ?></span>
+                                                        <?php endif; ?>
+                                                    <?php else: ?>
+                                                        <span class="text-slate-400 font-normal">-</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-white"><?= htmlspecialchars($pm['guru_peminjam'] ?? '-'); ?></td>
+                                                <td class="py-3.5 px-4 font-semibold text-slate-700 dark:text-slate-300"><?= htmlspecialchars($pm['nama_petugas'] ?? '-'); ?></td>
+                                                <td class="py-3.5 px-4 font-semibold text-slate-800 dark:text-slate-200"><?= htmlspecialchars($pm['jumlah']); ?> <?= htmlspecialchars($pm['satuan'] ?? 'Unit'); ?></td>
+                                                <td class="py-3.5 px-4">
+                                                    <?php if ($pm['status'] === 'dipinjam'): ?>
+                                                        <span class="text-amber-500 font-extrabold">Dipinjam</span>
+                                                    <?php elseif ($pm['status'] === 'pending'): ?>
+                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800 border border-amber-300">
+                                                            <svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                            Pending
+                                                        </span>
+                                                    <?php elseif ($pm['status'] === 'ditolak'): ?>
+                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-red-100 text-red-800 border border-red-300">
+                                                            Ditolak
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span class="font-extrabold text-sage-600 dark:text-sage-400">
+                                                            Dikembalikan
+                                                        </span>
+                                                    <?php endif; ?>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
                                     <?php else: ?>
-                                        <tr><td colspan="4" class="py-4 text-center text-slate-400">Belum ada data peminjaman</td></tr>
+                                        <tr><td colspan="7" class="py-4 text-center text-slate-400">Belum ada data peminjaman</td></tr>
                                     <?php endif; ?>
                                 </tbody>
                             </table>
@@ -388,8 +500,8 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                         <div>
                             <div class="flex items-center justify-between mb-4">
                                 <div>
-                                    <h3 class="text-base font-bold text-slate-800">Aktivitas Barang Masuk & Keluar</h3>
-                                    <p class="text-xs text-slate-500">Catatan transaksi barang terbaru</p>
+                                    <h3 class="text-base font-bold text-slate-800">Aktivitas Masuk & Keluar</h3>
+                                    <p class="text-xs text-slate-500">Catatan transaksi alat & bahan terbaru</p>
                                 </div>
                             </div>
                             <?php 
@@ -398,7 +510,8 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                 $recentLogMasukKeluar[] = [
                                     'type' => 'masuk',
                                     'nama_barang' => $m['nama_barang'] ?? 'Barang',
-                                    'pihak' => $m['nama_pemasok'] ?? 'Pemasok',
+                                    'jurusan_id' => $m['jurusan_id'] ?? null,
+                                    'pihak' => $m['nama_petugas'] ?? 'Petugas Gudang',
                                     'jumlah' => $m['jumlah'] ?? 1,
                                     'satuan' => $m['satuan'] ?? 'Unit',
                                     'tanggal' => $m['tanggal_masuk'] ?? $m['created_at'] ?? date('Y-m-d H:i')
@@ -408,6 +521,7 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                 $recentLogMasukKeluar[] = [
                                     'type' => 'keluar',
                                     'nama_barang' => $k['nama_barang'] ?? 'Barang',
+                                    'jurusan_id' => $k['jurusan_id'] ?? null,
                                     'pihak' => $k['nama_penerima'] ?? 'Penerima',
                                     'jumlah' => $k['jumlah'] ?? 1,
                                     'satuan' => $k['satuan'] ?? 'Unit',
@@ -419,34 +533,39 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                             });
                             $recentLogMasukKeluar = array_slice($recentLogMasukKeluar, 0, 4);
                             ?>
-                            <div class="space-y-3">
+                            <div class="space-y-3" id="recentLogMasukKeluarContainer">
                                 <?php if (!empty($recentLogMasukKeluar)): ?>
                                     <?php foreach ($recentLogMasukKeluar as $log): ?>
-                                        <div class="p-3 rounded-xl <?= $log['type'] === 'masuk' ? 'bg-emerald-50/50 border border-emerald-200/60' : 'bg-orange-50/50 border border-orange-200/60'; ?> flex items-center justify-between transition-all">
-                                            <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
-                                                <div class="w-8 h-8 rounded-lg <?= $log['type'] === 'masuk' ? 'bg-emerald-600 text-white' : 'bg-orange-600 text-white'; ?> flex items-center justify-center text-xs font-bold shrink-0">
-                                                    <?php if ($log['type'] === 'masuk'): ?>
+                                        <?php 
+                                            $isMasuk = ($log['type'] === 'masuk');
+                                        ?>
+                                        <div class="p-3 rounded-xl <?= $isMasuk 
+                                            ? 'bg-emerald-50/60 border border-emerald-200/60 dark:bg-slate-800/40 dark:border-slate-800/80' 
+                                            : 'bg-amber-50/60 border border-amber-200/60 dark:bg-slate-800/40 dark:border-slate-800/80'; ?> flex items-center justify-between transition-all">
+                                            <div class="flex items-center gap-3 min-w-0">
+                                                <div class="w-8 h-8 rounded-lg <?= $isMasuk ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'; ?> flex items-center justify-center text-xs font-bold shrink-0 shadow-sm">
+                                                    <?php if ($isMasuk): ?>
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
                                                     <?php else: ?>
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
                                                     <?php endif; ?>
                                                 </div>
-                                                <div>
-                                                    <p class="text-xs font-bold text-slate-800 line-clamp-1"><?= htmlspecialchars($log['nama_barang']); ?></p>
-                                                    <p class="text-[10px] text-slate-500 font-semibold"><?= $log['type'] === 'masuk' ? 'Dari: ' : 'Untuk: '; ?><?= htmlspecialchars($log['pihak']); ?></p>
+                                                <div class="min-w-0">
+                                                    <p class="text-xs font-extrabold line-clamp-1 text-slate-800 dark:text-slate-100"><?= htmlspecialchars($log['nama_barang']); ?></p>
+                                                    <p class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold truncate"><?= $isMasuk ? 'Petugas: ' : 'Untuk: '; ?><span class="text-slate-700 dark:text-slate-200"><?= htmlspecialchars($log['pihak']); ?></span></p>
                                                 </div>
                                             </div>
-                                            <div class="text-right shrink-0">
-                                                <span class="text-xs font-extrabold <?= $log['type'] === 'masuk' ? 'text-emerald-700' : 'text-orange-700'; ?>">
-                                                    <?= $log['type'] === 'masuk' ? '+' : '-'; ?><?= htmlspecialchars($log['jumlah']); ?> <?= htmlspecialchars($log['satuan']); ?>
+                                            <div class="text-right shrink-0 ml-3">
+                                                <span class="text-xs font-extrabold <?= $isMasuk ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'; ?>">
+                                                    <?= $isMasuk ? '+' : '-'; ?><?= htmlspecialchars($log['jumlah']); ?> <?= htmlspecialchars($log['satuan']); ?>
                                                 </span>
-                                                <p class="text-[9px] text-slate-400 font-medium mt-0.5"><?= date('d/m/H:i', strtotime($log['tanggal'])); ?></p>
+                                                <p class="text-[9px] text-slate-400 dark:text-slate-500 font-medium mt-0.5"><?= date('d/m/H:i', strtotime($log['tanggal'])); ?></p>
                                             </div>
                                         </div>
                                     <?php endforeach; ?>
                                 <?php else: ?>
-                                    <div class="p-6 text-center text-slate-400 text-xs italic">
-                                        Belum ada aktivitas barang masuk / keluar
+                                    <div class="p-6 text-center text-slate-400 dark:text-slate-500 text-xs italic">
+                                        Belum ada aktivitas alat & bahan masuk / keluar
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -458,69 +577,108 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
             <!-- SECTION 2: TAB DATA PENGGUNA (MySQL Live) -->
             <div id="tab-pengguna" class="tab-content hidden space-y-6">
                 <!-- Stat Cards Row for Data Pengguna -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 <?= $isSuperAdmin ? 'lg:grid-cols-5' : 'lg:grid-cols-4'; ?> gap-5">
-                    <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
+                <!-- Stat Cards Row 1: Total User, Total Siswa, Total Guru (3 Kolom) -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total User</span>
-                            <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                            <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                             </div>
                         </div>
-                        <h3 id="statTabPenggunaTotal" class="text-2xl font-extrabold text-slate-800"><?= $totalUsersCount; ?> User</h3>
+                        <h3 id="statTabPenggunaTotal" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalUsersCount); ?> User</h3>
                     </div>
+
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Siswa</span>
+                            <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                            </div>
+                        </div>
+                        <h3 id="statTabPenggunaTotalSiswa" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalSiswaCount); ?> Siswa</h3>
+                    </div>
+
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Guru</span>
+                            <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+                            </div>
+                        </div>
+                        <h3 id="statTabPenggunaTotalGuru" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalGuruCount); ?> Guru</h3>
+                    </div>
+                </div>
+
+                <!-- Stat Cards Row 2: Admin Sekolah, Admin Jurusan, Petugas Gudang, Guru Umum -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 <?= $isSuperAdmin ? 'lg:grid-cols-4' : 'lg:grid-cols-2'; ?> gap-5">
                     <?php if ($isSuperAdmin): ?>
-                    <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Admin Sekolah</span>
-                            <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                            <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                             </div>
                         </div>
-                        <h3 class="text-2xl font-extrabold text-slate-800"><?= $cntAdminSekolah; ?> Admin</h3>
+                        <h3 id="statPenggunaAdminSekolah" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($cntAdminSekolah); ?> Admin</h3>
                     </div>
                     <?php endif; ?>
-                    <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
+
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Admin Jurusan</span>
-                            <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                            <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                             </div>
                         </div>
-                        <h3 class="text-2xl font-extrabold text-slate-800"><?= $cntAdminJurusan; ?> Admin</h3>
+                        <h3 id="statPenggunaAdminJurusan" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($cntAdminJurusan); ?> Admin</h3>
                     </div>
-                    <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
+
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Petugas Gudang</span>
-                            <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                             </div>
                         </div>
-                        <h3 class="text-2xl font-extrabold text-slate-800"><?= $cntPetugas; ?> Petugas</h3>
+                        <h3 id="statPenggunaPetugas" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($cntPetugas); ?> Petugas</h3>
                     </div>
-                    <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
+
+                    <?php if ($isSuperAdmin): ?>
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Siswa</span>
-                            <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Guru Umum</span>
+                            <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                             </div>
                         </div>
-                        <h3 class="text-2xl font-extrabold text-slate-800"><?= $cntSiswa; ?> Siswa</h3>
+                        <h3 id="statPenggunaGuruUmum" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($cntGuruUmum); ?> Guru</h3>
                     </div>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Charts Row for Data Pengguna -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <div class="lg:col-span-7 bg-white p-6 rounded-2xl border border-sage-200/80 shadow-sm">
-                        <h3 class="text-base font-bold text-slate-800 mb-1">Distribusi Pengguna per Peran (Role)</h3>
-                        <p class="text-xs text-slate-500 mb-4">Jumlah Admin Sekolah, Admin Jurusan, Petugas, dan Siswa</p>
+                    <div class="lg:col-span-6 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm">
+                        <h3 class="text-base font-bold text-slate-800 dark:text-white mb-1">Distribusi Pengguna per Peran (Role)</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Jumlah Admin Sekolah, Admin Jurusan, Petugas, Guru Umum, dan Siswa</p>
                         <div class="relative h-64 w-full"><canvas id="userRoleChart"></canvas></div>
                     </div>
-                    <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-sage-200/80 shadow-sm flex flex-col justify-between">
+                    <div class="lg:col-span-6 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm flex flex-col justify-between">
                         <div>
-                            <h3 class="text-base font-bold text-slate-800 mb-1"><?= $isSuperAdmin ? 'Sebaran Pengguna per Jurusan' : 'Persentase Peran Pengguna'; ?></h3>
-                            <p class="text-xs text-slate-500 mb-4"><?= $isSuperAdmin ? 'Persentase anggota di setiap jurusan sekolah' : 'Proporsi Admin Jurusan, Petugas Gudang, dan Siswa'; ?></p>
+                            <h3 class="text-base font-bold text-slate-800 dark:text-white mb-1"><?= $isSuperAdmin ? 'Sebaran Pengguna per Jurusan' : 'Persentase Peran Pengguna'; ?></h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-3"><?= $isSuperAdmin ? 'Persentase dan jumlah anggota di setiap jurusan sekolah' : 'Proporsi Admin Jurusan, Petugas Gudang, dan Siswa'; ?></p>
                         </div>
-                        <div class="relative h-56 w-full flex items-center justify-center"><canvas id="userJurusanChart"></canvas></div>
+                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center flex-1">
+                            <!-- Left: Pie Chart (5 cols) -->
+                            <div class="sm:col-span-5 relative h-56 w-full flex items-center justify-center">
+                                <canvas id="userJurusanChart"></canvas>
+                            </div>
+                            <!-- Right: Legend List (7 cols) -->
+                            <div class="sm:col-span-7 overflow-y-auto pr-1 space-y-1" style="scrollbar-width: thin; max-height: 224px;" id="userJurusanLegendList">
+                                <!-- Populated dynamically by JavaScript -->
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -538,9 +696,51 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                             <button onclick="openModal('modalPengguna', 'Tambah Data Pengguna Baru')" class="px-4 py-2 bg-sage-600 text-white rounded-xl font-bold text-xs shadow-md shadow-sage-600/20 hover:bg-sage-700 transition-colors">+ Tambah Pengguna</button>
                         </div>
                     </div>
-                    <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100">
-                        <table id="tablePengguna" class="w-full text-left text-xs text-slate-600">
-                            <thead class="bg-sage-50 text-slate-700 font-bold border-b border-sage-200">
+
+                    <!-- Filter Controls Data Pengguna -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                        <div class="relative">
+                            <input type="text" id="filter_pengguna_search" oninput="debouncedRenderTablePengguna()" placeholder="Cari nama, email, kelas..." class="w-full pl-9 pr-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-medium">
+                            <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <div>
+                            <select id="filter_pengguna_tingkat_kelas" onchange="currentPenggunaPage=1; renderTablePengguna()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
+                                <option value="">Semua Tingkat Kelas</option>
+                                <option value="10">Kelas 10</option>
+                                <option value="11">Kelas 11</option>
+                                <option value="12">Kelas 12</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select id="filter_pengguna_peran" onchange="currentPenggunaPage=1; renderTablePengguna()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
+                                <option value="">Semua Peran</option>
+                                <?php if ($isSuperAdmin): ?><option value="admin_sekolah">Admin Sekolah</option><?php endif; ?>
+                                <option value="admin_jurusan">Admin Jurusan</option>
+                                <option value="petugas">Petugas Gudang</option>
+                                <option value="guru_umum">Guru Umum</option>
+                                <option value="siswa">Siswa</option>
+                            </select>
+                        </div>
+                        <div>
+                            <?php if ($isSuperAdmin): ?>
+                                <select id="filter_pengguna_jurusan" onchange="currentPenggunaPage=1; renderTablePengguna()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
+                                    <option value="">Semua Jurusan</option>
+                                    <option value="none">Tanpa Jurusan (Umum)</option>
+                                    <?php foreach ($dbJurusan as $j): ?>
+                                        <option value="<?= htmlspecialchars($j['id']); ?>"><?= htmlspecialchars($j['nama_jurusan']); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            <?php else: ?>
+                                <select id="filter_pengguna_jurusan" disabled class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-500 dark:text-slate-400 font-semibold cursor-not-allowed">
+                                    <option value="<?= htmlspecialchars($user['jurusan_id'] ?? ''); ?>" selected><?= htmlspecialchars($user['nama_jurusan'] ?? 'Jurusan Saya'); ?></option>
+                                </select>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100 dark:border-slate-800">
+                        <table id="tablePengguna" class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+                            <thead class="bg-sage-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 font-bold border-b border-sage-200 dark:border-slate-700">
                                 <tr>
                                     <th class="py-3 px-3 w-10 text-center"><input type="checkbox" class="select-all-checkbox rounded accent-sage-600 cursor-pointer" onchange="toggleSelectAll(this)"></th>
                                     <th class="py-3 px-4 w-12 text-center">No</th>
@@ -549,60 +749,231 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                     <th class="py-3 px-4">Email</th>
                                     <th class="py-3 px-4">Jurusan</th>
                                     <th class="py-3 px-4">Peran</th>
+                                    <th class="py-3 px-4">Kelas</th>
                                     <th class="py-3 px-4">Nomor Telepon</th>
                                     <th class="py-3 px-4">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-100">
-                                <?php $no = 1; foreach ($dbPengguna as $p): ?>
-                                    <tr class="hover:bg-sage-50/50">
-                                        <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="<?= htmlspecialchars($p['id']); ?>" onchange="updateBatchDeleteBar()"></td>
-                                        <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell"><?= $no++; ?></td>
-                                         <td class="py-3.5 px-4 font-bold text-slate-800 flex items-center gap-2.5">
-                                             <?php if (!empty($p['foto_url']) && file_exists(__DIR__ . '/../../../' . $p['foto_url'])): ?>
-                                                 <img src="<?= htmlspecialchars($p['foto_url']);  ?>" class="w-7 h-7 rounded-full object-cover border border-sage-200 shrink-0 shadow-sm" alt="Avatar">
-                                             <?php else: ?>
-                                                 <div class="w-7 h-7 rounded-full bg-sage-600 text-white font-bold flex items-center justify-center text-[10px] shrink-0 shadow-sm">
-                                                     <?= strtoupper(substr($p['nama_lengkap'] ?? 'U', 0, 1)); ?>
-                                                 </div>
-                                             <?php endif; ?>
-                                             <span><?= htmlspecialchars($p['nama_pengguna']); ?></span>
-                                         </td>
-                                        <td class="py-3.5 px-4"><?= htmlspecialchars($p['nama_lengkap']); ?></td>
-                                        <td class="py-3.5 px-4"><?= htmlspecialchars($p['email'] ?? '-'); ?></td>
-                                        <td class="py-3.5 px-4 font-bold text-sage-700">
-                                            <?= ($p['peran'] === 'admin_sekolah') ? '<span class="text-slate-400 font-normal">-</span>' : htmlspecialchars($p['nama_jurusan'] ?? '-'); ?>
-                                        </td>
-                                        <td class="py-3.5 px-4 font-semibold">
-                                            <?php
-                                                $r = $p['peran'] ?? 'siswa';
-                                                if ($r === 'admin_sekolah') echo 'Admin Sekolah';
-                                                elseif ($r === 'admin_jurusan') echo 'Admin Jurusan';
-                                                elseif ($r === 'petugas') echo 'Petugas Gudang';
-                                                else echo 'Siswa';
-                                            ?>
-                                        </td>
-                                        <td class="py-3.5 px-4"><?= htmlspecialchars($p['nomor_telepon'] ?? '-'); ?></td>
-                                        <td class="py-3.5 px-4">
-                                            <div class="flex items-center gap-1.5">
-                                                <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah' && $p['id'] !== $user['id']): ?>
-                                                <button type="button" onclick="loginAsUser('<?= htmlspecialchars($p['id']); ?>', '<?= htmlspecialchars(addslashes($p['nama_pengguna'])); ?>')" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-sm transition-all flex items-center gap-1" title="Login Sebagai Akun Ini">
-                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
-                                                    <span>Login Akun</span>
-                                                </button>
-                                                <?php endif; ?>
-                                                <button type="button" onclick="editPengguna('<?= htmlspecialchars($p['id']); ?>')" class="p-1.5 rounded-lg bg-sage-600 hover:bg-sage-700 text-white shadow-sm transition-all" title="Edit Data Pengguna">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 01-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                                </button>
-                                                <button type="button" onclick="deletePengguna('<?= htmlspecialchars($p['id']); ?>', '<?= htmlspecialchars(addslashes($p['nama_pengguna'])); ?>')" class="p-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm transition-all" title="Hapus Data Pengguna">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Pagination Controls Data Pengguna -->
+                    <div id="pagination_pengguna" class="mt-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-slate-800 gap-3">
+                        <div class="flex items-center gap-2.5">
+                            <span>Tampilkan</span>
+                            <select id="pengguna_per_page" onchange="changePenggunaPerPage(this.value)" class="px-2 py-1 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300 focus:outline-none focus:border-sage-600">
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span>data per halaman</span>
+                        </div>
+                        <div id="pengguna_pagination_info" class="font-medium text-slate-600 dark:text-slate-300 text-center sm:text-left">
+                            Menampilkan 0 data
+                        </div>
+                        <div id="pengguna_pagination_btns" class="flex items-center gap-1 flex-wrap justify-center sm:justify-end">
+                            <!-- Populated dynamically by renderPenggunaPaginationControls -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2.1: TAB DATA GURU -->
+            <div id="tab-guru" class="tab-content hidden space-y-6">
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-5">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800 dark:text-white">Master Data Guru</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Kelola data guru pengajar (Bengkel / Umum)</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
+                            <button onclick="openModal('modalImportGuruCSV')" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Import data dari berkas CSV">
+                                <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12"/></svg>
+                                <span>Import CSV</span>
+                            </button>
+                            <button onclick="exportTableToCSV('tableGuru', 'data_guru.csv')" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Download data sebagai CSV">
+                                <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                <span>Export CSV</span>
+                            </button>
+                            <button onclick="openModal('modalGuru', 'Tambah Data Guru Baru')" class="px-4 py-2 bg-sage-600 text-white rounded-xl font-bold text-xs shadow-md shadow-sage-600/20 hover:bg-sage-700 transition-colors">+ Tambah Guru</button>
+                        </div>
+                    </div>
+
+                    <!-- Filter Controls Data Guru -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                        <div class="relative">
+                            <input type="text" id="filter_guru_search" oninput="debouncedRenderTableGuru()" placeholder="Cari nama guru atau token..." class="w-full pl-9 pr-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-medium">
+                            <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <div>
+                            <?php if ($isSuperAdmin): ?>
+                                <select id="filter_guru_mengajar" onchange="currentGuruPage=1; renderTableGuru()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
+                                    <option value="">Semua Kategori Mengajar</option>
+                                    <option value="bengkel">Guru Bengkel</option>
+                                    <option value="umum">Guru Umum</option>
+                                </select>
+                            <?php else: ?>
+                                <select id="filter_guru_mengajar" disabled class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-500 dark:text-slate-400 font-semibold cursor-not-allowed">
+                                    <option value="bengkel" selected>Guru Bengkel (Kejuruan)</option>
+                                </select>
+                            <?php endif; ?>
+                        </div>
+                        <div>
+                            <?php if ($isSuperAdmin): ?>
+                                <select id="filter_guru_jurusan" onchange="currentGuruPage=1; renderTableGuru()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
+                                    <option value="">Semua Jurusan</option>
+                                    <option value="none">Guru Umum (Tidak Ada Jurusan)</option>
+                                    <?php foreach ($dbJurusan as $j): ?>
+                                        <option value="<?= htmlspecialchars($j['id']); ?>"><?= htmlspecialchars($j['nama_jurusan']); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            <?php else: ?>
+                                <select id="filter_guru_jurusan" disabled class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-500 dark:text-slate-400 font-semibold cursor-not-allowed">
+                                    <option value="<?= htmlspecialchars($user['jurusan_id'] ?? ''); ?>" selected><?= htmlspecialchars($user['nama_jurusan'] ?? 'Jurusan Saya'); ?></option>
+                                </select>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100 dark:border-slate-800">
+                        <table id="tableGuru" class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+                            <thead class="bg-sage-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 font-bold border-b border-sage-200 dark:border-slate-700">
+                                <tr>
+                                    <th class="py-3 px-3 w-10 text-center"><input type="checkbox" class="select-all-checkbox rounded accent-sage-600 cursor-pointer" onchange="toggleSelectAll(this)"></th>
+                                    <th class="py-3 px-4 w-12 text-center">No</th>
+                                    <th class="py-3 px-4">Nama Guru</th>
+                                    <th class="py-3 px-4">Nama Pengguna</th>
+                                    <th class="py-3 px-4">Token</th>
+                                    <th class="py-3 px-4">Kategori Mengajar</th>
+                                    <th class="py-3 px-4">Jurusan</th>
+                                    <th class="py-3 px-4">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination Controls Data Guru -->
+                    <div id="pagination_guru" class="mt-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-slate-800 gap-3">
+                        <div class="flex items-center gap-2.5">
+                            <span id="guru_pagination_info" class="font-medium text-slate-600 dark:text-slate-300">Menampilkan 0 data</span>
+                            <div class="flex items-center gap-1.5 ml-2">
+                                <span class="text-[11px] text-slate-400">Tampilkan:</span>
+                                <select id="guru_per_page" onchange="changeGuruPerPage(this.value)" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-sage-600 cursor-pointer">
+                                    <option value="10" selected>10 / hal</option>
+                                    <option value="25">25 / hal</option>
+                                    <option value="50">50 / hal</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="guru_pagination_btns" class="flex items-center gap-1 flex-wrap"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2.2: TAB DATA SISWA -->
+            <div id="tab-siswa" class="tab-content hidden space-y-6">
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-5">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800 dark:text-white">Master Data Siswa</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Kelola data siswa</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
+                            <button onclick="openModal('modalImportSiswaCSV')" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Import data dari berkas CSV">
+                                <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12"/></svg>
+                                <span>Import CSV</span>
+                            </button>
+                            <button onclick="exportTableToCSV('tableSiswa', 'data_siswa.csv')" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Download data sebagai CSV">
+                                <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                <span>Export CSV</span>
+                            </button>
+                            <button onclick="openModal('modalSiswa', 'Tambah Data Siswa Baru')" class="px-4 py-2 bg-sage-600 text-white rounded-xl font-bold text-xs shadow-md shadow-sage-600/20 hover:bg-sage-700 transition-colors">+ Tambah Siswa</button>
+                        </div>
+                    </div>
+
+                    <!-- Filter Controls Data Siswa -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                        <div class="relative">
+                            <input type="text" id="filter_siswa_search" oninput="debouncedRenderTableSiswa()" placeholder="Cari nama, NISN, token, atau kelas..." class="w-full pl-9 pr-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-medium">
+                            <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <div>
+                            <select id="filter_siswa_tingkat_kelas" onchange="currentSiswaPage=1; renderTableSiswa()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
+                                <option value="">Semua Tingkat Kelas</option>
+                                <option value="10">Kelas 10</option>
+                                <option value="11">Kelas 11</option>
+                                <option value="12">Kelas 12</option>
+                            </select>
+                        </div>
+                        <div>
+                            <?php if ($isSuperAdmin): ?>
+                                <select id="filter_siswa_jurusan" onchange="currentSiswaPage=1; renderTableSiswa()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
+                                    <option value="">Semua Jurusan</option>
+                                    <option value="none">Tidak Ada Jurusan (Umum)</option>
+                                    <?php foreach ($dbJurusan as $j): ?>
+                                        <option value="<?= htmlspecialchars($j['id']); ?>"><?= htmlspecialchars($j['nama_jurusan']); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            <?php else: ?>
+                                <select id="filter_siswa_jurusan" disabled class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-500 dark:text-slate-400 font-semibold cursor-not-allowed">
+                                    <option value="<?= htmlspecialchars($user['jurusan_id'] ?? ''); ?>" selected><?= htmlspecialchars($user['nama_jurusan'] ?? 'Jurusan Saya'); ?></option>
+                                </select>
+                            <?php endif; ?>
+                        </div>
+                        <div>
+                            <select id="filter_siswa_tahun" onchange="currentSiswaPage=1; renderTableSiswa()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
+                                <option value="">Semua Tahun Ajaran</option>
+                                <?php 
+                                    $taList = array_values(array_unique(array_filter(array_map(fn($s) => $s['tahun_ajaran'] ?? '', $dbSiswa))));
+                                    if (empty($taList)) $taList = ['2026/2027'];
+                                    foreach ($taList as $ta): 
+                                ?>
+                                    <option value="<?= htmlspecialchars($ta); ?>"><?= htmlspecialchars($ta); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100 dark:border-slate-800">
+                        <table id="tableSiswa" class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+                            <thead class="bg-sage-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 font-bold border-b border-sage-200 dark:border-slate-700">
+                                <tr>
+                                    <th class="py-3 px-3 w-10 text-center"><input type="checkbox" class="select-all-checkbox rounded accent-sage-600 cursor-pointer" onchange="toggleSelectAll(this)"></th>
+                                    <th class="py-3 px-4 w-12 text-center">No</th>
+                                    <th class="py-3 px-4">NISN</th>
+                                    <th class="py-3 px-4">Nama Siswa</th>
+                                    <th class="py-3 px-4">Token</th>
+                                    <th class="py-3 px-4">Kelas</th>
+                                    <th class="py-3 px-4">Jurusan</th>
+                                    <th class="py-3 px-4">Tahun Ajaran</th>
+                                    <th class="py-3 px-4">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination Controls Data Siswa -->
+                    <div id="pagination_siswa" class="mt-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-slate-800 gap-3">
+                        <div class="flex items-center gap-2.5">
+                            <span id="siswa_pagination_info" class="font-medium text-slate-600 dark:text-slate-300">Menampilkan 0 data</span>
+                            <div class="flex items-center gap-1.5 ml-2">
+                                <span class="text-[11px] text-slate-400">Tampilkan:</span>
+                                <select id="siswa_per_page" onchange="changeSiswaPerPage(this.value)" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-sage-600 cursor-pointer">
+                                    <option value="10">10 / hal</option>
+                                    <option value="25" selected>25 / hal</option>
+                                    <option value="50">50 / hal</option>
+                                    <option value="100">100 / hal</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="siswa_pagination_btns" class="flex items-center gap-1 flex-wrap"></div>
                     </div>
                 </div>
             </div>
@@ -700,7 +1071,7 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 11h.01M7 15h.01M11 7h8M11 11h8M11 15h8"/></svg>
                             </div>
                         </div>
-                        <h3 class="text-2xl font-extrabold text-slate-800"><?= $totalKategoriCount; ?> Kategori</h3>
+                        <h3 id="statTabKategoriTotal" class="text-2xl font-extrabold text-slate-800"><?= number_format($totalKategoriCount); ?> Kategori</h3>
                     </div>
                 </div>
 
@@ -785,7 +1156,7 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
                             </div>
                         </div>
-                        <h3 id="statTabRakTotal" class="text-2xl font-extrabold text-slate-800"><?= count($dbRak); ?> Rak</h3>
+                        <h3 id="statTabRakTotal" class="text-2xl font-extrabold text-slate-800"><?= number_format(count($dbRak)); ?> Rak</h3>
                     </div>
                 </div>
                 <div class="bg-white rounded-2xl border border-sage-200/80 shadow-sm p-6">
@@ -857,27 +1228,18 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                 </div>
             </div>
 
-            <!-- SECTION 4: TAB MASTER BARANG & BARCODE (MySQL Live) -->
+            <!-- SECTION 4: TAB MASTER ALAT & BAHAN & BARCODE (MySQL Live) -->
             <div id="tab-barang" class="tab-content hidden space-y-6">
                 <!-- Stat Cards Row for Barang -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                    <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Barang</span>
+                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Alat & Bahan</span>
                             <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                             </div>
                         </div>
-                        <h3 id="statTabBarangTotalItem" class="text-2xl font-extrabold text-slate-800"><?= $totalBarangCount; ?> Item</h3>
-                    </div>
-                    <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Stok Tersedia</span>
-                            <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            </div>
-                        </div>
-                        <h3 id="statTabBarangTotalStok" class="text-2xl font-extrabold text-slate-800"><?= $totalStokTersedia; ?> Unit</h3>
+                        <h3 id="statTabBarangTotalItem" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalBarangCount); ?> Item</h3>
                     </div>
                 </div>
 
@@ -885,14 +1247,14 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                 <!-- Charts Row for Barang -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     <div class="lg:col-span-7 bg-white p-6 rounded-2xl border border-sage-200/80 shadow-sm">
-                        <h3 class="text-base font-bold text-slate-800 mb-1">Total Stok Barang per Jurusan</h3>
-                        <p class="text-xs text-slate-500 mb-4">Total stok seluruh alat inventaris di masing-masing jurusan</p>
+                        <h3 class="text-base font-bold text-slate-800 mb-1">Total Stok Alat & Bahan per Jurusan</h3>
+                        <p class="text-xs text-slate-500 mb-4">Total stok seluruh alat & bahan inventaris di masing-masing jurusan</p>
                         <div class="relative h-64 w-full"><canvas id="barangColumnChart"></canvas></div>
                     </div>
                     <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-sage-200/80 shadow-sm flex flex-col justify-between">
                         <div>
-                            <h3 class="text-base font-bold text-slate-800 mb-1">Persentase Stok Barang per Jurusan</h3>
-                            <p class="text-xs text-slate-500 mb-4">Proporsi stok barang di seluruh jurusan</p>
+                            <h3 class="text-base font-bold text-slate-800 mb-1">Persentase Stok Alat & Bahan per Jurusan</h3>
+                            <p class="text-xs text-slate-500 mb-4">Proporsi stok alat & bahan di seluruh jurusan</p>
                         </div>
                         <div class="relative h-56 w-full flex items-center justify-center"><canvas id="barangPieChart"></canvas></div>
                     </div>
@@ -902,34 +1264,87 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                 <div class="bg-white rounded-2xl border border-sage-200/80 shadow-sm p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-5">
                         <div>
-                            <h3 class="text-base font-bold text-slate-800">Data Barang</h3>
-                            <p class="text-xs text-slate-500">Kelola data alat, stok total/tersedia, dan kode barcode</p>
+                            <h3 class="text-base font-bold text-slate-800">Alat & Bahan</h3>
+                            <p class="text-xs text-slate-500">Kelola data alat & bahan, stok total/tersedia, dan kode barcode</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
-                            <button onclick="exportTableToCSV('tableBarang', 'master_barang.csv')" class="px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Download data sebagai CSV">
+                            <button onclick="exportTableToCSV('tableBarang', 'master_alat_dan_bahan.csv')" class="px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Download data sebagai CSV">
                                 <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                 <span>Export CSV</span>
                             </button>
                             <?php if (!empty($user['peran']) && $user['peran'] !== 'siswa'): ?>
                             <input type="file" id="directCsvFileInput" accept=".csv" class="hidden" onchange="handleDirectCsvImport(event)">
-                            <button onclick="document.getElementById('directCsvFileInput').click()" class="px-3.5 py-2 bg-sage-50 text-sage-700 hover:bg-sage-100 border border-sage-200 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Import data barang dari file CSV">+ Import CSV</button>
-                            <button onclick="openModal('modalBarang', 'Tambah Data Barang Baru')" class="px-4 py-2 bg-sage-600 text-white rounded-xl font-bold text-xs shadow-md shadow-sage-600/20 hover:bg-sage-700 transition-colors">+ Tambah Barang Baru</button>
+                            <button onclick="document.getElementById('directCsvFileInput').click()" class="px-3.5 py-2 bg-sage-50 text-sage-700 hover:bg-sage-100 border border-sage-200 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Import data dari file CSV">+ Import CSV</button>
+                            <button onclick="openModal('modalBarang', 'Tambah Alat & Bahan Baru')" class="px-4 py-2 bg-sage-600 text-white rounded-xl font-bold text-xs shadow-md shadow-sage-600/20 hover:bg-sage-700 transition-colors">+ Tambah Alat & Bahan Baru</button>
                             <?php endif; ?>
                         </div>
                     </div>
+
+                    <!-- Filter Controls Alat & Bahan -->
+                    <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 mb-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 <?= $isSuperAdmin ? 'xl:grid-cols-5' : ''; ?> gap-3 flex-1">
+                            <div class="relative">
+                                <input type="text" id="filter_barang_search" oninput="debouncedFilterTableBarang()" placeholder="Cari nama, merek, barcode..." class="w-full pl-9 pr-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-medium">
+                                <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            </div>
+                            <div>
+                                <select id="filter_barang_jenis" onchange="filterTableBarang()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold cursor-pointer">
+                                    <option value="">Semua Jenis (Alat & Bahan)</option>
+                                    <option value="alat">Alat</option>
+                                    <option value="bahan">Bahan</option>
+                                </select>
+                            </div>
+                            <div>
+                                <select id="filter_barang_kategori" onchange="filterTableBarang()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold cursor-pointer">
+                                    <option value="">Semua Kategori</option>
+                                    <?php foreach ($dbKategori as $kat): ?>
+                                        <option value="<?= htmlspecialchars(strval($kat['id'])); ?>"><?= htmlspecialchars($kat['nama_kategori']); ?></option>
+                                    <?php endforeach; ?>
+                                    <option value="__none__">Tanpa Kategori</option>
+                                </select>
+                            </div>
+                            <div>
+                                <select id="filter_barang_rak" onchange="filterTableBarang()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold cursor-pointer">
+                                    <option value="">Semua Rak</option>
+                                    <?php foreach ($dbRak as $rk): ?>
+                                        <option value="<?= htmlspecialchars(strval($rk['id'])); ?>"><?= htmlspecialchars($rk['nama_rak'] . (!empty($rk['kategori_rak']) ? ' (' . $rk['kategori_rak'] . ')' : '')); ?></option>
+                                    <?php endforeach; ?>
+                                    <option value="__none__">Tanpa Rak</option>
+                                </select>
+                            </div>
+                            <?php if ($isSuperAdmin): ?>
+                            <div>
+                                <select id="filter_barang_jurusan" onchange="onBarangJurusanFilterChange()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold cursor-pointer">
+                                    <option value="">Semua Jurusan</option>
+                                    <?php foreach ($dbJurusan as $j): ?>
+                                        <option value="<?= htmlspecialchars(strval($j['id'])); ?>"><?= htmlspecialchars($j['nama_jurusan']); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="flex items-center shrink-0">
+                            <button type="button" onclick="resetBarangFilters()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 transition-colors flex items-center gap-1.5" title="Reset Semua Filter">
+                                <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                <span>Reset Filter</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100">
                         <table id="tableBarang" class="w-full text-left text-xs text-slate-600">
                             <thead class="bg-sage-50 text-slate-700 font-bold border-b border-sage-200">
                                 <tr>
                                     <th class="py-3 px-3 w-10 text-center"><input type="checkbox" class="select-all-checkbox rounded accent-sage-600 cursor-pointer" onchange="toggleSelectAll(this)"></th>
                                     <th class="py-3 px-4 w-12 text-center">No</th>
-                                    <th class="py-3 px-4">Nama Barang</th>
+                                    <th class="py-3 px-4">Nama Alat / Bahan</th>
+                                    <th class="py-3 px-4">Jenis</th>
                                     <th class="py-3 px-4">Kategori</th>
                                     <th class="py-3 px-4">Rak</th>
                                     <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><th class="py-3 px-4">Jurusan</th><?php endif; ?>
                                     <th class="py-3 px-4">Merek</th>
                                     <th class="py-3 px-4">Barcode</th>
-                                    <th class="py-3 px-4">Stock Total</th>
+                                    <th class="py-3 px-4">Stock Awal</th>
                                     <th class="py-3 px-4">Stock Tersedia</th>
                                     <th class="py-3 px-4">Aksi</th>
                                 </tr>
@@ -939,10 +1354,16 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                     <?php 
                                         $jColor = (!empty($b['jurusan_id']) && isset($jurusanColors[$b['jurusan_id']])) ? $jurusanColors[$b['jurusan_id']] : '#2E7D32';
                                     ?>
-                                    <tr id="row-barang-<?= htmlspecialchars($b['id']); ?>" class="hover:bg-sage-50/50 transition-all duration-300">
+                                    <tr id="row-barang-<?= htmlspecialchars($b['id']); ?>" 
+                                        data-jenis="<?= htmlspecialchars(strtolower($b['jenis'] ?? 'alat')); ?>"
+                                        data-kategori-id="<?= htmlspecialchars(strval($b['kategori_id'] ?? '')); ?>"
+                                        data-rak-id="<?= htmlspecialchars(strval($b['rak_id'] ?? '')); ?>"
+                                        data-jurusan-id="<?= htmlspecialchars(strval($b['jurusan_id'] ?? '')); ?>"
+                                        class="hover:bg-sage-50/50 transition-all duration-300">
                                         <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="<?= htmlspecialchars($b['id']); ?>" onchange="updateBatchDeleteBar()"></td>
                                         <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell"><?= $no++; ?></td>
                                         <td class="py-3.5 px-4 font-extrabold text-xs nama-barang-cell" style="color: <?= htmlspecialchars($jColor); ?>;"><?= htmlspecialchars($b['nama_barang']); ?></td>
+                                        <td class="py-3.5 px-4 font-semibold text-slate-700"><?= ucfirst(htmlspecialchars($b['jenis'] ?? 'alat')); ?></td>
                                         <td class="py-3.5 px-4 font-semibold text-slate-700"><?= htmlspecialchars($b['nama_kategori'] ?? '-'); ?></td>
                                         <td class="py-3.5 px-4 font-semibold text-slate-700"><?= htmlspecialchars($b['nama_rak'] ?? '-'); ?></td>
                                         <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><td class="py-3.5 px-4 font-bold text-sage-700"><?= htmlspecialchars($b['nama_jurusan'] ?? 'Semua Jurusan'); ?></td><?php endif; ?>
@@ -959,8 +1380,20 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                                 <span class="text-slate-400">-</span>
                                             <?php endif; ?>
                                         </td>
-                                        <td class="py-3.5 px-4 font-bold"><?= htmlspecialchars($b['stok_total']); ?> <?= htmlspecialchars($b['satuan'] ?? 'Unit'); ?></td>
-                                        <td class="py-3.5 px-4 font-bold text-sage-600"><?= htmlspecialchars($b['stok_tersedia']); ?> <?= htmlspecialchars($b['satuan'] ?? 'Unit'); ?></td>
+                                        <td class="py-3.5 px-4 font-bold"><?= htmlspecialchars($b['stok_awal'] ?? $b['stok_total']); ?> <?= htmlspecialchars($b['satuan'] ?? 'Unit'); ?></td>
+                                        <td class="py-3.5 px-4 font-bold text-sage-600 whitespace-nowrap">
+                                            <div class="whitespace-nowrap"><?= intval($b['stok_tersedia'] ?? 0); ?> <?= htmlspecialchars($b['satuan'] ?? 'Unit'); ?></div>
+                                            <?php 
+                                            $dipinjamCount = !empty($b['total_dipinjam']) ? intval($b['total_dipinjam']) : 0;
+                                            $keluarCount = !empty($b['total_keluar']) ? intval($b['total_keluar']) : 0;
+                                            if ($dipinjamCount > 0): 
+                                            ?>
+                                                <span class="block text-[9.5px] font-semibold text-amber-500 mt-0.5 whitespace-nowrap leading-tight"><?= $dipinjamCount; ?> <?= htmlspecialchars($b['satuan'] ?? 'Unit'); ?> dipinjam</span>
+                                            <?php endif; ?>
+                                            <?php if ($keluarCount > 0): ?>
+                                                <span class="block text-[9.5px] font-semibold text-rose-500 dark:text-rose-400 mt-0.5 whitespace-nowrap leading-tight"><?= $keluarCount; ?> <?= htmlspecialchars($b['satuan'] ?? 'Unit'); ?> dikeluarkan</span>
+                                            <?php endif; ?>
+                                        </td>
                                         <td class="py-3.5 px-4">
                                             <?php if (!empty($user['peran']) && $user['peran'] !== 'siswa'): ?>
                                             <div class="flex items-center gap-1.5">
@@ -994,7 +1427,7 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                             </div>
                         </div>
-                        <h3 id="statTabMasukTotal" class="text-2xl font-extrabold text-slate-800"><?= count($dbBarangMasuk); ?> Transaksi</h3>
+                        <h3 id="statTabMasukTotal" class="text-2xl font-extrabold text-slate-800"><?= number_format(count($dbBarangMasuk)); ?> Transaksi</h3>
                     </div>
                     <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
@@ -1003,7 +1436,7 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                             </div>
                         </div>
-                        <h3 id="statTabMasukTotalItem" class="text-2xl font-extrabold text-slate-800">+<?= $totalUnitMasuk; ?> Unit</h3>
+                        <h3 id="statTabMasukTotalItem" class="text-2xl font-extrabold text-slate-800">+<?= number_format($totalUnitMasuk); ?> Unit</h3>
                     </div>
                 </div>
 
@@ -1011,14 +1444,14 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                 <!-- Charts Row for Barang Masuk -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     <div class="lg:col-span-7 bg-white p-6 rounded-2xl border border-sage-200/80 shadow-sm">
-                        <h3 class="text-base font-bold text-slate-800 mb-1">Barang Masuk per Jurusan</h3>
-                        <p class="text-xs text-slate-500 mb-4">Total unit barang yang diterima di masing-masing jurusan</p>
+                        <h3 class="text-base font-bold text-slate-800 mb-1">Alat & Bahan Masuk per Jurusan</h3>
+                        <p class="text-xs text-slate-500 mb-4">Total unit alat & bahan yang diterima di masing-masing jurusan</p>
                         <div class="relative h-64 w-full"><canvas id="masukColumnChart"></canvas></div>
                     </div>
                     <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-sage-200/80 shadow-sm flex flex-col justify-between">
                         <div>
-                            <h3 class="text-base font-bold text-slate-800 mb-1">Persentase Barang Masuk per Jurusan</h3>
-                            <p class="text-xs text-slate-500 mb-4">Proporsi penerimaan barang per jurusan</p>
+                            <h3 class="text-base font-bold text-slate-800 mb-1">Persentase Alat & Bahan Masuk per Jurusan</h3>
+                            <p class="text-xs text-slate-500 mb-4">Proporsi penerimaan alat & bahan per jurusan</p>
                         </div>
                         <div class="relative h-56 w-full flex items-center justify-center"><canvas id="masukPieChart"></canvas></div>
                     </div>
@@ -1028,15 +1461,15 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                 <div class="bg-white rounded-2xl border border-sage-200/80 shadow-sm p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-5">
                         <div>
-                            <h3 class="text-base font-bold text-slate-800">Transaksi Barang Masuk</h3>
-                            <p class="text-xs text-slate-500">Catatan pengadaan dan penerimaan barang</p>
+                            <h3 class="text-base font-bold text-slate-800">Transaksi Alat & Bahan Masuk</h3>
+                            <p class="text-xs text-slate-500">Catatan pengadaan dan penerimaan alat & bahan</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
-                            <button onclick="exportTableToCSV('tableBarangMasuk', 'barang_masuk.csv')" class="px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Download data sebagai CSV">
+                            <button onclick="exportTableToCSV('tableBarangMasuk', 'alat_bahan_masuk.csv')" class="px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Download data sebagai CSV">
                                 <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                 <span>Export CSV</span>
                             </button>
-                            <button onclick="openModal('modalBarangMasuk')" class="px-4 py-2 bg-sage-600 text-white rounded-xl font-bold text-xs shadow-md shadow-sage-600/20 hover:bg-sage-700 transition-colors">+ Catat Barang Masuk</button>
+                            <button onclick="openModal('modalBarangMasuk')" class="px-4 py-2 bg-sage-600 text-white rounded-xl font-bold text-xs shadow-md shadow-sage-600/20 hover:bg-sage-700 transition-colors">+ Catat Alat & Bahan Masuk</button>
                         </div>
                     </div>
                     <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100">
@@ -1045,9 +1478,8 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                 <tr>
                                     <th class="py-3 px-3 w-10 text-center"><input type="checkbox" class="select-all-checkbox rounded accent-sage-600 cursor-pointer" onchange="toggleSelectAll(this)"></th>
                                     <th class="py-3 px-4 w-12 text-center">No</th>
-                                    <th class="py-3 px-4">Barang</th>
+                                    <th class="py-3 px-4">Alat / Bahan</th>
                                     <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><th class="py-3 px-4">Jurusan</th><?php endif; ?>
-                                    <th class="py-3 px-4">Nama Pemasok</th>
                                     <th class="py-3 px-4">Jumlah</th>
                                     <th class="py-3 px-4">Petugas</th>
                                     <th class="py-3 px-4">Tgl Masuk</th>
@@ -1061,7 +1493,6 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                         <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell"><?= $no++; ?></td>
                                         <td class="py-3.5 px-4 font-bold text-slate-800"><?= htmlspecialchars($bm['nama_barang']); ?></td>
                                         <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><td class="py-3.5 px-4 font-bold text-sage-700"><?= htmlspecialchars($bm['nama_jurusan'] ?? '-'); ?></td><?php endif; ?>
-                                        <td class="py-3.5 px-4"><?= htmlspecialchars($bm['nama_pemasok'] ?? '-'); ?></td>
                                         <td class="py-3.5 px-4 font-bold text-emerald-600">+<?= htmlspecialchars($bm['jumlah']); ?> <?= htmlspecialchars($bm['satuan'] ?? 'Unit'); ?></td>
                                         <td class="py-3.5 px-4"><?= htmlspecialchars($bm['nama_petugas'] ?? 'Petugas'); ?></td>
                                         <td class="py-3.5 px-4"><?= date('d M Y', strtotime($bm['created_at'])); ?></td>
@@ -1094,7 +1525,7 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
                             </div>
                         </div>
-                        <h3 id="statTabKeluarTotal" class="text-2xl font-extrabold text-slate-800"><?= count($dbBarangKeluar); ?> Transaksi</h3>
+                        <h3 id="statTabKeluarTotal" class="text-2xl font-extrabold text-slate-800"><?= number_format(count($dbBarangKeluar)); ?> Transaksi</h3>
                     </div>
                     <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
@@ -1103,7 +1534,7 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7"/></svg>
                             </div>
                         </div>
-                        <h3 id="statTabKeluarTotalItem" class="text-2xl font-extrabold text-slate-800">-<?= $totalUnitKeluar; ?> Unit</h3>
+                        <h3 id="statTabKeluarTotalItem" class="text-2xl font-extrabold text-slate-800">-<?= number_format($totalUnitKeluar); ?> Unit</h3>
                     </div>
                 </div>
 
@@ -1111,14 +1542,14 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                 <!-- Charts Row for Barang Keluar -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     <div class="lg:col-span-7 bg-white p-6 rounded-2xl border border-sage-200/80 shadow-sm">
-                        <h3 class="text-base font-bold text-slate-800 mb-1">Barang Keluar per Jurusan</h3>
-                        <p class="text-xs text-slate-500 mb-4">Total unit barang yang dikeluarkan di masing-masing jurusan</p>
+                        <h3 class="text-base font-bold text-slate-800 mb-1">Bahan Keluar per Jurusan</h3>
+                        <p class="text-xs text-slate-500 mb-4">Total unit bahan yang dikeluarkan di masing-masing jurusan</p>
                         <div class="relative h-64 w-full"><canvas id="keluarColumnChart"></canvas></div>
                     </div>
                     <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-sage-200/80 shadow-sm flex flex-col justify-between">
                         <div>
-                            <h3 class="text-base font-bold text-slate-800 mb-1">Persentase Barang Keluar per Jurusan</h3>
-                            <p class="text-xs text-slate-500 mb-4">Proporsi pengeluaran barang per jurusan</p>
+                            <h3 class="text-base font-bold text-slate-800 mb-1">Persentase Bahan Keluar per Jurusan</h3>
+                            <p class="text-xs text-slate-500 mb-4">Proporsi pengeluaran bahan per jurusan</p>
                         </div>
                         <div class="relative h-56 w-full flex items-center justify-center"><canvas id="keluarPieChart"></canvas></div>
                     </div>
@@ -1128,15 +1559,15 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                 <div class="bg-white rounded-2xl border border-sage-200/80 shadow-sm p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-5">
                         <div>
-                            <h3 class="text-base font-bold text-slate-800">Transaksi Barang Keluar</h3>
-                            <p class="text-xs text-slate-500">Catatan pengeluaran barang inventaris</p>
+                            <h3 class="text-base font-bold text-slate-800">Transaksi Bahan Keluar</h3>
+                            <p class="text-xs text-slate-500">Catatan pengeluaran bahan inventaris</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
-                            <button onclick="exportTableToCSV('tableBarangKeluar', 'barang_keluar.csv')" class="px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Download data sebagai CSV">
+                            <button onclick="exportTableToCSV('tableBarangKeluar', 'bahan_keluar.csv')" class="px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Download data sebagai CSV">
                                 <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                 <span>Export CSV</span>
                             </button>
-                            <button onclick="openModal('modalBarangKeluar')" class="px-4 py-2 bg-sage-600 text-white rounded-xl font-bold text-xs shadow-md shadow-sage-600/20 hover:bg-sage-700 transition-colors">+ Catat Barang Keluar</button>
+                            <button onclick="openModal('modalBarangKeluar')" class="px-4 py-2 bg-sage-600 text-white rounded-xl font-bold text-xs shadow-md shadow-sage-600/20 hover:bg-sage-700 transition-colors">+ Catat Bahan Keluar</button>
                         </div>
                     </div>
                     <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100">
@@ -1145,10 +1576,11 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                 <tr>
                                     <th class="py-3 px-3 w-10 text-center"><input type="checkbox" class="select-all-checkbox rounded accent-sage-600 cursor-pointer" onchange="toggleSelectAll(this)"></th>
                                     <th class="py-3 px-4 w-12 text-center">No</th>
-                                    <th class="py-3 px-4">Barang</th>
+                                    <th class="py-3 px-4">Bahan</th>
                                     <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><th class="py-3 px-4">Jurusan</th><?php endif; ?>
                                     <th class="py-3 px-4">Nama Penerima</th>
                                     <th class="py-3 px-4">Jumlah</th>
+                                    <th class="py-3 px-4">Keterangan / Alasan</th>
                                     <th class="py-3 px-4">Petugas</th>
                                     <th class="py-3 px-4">Tgl Keluar</th>
                                     <th class="py-3 px-4">Aksi</th>
@@ -1163,6 +1595,7 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                         <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><td class="py-3.5 px-4 font-bold text-sage-700"><?= htmlspecialchars($bk['nama_jurusan'] ?? '-'); ?></td><?php endif; ?>
                                         <td class="py-3.5 px-4"><?= htmlspecialchars($bk['nama_penerima'] ?? '-'); ?></td>
                                         <td class="py-3.5 px-4 font-bold text-amber-600">-<?= htmlspecialchars($bk['jumlah']); ?> <?= htmlspecialchars($bk['satuan'] ?? 'Unit'); ?></td>
+                                        <td class="py-3.5 px-4"><?= htmlspecialchars($bk['catatan'] ?? '-'); ?></td>
                                         <td class="py-3.5 px-4"><?= htmlspecialchars($bk['nama_petugas'] ?? 'Petugas'); ?></td>
                                         <td class="py-3.5 px-4"><?= date('d M Y', strtotime($bk['created_at'])); ?></td>
                                         <td class="py-3.5 px-4">
@@ -1194,7 +1627,7 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                             </div>
                         </div>
-                        <h3 id="statTabPinjamTotal" class="text-2xl font-extrabold text-slate-800"><?= count($dbPeminjaman); ?> Transaksi</h3>
+                        <h3 id="statTabPinjamTotal" class="text-2xl font-extrabold text-slate-800"><?= number_format(count($dbPeminjaman)); ?> Transaksi</h3>
                     </div>
                     <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
@@ -1203,7 +1636,7 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             </div>
                         </div>
-                        <h3 id="statTabPinjamBelumKembali" class="text-2xl font-extrabold text-slate-800"><?= $pinjamBelumKembali; ?> Transaksi</h3>
+                        <h3 id="statTabPinjamBelumKembali" class="text-2xl font-extrabold text-slate-800"><?= number_format($pinjamBelumKembali); ?> Transaksi</h3>
                     </div>
                     <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
@@ -1212,7 +1645,7 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             </div>
                         </div>
-                        <h3 id="statTabPinjamSudahKembali" class="text-2xl font-extrabold text-slate-800"><?= $pinjamSudahKembali; ?> Transaksi</h3>
+                        <h3 id="statTabPinjamSudahKembali" class="text-2xl font-extrabold text-slate-800"><?= number_format($pinjamSudahKembali); ?> Transaksi</h3>
                     </div>
                 </div>
 
@@ -1245,7 +1678,7 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                 <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                 <span>Export CSV</span>
                             </button>
-                            <button onclick="openModal('modalPeminjaman')" class="px-4 py-2 bg-sage-600 text-white rounded-xl font-bold text-xs shadow-md shadow-sage-600/20 hover:bg-sage-700 transition-colors">+ Peminjaman</button>
+                            <button onclick="openModal('modalPeminjaman', 'Tambah Transaksi Peminjaman')" class="px-4 py-2 bg-sage-600 text-white rounded-xl font-bold text-xs shadow-md shadow-sage-600/20 hover:bg-sage-700 transition-colors">+ Peminjaman</button>
                         </div>
                     </div>
                     <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100">
@@ -1256,7 +1689,8 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                     <th class="py-3 px-4 w-12 text-center">No</th>
                                     <th class="py-3 px-4">Barang</th>
                                     <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><th class="py-3 px-4">Jurusan</th><?php endif; ?>
-                                    <th class="py-3 px-4">Peminjam (Siswa)</th>
+                                    <th class="py-3 px-4">Guru Peminjam</th>
+                                    <th class="py-3 px-4">Siswa Peminjam</th>
                                     <th class="py-3 px-4">Petugas</th>
                                     <th class="py-3 px-4">Jumlah</th>
                                     <th class="py-3 px-4">Tugas</th>
@@ -1274,11 +1708,33 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                         <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell"><?= $no++; ?></td>
                                         <td class="py-3.5 px-4 font-bold text-slate-800"><?= htmlspecialchars($pm['nama_barang']); ?></td>
                                         <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><td class="py-3.5 px-4 font-bold text-sage-700"><?= htmlspecialchars($pm['nama_jurusan'] ?? '-'); ?></td><?php endif; ?>
-                                        <td class="py-3.5 px-4"><?= htmlspecialchars($pm['nama_peminjam']); ?></td>
+                                        <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-white">
+                                            <?= htmlspecialchars($pm['guru_peminjam'] ?? '-'); ?>
+                                        </td>
+                                        <td class="py-3.5 px-4">
+                                            <?php if (!empty($pm['nama_peminjam'])): ?>
+                                                <div class="font-bold text-slate-800 dark:text-white"><?= htmlspecialchars($pm['nama_peminjam']); ?></div>
+                                                <?php if (!empty($pm['nisn'])): ?>
+                                                    <span class="inline-flex items-center gap-1 font-mono text-[10px] text-slate-500"><span class="font-bold">NISN:</span> <?= htmlspecialchars($pm['nisn']); ?></span>
+                                                <?php endif; ?>
+                                            <?php else: ?>
+                                                <span class="text-slate-400 font-normal">-</span>
+                                            <?php endif; ?>
+                                        </td>
                                         <td class="py-3.5 px-4 font-semibold text-slate-700"><?= htmlspecialchars($pm['nama_petugas'] ?? '-'); ?></td>
-                                        <td class="py-3.5 px-4 font-semibold"><?= htmlspecialchars($pm['jumlah']); ?> Unit</td>
+                                        <?php
+                                        $brgMatch = null;
+                                        foreach ($dbBarang as $bItem) {
+                                            if (strval($bItem['id']) === strval($pm['barang_id'])) {
+                                                $brgMatch = $bItem;
+                                                break;
+                                            }
+                                        }
+                                        $satuanDisplay = !empty($brgMatch['satuan']) ? $brgMatch['satuan'] : (!empty($pm['satuan']) ? $pm['satuan'] : 'Unit');
+                                        ?>
+                                        <td class="py-3.5 px-4 font-semibold"><?= htmlspecialchars($pm['jumlah']); ?> <?= htmlspecialchars($satuanDisplay); ?></td>
                                         <td class="py-3.5 px-4 font-semibold text-slate-700"><?= htmlspecialchars($pm['tugas'] ?? '-'); ?></td>
-                                        <td class="py-3.5 px-4 font-semibold text-sage-700"><?= htmlspecialchars($pm['tahun_ajaran'] ?? '2025/2026'); ?></td>
+                                        <td class="py-3.5 px-4 font-semibold text-sage-700"><?= !empty($pm['nama_peminjam']) ? htmlspecialchars($pm['tahun_ajaran'] ?? '2026/2027') : '-'; ?></td>
                                         <td class="py-3.5 px-4"><?= date('d M Y', strtotime($pm['tanggal_pinjam'])); ?></td>
                                         <td class="py-3.5 px-4 font-mono">
                                             <?php if (!empty($pm['tanggal_kembali']) && $pm['status'] === 'dikembalikan'): ?>
@@ -1363,9 +1819,8 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                 <div class="bg-white rounded-2xl border border-sage-200/80 shadow-sm p-6 mt-6">
                     <div class="flex items-center justify-between mb-4 border-b border-sage-100 pb-3">
                         <div>
-                            <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                                <svg class="w-5 h-5 text-sage-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                <span>Logs Riwayat Peminjaman Alat</span>
+                            <h3 class="text-base font-bold text-slate-800">
+                                Logs Riwayat Peminjaman Alat
                             </h3>
                             <p class="text-xs text-slate-500">Histori kronologis seluruh pengajuan & transaksi pengembalian barang pinjaman</p>
                         </div>
@@ -1379,7 +1834,8 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                             <thead class="bg-sage-50 text-slate-700 font-bold border-b border-sage-200">
                                 <tr>
                                     <th class="py-3 px-4 w-12 text-center">No</th>
-                                    <th class="py-3 px-4">Nama Peminjam</th>
+                                    <th class="py-3 px-4">Guru Peminjam</th>
+                                    <th class="py-3 px-4">Siswa Peminjam</th>
                                     <th class="py-3 px-4">Barang Pinjaman</th>
                                     <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><th class="py-3 px-4">Jurusan</th><?php endif; ?>
                                     <th class="py-3 px-4">Petugas</th>
@@ -1396,7 +1852,17 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                 <?php $lNo = 1; foreach ($dbPeminjaman as $logPm): ?>
                                     <tr class="hover:bg-sage-50/50">
                                         <td class="py-3 px-4 text-center font-bold text-slate-500 row-number-cell"><?= $lNo++; ?></td>
-                                        <td class="py-3 px-4 font-bold text-slate-800"><?= htmlspecialchars($logPm['nama_peminjam'] ?? '-'); ?></td>
+                                        <td class="py-3 px-4 font-bold text-slate-800 dark:text-white"><?= htmlspecialchars($logPm['guru_peminjam'] ?? '-'); ?></td>
+                                        <td class="py-3 px-4">
+                                            <?php if (!empty($logPm['nama_peminjam'])): ?>
+                                                <span class="font-bold text-slate-800 dark:text-white"><?= htmlspecialchars($logPm['nama_peminjam']); ?></span>
+                                                <?php if (!empty($logPm['nisn'])): ?>
+                                                    <div class="text-[10px] text-slate-500 font-mono">NISN: <?= htmlspecialchars($logPm['nisn']); ?></div>
+                                                <?php endif; ?>
+                                            <?php else: ?>
+                                                <span class="text-slate-400 font-normal">-</span>
+                                            <?php endif; ?>
+                                        </td>
                                         <td class="py-3 px-4 font-semibold text-slate-700"><?= htmlspecialchars($logPm['nama_barang'] ?? '-'); ?></td>
                                         <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><td class="py-3 px-4 font-bold text-sage-700"><?= htmlspecialchars($logPm['nama_jurusan'] ?? 'Semua Jurusan'); ?></td><?php endif; ?>
                                         <td class="py-3 px-4 font-semibold text-slate-700"><?= htmlspecialchars($logPm['nama_petugas'] ?? '-'); ?></td>
@@ -1463,7 +1929,7 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                             </div>
                         </div>
-                        <h3 id="statTabLogAktivitasTotal" class="text-2xl font-extrabold text-slate-800"><?= $totalLogsCount; ?> Catatan</h3>
+                        <h3 id="statTabLogAktivitasTotal" class="text-2xl font-extrabold text-slate-800"><?= number_format($totalLogsCount); ?> Catatan</h3>
                     </div>
                 </div>
 
@@ -1579,34 +2045,7 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                         data-pengguna="<?= htmlspecialchars(strtolower($log['nama_pengguna'] ?? $log['nama_lengkap'] ?? 'Sistem')); ?>">
                                         <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell"><?= $no++; ?></td>
                                         <td class="py-3.5 px-4 font-bold text-slate-800"><?= htmlspecialchars($log['nama_pengguna'] ?? $log['nama_lengkap'] ?? 'Sistem'); ?></td>
-                                        <td class="py-3.5 px-4 font-bold text-slate-800">
-                                            <?php 
-                                                $tindakan = strtoupper($log['tindakan'] ?? '');
-                                                $badgeStyle = 'bg-sage-100 text-sage-800 border-sage-200';
-                                                $dotColor = 'bg-sage-600';
-
-                                                if ($tindakan === 'LOGIN') {
-                                                    $badgeStyle = 'bg-emerald-100 text-emerald-800 border-emerald-200';
-                                                    $dotColor = 'bg-emerald-600';
-                                                } elseif ($tindakan === 'LOGOUT') {
-                                                    $badgeStyle = 'bg-rose-100 text-rose-800 border-rose-200';
-                                                    $dotColor = 'bg-rose-600';
-                                                } elseif (str_contains($tindakan, 'TAMBAH') || str_contains($tindakan, 'CREATE')) {
-                                                    $badgeStyle = 'bg-blue-100 text-blue-800 border-blue-200';
-                                                    $dotColor = 'bg-blue-600';
-                                                } elseif (str_contains($tindakan, 'HAPUS') || str_contains($tindakan, 'DELETE')) {
-                                                    $badgeStyle = 'bg-red-100 text-red-800 border-red-200';
-                                                    $dotColor = 'bg-red-600';
-                                                } elseif (str_contains($tindakan, 'IMPERSONATE')) {
-                                                    $badgeStyle = 'bg-amber-100 text-amber-800 border-amber-200';
-                                                    $dotColor = 'bg-amber-600';
-                                                }
-                                            ?>
-                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold <?= $badgeStyle; ?> border">
-                                                <span class="w-1.5 h-1.5 rounded-full <?= $dotColor; ?> shrink-0"></span>
-                                                <span><?= htmlspecialchars($log['tindakan']); ?></span>
-                                            </span>
-                                        </td>
+                                        <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-white"><?= htmlspecialchars($log['tindakan']); ?></td>
                                         <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><td class="py-3.5 px-4 font-bold text-sage-700"><?= htmlspecialchars($log['nama_jurusan'] ?? '-'); ?></td><?php endif; ?>
                                         <td class="py-3.5 px-4 text-slate-600"><?= htmlspecialchars($log['deskripsi'] ?? '-'); ?></td>
                                         <td class="py-3.5 px-4 font-mono text-[11px] text-slate-500"><?= date('d M Y H:i', strtotime($log['created_at'])); ?></td>
@@ -1770,6 +2209,8 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
 window.currentUser = <?= json_encode($user); ?>;
 window.dbJurusan = <?= json_encode($dbJurusan ?: []); ?>;
 window.dbPengguna = <?= json_encode($dbPengguna ?: []); ?>;
+window.dbGuru = <?= json_encode($dbGuru ?: []); ?>;
+window.dbSiswa = <?= json_encode($dbSiswa ?: []); ?>;
 window.dbKategori = <?= json_encode($dbKategori ?: []); ?>;
 window.dbRak = <?= json_encode($dbRak ?: []); ?>;
 window.dbBarang = <?= json_encode($dbBarang ?: []); ?>;
@@ -1781,6 +2222,8 @@ window.nextCodes = {
     barcode: <?= json_encode(Barang::generateNextBarcode()); ?>,
     rakBarcode: <?= json_encode(Rak::generateNextBarcode()); ?>
 };
+window.jurusanColors = <?= json_encode($jurusanColors ?: []); ?>;
+window.themePrimaryColor = <?= json_encode($activeThemePalette['600'] ?? '#eab308'); ?>;
 
 function setUrlParam(key, val) {
     const url = new URL(window.location.href);
@@ -1796,10 +2239,16 @@ function exportTableToCSV(tableId, filename) {
     let dataset = null;
     let tableSchema = null;
 
-    if (tableId === 'tablePengguna') {
+    if (tableId === 'tableGuru') {
+        dataset = window.dbGuru;
+        tableSchema = ['id', 'nama_guru', 'token', 'mengajar', 'jurusan_id', 'nama_jurusan', 'created_at', 'updated_at'];
+    } else if (tableId === 'tableSiswa') {
+        dataset = window.dbSiswa;
+        tableSchema = ['id', 'nisn', 'nama_siswa', 'nama_lengkap', 'token', 'kelas', 'jurusan_id', 'nama_jurusan', 'tahun_ajaran', 'created_at', 'updated_at'];
+    } else if (tableId === 'tablePengguna') {
         dataset = window.dbPengguna;
         tableSchema = [
-            'id', 'jurusan_id', 'nama_pengguna', 'nama_lengkap', 'email', 'peran', 
+            'id', 'jurusan_id', 'nama_pengguna', 'nama_lengkap', 'email', 'peran', 'kelas', 'nisn', 'status_pengguna', 'token',
             'nomor_telepon', 'foto_url', 'nama_jurusan', 'created_at', 'updated_at'
         ];
     } else if (tableId === 'tableJurusan') {
@@ -1833,7 +2282,7 @@ function exportTableToCSV(tableId, filename) {
         dataset = window.dbBarangMasuk;
         tableSchema = [
             'id', 'barang_id', 'pengguna_id', 'jurusan_id', 'kode_barang', 'nama_barang', 
-            'nama_pemasok', 'jumlah', 'tanggal_masuk', 'catatan', 'nama_petugas', 
+            'jumlah', 'tanggal_masuk', 'catatan', 'nama_petugas', 
             'nama_jurusan', 'created_at', 'updated_at'
         ];
     } else if (tableId === 'tableBarangKeluar') {
@@ -1847,7 +2296,7 @@ function exportTableToCSV(tableId, filename) {
         dataset = window.dbPeminjaman;
         tableSchema = [
             'id', 'kode_peminjaman', 'barang_id', 'pengguna_id', 'jurusan_id', 
-            'nama_barang', 'nama_peminjam', 'jumlah', 'tanggal_pinjam', 'tenggat_kembali', 
+            'nama_barang', 'guru_peminjam', 'nama_peminjam', 'nisn', 'jumlah', 'tanggal_pinjam', 'tenggat_kembali', 
             'tanggal_kembali', 'status', 'kondisi_sebelum', 'kondisi_sesudah', 'catatan', 
             'bukti_foto_url', 'nama_petugas', 'nama_jurusan', 'created_at', 'updated_at'
         ];
@@ -1865,15 +2314,19 @@ function exportTableToCSV(tableId, filename) {
         let items = dataset;
 
         // Ambil baris terfilter jika pengguna sedang memfilter/mencari data
-        const paginator = window.tablePaginators && window.tablePaginators[tableId];
-        if (paginator && Array.isArray(paginator.filteredRows) && paginator.filteredRows.length > 0) {
-            const allowedIds = new Set();
-            paginator.filteredRows.forEach(tr => {
-                const id = tr.getAttribute('data-id');
-                if (id) allowedIds.add(String(id));
-            });
-            if (allowedIds.size > 0) {
-                items = dataset.filter(item => allowedIds.has(String(item.id)));
+        if (tableId === 'tablePengguna' && Array.isArray(window.filteredPengguna)) {
+            items = window.filteredPengguna;
+        } else {
+            const paginator = window.tablePaginators && window.tablePaginators[tableId];
+            if (paginator && Array.isArray(paginator.filteredRows) && paginator.filteredRows.length > 0) {
+                const allowedIds = new Set();
+                paginator.filteredRows.forEach(tr => {
+                    const id = tr.getAttribute('data-id');
+                    if (id) allowedIds.add(String(id));
+                });
+                if (allowedIds.size > 0) {
+                    items = dataset.filter(item => allowedIds.has(String(item.id)));
+                }
             }
         }
 
@@ -2246,25 +2699,28 @@ function initInventoryChart() {
                     labels: jurLabels,
                     datasets: [
                         {
-                            label: 'Barang Masuk',
+                            label: 'Alat & Bahan Masuk',
                             data: masukPerJur,
-                            backgroundColor: 'rgba(46, 125, 50, 0.85)',
-                            hoverBackgroundColor: '#2e7d32',
-                            borderRadius: 6,
+                            backgroundColor: (window.themePrimaryColor || '<?= $activeThemePalette['600'] ?? '#eab308'; ?>'),
+                            hoverBackgroundColor: '<?= $activeThemePalette['700'] ?? '#ca8a04'; ?>',
+                            borderRadius: 8,
+                            maxBarThickness: 36,
                         },
                         {
-                            label: 'Barang Keluar',
+                            label: 'Bahan Keluar',
                             data: keluarPerJur,
                             backgroundColor: 'rgba(245, 158, 11, 0.85)',
                             hoverBackgroundColor: '#f59e0b',
-                            borderRadius: 6,
+                            borderRadius: 8,
+                            maxBarThickness: 36,
                         },
                         {
-                            label: 'Peminjaman',
+                            label: 'Peminjaman Alat',
                             data: pinjamPerJur,
                             backgroundColor: 'rgba(14, 165, 233, 0.85)',
                             hoverBackgroundColor: '#0ea5e9',
-                            borderRadius: 6,
+                            borderRadius: 8,
+                            maxBarThickness: 36,
                         }
                     ]
                 },
@@ -2311,9 +2767,9 @@ function initInventoryChart() {
                 data: {
                     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
                     datasets: [
-                        { label: 'Barang Masuk', data: masukMonthly, backgroundColor: 'rgba(46, 125, 50, 0.85)', borderRadius: 6 },
-                        { label: 'Barang Keluar', data: keluarMonthly, backgroundColor: 'rgba(245, 158, 11, 0.85)', borderRadius: 6 },
-                        { label: 'Peminjaman', data: pinjamMonthly, backgroundColor: 'rgba(14, 165, 233, 0.85)', borderRadius: 6 }
+                        { label: 'Alat & Bahan Masuk', data: masukMonthly, backgroundColor: (window.themePrimaryColor || '<?= $activeThemePalette['600'] ?? '#eab308'; ?>'), hoverBackgroundColor: '<?= $activeThemePalette['700'] ?? '#ca8a04'; ?>', borderRadius: 8, maxBarThickness: 24 },
+                        { label: 'Bahan Keluar', data: keluarMonthly, backgroundColor: 'rgba(245, 158, 11, 0.85)', hoverBackgroundColor: '#f59e0b', borderRadius: 8, maxBarThickness: 24 },
+                        { label: 'Peminjaman Alat', data: pinjamMonthly, backgroundColor: 'rgba(14, 165, 233, 0.85)', hoverBackgroundColor: '#0ea5e9', borderRadius: 8, maxBarThickness: 24 }
                     ]
                 },
                 options: {
@@ -2380,13 +2836,21 @@ function initInventoryChart() {
                     backgroundColor: pieBgColors,
                     hoverBackgroundColor: pieBgColors,
                     borderWidth: 2,
-                    borderColor: isDark ? '#0f172a' : '#ffffff'
+                    borderColor: isDark ? '#0f172a' : '#ffffff',
+                    borderRadius: 8,
+                    spacing: 3,
+                    hoverOffset: 6
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 animation: { duration: 1000, easing: 'easeOutQuart' },
+                transitions: {
+                    active: {
+                        animation: { duration: 300, easing: 'easeOutCubic' }
+                    }
+                },
                 plugins: {
                     legend: {
                         position: 'bottom',
@@ -2439,7 +2903,7 @@ function initTabAnalytics(tabId) {
     // 1. PENGGUNA TAB ANALYTICS
     if (tabId === 'pengguna') {
         const roleLabels = isSuperAdmin 
-            ? ['Admin Sekolah', 'Admin Jurusan', 'Petugas Gudang', 'Siswa'] 
+            ? ['Admin Sekolah', 'Admin Jurusan', 'Petugas Gudang', 'Guru Umum', 'Siswa'] 
             : ['Admin Jurusan', 'Petugas Gudang', 'Siswa'];
 
         const roleData = isSuperAdmin
@@ -2447,6 +2911,7 @@ function initTabAnalytics(tabId) {
                 (window.dbPengguna || []).filter(u => u.peran === 'admin_sekolah').length,
                 (window.dbPengguna || []).filter(u => u.peran === 'admin_jurusan').length,
                 (window.dbPengguna || []).filter(u => u.peran === 'petugas').length,
+                (window.dbPengguna || []).filter(u => u.peran === 'guru_umum').length,
                 (window.dbPengguna || []).filter(u => u.peran === 'siswa').length
               ]
             : [
@@ -2456,7 +2921,7 @@ function initTabAnalytics(tabId) {
               ];
 
         const roleColors = isSuperAdmin
-            ? ['#2563eb', '#eab308', '#059669', '#7c3aed']
+            ? ['#2563eb', '#eab308', '#059669', '#f97316', '#7c3aed']
             : ['#eab308', '#059669', '#7c3aed'];
 
         const ctxRole = document.getElementById('userRoleChart');
@@ -2470,7 +2935,8 @@ function initTabAnalytics(tabId) {
                         label: 'Jumlah Pengguna',
                         data: roleData,
                         backgroundColor: roleColors,
-                        borderRadius: 6
+                        borderRadius: 8,
+                        maxBarThickness: 48
                     }]
                 },
                 options: {
@@ -2484,13 +2950,31 @@ function initTabAnalytics(tabId) {
         const ctxUserJur = document.getElementById('userJurusanChart');
         if (ctxUserJur) {
             destroyChart('userJurusan');
-            let labels, data, bgColors;
+            let labels, data, bgColors, legendItems = [];
 
             if (isSuperAdmin) {
-                const jCounts = countByJurusan(window.dbPengguna);
-                labels = Object.keys(jCounts);
-                data = Object.values(jCounts);
+                // Hitung pengguna per jurusan dengan nama lengkap
+                const countsPerJur = {};
+                (window.dbPengguna || []).forEach(u => {
+                    const fullName = u.nama_jurusan || 'Admin Sekolah';
+                    countsPerJur[fullName] = (countsPerJur[fullName] || 0) + 1;
+                });
+
+                // Urutkan dari jumlah user terbanyak
+                const sortedNames = Object.keys(countsPerJur).sort((a, b) => countsPerJur[b] - countsPerJur[a]);
+
+                labels = sortedNames.map(name => {
+                    const match = name.match(/\(([^)]+)\)/);
+                    return match ? match[1] : name;
+                });
+                data = sortedNames.map(name => countsPerJur[name]);
                 bgColors = getColorsForLabels(labels);
+
+                legendItems = sortedNames.map((name, idx) => ({
+                    fullName: name,
+                    count: countsPerJur[name],
+                    color: bgColors[idx]
+                }));
             } else {
                 labels = ['Admin Jurusan', 'Petugas Gudang', 'Siswa'];
                 data = [
@@ -2499,12 +2983,69 @@ function initTabAnalytics(tabId) {
                     (window.dbPengguna || []).filter(u => u.peran === 'siswa').length
                 ];
                 bgColors = ['#d97706', '#059669', '#7c3aed'];
+
+                legendItems = labels.map((name, idx) => ({
+                    fullName: name,
+                    count: data[idx],
+                    color: bgColors[idx]
+                }));
+            }
+
+            // Render list data di samping kanan pie chart
+            const legendContainer = document.getElementById('userJurusanLegendList');
+            if (legendContainer) {
+                legendContainer.innerHTML = legendItems.map(item => `
+                    <div class="flex items-center justify-between py-1.5 px-2.5 rounded-xl hover:bg-slate-100/70 dark:hover:bg-slate-800/70 transition-colors text-xs border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                        <div class="flex items-center gap-2 min-w-0 pr-2">
+                            <span class="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm" style="background-color: ${item.color}"></span>
+                            <span class="font-medium text-slate-700 dark:text-slate-200 truncate" title="${escapeHtml(item.fullName)}">
+                                ${escapeHtml(item.fullName)}
+                            </span>
+                        </div>
+                        <span class="font-semibold text-slate-800 dark:text-slate-200 shrink-0 ml-1">
+                            ${item.count.toLocaleString('en-US')}
+                        </span>
+                    </div>
+                `).join('');
             }
 
             tabAnalyticsCharts['userJurusan'] = new Chart(ctxUserJur, {
                 type: 'pie',
-                data: { labels: labels, datasets: [{ data: data, backgroundColor: bgColors }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, color: labelColor } } } }
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: bgColors,
+                        hoverBackgroundColor: bgColors,
+                        borderWidth: 2,
+                        borderColor: isDark ? '#0f172a' : '#ffffff',
+                        borderRadius: 8,
+                        spacing: 3,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    transitions: { active: { animation: { duration: 300, easing: 'easeOutCubic' } } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: function() {
+                                    return '';
+                                },
+                                label: function(context) {
+                                    const shortLabel = context.label || '';
+                                    const val = Number(context.raw || 0).toLocaleString('en-US');
+                                    const total = data.reduce((a, b) => a + b, 0);
+                                    const pct = total > 0 ? Math.round(((context.raw || 0) / total) * 100) : 0;
+                                    return ` ${shortLabel}: ${val} (${pct}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
             });
         }
     }
@@ -2522,7 +3063,7 @@ function initTabAnalytics(tabId) {
             destroyChart('logCol');
             tabAnalyticsCharts['logCol'] = new Chart(ctxCol, {
                 type: 'bar',
-                data: { labels: labels, datasets: [{ label: 'Catatan Log', data: data, backgroundColor: bgColors, borderRadius: 6 }] },
+                data: { labels: labels, datasets: [{ label: 'Catatan Log', data: data, backgroundColor: bgColors, borderRadius: 8, maxBarThickness: 48 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: labelColor } }, y: { ticks: { color: labelColor, precision: 0 } } } }
             });
         }
@@ -2530,8 +3071,25 @@ function initTabAnalytics(tabId) {
             destroyChart('logPie');
             tabAnalyticsCharts['logPie'] = new Chart(ctxPie, {
                 type: 'pie',
-                data: { labels: labels, datasets: [{ data: data, backgroundColor: bgColors }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: labelColor } } } }
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: bgColors,
+                        hoverBackgroundColor: bgColors,
+                        borderWidth: 2,
+                        borderColor: isDark ? '#0f172a' : '#ffffff',
+                        borderRadius: 8,
+                        spacing: 3,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    transitions: { active: { animation: { duration: 300, easing: 'easeOutCubic' } } },
+                    plugins: { legend: { position: 'bottom', labels: { color: labelColor } } }
+                }
             });
         }
     }
@@ -2552,7 +3110,7 @@ function initTabAnalytics(tabId) {
             destroyChart('katCol');
             tabAnalyticsCharts['katCol'] = new Chart(ctxCol, {
                 type: 'bar',
-                data: { labels: labels, datasets: [{ label: 'Kategori', data: data, backgroundColor: bgColors, borderRadius: 6 }] },
+                data: { labels: labels, datasets: [{ label: 'Kategori', data: data, backgroundColor: bgColors, borderRadius: 8, maxBarThickness: 48 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: labelColor } }, y: { ticks: { color: labelColor, precision: 0 } } } }
             });
         }
@@ -2560,8 +3118,25 @@ function initTabAnalytics(tabId) {
             destroyChart('katPie');
             tabAnalyticsCharts['katPie'] = new Chart(ctxPie, {
                 type: 'pie',
-                data: { labels: labels, datasets: [{ data: data, backgroundColor: bgColors }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: labelColor } } } }
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: bgColors,
+                        hoverBackgroundColor: bgColors,
+                        borderWidth: 2,
+                        borderColor: isDark ? '#0f172a' : '#ffffff',
+                        borderRadius: 8,
+                        spacing: 3,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    transitions: { active: { animation: { duration: 300, easing: 'easeOutCubic' } } },
+                    plugins: { legend: { position: 'bottom', labels: { color: labelColor } } }
+                }
             });
         }
     }
@@ -2585,7 +3160,7 @@ function initTabAnalytics(tabId) {
             destroyChart('brgCol');
             tabAnalyticsCharts['brgCol'] = new Chart(ctxCol, {
                 type: 'bar',
-                data: { labels: labels, datasets: [{ label: 'Total Stok', data: data, backgroundColor: bgColors, borderRadius: 6 }] },
+                data: { labels: labels, datasets: [{ label: 'Total Stok', data: data, backgroundColor: bgColors, borderRadius: 8, maxBarThickness: 48 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: labelColor } }, y: { ticks: { color: labelColor, precision: 0 } } } }
             });
         }
@@ -2593,8 +3168,25 @@ function initTabAnalytics(tabId) {
             destroyChart('brgPie');
             tabAnalyticsCharts['brgPie'] = new Chart(ctxPie, {
                 type: 'pie',
-                data: { labels: labels, datasets: [{ data: data, backgroundColor: bgColors }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: labelColor } } } }
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: bgColors,
+                        hoverBackgroundColor: bgColors,
+                        borderWidth: 2,
+                        borderColor: isDark ? '#0f172a' : '#ffffff',
+                        borderRadius: 8,
+                        spacing: 3,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    transitions: { active: { animation: { duration: 300, easing: 'easeOutCubic' } } },
+                    plugins: { legend: { position: 'bottom', labels: { color: labelColor } } }
+                }
             });
         }
     }
@@ -2612,7 +3204,7 @@ function initTabAnalytics(tabId) {
             destroyChart('masukCol');
             tabAnalyticsCharts['masukCol'] = new Chart(ctxCol, {
                 type: 'bar',
-                data: { labels: labels, datasets: [{ label: 'Unit Masuk', data: data, backgroundColor: bgColors, borderRadius: 6 }] },
+                data: { labels: labels, datasets: [{ label: 'Unit Masuk', data: data, backgroundColor: bgColors, borderRadius: 8, maxBarThickness: 48 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: labelColor } }, y: { ticks: { color: labelColor, precision: 0 } } } }
             });
         }
@@ -2620,8 +3212,25 @@ function initTabAnalytics(tabId) {
             destroyChart('masukPie');
             tabAnalyticsCharts['masukPie'] = new Chart(ctxPie, {
                 type: 'pie',
-                data: { labels: labels, datasets: [{ data: data, backgroundColor: bgColors }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: labelColor } } } }
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: bgColors,
+                        hoverBackgroundColor: bgColors,
+                        borderWidth: 2,
+                        borderColor: isDark ? '#0f172a' : '#ffffff',
+                        borderRadius: 8,
+                        spacing: 3,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    transitions: { active: { animation: { duration: 300, easing: 'easeOutCubic' } } },
+                    plugins: { legend: { position: 'bottom', labels: { color: labelColor } } }
+                }
             });
         }
     }
@@ -2639,7 +3248,7 @@ function initTabAnalytics(tabId) {
             destroyChart('keluarCol');
             tabAnalyticsCharts['keluarCol'] = new Chart(ctxCol, {
                 type: 'bar',
-                data: { labels: labels, datasets: [{ label: 'Unit Keluar', data: data, backgroundColor: bgColors, borderRadius: 6 }] },
+                data: { labels: labels, datasets: [{ label: 'Unit Keluar', data: data, backgroundColor: bgColors, borderRadius: 8, maxBarThickness: 48 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: labelColor } }, y: { ticks: { color: labelColor, precision: 0 } } } }
             });
         }
@@ -2647,8 +3256,25 @@ function initTabAnalytics(tabId) {
             destroyChart('keluarPie');
             tabAnalyticsCharts['keluarPie'] = new Chart(ctxPie, {
                 type: 'pie',
-                data: { labels: labels, datasets: [{ data: data, backgroundColor: bgColors }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: labelColor } } } }
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: bgColors,
+                        hoverBackgroundColor: bgColors,
+                        borderWidth: 2,
+                        borderColor: isDark ? '#0f172a' : '#ffffff',
+                        borderRadius: 8,
+                        spacing: 3,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    transitions: { active: { animation: { duration: 300, easing: 'easeOutCubic' } } },
+                    plugins: { legend: { position: 'bottom', labels: { color: labelColor } } }
+                }
             });
         }
     }
@@ -2666,7 +3292,7 @@ function initTabAnalytics(tabId) {
             destroyChart('pinjamCol');
             tabAnalyticsCharts['pinjamCol'] = new Chart(ctxCol, {
                 type: 'bar',
-                data: { labels: labels, datasets: [{ label: 'Total Peminjaman', data: data, backgroundColor: bgColors, borderRadius: 6 }] },
+                data: { labels: labels, datasets: [{ label: 'Total Peminjaman', data: data, backgroundColor: bgColors, borderRadius: 8, maxBarThickness: 48 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: labelColor } }, y: { ticks: { color: labelColor, precision: 0 } } } }
             });
         }
@@ -2674,15 +3300,32 @@ function initTabAnalytics(tabId) {
             destroyChart('pinjamPie');
             tabAnalyticsCharts['pinjamPie'] = new Chart(ctxPie, {
                 type: 'pie',
-                data: { labels: labels, datasets: [{ data: data, backgroundColor: bgColors }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: labelColor } } } }
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: bgColors,
+                        hoverBackgroundColor: bgColors,
+                        borderWidth: 2,
+                        borderColor: isDark ? '#0f172a' : '#ffffff',
+                        borderRadius: 8,
+                        spacing: 3,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    transitions: { active: { animation: { duration: 300, easing: 'easeOutCubic' } } },
+                    plugins: { legend: { position: 'bottom', labels: { color: labelColor } } }
+                }
             });
         }
     }
 }
 
 function escapeHtml(str) {
-    if (!str) return '';
+    if (str === null || str === undefined || str === '') return '';
     return String(str)
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
@@ -2692,7 +3335,7 @@ function escapeHtml(str) {
 }
 
 function escapeJsStr(str) {
-    if (!str) return '';
+    if (str === null || str === undefined || str === '') return '';
     return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 }
 
@@ -2704,53 +3347,173 @@ function updateStatCardsData() {
     const totalRak = (window.dbRak || []).length;
     const totalJurusan = (window.dbJurusan || []).length;
     const totalPengguna = (window.dbPengguna || []).length;
+    const totalSiswa = (window.dbSiswa || []).length;
+    const totalGuru = (window.dbGuru || []).length;
 
     const dipinjamCount = (window.dbPeminjaman || []).filter(p => p.status === 'dipinjam' || p.status === 'pending' || p.status === 'diajukan_pengembalian').length;
     const dikembalikanCount = (window.dbPeminjaman || []).filter(p => p.status === 'dikembalikan').length;
     const totalPeminjaman = (window.dbPeminjaman || []).length;
     const totalLogs = (window.dbLogAktivitas || []).length;
 
+    const fmt = (num) => Number(num || 0).toLocaleString('en-US');
+
     const setTxt = (id, val) => {
         const el = document.getElementById(id);
         if (el) el.innerText = val;
     };
 
-    setTxt('statSuperTotalJurusan', totalJurusan + ' Jurusan');
-    setTxt('statSuperTotalKategori', totalKategori + ' Kategori');
-    setTxt('statSuperTotalBarang', totalBarangItems + ' Item');
-    setTxt('statSuperStokTersedia', totalStokTersedia + ' Unit');
-    setTxt('statSuperBelumKembali', dipinjamCount + ' Transaksi');
-    setTxt('statSuperSudahKembali', dikembalikanCount + ' Transaksi');
-    setTxt('statSuperTotalLogs', totalLogs + ' Catatan');
+    // SuperAdmin Dashboard Stat Cards
+    setTxt('statSuperTotalSiswa', fmt(totalSiswa) + ' Siswa');
+    setTxt('statSuperTotalGuru', fmt(totalGuru) + ' Guru');
+    setTxt('statSuperTotalJurusan', fmt(totalJurusan) + ' Jurusan');
+    setTxt('statSuperTotalUsers', fmt(totalPengguna) + ' User');
+    setTxt('statSuperTotalKategori', fmt(totalKategori) + ' Kategori');
+    setTxt('statSuperTotalBarang', fmt(totalBarangItems) + ' Item');
+    setTxt('statSuperStokTersedia', fmt(totalStokTersedia) + ' Unit');
+    setTxt('statSuperBelumKembali', fmt(dipinjamCount) + ' Transaksi');
+    setTxt('statSuperSudahKembali', fmt(dikembalikanCount) + ' Transaksi');
+    setTxt('statSuperTotalLogs', fmt(totalLogs) + ' Catatan');
 
-    setTxt('statTotalBarang', totalBarangItems + ' Item');
-    setTxt('statStokTersedia', totalStokTersedia + ' Unit');
-    setTxt('statTotalKategori', totalKategori + ' Kategori');
-    setTxt('statBelumKembali', dipinjamCount + ' Transaksi');
-    setTxt('statSudahKembali', dikembalikanCount + ' Transaksi');
-    setTxt('statTotalLogs', totalLogs + ' Catatan');
+    // Jurusan & Siswa Dashboard Stat Cards
+    setTxt('statJurusanTotalSiswa', fmt(totalSiswa) + ' Siswa');
+    setTxt('statJurusanTotalGuru', fmt(totalGuru) + ' Guru');
+    setTxt('statTotalBarang', fmt(totalBarangItems) + ' Item');
+    setTxt('statStokTersedia', fmt(totalStokTersedia) + ' Unit');
+    setTxt('statTotalKategori', fmt(totalKategori) + ' Kategori');
+    setTxt('statBelumKembali', fmt(dipinjamCount) + ' Transaksi');
+    setTxt('statSudahKembali', fmt(dikembalikanCount) + ' Transaksi');
+    setTxt('statTotalLogs', fmt(totalLogs) + ' Catatan');
 
-    setTxt('statTabJurusanTotal', totalJurusan + ' Jurusan');
-    setTxt('statTabPenggunaTotal', totalPengguna + ' Pengguna');
-    setTxt('statTabKategoriTotal', totalKategori + ' Kategori');
-    setTxt('statTabRakTotal', totalRak + ' Rak');
+    // Tab Data Pengguna Stat Cards
+    // Row 1: Total User, Total Siswa, Total Guru
+    setTxt('statTabPenggunaTotal', fmt(totalPengguna) + ' User');
+    setTxt('statTabPenggunaTotalSiswa', fmt(totalSiswa) + ' Siswa');
+    setTxt('statTabPenggunaTotalGuru', fmt(totalGuru) + ' Guru');
 
-    setTxt('statTabBarangTotalItem', totalBarangItems + ' Item');
-    setTxt('statTabBarangTotalStok', totalStokTersedia + ' Unit');
+    // Row 2: Admin Sekolah, Admin Jurusan, Petugas Gudang, Guru Umum
+    const cntAdminSekolah = (window.dbPengguna || []).filter(u => u.peran === 'admin_sekolah').length;
+    const cntAdminJurusan = (window.dbPengguna || []).filter(u => u.peran === 'admin_jurusan').length;
+    const cntPetugas = (window.dbPengguna || []).filter(u => u.peran === 'petugas').length;
+    const cntGuruUmum = (window.dbPengguna || []).filter(u => u.peran === 'guru_umum').length;
+    setTxt('statPenggunaAdminSekolah', fmt(cntAdminSekolah) + ' Admin');
+    setTxt('statPenggunaAdminJurusan', fmt(cntAdminJurusan) + ' Admin');
+    setTxt('statPenggunaPetugas', fmt(cntPetugas) + ' Petugas');
+    setTxt('statPenggunaGuruUmum', fmt(cntGuruUmum) + ' Guru');
+
+    // Tab-specific Stat Cards
+    setTxt('statTabJurusanTotal', fmt(totalJurusan) + ' Jurusan');
+    setTxt('statTabKategoriTotal', fmt(totalKategori) + ' Kategori');
+    setTxt('statTabRakTotal', fmt(totalRak) + ' Rak');
+
+    setTxt('statTabBarangTotalItem', fmt(totalBarangItems) + ' Item');
+    setTxt('statTabBarangTotalStok', fmt(totalStokTersedia) + ' Unit');
 
     const totalMasukJumlah = (window.dbBarangMasuk || []).reduce((sum, m) => sum + parseInt(m.jumlah || 0), 0);
-    setTxt('statTabMasukTotal', (window.dbBarangMasuk || []).length + ' Transaksi');
-    setTxt('statTabMasukTotalItem', '+' + totalMasukJumlah + ' Unit');
+    setTxt('statTabMasukTotal', fmt((window.dbBarangMasuk || []).length) + ' Transaksi');
+    setTxt('statTabMasukTotalItem', '+' + fmt(totalMasukJumlah) + ' Unit');
 
     const totalKeluarJumlah = (window.dbBarangKeluar || []).reduce((sum, k) => sum + parseInt(k.jumlah || 0), 0);
-    setTxt('statTabKeluarTotal', (window.dbBarangKeluar || []).length + ' Transaksi');
-    setTxt('statTabKeluarTotalItem', '-' + totalKeluarJumlah + ' Unit');
+    setTxt('statTabKeluarTotal', fmt((window.dbBarangKeluar || []).length) + ' Transaksi');
+    setTxt('statTabKeluarTotalItem', '-' + fmt(totalKeluarJumlah) + ' Unit');
 
-    setTxt('statTabPinjamTotal', totalPeminjaman + ' Transaksi');
-    setTxt('statTabPinjamBelumKembali', dipinjamCount + ' Transaksi');
-    setTxt('statTabPinjamSudahKembali', dikembalikanCount + ' Transaksi');
+    setTxt('statTabPinjamTotal', fmt(totalPeminjaman) + ' Transaksi');
+    setTxt('statTabPinjamBelumKembali', fmt(dipinjamCount) + ' Transaksi');
+    setTxt('statTabPinjamSudahKembali', fmt(dikembalikanCount) + ' Transaksi');
 
-    setTxt('statTabLogAktivitasTotal', totalLogs + ' Catatan');
+    setTxt('statTabLogAktivitasTotal', fmt(totalLogs) + ' Catatan');
+}
+
+let currentPenggunaPage = 1;
+let currentPenggunaPerPage = 10;
+let penggunaSearchDebounceTimer = null;
+
+function matchTingkatKelas(kelasStr, tingkat) {
+    if (!tingkat) return true;
+    if (!kelasStr) return false;
+    const k = String(kelasStr).trim().toUpperCase();
+    if (tingkat === '10') {
+        return k.startsWith('10') || k.startsWith('X-') || k.startsWith('X ') || k === 'X';
+    } else if (tingkat === '11') {
+        return k.startsWith('11') || k.startsWith('XI-') || k.startsWith('XI ') || k === 'XI';
+    } else if (tingkat === '12') {
+        return k.startsWith('12') || k.startsWith('XII-') || k.startsWith('XII ') || k === 'XII';
+    }
+    return k.includes(tingkat);
+}
+
+function debouncedRenderTablePengguna() {
+    clearTimeout(penggunaSearchDebounceTimer);
+    penggunaSearchDebounceTimer = setTimeout(() => {
+        currentPenggunaPage = 1;
+        renderTablePengguna();
+    }, 150);
+}
+
+function changePenggunaPerPage(val) {
+    currentPenggunaPerPage = parseInt(val) || 10;
+    currentPenggunaPage = 1;
+    renderTablePengguna();
+}
+
+function setPenggunaPage(p) {
+    currentPenggunaPage = p;
+    renderTablePengguna();
+}
+
+function renderPenggunaPaginationControls(totalItems, totalPages, startIdx, endIdx) {
+    const infoElem = document.getElementById('pengguna_pagination_info');
+    const btnsElem = document.getElementById('pengguna_pagination_btns');
+    if (!infoElem || !btnsElem) return;
+
+    if (totalItems === 0) {
+        infoElem.innerHTML = `Menampilkan <strong class="text-slate-800 dark:text-white">0</strong> data`;
+        btnsElem.innerHTML = '';
+        return;
+    }
+
+    infoElem.innerHTML = `Menampilkan <strong class="text-slate-800 dark:text-white">${startIdx + 1} - ${endIdx}</strong> dari <strong class="text-slate-800 dark:text-white">${totalItems.toLocaleString('id-ID')}</strong> pengguna (Hal <strong class="text-slate-800 dark:text-white">${currentPenggunaPage}</strong> / ${totalPages})`;
+
+    if (totalPages <= 1) {
+        btnsElem.innerHTML = '';
+        return;
+    }
+
+    let html = '';
+    const prevDisabled = currentPenggunaPage <= 1;
+    const nextDisabled = currentPenggunaPage >= totalPages;
+
+    html += `<button type="button" onclick="setPenggunaPage(1)" ${prevDisabled ? 'disabled' : ''} class="px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-xs ${prevDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}" title="Halaman Pertama">&laquo;</button>`;
+    html += `<button type="button" onclick="setPenggunaPage(${currentPenggunaPage - 1})" ${prevDisabled ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-xs ${prevDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}" title="Sebelumnya">&lsaquo;</button>`;
+
+    let startPage = Math.max(1, currentPenggunaPage - 2);
+    let endPage = Math.min(totalPages, currentPenggunaPage + 2);
+
+    if (startPage > 1) {
+        html += `<button type="button" onclick="setPenggunaPage(1)" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">1</button>`;
+        if (startPage > 2) {
+            html += `<span class="px-1 text-slate-400">...</span>`;
+        }
+    }
+
+    for (let p = startPage; p <= endPage; p++) {
+        if (p === currentPenggunaPage) {
+            html += `<button type="button" class="px-2.5 py-1 rounded-lg bg-sage-600 text-white font-bold text-xs shadow-sm">${p}</button>`;
+        } else {
+            html += `<button type="button" onclick="setPenggunaPage(${p})" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">${p}</button>`;
+        }
+    }
+
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            html += `<span class="px-1 text-slate-400">...</span>`;
+        }
+        html += `<button type="button" onclick="setPenggunaPage(${totalPages})" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">${totalPages}</button>`;
+    }
+
+    html += `<button type="button" onclick="setPenggunaPage(${currentPenggunaPage + 1})" ${nextDisabled ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-xs ${nextDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}" title="Selanjutnya">&rsaquo;</button>`;
+    html += `<button type="button" onclick="setPenggunaPage(${totalPages})" ${nextDisabled ? 'disabled' : ''} class="px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-xs ${nextDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}" title="Halaman Terakhir">&raquo;</button>`;
+
+    btnsElem.innerHTML = html;
 }
 
 function renderTablePengguna() {
@@ -2759,31 +3522,365 @@ function renderTablePengguna() {
     const isSuperAdmin = window.currentUser && window.currentUser.peran === 'admin_sekolah';
     const currentUserId = window.currentUser ? window.currentUser.id : null;
 
-    tbody.innerHTML = window.dbPengguna.map((p, idx) => {
+    const searchVal = (document.getElementById('filter_pengguna_search')?.value || '').trim().toLowerCase();
+    const kelasVal = document.getElementById('filter_pengguna_tingkat_kelas')?.value || '';
+    const peranVal = document.getElementById('filter_pengguna_peran')?.value || '';
+    const jurusanVal = document.getElementById('filter_pengguna_jurusan')?.value || '';
+
+    const filtered = window.dbPengguna.filter(p => {
+        const matchSearch = !searchVal ||
+            (p.nama_pengguna && p.nama_pengguna.toLowerCase().includes(searchVal)) ||
+            (p.nama_lengkap && p.nama_lengkap.toLowerCase().includes(searchVal)) ||
+            (p.email && p.email.toLowerCase().includes(searchVal)) ||
+            (p.nomor_telepon && p.nomor_telepon.toLowerCase().includes(searchVal)) ||
+            (p.peran && p.peran.toLowerCase().includes(searchVal)) ||
+            (p.kelas && p.kelas.toLowerCase().includes(searchVal));
+
+        const matchKelas = matchTingkatKelas(p.kelas, kelasVal);
+
+        const matchPeran = !peranVal || p.peran === peranVal;
+
+        let matchJurusan = true;
+        if (jurusanVal === 'none') {
+            matchJurusan = !p.jurusan_id;
+        } else if (jurusanVal) {
+            matchJurusan = String(p.jurusan_id) === String(jurusanVal);
+        }
+
+        return matchSearch && matchKelas && matchPeran && matchJurusan;
+    });
+
+    window.filteredPengguna = filtered;
+
+    const totalItems = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / currentPenggunaPerPage));
+    if (currentPenggunaPage > totalPages) currentPenggunaPage = totalPages;
+    if (currentPenggunaPage < 1) currentPenggunaPage = 1;
+
+    const startIdx = (currentPenggunaPage - 1) * currentPenggunaPerPage;
+    const endIdx = Math.min(startIdx + currentPenggunaPerPage, totalItems);
+    const pageItems = filtered.slice(startIdx, endIdx);
+
+    renderPenggunaPaginationControls(totalItems, totalPages, startIdx, endIdx);
+
+    if (totalItems === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" class="py-8 text-center text-slate-400 font-semibold">Tidak ada data pengguna yang cocok dengan filter.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = pageItems.map((p, idx) => {
+        const rowNo = startIdx + idx + 1;
         const initial = (p.nama_lengkap || p.nama_pengguna || 'U').charAt(0).toUpperCase();
         const avatarHtml = p.foto_url
             ? `<img src="${p.foto_url}" class="w-7 h-7 rounded-full object-cover border border-sage-200 shrink-0 shadow-sm" alt="Avatar">`
             : `<div class="w-7 h-7 rounded-full bg-sage-600 text-white font-bold flex items-center justify-center text-[10px] shrink-0 shadow-sm">${initial}</div>`;
-        const peranText = p.peran === 'admin_sekolah' ? 'Admin Sekolah' : (p.peran === 'admin_jurusan' ? 'Admin Jurusan' : (p.peran === 'petugas' ? 'Petugas Gudang' : 'Siswa'));
+        const peranText = p.peran === 'admin_sekolah' ? 'Admin Sekolah' : (p.peran === 'admin_jurusan' ? 'Admin Jurusan' : (p.peran === 'petugas' ? 'Petugas Gudang' : (p.peran === 'guru_umum' ? 'Guru Umum' : 'Siswa')));
         const jurusanText = p.peran === 'admin_sekolah' ? '<span class="text-slate-400 font-normal">-</span>' : (p.nama_jurusan || '-');
-        const loginBtnHtml = (isSuperAdmin && p.id !== currentUserId)
+        const isSiswa = p.peran === 'siswa' || p.status_pengguna === 'siswa';
+        const loginBtnHtml = (isSuperAdmin && p.id !== currentUserId && !isSiswa)
             ? `<button type="button" onclick="loginAsUser('${p.id}', '${escapeJsStr(p.nama_pengguna)}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-sm transition-all flex items-center gap-1" title="Login Sebagai Akun Ini"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg><span>Login Akun</span></button>`
             : '';
+        const kelasText = (p.kelas && String(p.kelas).trim() !== '')
+            ? `<span class="font-bold text-slate-700 dark:text-slate-300 whitespace-nowrap">${escapeHtml(p.kelas)}</span>`
+            : '<span class="text-slate-400 font-normal">-</span>';
 
-        return `<tr class="hover:bg-sage-50/50">
+        return `<tr class="hover:bg-sage-50/50 dark:hover:bg-slate-800/40">
             <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${p.id}" onchange="updateBatchDeleteBar()"></td>
-            <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${idx + 1}</td>
-            <td class="py-3.5 px-4 font-bold text-slate-800 flex items-center gap-2.5">${avatarHtml}<span>${escapeHtml(p.nama_pengguna)}</span></td>
-            <td class="py-3.5 px-4">${escapeHtml(p.nama_lengkap || '')}</td>
+            <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${rowNo}</td>
+            <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2.5">${avatarHtml}<span>${escapeHtml(p.nama_pengguna)}</span></td>
+            <td class="py-3.5 px-4 font-semibold text-slate-800 dark:text-slate-200">${escapeHtml(p.nama_lengkap || '')}</td>
             <td class="py-3.5 px-4">${escapeHtml(p.email || '-')}</td>
             <td class="py-3.5 px-4 font-bold text-sage-700">${jurusanText}</td>
             <td class="py-3.5 px-4 font-semibold">${peranText}</td>
+            <td class="py-3.5 px-4">${kelasText}</td>
             <td class="py-3.5 px-4">${escapeHtml(p.nomor_telepon || '-')}</td>
             <td class="py-3.5 px-4">
                 <div class="flex items-center gap-1.5">
                     ${loginBtnHtml}
                     <button type="button" onclick="editPengguna('${p.id}')" class="p-1.5 rounded-lg bg-sage-600 hover:bg-sage-700 text-white shadow-sm transition-all" title="Edit Data Pengguna"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 01-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
                     <button type="button" onclick="deletePengguna('${p.id}', '${escapeJsStr(p.nama_pengguna)}')" class="p-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm transition-all" title="Hapus Data Pengguna"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+let currentSiswaPage = 1;
+let currentSiswaPerPage = 25;
+let currentGuruPage = 1;
+let currentGuruPerPage = 10;
+let siswaSearchDebounceTimer = null;
+let guruSearchDebounceTimer = null;
+
+function debouncedRenderTableSiswa() {
+    clearTimeout(siswaSearchDebounceTimer);
+    siswaSearchDebounceTimer = setTimeout(() => {
+        currentSiswaPage = 1;
+        renderTableSiswa();
+    }, 150);
+}
+
+function debouncedRenderTableGuru() {
+    clearTimeout(guruSearchDebounceTimer);
+    guruSearchDebounceTimer = setTimeout(() => {
+        currentGuruPage = 1;
+        renderTableGuru();
+    }, 150);
+}
+
+function changeSiswaPerPage(val) {
+    currentSiswaPerPage = parseInt(val) || 25;
+    currentSiswaPage = 1;
+    renderTableSiswa();
+}
+
+function changeGuruPerPage(val) {
+    currentGuruPerPage = parseInt(val) || 10;
+    currentGuruPage = 1;
+    renderTableGuru();
+}
+
+function setSiswaPage(p) {
+    currentSiswaPage = p;
+    renderTableSiswa();
+}
+
+function setGuruPage(p) {
+    currentGuruPage = p;
+    renderTableGuru();
+}
+
+function renderGuruPaginationControls(totalItems, totalPages, startIdx, endIdx) {
+    const infoElem = document.getElementById('guru_pagination_info');
+    const btnsElem = document.getElementById('guru_pagination_btns');
+    if (!infoElem || !btnsElem) return;
+
+    if (totalItems === 0) {
+        infoElem.innerHTML = `Menampilkan <strong class="text-slate-800 dark:text-white">0</strong> data`;
+        btnsElem.innerHTML = '';
+        return;
+    }
+
+    infoElem.innerHTML = `Menampilkan <strong class="text-slate-800 dark:text-white">${startIdx + 1} - ${endIdx}</strong> dari <strong class="text-slate-800 dark:text-white">${totalItems.toLocaleString('id-ID')}</strong> guru`;
+
+    if (totalPages <= 1) {
+        btnsElem.innerHTML = '';
+        return;
+    }
+
+    let html = '';
+    const prevDisabled = currentGuruPage <= 1;
+    const nextDisabled = currentGuruPage >= totalPages;
+
+    html += `<button type="button" onclick="setGuruPage(${currentGuruPage - 1})" ${prevDisabled ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-xs ${prevDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}" title="Sebelumnya">&lsaquo;</button>`;
+
+    let startPage = Math.max(1, currentGuruPage - 2);
+    let endPage = Math.min(totalPages, currentGuruPage + 2);
+
+    for (let p = startPage; p <= endPage; p++) {
+        if (p === currentGuruPage) {
+            html += `<button type="button" class="px-2.5 py-1 rounded-lg bg-sage-600 text-white font-bold text-xs shadow-sm">${p}</button>`;
+        } else {
+            html += `<button type="button" onclick="setGuruPage(${p})" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">${p}</button>`;
+        }
+    }
+
+    html += `<button type="button" onclick="setGuruPage(${currentGuruPage + 1})" ${nextDisabled ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-xs ${nextDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}" title="Selanjutnya">&rsaquo;</button>`;
+
+    btnsElem.innerHTML = html;
+}
+
+function renderTableGuru() {
+    const tbody = document.querySelector('#tableGuru tbody');
+    if (!tbody || !window.dbGuru) return;
+
+    const searchVal = (document.getElementById('filter_guru_search')?.value || '').trim().toLowerCase();
+    const mengajarVal = document.getElementById('filter_guru_mengajar')?.value || '';
+    const jurusanVal = document.getElementById('filter_guru_jurusan')?.value || '';
+
+    const filtered = window.dbGuru.filter(g => {
+        const matchSearch = !searchVal || 
+            (g.nama_guru && g.nama_guru.toLowerCase().includes(searchVal)) || 
+            (g.nama_pengguna && g.nama_pengguna.toLowerCase().includes(searchVal)) || 
+            (g.token && g.token.toLowerCase().includes(searchVal));
+        const matchMengajar = !mengajarVal || String(g.mengajar || '') === String(mengajarVal);
+        let matchJurusan = true;
+        if (jurusanVal === 'none') {
+            matchJurusan = !g.jurusan_id || g.mengajar === 'umum';
+        } else if (jurusanVal) {
+            matchJurusan = String(g.jurusan_id) === String(jurusanVal);
+        }
+
+        return matchSearch && matchMengajar && matchJurusan;
+    });
+
+    const totalItems = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / currentGuruPerPage));
+    if (currentGuruPage > totalPages) currentGuruPage = totalPages;
+    if (currentGuruPage < 1) currentGuruPage = 1;
+
+    const startIdx = (currentGuruPage - 1) * currentGuruPerPage;
+    const endIdx = Math.min(startIdx + currentGuruPerPage, totalItems);
+    const pageItems = filtered.slice(startIdx, endIdx);
+
+    renderGuruPaginationControls(totalItems, totalPages, startIdx, endIdx);
+
+    if (totalItems === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-400 font-semibold">Tidak ada data guru yang cocok dengan filter.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = pageItems.map((g, idx) => {
+        const rowNo = startIdx + idx + 1;
+        const mengajarText = g.mengajar === 'umum' ? 'Guru Umum' : 'Guru Bengkel';
+        const jurusanText = g.mengajar === 'umum'
+            ? `<span class="text-slate-400 font-normal">Tidak ada jurusan</span>`
+            : escapeHtml(g.nama_jurusan || '-');
+        const tokenText = `<span class="font-mono font-bold text-slate-700 dark:text-slate-200">${escapeHtml(g.token || '-')}</span>`;
+        const usernameClean = escapeHtml(g.nama_pengguna || g.nama_guru.toLowerCase().replace(/[^a-z0-9]/g, ''));
+        const usernameText = `<span class="font-mono font-bold text-sage-600 dark:text-amber-400">${usernameClean}</span>`;
+
+        return `<tr class="hover:bg-sage-50/50 dark:hover:bg-slate-800/40">
+            <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${g.id}" onchange="updateBatchDeleteBar()"></td>
+            <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${rowNo}</td>
+            <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-slate-200">${escapeHtml(g.nama_guru)}</td>
+            <td class="py-3.5 px-4">${usernameText}</td>
+            <td class="py-3.5 px-4">${tokenText}</td>
+            <td class="py-3.5 px-4 font-bold text-slate-700 dark:text-slate-300">${mengajarText}</td>
+            <td class="py-3.5 px-4 font-bold text-sage-700">${jurusanText}</td>
+            <td class="py-3.5 px-4">
+                <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="editGuru('${g.id}')" class="p-1.5 rounded-lg bg-sage-600 hover:bg-sage-700 text-white shadow-sm transition-all" title="Edit Data Guru"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 01-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+                    <button type="button" onclick="deleteGuru('${g.id}', '${escapeJsStr(g.nama_guru)}')" class="p-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm transition-all" title="Hapus Data Guru"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+function renderSiswaPaginationControls(totalItems, totalPages, startIdx, endIdx) {
+    const infoElem = document.getElementById('siswa_pagination_info');
+    const btnsElem = document.getElementById('siswa_pagination_btns');
+    if (!infoElem || !btnsElem) return;
+
+    if (totalItems === 0) {
+        infoElem.innerHTML = `Menampilkan <strong class="text-slate-800 dark:text-white">0</strong> data`;
+        btnsElem.innerHTML = '';
+        return;
+    }
+
+    infoElem.innerHTML = `Menampilkan <strong class="text-slate-800 dark:text-white">${startIdx + 1} - ${endIdx}</strong> dari <strong class="text-slate-800 dark:text-white">${totalItems.toLocaleString('id-ID')}</strong> siswa (Hal <strong class="text-slate-800 dark:text-white">${currentSiswaPage}</strong> / ${totalPages})`;
+
+    if (totalPages <= 1) {
+        btnsElem.innerHTML = '';
+        return;
+    }
+
+    let html = '';
+    const prevDisabled = currentSiswaPage <= 1;
+    const nextDisabled = currentSiswaPage >= totalPages;
+
+    html += `<button type="button" onclick="setSiswaPage(1)" ${prevDisabled ? 'disabled' : ''} class="px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-xs ${prevDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}" title="Halaman Pertama">&laquo;</button>`;
+    html += `<button type="button" onclick="setSiswaPage(${currentSiswaPage - 1})" ${prevDisabled ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-xs ${prevDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}" title="Sebelumnya">&lsaquo;</button>`;
+
+    let startPage = Math.max(1, currentSiswaPage - 2);
+    let endPage = Math.min(totalPages, currentSiswaPage + 2);
+
+    if (startPage > 1) {
+        html += `<button type="button" onclick="setSiswaPage(1)" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">1</button>`;
+        if (startPage > 2) {
+            html += `<span class="px-1 text-slate-400">...</span>`;
+        }
+    }
+
+    for (let p = startPage; p <= endPage; p++) {
+        if (p === currentSiswaPage) {
+            html += `<button type="button" class="px-2.5 py-1 rounded-lg bg-sage-600 text-white font-bold text-xs shadow-sm">${p}</button>`;
+        } else {
+            html += `<button type="button" onclick="setSiswaPage(${p})" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">${p}</button>`;
+        }
+    }
+
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            html += `<span class="px-1 text-slate-400">...</span>`;
+        }
+        html += `<button type="button" onclick="setSiswaPage(${totalPages})" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">${totalPages}</button>`;
+    }
+
+    html += `<button type="button" onclick="setSiswaPage(${currentSiswaPage + 1})" ${nextDisabled ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-xs ${nextDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}" title="Selanjutnya">&rsaquo;</button>`;
+    html += `<button type="button" onclick="setSiswaPage(${totalPages})" ${nextDisabled ? 'disabled' : ''} class="px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-xs ${nextDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}" title="Halaman Terakhir">&raquo;</button>`;
+
+    btnsElem.innerHTML = html;
+}
+
+function renderTableSiswa() {
+    const tbody = document.querySelector('#tableSiswa tbody');
+    if (!tbody || !window.dbSiswa) return;
+
+    const searchVal = (document.getElementById('filter_siswa_search')?.value || '').trim().toLowerCase();
+    const kelasVal = document.getElementById('filter_siswa_tingkat_kelas')?.value || '';
+    const jurusanVal = document.getElementById('filter_siswa_jurusan')?.value || '';
+    const tahunVal = document.getElementById('filter_siswa_tahun')?.value || '';
+
+    const filtered = window.dbSiswa.filter(s => {
+        const matchSearch = !searchVal ||
+            (s.nama_lengkap && s.nama_lengkap.toLowerCase().includes(searchVal)) ||
+            (s.nama_siswa && s.nama_siswa.toLowerCase().includes(searchVal)) ||
+            (s.nisn && s.nisn.toLowerCase().includes(searchVal)) ||
+            (s.token && s.token.toLowerCase().includes(searchVal)) ||
+            (s.kelas && s.kelas.toLowerCase().includes(searchVal));
+
+        const matchKelas = matchTingkatKelas(s.kelas, kelasVal);
+
+        let matchJurusan = true;
+        if (jurusanVal === 'none') {
+            matchJurusan = !s.jurusan_id;
+        } else if (jurusanVal) {
+            matchJurusan = String(s.jurusan_id) === String(jurusanVal);
+        }
+
+        const matchTahun = !tahunVal || String(s.tahun_ajaran || '') === String(tahunVal);
+
+        return matchSearch && matchKelas && matchJurusan && matchTahun;
+    });
+
+    const totalItems = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / currentSiswaPerPage));
+    if (currentSiswaPage > totalPages) currentSiswaPage = totalPages;
+    if (currentSiswaPage < 1) currentSiswaPage = 1;
+
+    const startIdx = (currentSiswaPage - 1) * currentSiswaPerPage;
+    const endIdx = Math.min(startIdx + currentSiswaPerPage, totalItems);
+    const pageItems = filtered.slice(startIdx, endIdx);
+
+    renderSiswaPaginationControls(totalItems, totalPages, startIdx, endIdx);
+
+    if (totalItems === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="py-8 text-center text-slate-400 font-semibold">Tidak ada data siswa yang cocok dengan filter.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = pageItems.map((s, idx) => {
+        const rowNo = startIdx + idx + 1;
+        const tokenHtml = `<span class="font-mono font-bold text-slate-700 dark:text-slate-200">${escapeHtml(s.token || '-')}</span>`;
+        const nisnHtml = s.nisn
+            ? `<span class="font-mono font-bold text-slate-700 dark:text-slate-300 tracking-wider">${escapeHtml(s.nisn)}</span>`
+            : `<span class="text-slate-400 italic text-[11px]">-</span>`;
+
+        return `<tr class="hover:bg-sage-50/50 dark:hover:bg-slate-800/40">
+            <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${s.id}" onchange="updateBatchDeleteBar()"></td>
+            <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${rowNo}</td>
+            <td class="py-3.5 px-4">${nisnHtml}</td>
+            <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-slate-200">${escapeHtml(s.nama_lengkap || s.nama_siswa)}</td>
+            <td class="py-3.5 px-4">${tokenHtml}</td>
+            <td class="py-3.5 px-4 font-bold text-slate-700 dark:text-slate-300">${escapeHtml(s.kelas || '-')}</td>
+            <td class="py-3.5 px-4 font-bold text-sage-700 dark:text-sage-400">${escapeHtml(s.nama_jurusan || '-')}</td>
+            <td class="py-3.5 px-4 dark:text-slate-400">${escapeHtml(s.tahun_ajaran || '2026/2027')}</td>
+            <td class="py-3.5 px-4">
+                <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="editSiswa('${s.id}')" class="p-1.5 rounded-lg bg-sage-600 hover:bg-sage-700 text-white shadow-sm transition-all" title="Edit Data Siswa"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 01-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+                    <button type="button" onclick="deleteSiswa('${s.id}', '${escapeJsStr(s.nama_lengkap || s.nama_siswa)}')" class="p-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm transition-all" title="Hapus Data Siswa"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
                 </div>
             </td>
         </tr>`;
@@ -2886,6 +3983,7 @@ function renderTableBarang() {
 
     tbody.innerHTML = window.dbBarang.map((b, idx) => {
         const jurTd = isSuperAdmin ? `<td class="py-3.5 px-4 font-bold text-sage-700">${escapeHtml(b.nama_jurusan || 'Semua Jurusan')}</td>` : '';
+        const jenisText = String(b.jenis || 'alat').toLowerCase() === 'bahan' ? 'Bahan' : 'Alat';
         const barcodeHtml = b.barcode
             ? `<button type="button" onclick="showBarcodeModal('${escapeHtml(b.barcode)}', '${escapeJsStr(b.nama_barang)}')" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sage-50 hover:bg-sage-100 text-sage-800 border border-sage-200 font-bold transition-all group" title="Klik untuk preview / simpan barcode"><svg class="w-4 h-4 text-sage-600 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg><span>${escapeHtml(b.barcode)}</span></button>`
             : '<span class="text-slate-400">-</span>';
@@ -2894,17 +3992,52 @@ function renderTableBarang() {
             ? `<div class="flex items-center gap-1.5"><button type="button" onclick="editBarang('${b.id}')" class="p-1.5 rounded-lg bg-sage-600 hover:bg-sage-700 text-white shadow-sm transition-all" title="Edit Master Barang"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 01-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button><button type="button" onclick="deleteBarang('${b.id}', '${escapeJsStr(b.nama_barang)}')" class="p-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm transition-all" title="Hapus Data Barang"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></div>`
             : '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-sage-50 text-sage-700 border border-sage-200">Read Only</span>';
 
-        return `<tr id="row-barang-${b.id}" class="hover:bg-sage-50/50 transition-all duration-300">
+            let totalDipinjam = Number(b.total_dipinjam || 0);
+            if (window.dbPeminjaman && window.dbPeminjaman.length > 0) {
+                totalDipinjam = window.dbPeminjaman
+                    .filter(p => String(p.barang_id) === String(b.id) && p.status !== 'dikembalikan')
+                    .reduce((sum, p) => sum + parseInt(p.jumlah || 0), 0);
+            }
+
+            let totalKeluar = Number(b.total_keluar || 0);
+            if (window.dbBarangKeluar && window.dbBarangKeluar.length > 0) {
+                totalKeluar = window.dbBarangKeluar
+                    .filter(k => String(k.barang_id) === String(b.id))
+                    .reduce((sum, k) => sum + parseInt(k.jumlah || 0), 0);
+            }
+
+            const dipinjamInfo = (totalDipinjam > 0)
+                ? `<span class="block text-[9.5px] font-semibold text-amber-500 mt-0.5 whitespace-nowrap leading-tight">${totalDipinjam} ${escapeHtml(b.satuan || 'Unit')} dipinjam</span>`
+                : '';
+
+            const keluarInfo = (totalKeluar > 0)
+                ? `<span class="block text-[9.5px] font-semibold text-rose-500 dark:text-rose-400 mt-0.5 whitespace-nowrap leading-tight">${totalKeluar} ${escapeHtml(b.satuan || 'Unit')} dikeluarkan</span>`
+                : '';
+
+            const stokTersediaVal = parseInt(b.stok_tersedia !== undefined && b.stok_tersedia !== null ? b.stok_tersedia : 0);
+            const stokAwalVal = (b.stok_awal !== undefined && b.stok_awal !== null) ? b.stok_awal : (b.stok_total || 0);
+
+            return `<tr id="row-barang-${b.id}"
+            data-jenis="${escapeHtml(String(b.jenis || 'alat').toLowerCase())}"
+            data-kategori-id="${escapeHtml(String(b.kategori_id || ''))}"
+            data-rak-id="${escapeHtml(String(b.rak_id || ''))}"
+            data-jurusan-id="${escapeHtml(String(b.jurusan_id || ''))}"
+            class="hover:bg-sage-50/50 transition-all duration-300">
             <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${b.id}" onchange="updateBatchDeleteBar()"></td>
             <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${idx + 1}</td>
             <td class="py-3.5 px-4 font-extrabold text-xs nama-barang-cell text-sage-700">${escapeHtml(b.nama_barang)}</td>
+            <td class="py-3.5 px-4 font-semibold text-slate-700">${escapeHtml(jenisText)}</td>
             <td class="py-3.5 px-4 font-semibold text-slate-700">${escapeHtml(b.nama_kategori || '-')}</td>
             <td class="py-3.5 px-4 font-semibold text-slate-700">${escapeHtml(b.nama_rak || '-')}</td>
             ${jurTd}
             <td class="py-3.5 px-4">${escapeHtml(b.merek || '-')}</td>
             <td class="py-3.5 px-4 font-mono text-sage-700">${barcodeHtml}</td>
-            <td class="py-3.5 px-4 font-bold">${escapeHtml(b.stok_total)} ${escapeHtml(b.satuan || 'Unit')}</td>
-            <td class="py-3.5 px-4 font-bold text-sage-600">${escapeHtml(b.stok_tersedia)} ${escapeHtml(b.satuan || 'Unit')}</td>
+            <td class="py-3.5 px-4 font-bold">${escapeHtml(String(stokAwalVal))} ${escapeHtml(b.satuan || 'Unit')}</td>
+            <td class="py-3.5 px-4 font-bold text-sage-600 whitespace-nowrap">
+                <div class="whitespace-nowrap">${stokTersediaVal} ${escapeHtml(b.satuan || 'Unit')}</div>
+                ${dipinjamInfo}
+                ${keluarInfo}
+            </td>
             <td class="py-3.5 px-4">${actionBtns}</td>
         </tr>`;
     }).join('');
@@ -2923,7 +4056,6 @@ function renderTableBarangMasuk() {
             <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${idx + 1}</td>
             <td class="py-3.5 px-4 font-bold text-slate-800">${escapeHtml(bm.nama_barang)}</td>
             ${jurTd}
-            <td class="py-3.5 px-4">${escapeHtml(bm.nama_pemasok || '-')}</td>
             <td class="py-3.5 px-4 font-bold text-emerald-600">+${escapeHtml(bm.jumlah)} ${escapeHtml(bm.satuan || 'Unit')}</td>
             <td class="py-3.5 px-4">${escapeHtml(bm.nama_petugas || 'Petugas')}</td>
             <td class="py-3.5 px-4">${dateStr}</td>
@@ -2952,6 +4084,7 @@ function renderTableBarangKeluar() {
             ${jurTd}
             <td class="py-3.5 px-4">${escapeHtml(bk.nama_penerima || '-')}</td>
             <td class="py-3.5 px-4 font-bold text-amber-600">-${escapeHtml(bk.jumlah)} ${escapeHtml(bk.satuan || 'Unit')}</td>
+            <td class="py-3.5 px-4">${escapeHtml(bk.catatan || '-')}</td>
             <td class="py-3.5 px-4">${escapeHtml(bk.nama_petugas || 'Petugas')}</td>
             <td class="py-3.5 px-4">${dateStr}</td>
             <td class="py-3.5 px-4">
@@ -2974,6 +4107,18 @@ function renderTablePeminjaman() {
         const tglPinjam = pm.tanggal_pinjam ? new Date(pm.tanggal_pinjam).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
         const tglKembali = (pm.tanggal_kembali && pm.status === 'dikembalikan') ? new Date(pm.tanggal_kembali).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '<span class="text-slate-400 font-normal">-</span>';
         
+        const guruHtml = `<td class="py-3.5 px-4 font-bold text-slate-800 dark:text-white">${escapeHtml(pm.guru_peminjam || '-')}</td>`;
+        let siswaHtml = '<td class="py-3.5 px-4"><span class="text-slate-400 font-normal">-</span></td>';
+        if (pm.nama_peminjam) {
+            let sContent = `<div class="font-bold text-slate-800 dark:text-white">${escapeHtml(pm.nama_peminjam)}</div>`;
+            if (pm.nisn) {
+                sContent += `<span class="inline-flex items-center gap-1 font-mono text-[10px] text-slate-500"><span class="font-bold">NISN:</span> ${escapeHtml(pm.nisn)}</span>`;
+            }
+            siswaHtml = `<td class="py-3.5 px-4">${sContent}</td>`;
+        }
+
+        const thnAjaranDisplay = pm.nama_peminjam ? escapeHtml(pm.tahun_ajaran || '2026/2027') : '-';
+
         let statusHtml = '';
         if (pm.status === 'dipinjam') statusHtml = `<span class="text-amber-500 font-extrabold">Dipinjam</span>`;
         else if (pm.status === 'pending') statusHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800 border border-amber-300"><svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Pending</span>`;
@@ -2987,32 +4132,36 @@ function renderTablePeminjaman() {
             actionBtns = `<button type="button" onclick="approvePeminjaman('${pm.id}')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-sm transition-all flex items-center gap-1" title="Setujui Pengembalian"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Setujui</button>
             <button type="button" onclick="rejectPeminjaman('${pm.id}')" class="px-2.5 py-1 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-[11px] shadow-sm transition-all flex items-center gap-1" title="Tolak Pengembalian"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Tolak</button>`;
             if (pm.bukti_foto) {
-                actionBtns += `<button type="button" onclick="showFotoPreview('${pm.bukti_foto}', 'Bukti Foto Pengembalian Alat', 'Peminjam: ${escapeJsStr(pm.nama_peminjam)} | Alat: ${escapeJsStr(pm.nama_barang)}')" class="p-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all" title="Lihat Bukti Foto"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>`;
+                actionBtns += `<button type="button" onclick="showFotoPreview('${pm.bukti_foto}', 'Bukti Foto Pengembalian Alat', 'Peminjam: ${escapeJsStr(pm.nama_peminjam || pm.guru_peminjam)} | Alat: ${escapeJsStr(pm.nama_barang)}')" class="p-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all" title="Lihat Bukti Foto"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>`;
             }
         } else if (pm.status === 'ditolak') {
             actionBtns = `<button type="button" onclick="kembalikanPeminjaman('${pm.id}')" class="px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-[11px] shadow-sm transition-all flex items-center gap-1" title="Upload Ulang Bukti Foto Pengembalian">Upload Ulang</button>`;
             if (pm.bukti_foto) {
-                actionBtns += `<button type="button" onclick="showFotoPreview('${pm.bukti_foto}', 'Bukti Foto Pengembalian Alat (Ditolak)', 'Peminjam: ${escapeJsStr(pm.nama_peminjam)} | Alat: ${escapeJsStr(pm.nama_barang)}')" class="p-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all" title="Lihat Bukti Foto Ditolak"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>`;
+                actionBtns += `<button type="button" onclick="showFotoPreview('${pm.bukti_foto}', 'Bukti Foto Pengembalian Alat (Ditolak)', 'Peminjam: ${escapeJsStr(pm.nama_peminjam || pm.guru_peminjam)} | Alat: ${escapeJsStr(pm.nama_barang)}')" class="p-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all" title="Lihat Bukti Foto Ditolak"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>`;
             }
         }
 
         if (pm.status !== 'dikembalikan') {
             actionBtns += `<button type="button" onclick="editPeminjaman('${pm.id}')" class="p-1.5 rounded-lg bg-sage-600 hover:bg-sage-700 text-white shadow-sm transition-all" title="Edit Transaksi Peminjaman"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 01-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
-            <button type="button" onclick="deletePeminjaman('${pm.id}', '${escapeJsStr(pm.nama_peminjam)}')" class="p-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm transition-all" title="Hapus Transaksi Peminjaman"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>`;
+            <button type="button" onclick="deletePeminjaman('${pm.id}', '${escapeJsStr(pm.nama_peminjam || pm.guru_peminjam)}')" class="p-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm transition-all" title="Hapus Transaksi Peminjaman"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>`;
         } else if (pm.bukti_foto) {
-            actionBtns += `<button type="button" onclick="showFotoPreview('${pm.bukti_foto}', 'Bukti Foto Pengembalian Alat', 'Peminjam: ${escapeJsStr(pm.nama_peminjam)} | Alat: ${escapeJsStr(pm.nama_barang)}')" class="p-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all" title="Lihat Bukti Foto"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>`;
+            actionBtns += `<button type="button" onclick="showFotoPreview('${pm.bukti_foto}', 'Bukti Foto Pengembalian Alat', 'Peminjam: ${escapeJsStr(pm.nama_peminjam || pm.guru_peminjam)} | Alat: ${escapeJsStr(pm.nama_barang)}')" class="p-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all" title="Lihat Bukti Foto"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>`;
         }
+
+        const brgMatch = (window.dbBarang || []).find(b => String(b.id) === String(pm.barang_id));
+        const satuanDisplay = (brgMatch && brgMatch.satuan) ? brgMatch.satuan : (pm.satuan || 'Unit');
 
         return `<tr class="hover:bg-sage-50/50">
             <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${pm.id}" onchange="updateBatchDeleteBar()"></td>
             <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${idx + 1}</td>
             <td class="py-3.5 px-4 font-bold text-slate-800">${escapeHtml(pm.nama_barang)}</td>
             ${jurTd}
-            <td class="py-3.5 px-4">${escapeHtml(pm.nama_peminjam)}</td>
+            ${guruHtml}
+            ${siswaHtml}
             <td class="py-3.5 px-4 font-semibold text-slate-700">${escapeHtml(pm.nama_petugas || '-')}</td>
-            <td class="py-3.5 px-4 font-semibold">${escapeHtml(pm.jumlah)} Unit</td>
+            <td class="py-3.5 px-4 font-semibold">${parseInt(pm.jumlah || 1)} ${escapeHtml(satuanDisplay)}</td>
             <td class="py-3.5 px-4 font-semibold text-slate-700">${escapeHtml(pm.tugas || '-')}</td>
-            <td class="py-3.5 px-4 font-semibold text-sage-700">${escapeHtml(pm.tahun_ajaran || '2025/2026')}</td>
+            <td class="py-3.5 px-4 font-semibold text-sage-700">${thnAjaranDisplay}</td>
             <td class="py-3.5 px-4">${tglPinjam}</td>
             <td class="py-3.5 px-4 font-mono">${tglKembali}</td>
             <td class="py-3.5 px-4 text-center">${statusHtml}</td>
@@ -3031,6 +4180,16 @@ function renderTableLogPeminjaman() {
         const tglPinjam = logPm.tanggal_pinjam ? new Date(logPm.tanggal_pinjam).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
         const tglKembali = logPm.tanggal_kembali ? new Date(logPm.tanggal_kembali).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
 
+        const guruHtml = `<td class="py-3 px-4 font-bold text-slate-800 dark:text-white">${escapeHtml(logPm.guru_peminjam || '-')}</td>`;
+        let siswaHtml = '<td class="py-3 px-4"><span class="text-slate-400 font-normal">-</span></td>';
+        if (logPm.nama_peminjam) {
+            let sContent = `<span class="font-bold text-slate-800 dark:text-white">${escapeHtml(logPm.nama_peminjam)}</span>`;
+            if (logPm.nisn) {
+                sContent += `<div class="text-[10px] text-slate-500 font-mono">NISN: ${escapeHtml(logPm.nisn)}</div>`;
+            }
+            siswaHtml = `<td class="py-3 px-4">${sContent}</td>`;
+        }
+
         let statusHtml = '';
         if (logPm.status === 'dipinjam') statusHtml = `<span class="text-amber-500 font-extrabold">Dipinjam</span>`;
         else if (logPm.status === 'pending') statusHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800 border border-amber-300"><svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Pending</span>`;
@@ -3038,26 +4197,71 @@ function renderTableLogPeminjaman() {
         else statusHtml = `<span class="font-extrabold text-sage-600">Dikembalikan</span>`;
 
         const fotoBtn = logPm.bukti_foto
-            ? `<button type="button" onclick="showFotoPreview('${logPm.bukti_foto}', 'Bukti Foto Pengembalian Alat', 'Peminjam: ${escapeJsStr(logPm.nama_peminjam)} | Alat: ${escapeJsStr(logPm.nama_barang)}')" class="px-3 py-1 rounded-xl bg-sage-600 hover:bg-sage-700 text-white font-bold text-xs shadow-md shadow-sage-600/20 transition-all inline-flex items-center gap-1.5" title="Lihat Foto Bukti Pengembalian Alat"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg><span>View</span></button>`
+            ? `<button type="button" onclick="showFotoPreview('${logPm.bukti_foto}', 'Bukti Foto Pengembalian Alat', 'Peminjam: ${escapeJsStr(logPm.nama_peminjam || logPm.guru_peminjam)} | Alat: ${escapeJsStr(logPm.nama_barang)}')" class="px-3 py-1 rounded-xl bg-sage-600 hover:bg-sage-700 text-white font-bold text-xs shadow-md shadow-sage-600/20 transition-all inline-flex items-center gap-1.5" title="Lihat Foto Bukti Pengembalian Alat"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg><span>View</span></button>`
             : '<span class="text-slate-400 font-normal">-</span>';
 
         const actionBtn = (logPm.status === 'dikembalikan' && window.currentUser && window.currentUser.peran !== 'siswa')
             ? `<button type="button" onclick="editPeminjaman('${logPm.id}')" class="p-1.5 rounded-lg bg-sage-600 hover:bg-sage-700 text-white shadow-sm transition-all flex items-center gap-1 text-xs font-bold px-2.5" title="Edit Status Peminjaman"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 01-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg><span>Edit Status</span></button>`
             : '<span class="text-slate-400 font-normal">-</span>';
 
+        const brgMatch = (window.dbBarang || []).find(b => String(b.id) === String(logPm.barang_id));
+        const satuanDisplay = (brgMatch && brgMatch.satuan) ? brgMatch.satuan : (logPm.satuan || 'Unit');
+
         return `<tr class="hover:bg-sage-50/50">
             <td class="py-3 px-4 text-center font-bold text-slate-500 row-number-cell">${idx + 1}</td>
-            <td class="py-3 px-4 font-bold text-slate-800">${escapeHtml(logPm.nama_peminjam || '-')}</td>
+            ${guruHtml}
+            ${siswaHtml}
             <td class="py-3 px-4 font-semibold text-slate-700">${escapeHtml(logPm.nama_barang || '-')}</td>
             ${jurTd}
             <td class="py-3 px-4 font-semibold text-slate-700">${escapeHtml(logPm.nama_petugas || '-')}</td>
-            <td class="py-3 px-4 text-center font-bold text-slate-800">${parseInt(logPm.jumlah || 1)} ${escapeHtml(logPm.satuan || 'Unit')}</td>
+            <td class="py-3 px-4 text-center font-bold text-slate-800">${parseInt(logPm.jumlah || 1)} ${escapeHtml(satuanDisplay)}</td>
             <td class="py-3 px-4 font-mono text-[11px] text-slate-600">${tglPinjam}</td>
             <td class="py-3 px-4 font-mono text-[11px] text-slate-600">${tglKembali}</td>
             <td class="py-3 px-4 text-center font-bold">${statusHtml}</td>
             <td class="py-3 px-4 text-slate-600">${escapeHtml(logPm.tugas || logPm.catatan || '-')}</td>
             <td class="py-3 px-4">${fotoBtn}</td>
-            <td class="py-3 px-4">${actionBtn}</td>
+            <td class="py-3 px-4"><div class="flex items-center gap-1.5">${actionBtn}</div></td>
+        </tr>`;
+    }).join('');
+}
+
+function renderDashboardRecentPeminjaman() {
+    const tbody = document.querySelector('#tableDashboardRecentPeminjaman tbody');
+    if (!tbody || !window.dbPeminjaman) return;
+
+    if (window.dbPeminjaman.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="py-4 text-center text-slate-400">Belum ada data peminjaman</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = window.dbPeminjaman.slice(0, 5).map(pm => {
+        let statusHtml = '';
+        if (pm.status === 'dipinjam') statusHtml = '<span class="text-amber-500 font-extrabold">Dipinjam</span>';
+        else if (pm.status === 'pending') statusHtml = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800 border border-amber-300"><svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Pending</span>';
+        else if (pm.status === 'ditolak') statusHtml = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-red-100 text-red-800 border border-red-300">Ditolak</span>';
+        else statusHtml = '<span class="font-extrabold text-sage-600 dark:text-sage-400">Dikembalikan</span>';
+
+        const brgMatch = (window.dbBarang || []).find(b => String(b.id) === String(pm.barang_id));
+        const jenisDisplay = (pm.jenis || (brgMatch ? brgMatch.jenis : 'alat')) || 'alat';
+        const satuanDisplay = (brgMatch && brgMatch.satuan) ? brgMatch.satuan : (pm.satuan || 'Unit');
+
+        let siswaHtml = '<span class="text-slate-400 font-normal">-</span>';
+        if (pm.nama_peminjam) {
+            let sContent = `<div class="font-bold text-slate-800 dark:text-white">${escapeHtml(pm.nama_peminjam)}</div>`;
+            if (pm.nisn) {
+                sContent += `<span class="inline-flex items-center gap-1 font-mono text-[10px] text-slate-500"><span class="font-bold">NISN:</span> ${escapeHtml(pm.nisn)}</span>`;
+            }
+            siswaHtml = sContent;
+        }
+
+        return `<tr class="hover:bg-sage-50/50">
+            <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-white">${escapeHtml(pm.nama_barang || '-')}</td>
+            <td class="py-3.5 px-4 font-semibold capitalize text-slate-700 dark:text-slate-300">${escapeHtml(jenisDisplay)}</td>
+            <td class="py-3.5 px-4">${siswaHtml}</td>
+            <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-white">${escapeHtml(pm.guru_peminjam || '-')}</td>
+            <td class="py-3.5 px-4 font-semibold text-slate-700 dark:text-slate-300">${escapeHtml(pm.nama_petugas || '-')}</td>
+            <td class="py-3.5 px-4 font-semibold text-slate-800 dark:text-slate-200">${parseInt(pm.jumlah || 1)} ${escapeHtml(satuanDisplay)}</td>
+            <td class="py-3.5 px-4">${statusHtml}</td>
         </tr>`;
     }).join('');
 }
@@ -3073,59 +4277,162 @@ function renderTableLogAktivitas() {
         const jurAttr = (log.nama_jurusan || '-').toLowerCase();
         const pengAttr = (log.nama_pengguna || log.nama_lengkap || 'Sistem').toLowerCase();
 
-        let badgeStyle = 'bg-sage-100 text-sage-800 border-sage-200';
-        let dotColor = 'bg-sage-600';
-
-        if (tindakan === 'LOGIN') {
-            badgeStyle = 'bg-emerald-100 text-emerald-800 border-emerald-200';
-            dotColor = 'bg-emerald-600';
-        } else if (tindakan === 'LOGOUT') {
-            badgeStyle = 'bg-rose-100 text-rose-800 border-rose-200';
-            dotColor = 'bg-rose-600';
-        } else if (tindakan.includes('TAMBAH') || tindakan.includes('CREATE')) {
-            badgeStyle = 'bg-blue-100 text-blue-800 border-blue-200';
-            dotColor = 'bg-blue-600';
-        } else if (tindakan.includes('HAPUS') || tindakan.includes('DELETE')) {
-            badgeStyle = 'bg-red-100 text-red-800 border-red-200';
-            dotColor = 'bg-red-600';
-        } else if (tindakan.includes('IMPERSONATE')) {
-            badgeStyle = 'bg-amber-100 text-amber-800 border-amber-200';
-            dotColor = 'bg-amber-600';
-        }
-
         const jurTd = isSuperAdmin ? `<td class="py-3.5 px-4 font-bold text-sage-700">${escapeHtml(log.nama_jurusan || '-')}</td>` : '';
         const dateStr = log.created_at ? new Date(log.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
 
         return `<tr class="hover:bg-sage-50/50" data-date="${dateAttr}" data-tindakan="${escapeHtml(tindakan)}" data-jurusan="${escapeHtml(jurAttr)}" data-pengguna="${escapeHtml(pengAttr)}">
             <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${idx + 1}</td>
-            <td class="py-3.5 px-4 font-bold text-slate-800">${escapeHtml(log.nama_pengguna || log.nama_lengkap || 'Sistem')}</td>
-            <td class="py-3.5 px-4 font-bold text-slate-800">
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${badgeStyle} border">
-                    <span class="w-1.5 h-1.5 rounded-full ${dotColor} shrink-0"></span>
-                    <span>${escapeHtml(log.tindakan)}</span>
-                </span>
-            </td>
+            <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-white">${escapeHtml(log.nama_pengguna || log.nama_lengkap || 'Sistem')}</td>
+            <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-white">${escapeHtml(log.tindakan || '-')}</td>
             ${jurTd}
-            <td class="py-3.5 px-4 text-slate-600">${escapeHtml(log.deskripsi || '-')}</td>
+            <td class="py-3.5 px-4 text-slate-600 dark:text-slate-300">${escapeHtml(log.deskripsi || '-')}</td>
             <td class="py-3.5 px-4 font-mono text-[11px] text-slate-500">${dateStr}</td>
         </tr>`;
     }).join('');
 }
 
+function renderRecentLogMasukKeluar() {
+    const container = document.getElementById('recentLogMasukKeluarContainer');
+    if (!container || !window.dbBarangMasuk || !window.dbBarangKeluar) return;
+
+    const list = [];
+    (window.dbBarangMasuk || []).forEach(m => {
+        list.push({
+            type: 'masuk',
+            nama_barang: m.nama_barang || 'Barang',
+            jurusan_id: m.jurusan_id || null,
+            pihak: m.nama_petugas || 'Petugas Gudang',
+            jumlah: m.jumlah || 1,
+            satuan: m.satuan || 'Unit',
+            tanggal: m.tanggal_masuk || m.created_at || new Date().toISOString()
+        });
+    });
+    (window.dbBarangKeluar || []).forEach(k => {
+        list.push({
+            type: 'keluar',
+            nama_barang: k.nama_barang || 'Barang',
+            jurusan_id: k.jurusan_id || null,
+            pihak: k.nama_penerima || 'Penerima',
+            jumlah: k.jumlah || 1,
+            satuan: k.satuan || 'Unit',
+            tanggal: k.tanggal_keluar || k.created_at || new Date().toISOString()
+        });
+    });
+
+    list.sort((a, b) => new Date(b.tanggal).getTime() - new Date(a.tanggal).getTime());
+    const topLogs = list.slice(0, 4);
+
+    if (topLogs.length === 0) {
+        container.innerHTML = '<div class="p-6 text-center text-slate-400 dark:text-slate-500 text-xs italic">Belum ada aktivitas alat & bahan masuk / keluar</div>';
+        return;
+    }
+
+    container.innerHTML = topLogs.map(log => {
+        const isMasuk = log.type === 'masuk';
+        const dateObj = new Date(log.tanggal);
+        const d = String(dateObj.getDate()).padStart(2, '0');
+        const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const h = String(dateObj.getHours()).padStart(2, '0');
+        const min = String(dateObj.getMinutes()).padStart(2, '0');
+        const dateFormatted = `${d}/${m}/${h}:${min}`;
+
+        const jurColor = (window.jurusanColors && log.jurusan_id && window.jurusanColors[log.jurusan_id])
+            ? window.jurusanColors[log.jurusan_id]
+            : (window.themePrimaryColor || '#eab308');
+
+        const boxClass = isMasuk
+            ? 'bg-emerald-50/60 border border-emerald-200/60 dark:bg-slate-800/40 dark:border-slate-800/80'
+            : 'bg-amber-50/60 border border-amber-200/60 dark:bg-slate-800/40 dark:border-slate-800/80';
+
+        const iconBg = isMasuk ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white';
+        const iconSvg = isMasuk
+            ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>'
+            : '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>';
+
+        const amountClass = isMasuk ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400';
+        const sign = isMasuk ? '+' : '-';
+        const pihakLabel = isMasuk ? 'Petugas: ' : 'Untuk: ';
+
+        return `<div class="p-3 rounded-xl ${boxClass} flex items-center justify-between transition-all">
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="w-8 h-8 rounded-lg ${iconBg} flex items-center justify-center text-xs font-bold shrink-0 shadow-sm">
+                    ${iconSvg}
+                </div>
+                <div class="min-w-0">
+                    <p class="text-xs font-extrabold line-clamp-1 text-slate-800 dark:text-slate-100">${escapeHtml(log.nama_barang)}</p>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold truncate">${pihakLabel}<span class="text-slate-700 dark:text-slate-200">${escapeHtml(log.pihak)}</span></p>
+                </div>
+            </div>
+            <div class="text-right shrink-0 ml-3">
+                <span class="text-xs font-extrabold ${amountClass}">${sign}${escapeHtml(String(log.jumlah))} ${escapeHtml(log.satuan)}</span>
+                <p class="text-[9px] text-slate-400 dark:text-slate-500 font-medium mt-0.5">${dateFormatted}</p>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function renderActiveTabTable(tabId) {
+    if (!tabId) tabId = (new URLSearchParams(window.location.search).get('tab') || 'dashboard');
+    if (tabId === 'siswa') {
+        renderTableSiswa();
+    } else if (tabId === 'guru') {
+        renderTableGuru();
+    } else if (tabId === 'barang') {
+        renderTableBarang();
+        refreshBarangFilterDropdowns();
+        const p = window.tablePaginators && window.tablePaginators['tableBarang'];
+        if (p) p.reinit();
+    } else if (tabId === 'peminjaman') {
+        renderTablePeminjaman();
+        renderTableLogPeminjaman();
+        const p1 = window.tablePaginators && window.tablePaginators['tablePeminjaman'];
+        if (p1) p1.reinit();
+        const p2 = window.tablePaginators && window.tablePaginators['tableLogPeminjaman'];
+        if (p2) p2.reinit();
+    } else if (tabId === 'barang-masuk') {
+        renderTableBarangMasuk();
+        const p = window.tablePaginators && window.tablePaginators['tableBarangMasuk'];
+        if (p) p.reinit();
+    } else if (tabId === 'barang-keluar') {
+        renderTableBarangKeluar();
+        const p = window.tablePaginators && window.tablePaginators['tableBarangKeluar'];
+        if (p) p.reinit();
+    } else if (tabId === 'pengguna') {
+        renderTablePengguna();
+        if (typeof initTabAnalytics === 'function') initTabAnalytics('pengguna');
+    } else if (tabId === 'jurusan') {
+        renderTableJurusan();
+        const p = window.tablePaginators && window.tablePaginators['tableJurusan'];
+        if (p) p.reinit();
+    } else if (tabId === 'kategori') {
+        renderTableKategori();
+        const p = window.tablePaginators && window.tablePaginators['tableKategori'];
+        if (p) p.reinit();
+    } else if (tabId === 'rak') {
+        renderTableRak();
+        const p = window.tablePaginators && window.tablePaginators['tableRak'];
+        if (p) p.reinit();
+    } else if (tabId === 'log-aktivitas') {
+        renderTableLogAktivitas();
+        const p = window.tablePaginators && window.tablePaginators['tableLogAktivitas'];
+        if (p) p.reinit();
+    } else if (tabId === 'dashboard') {
+        if (typeof initInventoryChart === 'function') initInventoryChart();
+        if (typeof renderRecentLogMasukKeluar === 'function') renderRecentLogMasukKeluar();
+        if (typeof renderDashboardRecentPeminjaman === 'function') renderDashboardRecentPeminjaman();
+    }
+}
+
 function renderAllTableBodies() {
-    renderTablePengguna();
-    renderTableJurusan();
-    renderTableKategori();
-    renderTableRak();
-    renderTableBarang();
-    renderTableBarangMasuk();
-    renderTableBarangKeluar();
-    renderTablePeminjaman();
-    renderTableLogPeminjaman();
-    renderTableLogAktivitas();
+    const currentTab = (new URLSearchParams(window.location.search).get('tab') || 'dashboard');
+    renderActiveTabTable(currentTab);
+    if (typeof renderRecentLogMasukKeluar === 'function') renderRecentLogMasukKeluar();
+    if (typeof renderDashboardRecentPeminjaman === 'function') renderDashboardRecentPeminjaman();
 }
 
 let isFetchingFreshData = false;
+let freshDataDebounceTimer = null;
+
 async function fetchFreshDataAndRefreshUI(tabId = null) {
     if (isFetchingFreshData) return;
     isFetchingFreshData = true;
@@ -3138,6 +4445,8 @@ async function fetchFreshDataAndRefreshUI(tabId = null) {
         if (data && data.success) {
             window.dbJurusan = data.dbJurusan || [];
             window.dbPengguna = data.dbPengguna || [];
+            window.dbGuru = data.dbGuru || window.dbGuru || [];
+            window.dbSiswa = data.dbSiswa || window.dbSiswa || [];
             window.dbKategori = data.dbKategori || [];
             window.dbRak = data.dbRak || [];
             window.dbBarang = data.dbBarang || [];
@@ -3147,21 +4456,9 @@ async function fetchFreshDataAndRefreshUI(tabId = null) {
             window.dbLogAktivitas = data.dbLogAktivitas || [];
 
             updateStatCardsData();
-            renderAllTableBodies();
-
-            if (window.tablePaginators) {
-                Object.keys(window.tablePaginators).forEach(id => {
-                    if (window.tablePaginators[id] && typeof window.tablePaginators[id].reinit === 'function') {
-                        window.tablePaginators[id].reinit();
-                    }
-                });
-            }
-
             const currentTab = tabId || (new URLSearchParams(window.location.search).get('tab') || 'dashboard');
-            if (currentTab === 'dashboard') {
-                initInventoryChart();
-            }
-            initTabAnalytics(currentTab);
+            renderActiveTabTable(currentTab);
+            if (typeof initTabAnalytics === 'function') initTabAnalytics(currentTab);
         }
     } catch (err) {
         console.error('Error fetching fresh data on navbar tab switch:', err);
@@ -3171,6 +4468,7 @@ async function fetchFreshDataAndRefreshUI(tabId = null) {
 }
 
 function switchTab(tabId) {
+    if (!tabId) tabId = 'dashboard';
     setUrlParam('tab', tabId);
     if (typeof clearBatchSelection === 'function') clearBatchSelection();
 
@@ -3207,8 +4505,14 @@ function switchTab(tabId) {
         setTimeout(initSwaggerUi, 100);
     }
 
-    // Always fetch fresh data from database when navbar tab switches
-    fetchFreshDataAndRefreshUI(tabId);
+    // Render immediately from in-memory data
+    renderActiveTabTable(tabId);
+
+    // Debounce background sync so rapid navigation does not block browser
+    clearTimeout(freshDataDebounceTimer);
+    freshDataDebounceTimer = setTimeout(() => {
+        fetchFreshDataAndRefreshUI(tabId);
+    }, 500);
 }
 
 let swaggerUiInitialized = false;
@@ -3253,12 +4557,12 @@ class TablePaginationManager {
     reinit() {
         this.tbody = this.table.querySelector('tbody');
         if (!this.tbody) return;
-        this.allRows = Array.from(this.tbody.querySelectorAll('tr'));
+        this.allRows = Array.from(this.tbody.querySelectorAll('tr:not(.empty-filter-row)'));
         this.update();
     }
 
     renderControls() {
-        if (this.table.id !== 'tableLogAktivitas') {
+        if (this.table.id !== 'tableLogAktivitas' && this.table.id !== 'tableBarang') {
             const cardHeader = this.table.closest('[class*="bg-white"]')?.querySelector('.flex.items-center.justify-between');
             if (cardHeader && !cardHeader.querySelector('.table-search-input')) {
                 const thList = Array.from(this.table.querySelectorAll('thead th'));
@@ -3319,17 +4623,22 @@ class TablePaginationManager {
         const overflowDiv = this.table.closest('.overflow-x-auto');
         if (overflowDiv && !overflowDiv.parentNode.querySelector(`.pagination-footer-${this.table.id}`)) {
             const footer = document.createElement('div');
-            footer.className = `pagination-footer-${this.table.id} mt-4 flex items-center justify-between text-xs text-slate-500 pt-3 border-t border-slate-100 flex-wrap gap-3`;
+            footer.className = `pagination-footer-${this.table.id} mt-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-slate-800 gap-3`;
             footer.innerHTML = `
-                <div class="flex items-center gap-2">
-                    <span class="font-medium info-text">Menampilkan 0 data</span>
-                    <select class="page-size-select bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-xs font-semibold text-slate-700 focus:outline-none">
-                        <option value="5" ${this.pageSize === 5 ? 'selected' : ''}>5 per hal</option>
-                        <option value="10" ${this.pageSize === 10 ? 'selected' : ''}>10 per hal</option>
-                        <option value="25" ${this.pageSize === 25 ? 'selected' : ''}>25 per hal</option>
-                    </select>
+                <div class="flex items-center gap-2.5">
+                    <span class="font-medium info-text text-slate-600 dark:text-slate-300">Menampilkan 0 data</span>
+                    <div class="flex items-center gap-1.5 ml-2">
+                        <span class="text-[11px] text-slate-400">Tampilkan:</span>
+                        <select class="page-size-select bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-sage-600 cursor-pointer">
+                            <option value="5" ${this.pageSize === 5 ? 'selected' : ''}>5 / hal</option>
+                            <option value="10" ${this.pageSize === 10 ? 'selected' : ''}>10 / hal</option>
+                            <option value="25" ${this.pageSize === 25 ? 'selected' : ''}>25 / hal</option>
+                            <option value="50" ${this.pageSize === 50 ? 'selected' : ''}>50 / hal</option>
+                            <option value="100" ${this.pageSize === 100 ? 'selected' : ''}>100 / hal</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="flex items-center gap-1.5 pagination-btns"></div>
+                <div class="flex items-center gap-1 pagination-btns flex-wrap justify-center"></div>
             `;
 
             footer.querySelector('.page-size-select').addEventListener('change', (e) => {
@@ -3378,6 +4687,35 @@ class TablePaginationManager {
                 if (!rowPengguna.includes(this.customNameFilter)) return false;
             }
 
+            // Custom Filters for tableBarang
+            if (this.customJenisFilter) {
+                const rowJenis = (row.getAttribute('data-jenis') || '').toLowerCase();
+                if (rowJenis !== this.customJenisFilter) return false;
+            }
+
+            if (this.customKategoriFilter) {
+                const rowKategori = row.getAttribute('data-kategori-id') || '';
+                if (this.customKategoriFilter === '__none__') {
+                    if (rowKategori !== '' && rowKategori !== '0' && rowKategori !== 'null') return false;
+                } else if (String(rowKategori) !== String(this.customKategoriFilter)) {
+                    return false;
+                }
+            }
+
+            if (this.customRakFilter) {
+                const rowRak = row.getAttribute('data-rak-id') || '';
+                if (this.customRakFilter === '__none__') {
+                    if (rowRak !== '' && rowRak !== '0' && rowRak !== 'null') return false;
+                } else if (String(rowRak) !== String(this.customRakFilter)) {
+                    return false;
+                }
+            }
+
+            if (this.customBarangJurusanFilter) {
+                const rowJur = row.getAttribute('data-jurusan-id') || '';
+                if (String(rowJur) !== String(this.customBarangJurusanFilter)) return false;
+            }
+
             if (!this.searchQuery) return true;
             return row.innerText.toLowerCase().includes(this.searchQuery);
         });
@@ -3388,6 +4726,7 @@ class TablePaginationManager {
         const totalPages = Math.ceil(totalFiltered / this.pageSize) || 1;
 
         if (this.currentPage > totalPages) this.currentPage = totalPages;
+        if (this.currentPage < 1) this.currentPage = 1;
 
         const startIdx = (this.currentPage - 1) * this.pageSize;
         const endIdx = Math.min(startIdx + this.pageSize, totalFiltered);
@@ -3402,44 +4741,101 @@ class TablePaginationManager {
             }
         }
 
+        let emptyRow = this.tbody.querySelector('.empty-filter-row');
+        if (totalFiltered === 0) {
+            if (!emptyRow) {
+                const cols = this.table.querySelectorAll('thead th').length || 10;
+                emptyRow = document.createElement('tr');
+                emptyRow.className = 'empty-filter-row';
+                emptyRow.innerHTML = `<td colspan="${cols}" class="py-8 text-center text-slate-400 font-semibold">Tidak ada data alat & bahan yang cocok dengan filter atau pencarian.</td>`;
+                this.tbody.appendChild(emptyRow);
+            } else {
+                emptyRow.style.display = '';
+            }
+        } else if (emptyRow) {
+            emptyRow.style.display = 'none';
+        }
+
         if (this.footer) {
             const infoText = this.footer.querySelector('.info-text');
             if (infoText) {
                 if (totalFiltered === 0) {
-                    infoText.innerText = 'Data tidak ditemukan';
+                    infoText.innerHTML = 'Data tidak ditemukan';
                 } else {
-                    infoText.innerText = `Menampilkan ${startIdx + 1} - ${endIdx} dari ${totalFiltered} data`;
+                    infoText.innerHTML = `Menampilkan <strong class="text-slate-800 dark:text-white">${startIdx + 1} - ${endIdx}</strong> dari <strong class="text-slate-800 dark:text-white">${totalFiltered.toLocaleString('id-ID')}</strong> data (Hal <strong class="text-slate-800 dark:text-white">${this.currentPage}</strong> / ${totalPages})`;
                 }
             }
 
             const btnsContainer = this.footer.querySelector('.pagination-btns');
             if (btnsContainer) {
                 btnsContainer.innerHTML = '';
+                if (totalPages <= 1) {
+                    // Only 1 page or none, no buttons needed
+                } else {
+                    const createBtn = (page, label = null, isActive = false, isDisabled = false) => {
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.innerText = label || page;
+                        btn.disabled = isDisabled;
 
-                const prevBtn = document.createElement('button');
-                prevBtn.type = 'button';
-                prevBtn.className = `px-2.5 py-1 rounded-lg border text-xs font-bold transition-colors ${this.currentPage > 1 ? 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50' : 'bg-slate-50 border-slate-100 text-slate-300 cursor-not-allowed'}`;
-                prevBtn.innerText = '« Prev';
-                prevBtn.disabled = this.currentPage <= 1;
-                prevBtn.onclick = () => { if (this.currentPage > 1) { this.currentPage--; this.update(); } };
-                btnsContainer.appendChild(prevBtn);
+                        if (isActive) {
+                            btn.className = 'px-2.5 py-1 rounded-lg bg-sage-600 text-white font-bold text-xs shadow-sm';
+                        } else if (isDisabled) {
+                            btn.className = 'px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-300 dark:text-slate-600 opacity-40 cursor-not-allowed';
+                        } else {
+                            btn.className = 'px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-sage-100 dark:hover:bg-slate-800 transition-colors cursor-pointer';
+                            btn.onclick = () => {
+                                this.currentPage = page;
+                                this.update();
+                            };
+                        }
+                        return btn;
+                    };
 
-                for (let p = 1; p <= totalPages; p++) {
-                    const pageBtn = document.createElement('button');
-                    pageBtn.type = 'button';
-                    pageBtn.className = `px-2.5 py-1 rounded-lg text-xs font-bold transition-colors ${p === this.currentPage ? 'bg-sage-600 text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`;
-                    pageBtn.innerText = p;
-                    pageBtn.onclick = () => { this.currentPage = p; this.update(); };
-                    btnsContainer.appendChild(pageBtn);
+                    const createEllipsis = () => {
+                        const span = document.createElement('span');
+                        span.className = 'px-1 text-slate-400 dark:text-slate-500 font-bold select-none text-xs';
+                        span.innerText = '...';
+                        return span;
+                    };
+
+                    // Previous Button
+                    btnsContainer.appendChild(createBtn(this.currentPage - 1, '« Prev', false, this.currentPage <= 1));
+
+                    // Smart windowing: 1 ... 100
+                    if (totalPages <= 7) {
+                        for (let p = 1; p <= totalPages; p++) {
+                            btnsContainer.appendChild(createBtn(p, null, p === this.currentPage));
+                        }
+                    } else {
+                        // Always show Page 1
+                        btnsContainer.appendChild(createBtn(1, null, this.currentPage === 1));
+
+                        if (this.currentPage <= 4) {
+                            for (let p = 2; p <= 5; p++) {
+                                btnsContainer.appendChild(createBtn(p, null, p === this.currentPage));
+                            }
+                            btnsContainer.appendChild(createEllipsis());
+                        } else if (this.currentPage >= totalPages - 3) {
+                            btnsContainer.appendChild(createEllipsis());
+                            for (let p = totalPages - 4; p <= totalPages - 1; p++) {
+                                btnsContainer.appendChild(createBtn(p, null, p === this.currentPage));
+                            }
+                        } else {
+                            btnsContainer.appendChild(createEllipsis());
+                            for (let p = this.currentPage - 1; p <= this.currentPage + 1; p++) {
+                                btnsContainer.appendChild(createBtn(p, null, p === this.currentPage));
+                            }
+                            btnsContainer.appendChild(createEllipsis());
+                        }
+
+                        // Always show last page
+                        btnsContainer.appendChild(createBtn(totalPages, null, this.currentPage === totalPages));
+                    }
+
+                    // Next Button
+                    btnsContainer.appendChild(createBtn(this.currentPage + 1, 'Next »', false, this.currentPage >= totalPages));
                 }
-
-                const nextBtn = document.createElement('button');
-                nextBtn.type = 'button';
-                nextBtn.className = `px-2.5 py-1 rounded-lg border text-xs font-bold transition-colors ${this.currentPage < totalPages ? 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50' : 'bg-slate-50 border-slate-100 text-slate-300 cursor-not-allowed'}`;
-                nextBtn.innerText = 'Next »';
-                nextBtn.disabled = this.currentPage >= totalPages;
-                nextBtn.onclick = () => { if (this.currentPage < totalPages) { this.currentPage++; this.update(); } };
-                btnsContainer.appendChild(nextBtn);
             }
         }
         if (typeof updateBatchDeleteBar === 'function') {
@@ -3500,10 +4896,96 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Inisialisasi Pagination dan Live Search untuk seluruh tabel
     window.tablePaginators = window.tablePaginators || {};
-    ['tablePengguna', 'tableJurusan', 'tableKategori', 'tableRak', 'tableBarang', 'tableBarangMasuk', 'tableBarangKeluar', 'tablePeminjaman', 'tableLogPeminjaman', 'tableLogAktivitas'].forEach(id => {
-        window.tablePaginators[id] = new TablePaginationManager(id, 5);
+    ['tableJurusan', 'tableKategori', 'tableRak', 'tableBarang', 'tableBarangMasuk', 'tableBarangKeluar', 'tablePeminjaman', 'tableLogPeminjaman', 'tableLogAktivitas'].forEach(id => {
+        const defaultSize = (id === 'tableBarang') ? 10 : 5;
+        window.tablePaginators[id] = new TablePaginationManager(id, defaultSize);
     });
+
+    filterTableBarang();
+    filterTableLogAktivitas();
 });
+
+let searchBarangDebounceTimer = null;
+function debouncedFilterTableBarang() {
+    clearTimeout(searchBarangDebounceTimer);
+    searchBarangDebounceTimer = setTimeout(filterTableBarang, 150);
+}
+
+function filterTableBarang() {
+    const paginator = window.tablePaginators && window.tablePaginators['tableBarang'];
+    if (!paginator) return;
+
+    paginator.customJenisFilter = (document.getElementById('filter_barang_jenis')?.value || '').toLowerCase().trim();
+    paginator.customKategoriFilter = (document.getElementById('filter_barang_kategori')?.value || '').trim();
+    paginator.customRakFilter = (document.getElementById('filter_barang_rak')?.value || '').trim();
+    paginator.customBarangJurusanFilter = (document.getElementById('filter_barang_jurusan')?.value || '').trim();
+    paginator.searchQuery = (document.getElementById('filter_barang_search')?.value || '').toLowerCase().trim();
+
+    paginator.currentPage = 1;
+    paginator.update();
+}
+
+function resetBarangFilters() {
+    const elSearch = document.getElementById('filter_barang_search');
+    const elJenis = document.getElementById('filter_barang_jenis');
+    const elKat = document.getElementById('filter_barang_kategori');
+    const elRak = document.getElementById('filter_barang_rak');
+    const elJur = document.getElementById('filter_barang_jurusan');
+
+    if (elSearch) elSearch.value = '';
+    if (elJenis) elJenis.value = '';
+    if (elKat) elKat.value = '';
+    if (elRak) elRak.value = '';
+    if (elJur) elJur.value = '';
+
+    filterTableBarang();
+}
+
+function refreshBarangFilterDropdowns() {
+    const selKat = document.getElementById('filter_barang_kategori');
+    const jurVal = document.getElementById('filter_barang_jurusan')?.value || '';
+
+    if (selKat && window.dbKategori) {
+        const curVal = selKat.value;
+        let filteredKat = window.dbKategori;
+        if (jurVal) {
+            filteredKat = filteredKat.filter(k => String(k.jurusan_id) === String(jurVal));
+        }
+        let katHtml = '<option value="">Semua Kategori</option>';
+        filteredKat.forEach(k => {
+            katHtml += `<option value="${k.id}">${escapeHtml(k.nama_kategori)}</option>`;
+        });
+        katHtml += '<option value="__none__">Tanpa Kategori</option>';
+        selKat.innerHTML = katHtml;
+        selKat.value = curVal || '';
+    }
+
+    const selRak = document.getElementById('filter_barang_rak');
+    if (selRak && window.dbRak) {
+        const curVal = selRak.value;
+        let filteredRak = window.dbRak;
+        if (jurVal) {
+            filteredRak = filteredRak.filter(r => String(r.jurusan_id) === String(jurVal));
+        }
+        let rakHtml = '<option value="">Semua Rak</option>';
+        filteredRak.forEach(r => {
+            const extra = r.kategori_rak ? ` (${r.kategori_rak})` : '';
+            rakHtml += `<option value="${r.id}">${escapeHtml(r.nama_rak + extra)}</option>`;
+        });
+        rakHtml += '<option value="__none__">Tanpa Rak</option>';
+        selRak.innerHTML = rakHtml;
+        selRak.value = curVal || '';
+    }
+}
+
+function onBarangJurusanFilterChange() {
+    refreshBarangFilterDropdowns();
+    const selKat = document.getElementById('filter_barang_kategori');
+    const selRak = document.getElementById('filter_barang_rak');
+    if (selKat) selKat.value = '';
+    if (selRak) selRak.value = '';
+    filterTableBarang();
+}
 
 function filterTableLogAktivitas() {
     const paginator = window.tablePaginators && window.tablePaginators['tableLogAktivitas'];

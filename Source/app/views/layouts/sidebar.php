@@ -19,6 +19,8 @@ if ($roleName === 'admin_sekolah') {
     $peranText = 'Admin Jurusan (' . $brandShort . ')';
 } elseif ($roleName === 'petugas') {
     $peranText = 'Petugas Gudang';
+} elseif ($roleName === 'guru_umum') {
+    $peranText = 'Guru Umum';
 } else {
     $peranText = 'Siswa';
 }
@@ -27,18 +29,18 @@ if ($roleName === 'admin_sekolah') {
 <div id="sidebarBackdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-30 hidden lg:hidden transition-opacity duration-300 opacity-0 pointer-events-none"></div>
 
 <!-- Sidebar Navigation - Collapsible & Responsive Mobile Drawer -->
-<aside id="mainSidebar" class="w-[270px] bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 h-full flex flex-col flex-shrink-0 border-r border-sage-200 shadow-xl lg:shadow-sm z-40 transition-all duration-300 fixed lg:static inset-y-0 left-0 -translate-x-full lg:translate-x-0">
+<aside id="mainSidebar" class="w-[270px] bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 h-full flex flex-col flex-shrink-0 border-r border-sage-200 shadow-xl lg:shadow-sm z-40 transition-all duration-300 fixed lg:static inset-y-0 left-0 -translate-x-full lg:translate-x-0 overflow-x-hidden">
     
     <!-- Brand Logo Area & Toggle Button -->
-    <div class="p-4 border-b border-sage-100 dark:border-slate-800 flex items-center justify-between gap-2 flex-shrink-0 h-16">
+    <div class="p-4 border-b border-sage-100 dark:border-slate-800 flex items-center justify-between gap-2 flex-shrink-0 h-16 overflow-hidden">
         <!-- Expanded Logo View -->
         <div class="brand-header-full flex items-center gap-3 overflow-hidden">
-            <div class="w-9 h-9 rounded-xl overflow-hidden shadow-md shadow-sage-600/20 shrink-0 bg-sage-600 flex items-center justify-center">
-                <img src="assets/img/belmoti.svg" alt="Belmoti Logo" class="w-full h-full object-contain p-0.5" onerror="this.style.display='none'" loading="lazy" decoding="async">
+            <div class="w-9 h-9 rounded-xl overflow-hidden shadow-md shrink-0 flex items-center justify-center transition-all duration-300" style="background: linear-gradient(135deg, <?= $activeThemePalette['600'] ?? '#eab308'; ?>, <?= $activeThemePalette['700'] ?? '#ca8a04'; ?>); box-shadow: 0 4px 14px 0 rgba(<?= implode(',', sscanf($activeThemePalette['600'] ?? '#eab308', "#%02x%02x%02x")); ?>, 0.35);">
+                <img src="assets/img/belmoti.svg" alt="Belmoti Logo" class="w-6 h-6 object-contain p-0.5 filter drop-shadow-sm" onerror="this.style.display='none'" loading="lazy" decoding="async">
             </div>
             <div class="sidebar-text truncate">
                 <h1 class="text-sm font-extrabold text-slate-800 dark:text-white tracking-wide truncate">Gudang <?= htmlspecialchars($brandShort); ?></h1>
-                <p class="text-[11px] text-sage-600 dark:text-sage-400 font-medium truncate">Sistem Inventaris</p>
+                <p class="text-[11px] font-medium truncate" style="color: <?= $activeThemePalette['600'] ?? '#eab308'; ?>;">Sistem Inventaris</p>
             </div>
         </div>
 
@@ -57,7 +59,7 @@ if ($roleName === 'admin_sekolah') {
     </div>
 
     <!-- Navigation Menu Scrollable -->
-    <nav class="flex-1 p-3 space-y-1.5 overflow-y-auto text-sm" id="sidebarNav">
+    <nav class="flex-1 p-3 space-y-1.5 overflow-y-auto overflow-x-hidden text-sm" id="sidebarNav">
         
         <div class="sidebar-section-label px-3 pb-1 pt-2 text-[10px] font-bold text-sage-600 uppercase tracking-wider">Main Menu</div>
 
@@ -81,6 +83,18 @@ if ($roleName === 'admin_sekolah') {
             <span class="sidebar-icon-mask w-5 h-5 shrink-0 transition-all inline-block" style="-webkit-mask-image: url('assets/img/icon-pengguna.svg'); mask-image: url('assets/img/icon-pengguna.svg'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></span>
             <span class="sidebar-text whitespace-nowrap text-left leading-none">Data Pengguna</span>
         </button>
+
+        <!-- Data Guru (Admin Sekolah & Admin Jurusan) -->
+        <button type="button" data-tab="guru" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Data Guru">
+            <svg class="w-5 h-5 shrink-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+            <span class="sidebar-text whitespace-nowrap text-left leading-none">Data Guru</span>
+        </button>
+
+        <!-- Data Siswa (Admin Sekolah & Admin Jurusan) -->
+        <button type="button" data-tab="siswa" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Data Siswa">
+            <svg class="w-5 h-5 shrink-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            <span class="sidebar-text whitespace-nowrap text-left leading-none">Data Siswa</span>
+        </button>
         <?php endif; ?>
 
         <!-- Data Kategori (Admin Sekolah, Admin Jurusan, Petugas) -->
@@ -100,24 +114,24 @@ if ($roleName === 'admin_sekolah') {
         <?php endif; ?>
 
         <!-- Master Barang & Barcode (Semua Peran) -->
-        <button type="button" data-tab="barang" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Barang">
+        <button type="button" data-tab="barang" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Alat & Bahan">
             <span class="sidebar-icon-mask w-5 h-5 shrink-0 transition-all inline-block" style="-webkit-mask-image: url('assets/img/icon-barang.svg'); mask-image: url('assets/img/icon-barang.svg'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></span>
-            <span class="sidebar-text whitespace-nowrap text-left leading-none">Data Barang</span>
+            <span class="sidebar-text whitespace-nowrap text-left leading-none">Alat & Bahan</span>
         </button>
 
         <div class="sidebar-section-label px-3 pb-1 pt-3 text-[10px] font-bold text-sage-600 uppercase tracking-wider">Transaksi & Operasional</div>
 
         <!-- Barang Masuk (Admin Sekolah, Admin Jurusan, Petugas) -->
         <?php if (in_array($roleName, ['admin_sekolah', 'admin_jurusan', 'petugas'])): ?>
-        <button type="button" data-tab="barang-masuk" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Barang Masuk">
+        <button type="button" data-tab="barang-masuk" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Alat & Bahan Masuk">
             <span class="sidebar-icon-mask w-5 h-5 shrink-0 transition-all inline-block" style="-webkit-mask-image: url('assets/img/icon-masuk.svg'); mask-image: url('assets/img/icon-masuk.svg'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></span>
-            <span class="sidebar-text whitespace-nowrap text-left leading-none">Barang Masuk</span>
+            <span class="sidebar-text whitespace-nowrap text-left leading-none">Alat & Bahan Masuk</span>
         </button>
 
         <!-- Barang Keluar (Admin Sekolah, Admin Jurusan, Petugas) -->
-        <button type="button" data-tab="barang-keluar" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Barang Keluar">
+        <button type="button" data-tab="barang-keluar" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Bahan Keluar">
             <span class="sidebar-icon-mask w-5 h-5 shrink-0 transition-all inline-block" style="-webkit-mask-image: url('assets/img/icon-keluar.svg'); mask-image: url('assets/img/icon-keluar.svg'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></span>
-            <span class="sidebar-text whitespace-nowrap text-left leading-none">Barang Keluar</span>
+            <span class="sidebar-text whitespace-nowrap text-left leading-none">Bahan Keluar</span>
         </button>
         <?php endif; ?>
 
@@ -175,8 +189,8 @@ if ($roleName === 'admin_sekolah') {
                     <?php endif; ?>
                 </div>
                 <div class="sidebar-text truncate flex flex-col justify-center">
-                    <p class="text-xs font-extrabold text-slate-800 truncate leading-tight"><?= htmlspecialchars($user['nama_lengkap'] ?? $user['nama_pengguna'] ?? 'User'); ?></p>
-                    <p class="text-[11px] font-bold text-sage-700 capitalize leading-tight mt-0.5"><?= htmlspecialchars($peranText); ?></p>
+                    <p class="sidebar-user-name text-xs font-extrabold text-slate-900 dark:text-white truncate leading-tight"><?= htmlspecialchars($user['nama_lengkap'] ?? $user['nama_pengguna'] ?? 'User'); ?></p>
+                    <p class="sidebar-user-role text-[11px] font-bold text-sage-700 capitalize leading-tight mt-0.5"><?= htmlspecialchars($peranText); ?></p>
                 </div>
             </div>
             <div class="flex items-center gap-1 shrink-0">
@@ -227,7 +241,13 @@ html:not(.dark) .nav-tab-btn.active svg {
 html:not(.dark) .sidebar-section-label {
     color: <?= $activeThemePalette['700'] ?? '#15803d'; ?> !important;
 }
-html:not(.dark) #mainSidebar .sidebar-text p {
+html:not(.dark) #mainSidebar .sidebar-user-name {
+    color: #0f172a !important;
+}
+html.dark #mainSidebar .sidebar-user-name {
+    color: #f8fafc !important;
+}
+html:not(.dark) #mainSidebar .sidebar-user-role {
     color: <?= $activeThemePalette['600'] ?? '#2e7d32'; ?> !important;
 }
 
@@ -252,6 +272,7 @@ html.dark .nav-tab-btn.active .sidebar-icon-mask {
 /* Collapsed Mini Sidebar Styles (76px mode) */
 #mainSidebar.collapsed {
     width: 76px !important;
+    overflow-x: hidden !important;
 }
 #mainSidebar.collapsed .sidebar-text,
 #mainSidebar.collapsed .sidebar-section-label,
@@ -268,6 +289,27 @@ html.dark .nav-tab-btn.active .sidebar-icon-mask {
 }
 #mainSidebar.collapsed #toggleIcon {
     transform: rotate(180deg);
+}
+
+/* Hide horizontal scrollbar completely and stylize slim vertical scrollbar */
+#sidebarNav {
+    overflow-x: hidden !important;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.25) transparent;
+}
+#sidebarNav::-webkit-scrollbar {
+    width: 4px;
+    height: 0px !important;
+}
+#sidebarNav::-webkit-scrollbar-track {
+    background: transparent;
+}
+#sidebarNav::-webkit-scrollbar-thumb {
+    background-color: rgba(148, 163, 184, 0.25);
+    border-radius: 9999px;
+}
+#sidebarNav::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(148, 163, 184, 0.5);
 }
 </style>
 

@@ -37,6 +37,9 @@ class AuthController {
             $password === 'admin123'
         );
         if ($isValidPass) {
+            if (($user['peran'] ?? '') === 'siswa' || ($user['status_pengguna'] ?? '') === 'siswa') {
+                return ['success' => false, 'message' => 'Akses login untuk akun siswa sedang dinonaktifkan sementara.'];
+            }
             session_regenerate_id(true);
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user'] = [
@@ -61,7 +64,8 @@ class AuthController {
                 ]
             ];
         }
-        return ['success' => false, 'message' => 'Nama pengguna atau kata sandi salah.'];
+
+        return ['success' => false, 'message' => 'Nama pengguna atau kata sandi tidak valid.'];
     }
 
     /**
@@ -89,40 +93,80 @@ class AuthController {
                     $password = $_POST['password'] ?? '';
 
                     if (empty($nama_pengguna) || empty($password)) {
-                        $error = 'Harap isi Nama Pengguna dan Kata Sandi.';
+                        $error = 'Harap isi Nama Pengguna / Token dan Kata Sandi.';
                     } else {
-                        $user = $this->penggunaModel->findByUsernameOrEmail($nama_pengguna);
-                        $isValidPass = $user && (
-                            password_verify($password, $user['kata_sandi_hash']) || 
-                            $password === 'admin' || 
-                            $password === 'admin123' ||
-                            ($user['nama_pengguna'] === 'admin' && ($password === 'admin' || $password === 'admin123'))
-                        );
+                        require_once __DIR__ . '/../models/Siswa.php';
+                        require_once __DIR__ . '/../models/Guru.php';
+
+                        $user = $this->penggunaModel->findByUsernameOrEmail($nama_pengguna) 
+                             ?: $this->penggunaModel->findByUsernameOrEmail($password);
+
+                        // If not found in pengguna, check if student or teacher token matches
+                        $guruByToken = Guru::findByToken($password) ?: Guru::findByToken($nama_pengguna);
+                        $siswaByToken = Siswa::findByToken($password) ?: Siswa::findByToken($nama_pengguna);
+
+                        $isValidPass = false;
+                        if ($user) {
+                            $isValidPass = (
+                                password_verify($password, $user['kata_sandi_hash']) || 
+                                $password === 'admin' || 
+                                $password === 'admin123' ||
+                                (!empty($user['token']) && ($nama_pengguna === $user['token'] || $password === $user['token']))
+                            );
+                        } else if ($guruByToken) {
+                            $user = [
+                                'id' => $guruByToken['id'],
+                                'jurusan_id' => $guruByToken['jurusan_id'] ?? null,
+                                'nama_pengguna' => strtolower(preg_replace('/[^a-z0-9]/', '', $guruByToken['nama_guru'])),
+                                'nama_lengkap' => $guruByToken['nama_guru'],
+                                'email' => '',
+                                'peran' => (($guruByToken['mengajar'] ?? '') === 'bengkel') ? 'admin_jurusan' : 'guru_umum',
+                                'status_pengguna' => 'guru'
+                            ];
+                            $isValidPass = true;
+                        } else if ($siswaByToken) {
+                            $user = [
+                                'id' => $siswaByToken['id'],
+                                'jurusan_id' => $siswaByToken['jurusan_id'] ?? null,
+                                'nama_pengguna' => strtolower(str_replace(' ', '', $siswaByToken['nama_siswa'])),
+                                'nama_lengkap' => $siswaByToken['nama_siswa'],
+                                'email' => '',
+                                'peran' => 'siswa',
+                                'status_pengguna' => 'siswa'
+                            ];
+                            $isValidPass = true;
+                        }
 
                         if ($isValidPass) {
-                            // Session Fixation Protection
-                            session_regenerate_id(true);
+                            if (($user['peran'] ?? '') === 'siswa' || ($user['status_pengguna'] ?? '') === 'siswa') {
+                                $this->recordFailedAttempt();
+                                $error = 'Akses login untuk akun siswa sedang dinonaktifkan untuk sementara waktu.';
+                            } else {
+                                // Session Fixation Protection
+                                session_regenerate_id(true);
 
-                            $_SESSION['user_id'] = $user['id'];
-                            $_SESSION['user'] = [
-                                'id' => $user['id'],
-                                'jurusan_id' => $user['jurusan_id'] ?? null,
-                                'nama_pengguna' => $user['nama_pengguna'],
-                                'nama_lengkap' => $user['nama_lengkap'],
-                                'email' => $user['email'],
-                                'peran' => $user['peran']
-                            ];
-                            $this->resetRateLimit();
+                                $_SESSION['user_id'] = $user['id'];
+                                $_SESSION['user'] = [
+                                    'id' => $user['id'],
+                                    'jurusan_id' => $user['jurusan_id'] ?? null,
+                                    'nama_pengguna' => $user['nama_pengguna'],
+                                    'nama_lengkap' => $user['nama_lengkap'],
+                                    'email' => $user['email'] ?? '',
+                                    'peran' => $user['peran'] ?? 'siswa',
+                                    'status_pengguna' => $user['status_pengguna'] ?? 'tidak_ada'
+                                ];
+                                $this->resetRateLimit();
 
-                            LogAktivitas::log('LOGIN', 'User ' . $user['nama_pengguna'] . ' (' . ($user['nama_lengkap'] ?? $user['nama_pengguna']) . ') berhasil login masuk ke sistem', $user['jurusan_id'] ?? null);
-                            setFlash('success', 'Selamat datang kembali, ' . ($user['nama_lengkap'] ?? $user['nama_pengguna']) . '! Login berhasil.');
+                                LogAktivitas::log('LOGIN', 'User ' . $user['nama_pengguna'] . ' (' . ($user['nama_lengkap'] ?? $user['nama_pengguna']) . ') berhasil login masuk ke sistem', $user['jurusan_id'] ?? null);
+                                setFlash('success', 'Selamat datang kembali, ' . ($user['nama_lengkap'] ?? $user['nama_pengguna']) . '! Login berhasil.');
 
-                            header('Location: dashboard.php');
-                            exit;
-                        } else {
-                            $this->recordFailedAttempt();
-                            $error = 'Nama pengguna atau kata sandi tidak valid.';
+                                header('Location: dashboard.php');
+                                exit;
+                            }
                         }
+
+                        $this->recordFailedAttempt();
+                        $error = 'Nama pengguna, kata sandi, atau Token tidak valid.';
                     }
                 }
             }

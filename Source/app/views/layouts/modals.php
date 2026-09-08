@@ -41,52 +41,92 @@
 </div>
 
 <!-- 1. MODAL DATA PENGGUNA (TAMBAH / EDIT) -->
-<div id="modalPengguna" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/40 backdrop-blur-sm animate-fade-in-up">
-    <div class="bg-white rounded-3xl border border-sage-200 shadow-2xl w-full max-w-lg overflow-hidden">
-        <div class="p-6 bg-sage-50/80 border-b border-sage-100 flex items-center justify-between">
+<!-- 1. MODAL DATA PENGGUNA (TAMBAH / EDIT) -->
+<div id="modalPengguna" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-sage-200 dark:border-slate-800 shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+        <div class="p-6 bg-sage-50/80 dark:bg-slate-800/80 border-b border-sage-100 dark:border-slate-700 flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                 </div>
-                <h3 class="text-base font-bold text-slate-800" id="modalPenggunaTitle">Tambah Data Pengguna</h3>
+                <h3 class="text-base font-bold text-slate-800 dark:text-white" id="modalPenggunaTitle">Tambah Data Pengguna</h3>
             </div>
             <button onclick="closeModal('modalPengguna')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
-        <form onsubmit="handleFormSubmit(event, 'Pengguna')" class="p-6 space-y-4 text-xs">
+        <form onsubmit="handleFormSubmit(event, 'Pengguna')" class="p-6 space-y-4 text-xs overflow-y-auto flex-1">
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
             <input type="hidden" id="pengguna_edit_id" value="">
+            
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Nama Pengguna (Username) <span class="text-red-500">*</span></label>
-                <input type="text" id="pengguna_nama_pengguna" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: siswa_budi">
+                <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Status Pengguna (Profil Profesi)</label>
+                <select id="pengguna_status_pengguna" onchange="handleStatusPenggunaChange(this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
+                    <option value="tidak_ada">-- Tidak Ada --</option>
+                    <option value="guru">Guru</option>
+                    <option value="siswa">Siswa</option>
+                </select>
             </div>
-            <div>
-                <label class="block font-bold text-slate-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
-                <input type="text" id="pengguna_nama_lengkap" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: Budi Prasetyo">
+
+            <!-- DROPDOWN PILIH DATA GURU (Tampil saat status = guru) -->
+            <div id="field_group_pilih_guru" class="hidden">
+                <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Pilih Data Guru</label>
+                <select id="pengguna_guru_id" onchange="onGuruSelectedInUserForm(this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
+                    <option value="">-- Pilih Guru --</option>
+                </select>
             </div>
+
+            <!-- DROPDOWN PILIH DATA SISWA (Tampil saat status = siswa) -->
+            <div id="field_group_pilih_siswa" class="hidden">
+                <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Pilih Data Siswa</label>
+                <select id="pengguna_siswa_id" onchange="onSiswaSelectedInUserForm(this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
+                    <option value="">-- Pilih Siswa --</option>
+                </select>
+            </div>
+
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Email</label>
+                <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Nama Pengguna (Username) <span class="text-red-500">*</span></label>
+                <input type="text" id="pengguna_nama_pengguna" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600" placeholder="contoh: budiprasetyo">
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
+                <input type="text" id="pengguna_nama_lengkap" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600" placeholder="contoh: Budi Prasetyo, S.Pd.">
+            </div>
+
+            <div id="field_group_token_siswa" class="hidden">
+                <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1" id="pengguna_token_label">Token Login (Password)</label>
+                <input type="text" id="pengguna_token" readonly class="w-full px-3.5 py-2.5 bg-sage-100/70 dark:bg-slate-900 border border-sage-200 dark:border-slate-700 rounded-xl font-mono font-bold text-sage-900 dark:text-sage-300 text-sm tracking-widest focus:outline-none cursor-not-allowed select-all" placeholder="ABCDE">
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Email <span class="text-slate-400 font-normal">(Opsional)</span></label>
                 <div class="flex items-center gap-2">
                     <input type="text" id="pengguna_email_prefix" class="w-1/2 px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="nama_email">
                     <span class="text-slate-400 font-bold text-sm">@</span>
                     <input type="text" id="pengguna_email_domain" value="smk2pangkalpinang.sch.id" class="w-1/2 px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="smk2pangkalpinang.sch.id">
                 </div>
             </div>
+
             <div>
                 <label class="block font-bold text-slate-700 mb-1">Nomor Telepon / HP <span class="text-slate-400 font-normal">(Opsional)</span></label>
                 <input type="text" id="pengguna_telepon" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: 081234567890">
             </div>
+
             <div>
                 <label class="block font-bold text-slate-700 mb-1">Jurusan / Departemen</label>
                 <select id="pengguna_jurusan_id" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
-                    <option value="">-- Semua Jurusan (Super Admin) --</option>
+                    <option value="">-- Tidak Ada Jurusan --</option>
                 </select>
             </div>
+
             <div>
                 <label class="block font-bold text-slate-700 mb-1">Peran Akses <span class="text-red-500">*</span></label>
-                <select id="pengguna_peran" required onchange="handlePeranChange(this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+                <select id="pengguna_peran" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
                     <option value="siswa">Siswa</option>
+                    <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
+                        <option value="guru_umum">Guru Umum</option>
+                    <?php endif; ?>
                     <option value="petugas">Petugas Gudang</option>
                     <option value="admin_jurusan">Admin Jurusan</option>
                     <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
@@ -94,10 +134,11 @@
                     <?php endif; ?>
                 </select>
             </div>
-            <div>
-                <label class="block font-bold text-slate-700 mb-1" id="pengguna_password_label">Kata Sandi</label>
+
+            <div id="field_group_password">
+                <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1" id="pengguna_password_label">Kata Sandi</label>
                 <div class="relative flex items-center">
-                    <input type="password" id="pengguna_password" class="w-full px-3.5 py-2.5 pr-10 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="••••••••">
+                    <input type="password" id="pengguna_password" class="w-full px-3.5 py-2.5 pr-10 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600" placeholder="••••••••">
                     <button type="button" onclick="togglePasswordVisibility('pengguna_password', this)" class="absolute right-3 text-slate-400 hover:text-sage-600 transition-colors p-1" title="Tampilkan / Sembunyikan Kata Sandi">
                         <svg class="eyeOpenIcon w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -110,13 +151,183 @@
                 </div>
                 <p class="text-[10px] text-slate-400 mt-1 hidden" id="pengguna_password_hint">*Biarkan kosong jika tidak ingin mengubah kata sandi</p>
             </div>
+
             <div>
                 <label class="block font-bold text-slate-700 mb-1">Foto Profil <span class="text-slate-400 font-normal">(Opsional)</span></label>
                 <input type="file" id="pengguna_foto" accept="image/png, image/jpeg, image/jpg, image/webp" class="w-full px-3.5 py-2 bg-sage-50/50 border border-sage-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-sage-600 file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-sage-600 file:text-white hover:file:bg-sage-700">
             </div>
+
             <div class="pt-3 flex justify-end gap-3 border-t border-sage-100">
                 <button type="button" onclick="closeModal('modalPengguna')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
                 <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Data</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 1.1 MODAL DATA GURU (TAMBAH / EDIT) -->
+<div id="modalGuru" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-sage-200 dark:border-slate-800 shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+        <div class="p-6 bg-sage-50/80 dark:bg-slate-800/80 border-b border-sage-100 dark:border-slate-700 flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/></svg>
+                </div>
+                <h3 class="text-base font-bold text-slate-800 dark:text-white" id="modalGuruTitle">Tambah Data Guru</h3>
+            </div>
+            <button onclick="closeModal('modalGuru')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <form onsubmit="handleFormSubmit(event, 'Guru')" class="p-6 space-y-4 text-xs overflow-y-auto flex-1">
+            <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
+            <input type="hidden" id="guru_edit_id" value="">
+            <input type="hidden" id="guru_token" value="">
+
+            <div>
+                <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Nama Guru <span class="text-red-500">*</span></label>
+                <input type="text" id="guru_nama_guru" required oninput="autoFillGuruUsername(this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600" placeholder="contoh: Pak wahyu">
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Nama Pengguna (Username) <span class="text-red-500">*</span></label>
+                <input type="text" id="guru_nama_pengguna" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600" placeholder="contoh: pakwahyu">
+                <span class="text-[10px] text-slate-400 mt-1 block">*Digunakan untuk login akun (huruf kecil & tanpa spasi)</span>
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Kategori Mengajar <span class="text-red-500">*</span></label>
+                <select id="guru_mengajar" required onchange="handleGuruMengajarChange(this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
+                    <option value="bengkel">Bengkel (Jurusan Spesifik)</option>
+                    <option value="umum">Umum (Tidak Ada Jurusan)</option>
+                </select>
+            </div>
+
+            <div id="group_guru_jurusan">
+                <label class="block font-bold text-slate-700 mb-1">Jurusan / Departemen <span class="text-red-500">*</span></label>
+                <select id="guru_jurusan_id" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+                    <option value="">-- Pilih Jurusan --</option>
+                </select>
+            </div>
+
+            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100">
+                <button type="button" onclick="closeModal('modalGuru')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
+                <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Guru</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 1.2 MODAL DATA SISWA (TAMBAH / EDIT) -->
+<div id="modalSiswa" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-sage-200 dark:border-slate-800 shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+        <div class="p-6 bg-sage-50/80 dark:bg-slate-800/80 border-b border-sage-100 dark:border-slate-700 flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/></svg>
+                </div>
+                <h3 class="text-base font-bold text-slate-800 dark:text-white" id="modalSiswaTitle">Tambah Data Siswa</h3>
+            </div>
+            <button onclick="closeModal('modalSiswa')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <form onsubmit="handleFormSubmit(event, 'Siswa')" class="p-6 space-y-4 text-xs overflow-y-auto flex-1">
+            <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
+            <input type="hidden" id="siswa_edit_id" value="">
+            <input type="hidden" id="siswa_token" value="">
+
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">NISN (Nomor Induk Siswa Nasional)</label>
+                <input type="text" id="siswa_nisn" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: 0112586332">
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Nama Lengkap Siswa <span class="text-red-500">*</span></label>
+                <input type="text" id="siswa_nama_lengkap" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: Rais Nafis">
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Nama Siswa (Huruf Kecil & Tanpa Spasi) <span class="text-red-500">*</span></label>
+                <input type="text" id="siswa_nama_siswa" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: raisnafis">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Kelas <span class="text-red-500">*</span></label>
+                    <input type="text" id="siswa_kelas" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="X TKJ 1">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Tahun Ajaran</label>
+                    <input type="text" id="siswa_tahun_ajaran" value="2025/2026" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="2025/2026">
+                </div>
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Jurusan / Departemen</label>
+                <select id="siswa_jurusan_id" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+                    <option value="">-- Tidak Ada Jurusan (Umum / Staf) --</option>
+                </select>
+            </div>
+
+            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100">
+                <button type="button" onclick="closeModal('modalSiswa')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
+                <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Siswa</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 1.3 MODAL IMPORT GURU CSV -->
+<div id="modalImportGuruCSV" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/40 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white rounded-3xl border border-sage-200 shadow-2xl w-full max-w-md overflow-hidden">
+        <div class="p-6 bg-sage-50/80 border-b border-sage-100 flex items-center justify-between">
+            <h3 class="text-base font-bold text-slate-800">Import Data Guru dari CSV</h3>
+            <button onclick="closeModal('modalImportGuruCSV')" class="text-slate-400 hover:text-red-600 p-1.5">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <form onsubmit="handleImportCSVSubmit(event, 'guru')" class="p-6 space-y-4 text-xs">
+            <div class="p-3 bg-sage-50 rounded-xl border border-sage-200 text-slate-600">
+                <p class="font-bold text-sage-900 mb-1">Format Kolom CSV:</p>
+                <p class="font-mono text-[11px]">nama_guru, mengajar, nama_jurusan</p>
+                <p class="mt-1 text-[10px] text-slate-500">*mengajar berisi 'bengkel' atau 'umum'</p>
+            </div>
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Pilih Berkas CSV</label>
+                <input type="file" id="import_guru_file" accept=".csv" required class="w-full px-3 py-2 border border-sage-200 rounded-xl text-xs">
+            </div>
+            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100">
+                <button type="button" onclick="closeModal('modalImportGuruCSV')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl">Batal</button>
+                <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md">Upload & Import</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 1.4 MODAL IMPORT SISWA EXCEL & CSV -->
+<div id="modalImportSiswaCSV" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/40 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-amber-200 dark:border-slate-800 shadow-2xl w-full max-w-md overflow-hidden">
+        <div class="p-6 bg-amber-50/80 dark:bg-slate-800/80 border-b border-amber-100 dark:border-slate-700 flex items-center justify-between">
+            <h3 class="text-base font-bold text-slate-800 dark:text-white">Import Data Siswa (Excel / CSV)</h3>
+            <button onclick="closeModal('modalImportSiswaCSV')" class="text-slate-400 hover:text-red-600 p-1.5">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <form onsubmit="handleImportCSVSubmit(event, 'siswa')" class="p-6 space-y-4 text-xs">
+            <div class="p-3 bg-amber-50 dark:bg-amber-950/30 rounded-xl border border-amber-200 dark:border-amber-800 text-slate-600 dark:text-slate-300">
+                <p class="font-bold text-amber-900 dark:text-amber-400 mb-1">Format Berkas yang Didukung:</p>
+                <p class="text-[11px] font-semibold text-slate-700 dark:text-slate-200 mb-1">• <strong>Berkas Excel (.xlsx)</strong>: Format Dapodik (No, NISN, Nama, Kelas, Tahun Ajaran)</p>
+                <p class="text-[11px] font-semibold text-slate-700 dark:text-slate-200">• <strong>Berkas CSV (.csv)</strong>: nama_siswa, token, kelas, jurusan, tahun_ajaran</p>
+                <p class="mt-1 text-[10px] text-slate-500 dark:text-slate-400">*Jurusan & token login pengguna akan otomatis dihubungkan</p>
+            </div>
+            <div>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Pilih Berkas Excel (.xlsx) atau CSV (.csv)</label>
+                <input type="file" id="import_siswa_file" accept=".xlsx, .xls, .csv" required class="w-full px-3 py-2 border border-amber-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl text-xs">
+            </div>
+            <div class="pt-3 flex justify-end gap-3 border-t border-amber-100 dark:border-slate-800">
+                <button type="button" onclick="closeModal('modalImportSiswaCSV')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl">Batal</button>
+                <button type="submit" class="px-5 py-2 bg-amber-600 text-white font-bold rounded-xl shadow-md">Upload & Import</button>
             </div>
         </form>
     </div>
@@ -262,7 +473,7 @@
                 <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                 </div>
-                <h3 class="text-base font-bold text-slate-800" id="modalBarangTitle">Tambah Barang & Barcode</h3>
+                <h3 class="text-base font-bold text-slate-800" id="modalBarangTitle">Tambah Alat / Bahan & Barcode</h3>
             </div>
             <button onclick="closeModal('modalBarang')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -284,11 +495,18 @@
                 <input type="text" id="barang_barcode" readonly class="w-full px-3.5 py-2.5 bg-slate-100/70 dark:bg-neutral-900/80 border border-sage-200 rounded-xl font-mono font-bold text-slate-700 dark:text-slate-300 cursor-not-allowed focus:outline-none" placeholder="899100100004">
             </div>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Nama Barang Inventaris <span class="text-red-500">*</span></label>
-                <input type="text" id="barang_nama" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: Router Mikrotik Hex Gr3">
+                <label class="block font-bold text-slate-700 mb-1">Nama Alat / Bahan <span class="text-red-500">*</span></label>
+                <input type="text" id="barang_nama" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: Router Mikrotik Hex Gr3 / Kabel UTP">
             </div>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Kategori Barang</label>
+                <label class="block font-bold text-slate-700 mb-1">Jenis Inventaris <span class="text-red-500">*</span></label>
+                <select id="barang_jenis" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+                    <option value="alat">Alat (Dapat dipinjam & dikembalikan)</option>
+                    <option value="bahan">Bahan (Material habis pakai)</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Kategori</label>
                 <select id="barang_kategori_id" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
                     <option value="">-- Pilih Kategori --</option>
                 </select>
@@ -315,7 +533,7 @@
             </div>
             <div class="pt-3 flex justify-end gap-3 border-t border-sage-100">
                 <button type="button" onclick="closeModal('modalBarang')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
-                <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Barang</button>
+                <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Data</button>
             </div>
         </form>
     </div>
@@ -329,7 +547,7 @@
                 <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                 </div>
-                <h3 class="text-base font-bold text-slate-800" id="modalBarangMasukTitle">Catat Transaksi Barang Masuk</h3>
+                <h3 class="text-base font-bold text-slate-800" id="modalBarangMasukTitle">Catat Transaksi Alat & Bahan Masuk</h3>
             </div>
             <button onclick="closeModal('modalBarangMasuk')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -341,30 +559,32 @@
             <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
             <div>
                 <label class="block font-bold text-slate-700 mb-1">Jurusan / Departemen</label>
-                <select id="masuk_jurusan_id" onchange="filterBarangSelectByJurusan('masuk_barang_id', this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+                <select id="masuk_jurusan_id" onchange="filterBarangMasukOptions()" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
                     <option value="">-- Semua Jurusan --</option>
                 </select>
             </div>
             <?php endif; ?>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Pilih Barang <span class="text-red-500">*</span></label>
-                <select id="masuk_barang_id" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
-                    <option value="">-- Pilih Barang --</option>
+                <label class="block font-bold text-slate-700 mb-1">Pilih Jenis Barang <span class="text-red-500">*</span></label>
+                <select id="masuk_jenis" onchange="filterBarangMasukOptions()" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+                    <option value="">-- Semua Jenis (Alat & Bahan) --</option>
+                    <option value="alat">Alat</option>
+                    <option value="bahan">Bahan</option>
                 </select>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">Nama Pemasok / Supplier</label>
-                    <input type="text" id="masuk_pemasok" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="PT Network Utama">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">Jumlah Masuk <span class="text-red-500">*</span></label>
-                    <input type="number" id="masuk_jumlah" min="1" value="5" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-bold text-sage-700 focus:outline-none focus:border-sage-600">
-                </div>
+            <div>
+                <label class="block font-bold text-slate-700 mb-1" id="masuk_barang_label">Pilih Alat / Bahan <span class="text-red-500">*</span></label>
+                <select id="masuk_barang_id" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+                    <option value="">-- Pilih Alat / Bahan --</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Jumlah Masuk <span class="text-red-500">*</span></label>
+                <input type="number" id="masuk_jumlah" min="1" value="5" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-bold text-sage-700 focus:outline-none focus:border-sage-600">
             </div>
             <div class="pt-3 flex justify-end gap-3 border-t border-sage-100">
                 <button type="button" onclick="closeModal('modalBarangMasuk')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
-                <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Barang Masuk</button>
+                <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Alat & Bahan Masuk</button>
             </div>
         </form>
     </div>
@@ -378,7 +598,7 @@
                 <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12"/></svg>
                 </div>
-                <h3 class="text-base font-bold text-slate-800" id="modalBarangKeluarTitle">Catat Transaksi Barang Keluar</h3>
+                <h3 class="text-base font-bold text-slate-800" id="modalBarangKeluarTitle">Catat Transaksi Bahan Keluar</h3>
             </div>
             <button onclick="closeModal('modalBarangKeluar')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -390,15 +610,22 @@
             <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
             <div>
                 <label class="block font-bold text-slate-700 mb-1">Jurusan / Departemen</label>
-                <select id="keluar_jurusan_id" onchange="filterBarangSelectByJurusan('keluar_barang_id', this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+                <select id="keluar_jurusan_id" onchange="filterBarangKeluarOptions()" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
                     <option value="">-- Semua Jurusan --</option>
                 </select>
             </div>
             <?php endif; ?>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Pilih Barang <span class="text-red-500">*</span></label>
+                <label class="block font-bold text-slate-700 mb-1">Pilih Bahan <span class="text-red-500">*</span></label>
                 <select id="keluar_barang_id" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
-                    <option value="">-- Pilih Barang --</option>
+                    <option value="">-- Pilih Bahan --</option>
+                    <?php if (!empty($dbBarang)): ?>
+                        <?php foreach ($dbBarang as $b): ?>
+                            <?php if (strtolower($b['jenis'] ?? 'alat') === 'bahan'): ?>
+                                <option value="<?= htmlspecialchars($b['id']); ?>"><?= htmlspecialchars($b['nama_barang']); ?> (Tersedia: <?= htmlspecialchars($b['stok_tersedia']); ?> <?= htmlspecialchars($b['satuan'] ?? 'Unit'); ?>)</option>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </select>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -413,87 +640,199 @@
             </div>
             <div>
                 <label class="block font-bold text-slate-700 mb-1">Keterangan / Alasan</label>
-                <textarea id="keluar_keterangan" rows="2" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: Pemakaian alat praktik pemeliharaan jaringan"></textarea>
+                <textarea id="keluar_keterangan" rows="2" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: Pemakaian bahan praktik jaringan"></textarea>
             </div>
             <div class="pt-3 flex justify-end gap-3 border-t border-sage-100">
                 <button type="button" onclick="closeModal('modalBarangKeluar')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
-                <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Barang Keluar</button>
+                <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Bahan Keluar</button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- 5. MODAL PEMINJAMAN ALAT -->
-<div id="modalPeminjaman" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/40 backdrop-blur-sm animate-fade-in-up">
-    <div class="bg-white rounded-3xl border border-sage-200 shadow-2xl w-full max-w-lg overflow-hidden">
-        <div class="p-6 bg-sage-50/80 border-b border-sage-100 flex items-center justify-between">
+<div id="modalPeminjaman" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-sage-200 dark:border-slate-800 shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+        <div class="p-6 bg-sage-50/80 dark:bg-slate-800/80 border-b border-sage-100 dark:border-slate-700 flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                 </div>
-                <h3 class="text-base font-bold text-slate-800">Form Pengajuan Peminjaman Alat</h3>
+                <h3 class="text-base font-bold text-slate-800 dark:text-white" id="modalPeminjamanTitle">Tambah Transaksi Peminjaman</h3>
             </div>
             <button onclick="closeModal('modalPeminjaman')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
-        <form onsubmit="handleFormSubmit(event, 'Peminjaman Alat')" class="p-6 space-y-4 text-xs">
+        <form onsubmit="handleFormSubmit(event, 'Peminjaman Alat')" class="p-6 space-y-4 text-xs overflow-y-auto flex-1">
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
             <input type="hidden" id="pinjam_edit_id" value="">
             <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Jurusan / Departemen</label>
-                <select id="pinjam_jurusan_id" onchange="filterBarangSelectByJurusan('pinjam_barang_id', this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jurusan / Departemen</label>
+                <select id="pinjam_jurusan_id" onchange="filterBarangPinjamOptions(); filterGuruPinjamOptions(); filterSiswaPinjamOptions();" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
                     <option value="">-- Semua Jurusan --</option>
                 </select>
             </div>
             <?php endif; ?>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Pilih Alat Inventaris <span class="text-red-500">*</span></label>
-                <select id="pinjam_barang_id" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
-                    <option value="">-- Pilih Alat --</option>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Pilih Jenis Barang <span class="text-red-500">*</span></label>
+                <select id="pinjam_jenis" onchange="filterBarangPinjamOptions()" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
+                    <option value="">-- Semua Jenis (Alat & Bahan) --</option>
+                    <option value="alat">Alat</option>
+                    <option value="bahan">Bahan</option>
                 </select>
             </div>
+
+            <!-- Checklist: Apakah ingin meminjam menggunakan scan barcode/QR code data alat & bahannya? -->
+            <div class="p-3 bg-sage-50/60 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
+                <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                    <input type="checkbox" id="pinjam_use_barcode" onchange="togglePinjamBarcodeScanner(this.checked)" class="w-4 h-4 rounded accent-sage-600 cursor-pointer">
+                    <span class="font-bold text-slate-800 dark:text-slate-200 text-xs flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-sage-600 dark:text-sage-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                        Pinjam Menggunakan Scan Barcode / QR Code Barang
+                    </span>
+                </label>
+                <span id="pinjam_use_barcode_badge" class="text-xs font-medium text-slate-400 dark:text-slate-400">Tidak (Manual)</span>
+            </div>
+
+            <!-- CONTAINER SCANNER BARCODE (TAMPIL JIKA CHECKBOX DICENTANG) -->
+            <div id="section_scan_barcode_peminjaman" class="hidden space-y-3 p-4 bg-transparent border border-sage-200 dark:border-slate-700 rounded-2xl animate-fade-in-up">
+                <!-- Tab Pilihan Metode Scan -->
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2.5">
+                    <span class="font-bold text-slate-700 dark:text-slate-200 text-[11px] uppercase tracking-wider">
+                        Metode Scan Barcode
+                    </span>
+                    <div class="flex items-center bg-slate-100/40 dark:bg-slate-800/40 rounded-xl p-1 border border-slate-200 dark:border-slate-700 text-xs">
+                        <button type="button" id="btn_mode_kamera" onclick="switchPinjamScanMode('kamera')" class="px-3 py-1 rounded-lg font-bold transition-all bg-sage-600 text-white shadow-sm">Kamera</button>
+                        <button type="button" id="btn_mode_file" onclick="switchPinjamScanMode('file')" class="px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-sage-600 dark:hover:text-sage-400 transition-all">Pilih Gambar</button>
+                    </div>
+                </div>
+
+                <!-- 1. MODE KAMERA LIVE -->
+                <div id="pinjam_scan_camera_pane" class="space-y-2.5">
+                    <div id="pinjam_camera_select_wrap" class="hidden">
+                        <select id="pinjam_camera_select" onchange="changePinjamCamera(this.value)" class="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:border-sage-600">
+                            <option value="">Pilih Kamera...</option>
+                        </select>
+                    </div>
+
+                    <div class="relative w-full max-w-sm mx-auto overflow-hidden rounded-2xl bg-transparent min-h-[220px] flex items-center justify-center border border-slate-200 dark:border-slate-700">
+                        <div id="pinjam_barcode_reader" class="w-full h-full min-h-[220px] bg-transparent"></div>
+                        <div id="pinjam_camera_placeholder" class="absolute inset-0 flex flex-col items-center justify-center p-4 text-center bg-transparent text-slate-700 dark:text-slate-300">
+                            <svg class="w-12 h-12 text-slate-400 dark:text-slate-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">Kamera belum aktif</p>
+                            <p class="text-[11px] text-slate-400 dark:text-slate-400 mt-0.5">Klik tombol di bawah untuk menyalakan kamera</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-center gap-2">
+                        <button type="button" id="btn_toggle_camera" onclick="togglePinjamCameraStream()" class="px-4 py-2 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-md shadow-sage-600/20 transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>Nyalakan Kamera</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. MODE PILIH GAMBAR (CHOOSE FILE) -->
+                <div id="pinjam_scan_file_pane" class="hidden space-y-2.5">
+                    <input type="file" id="pinjam_barcode_file_input" accept="image/*" class="hidden" onchange="handlePinjamBarcodeFileUpload(this)">
+                    <div onclick="document.getElementById('pinjam_barcode_file_input').click()" class="cursor-pointer border-2 border-dashed border-sage-500/70 hover:border-sage-600 dark:border-sage-500/70 dark:hover:border-sage-400 bg-transparent p-6 rounded-2xl flex flex-col items-center justify-center text-center transition-colors">
+                        <div class="w-12 h-12 rounded-2xl bg-transparent text-sage-600 dark:text-sage-400 flex items-center justify-center mb-2 border border-sage-500/30">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </div>
+                        <p class="font-bold text-xs text-slate-700 dark:text-slate-200">Klik untuk Pilih Gambar / Foto Barcode</p>
+                        <p class="text-[11px] text-slate-400 dark:text-slate-400 mt-1">Mendukung format JPG, PNG, WEBP, atau foto kamera langsung</p>
+                        <button type="button" class="mt-3 px-3.5 py-1.5 bg-sage-600 text-white rounded-xl font-bold text-xs hover:bg-sage-700 transition-colors pointer-events-none">
+                            Pilih Berkas Gambar
+                        </button>
+                    </div>
+                    <div id="pinjam_file_scan_status" class="hidden text-center py-2">
+                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-sage-600 dark:text-sage-400 animate-pulse">
+                            <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                            Menganalisis dan memindai barcode pada gambar...
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 3. KOTAK FEEDBACK HASIL SCAN & SINKRONISASI -->
+                <div id="pinjam_scan_feedback" class="hidden p-3 rounded-2xl text-xs transition-all"></div>
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1" id="pinjam_barang_label">Pilih Inventaris <span class="text-red-500">*</span></label>
+                <select id="pinjam_barang_id" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
+                    <option value="">-- Pilih Inventaris --</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Guru Peminjam <span class="text-red-500">*</span></label>
+                <select id="pinjam_guru_peminjam_select" onchange="toggleGuruPeminjamMode(this.value)" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
+                    <option value="">-- Pilih Guru Peminjam --</option>
+                </select>
+                <input type="text" id="pinjam_guru_peminjam_custom" placeholder="Ketik nama guru peminjam manual..." class="mt-2 hidden w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
+            </div>
+
+            <!-- Checklist: Apakah dipinjamkan untuk siswa? -->
+            <div class="p-3 bg-sage-50/60 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
+                <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                    <input type="checkbox" id="pinjam_untuk_siswa" onchange="togglePinjamUntukSiswa(this.checked)" class="w-4 h-4 rounded accent-sage-600 cursor-pointer">
+                    <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">Apakah dipinjamkan untuk siswa?</span>
+                </label>
+                <span id="pinjam_untuk_siswa_badge" class="text-xs font-medium text-slate-400 dark:text-slate-400">Tidak (Guru Langsung)</span>
+            </div>
+
+            <!-- Bagian Data Siswa (Hanya tampil jika checklist dicentang) -->
+            <div id="section_siswa_peminjam" class="hidden space-y-3">
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Siswa Peminjam <span class="text-red-500">*</span></label>
+                    <select id="pinjam_peminjam_select" onchange="onSiswaSelectedInPeminjamanForm(this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
+                        <option value="">-- Pilih Siswa Peminjam --</option>
+                    </select>
+                    <input type="text" id="pinjam_peminjam_custom" placeholder="Ketik nama siswa peminjam..." class="mt-2 hidden w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">NISN Siswa</label>
+                        <input type="text" id="pinjam_nisn" readonly class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800/80 border border-sage-200 dark:border-slate-700 rounded-xl font-mono font-bold text-slate-600 dark:text-slate-300 cursor-not-allowed" placeholder="Nisn">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tahun Ajaran (Siswa) <span class="text-red-500">*</span></label>
+                        <input type="text" id="pinjam_tahun_ajaran" value="2026/2027" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600" placeholder="2026/2027">
+                    </div>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Nama Peminjam (Siswa) <span class="text-red-500">*</span></label>
-                    <input type="text" id="pinjam_peminjam" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="Ahmad Rizki (XI TKJ 1)">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jumlah Pinjam <span class="text-red-500">*</span></label>
+                    <input type="number" id="pinjam_jumlah" min="1" value="1" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-bold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Jumlah Pinjam <span class="text-red-500">*</span></label>
-                    <input type="number" id="pinjam_jumlah" min="1" value="1" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-bold text-slate-800 focus:outline-none focus:border-sage-600">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tugas / Keperluan Praktik</label>
+                    <input type="text" id="pinjam_tugas" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600" placeholder="contoh: Praktik Jaringan Komputer">
                 </div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Tugas / Keperluan Praktik</label>
-                    <input type="text" id="pinjam_tugas" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: Praktik Jaringan Komputer">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tanggal Meminjam</label>
+                    <input type="datetime-local" id="pinjam_tanggal_pinjam" value="<?= date('Y-m-d\TH:i'); ?>" onclick="try{this.showPicker()}catch(e){}" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600 cursor-pointer">
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Tahun Ajaran (Siswa) <span class="text-red-500">*</span></label>
-                    <input type="text" id="pinjam_tahun_ajaran" value="2025/2026" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="2025/2026">
-                </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">Tanggal Meminjam</label>
-                    <input type="datetime-local" id="pinjam_tanggal_pinjam" value="<?= date('Y-m-d\TH:i'); ?>" onclick="try{this.showPicker()}catch(e){}" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600 cursor-pointer">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">Tanggal Pengembalian (Balik)</label>
-                    <input type="datetime-local" id="pinjam_tanggal_kembali" onclick="try{this.showPicker()}catch(e){}" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600 cursor-pointer">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tanggal Pengembalian (Balik)</label>
+                    <input type="datetime-local" id="pinjam_tanggal_kembali" onclick="try{this.showPicker()}catch(e){}" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600 cursor-pointer">
                 </div>
             </div>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Status Peminjaman</label>
-                <select id="pinjam_status" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-bold text-slate-800 focus:outline-none focus:border-sage-600">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Status Peminjaman</label>
+                <select id="pinjam_status" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-bold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
                     <option value="dipinjam">Dipinjam (Masih Dipinjam)</option>
                     <option value="dikembalikan">Dikembalikan (Sudah Kembali)</option>
                 </select>
             </div>
-            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100">
+            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100 dark:border-slate-800">
                 <button type="button" onclick="closeModal('modalPeminjaman')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
-                <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Kirim Pengajuan</button>
+                <button type="submit" id="modalPeminjamanSubmitBtn" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Kirim Pengajuan</button>
             </div>
         </form>
     </div>
@@ -933,8 +1272,500 @@ function filterBarangSelectByJurusan(targetSelectId, selectedJurusanId) {
     if (selectedJurusanId) {
         filtered = window.dbBarang.filter(b => String(b.jurusan_id) === String(selectedJurusanId));
     }
-    el.innerHTML = '<option value="">-- Pilih Barang --</option>' +
+    if (targetSelectId === 'keluar_barang_id') {
+        filtered = filtered.filter(b => String(b.jenis || 'alat').toLowerCase() === 'bahan');
+    }
+    const defaultLabel = (targetSelectId === 'keluar_barang_id') ? '-- Pilih Bahan --' : '-- Pilih Barang --';
+    el.innerHTML = `<option value="">${defaultLabel}</option>` +
         filtered.map(b => `<option value="${b.id}">${b.nama_barang} (Tersedia: ${b.stok_tersedia} ${b.satuan || 'Unit'})</option>`).join('');
+}
+
+function filterBarangMasukOptions(preselectedBarangId = null) {
+    const selectBarang = document.getElementById('masuk_barang_id');
+    const selectJenis = document.getElementById('masuk_jenis');
+    const selectJur = document.getElementById('masuk_jurusan_id');
+    const labelBarang = document.getElementById('masuk_barang_label');
+
+    if (!selectBarang || !window.dbBarang) return;
+
+    const chosenJenis = selectJenis ? selectJenis.value.toLowerCase() : '';
+    const isAdminSekolah = window.currentUser && window.currentUser.peran === 'admin_sekolah';
+    const chosenJur = (isAdminSekolah && selectJur && selectJur.value) ? selectJur.value : (window.currentUser?.jurusan_id || null);
+
+    let filtered = window.dbBarang;
+
+    if (chosenJur) {
+        filtered = filtered.filter(b => String(b.jurusan_id) === String(chosenJur));
+    }
+
+    if (chosenJenis === 'alat') {
+        filtered = filtered.filter(b => String(b.jenis || 'alat').toLowerCase() === 'alat');
+        if (labelBarang) labelBarang.innerHTML = 'Pilih Alat <span class="text-red-500">*</span>';
+    } else if (chosenJenis === 'bahan') {
+        filtered = filtered.filter(b => String(b.jenis || 'alat').toLowerCase() === 'bahan');
+        if (labelBarang) labelBarang.innerHTML = 'Pilih Bahan <span class="text-red-500">*</span>';
+    } else {
+        if (labelBarang) labelBarang.innerHTML = 'Pilih Alat / Bahan <span class="text-red-500">*</span>';
+    }
+
+    const defaultPrompt = chosenJenis === 'alat' ? '-- Pilih Alat --' : (chosenJenis === 'bahan' ? '-- Pilih Bahan --' : '-- Pilih Alat / Bahan --');
+
+    selectBarang.innerHTML = `<option value="">${defaultPrompt}</option>` +
+        filtered.map(b => `<option value="${b.id}">${b.nama_barang} (Tersedia: ${b.stok_tersedia} ${b.satuan || 'Unit'})</option>`).join('');
+
+    const targetVal = preselectedBarangId !== null ? preselectedBarangId : selectBarang.value;
+    if (targetVal && filtered.some(b => String(b.id) === String(targetVal))) {
+        selectBarang.value = targetVal;
+    } else {
+        selectBarang.value = '';
+    }
+}
+
+// --- SCANNER BARCODE & QR CODE UNTUK PEMINJAMAN ---
+let pinjamHtml5QrCode = null;
+let pinjamIsCameraRunning = false;
+let pinjamActiveScanMode = 'kamera';
+
+function togglePinjamBarcodeScanner(checked) {
+    const section = document.getElementById('section_scan_barcode_peminjaman');
+    const badge = document.getElementById('pinjam_use_barcode_badge');
+    if (badge) {
+        badge.innerText = checked ? 'Aktif (Scan)' : 'Tidak (Manual)';
+        badge.className = checked 
+            ? 'text-xs font-bold text-emerald-600 dark:text-emerald-400' 
+            : 'text-xs font-medium text-slate-400 dark:text-slate-400';
+    }
+
+    if (checked) {
+        if (section) section.classList.remove('hidden');
+        switchPinjamScanMode(pinjamActiveScanMode || 'kamera');
+    } else {
+        if (section) section.classList.add('hidden');
+        stopPinjamCameraStream();
+        clearPinjamScanFeedback();
+    }
+}
+
+function switchPinjamScanMode(mode) {
+    pinjamActiveScanMode = mode;
+    const btnKamera = document.getElementById('btn_mode_kamera');
+    const btnFile = document.getElementById('btn_mode_file');
+    const paneKamera = document.getElementById('pinjam_scan_camera_pane');
+    const paneFile = document.getElementById('pinjam_scan_file_pane');
+
+    if (mode === 'kamera') {
+        if (btnKamera) {
+            btnKamera.className = 'px-3 py-1 rounded-lg font-bold transition-all bg-sage-600 text-white shadow-sm';
+        }
+        if (btnFile) {
+            btnFile.className = 'px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-sage-600 dark:hover:text-sage-400 transition-all';
+        }
+        if (paneKamera) paneKamera.classList.remove('hidden');
+        if (paneFile) paneFile.classList.add('hidden');
+    } else {
+        if (btnFile) {
+            btnFile.className = 'px-3 py-1 rounded-lg font-bold transition-all bg-sage-600 text-white shadow-sm';
+        }
+        if (btnKamera) {
+            btnKamera.className = 'px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-sage-600 dark:hover:text-sage-400 transition-all';
+        }
+        if (paneFile) paneFile.classList.remove('hidden');
+        if (paneKamera) paneKamera.classList.add('hidden');
+        stopPinjamCameraStream();
+    }
+}
+
+async function togglePinjamCameraStream() {
+    if (pinjamIsCameraRunning) {
+        await stopPinjamCameraStream();
+    } else {
+        await startPinjamCameraStream();
+    }
+}
+
+async function startPinjamCameraStream(preferDeviceId = null) {
+    if (typeof Html5Qrcode === 'undefined') {
+        showToast('Library pemindai barcode sedang disiapkan, silakan coba sesaat lagi.', 'warning');
+        return;
+    }
+
+    try {
+        if (!pinjamHtml5QrCode) {
+            pinjamHtml5QrCode = new Html5Qrcode("pinjam_barcode_reader");
+        }
+
+        const placeholder = document.getElementById('pinjam_camera_placeholder');
+        const btnToggle = document.getElementById('btn_toggle_camera');
+        const cameraSelectWrap = document.getElementById('pinjam_camera_select_wrap');
+        const cameraSelect = document.getElementById('pinjam_camera_select');
+
+        // Deteksi daftar kamera yang tersedia
+        try {
+            const cameras = await Html5Qrcode.getCameras();
+            if (cameras && cameras.length > 1 && cameraSelect && cameraSelectWrap) {
+                cameraSelectWrap.classList.remove('hidden');
+                cameraSelect.innerHTML = cameras.map((c, i) => `<option value="${c.id}">${c.label || 'Kamera ' + (i+1)}</option>`).join('');
+                if (preferDeviceId) cameraSelect.value = preferDeviceId;
+            }
+        } catch (e) {
+            console.warn('Gagal membaca daftar kamera:', e);
+        }
+
+        const selectedDeviceId = (cameraSelect && cameraSelect.value) ? cameraSelect.value : preferDeviceId;
+        const cameraConfig = selectedDeviceId ? { exact: selectedDeviceId } : { facingMode: "environment" };
+
+        const config = {
+            fps: 15,
+            qrbox: (w, h) => ({
+                width: Math.min(Math.floor(w * 0.8), 280),
+                height: Math.min(Math.floor(h * 0.8), 280)
+            }),
+            aspectRatio: 1.333
+        };
+
+        await pinjamHtml5QrCode.start(
+            cameraConfig,
+            config,
+            (decodedText, decodedResult) => {
+                onPinjamBarcodeScanned(decodedText);
+            },
+            (errorMessage) => {
+                // scanning frame error ignored
+            }
+        );
+
+        pinjamIsCameraRunning = true;
+        if (placeholder) placeholder.classList.add('hidden');
+        if (btnToggle) {
+            btnToggle.className = 'px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all';
+            btnToggle.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg><span>Hentikan Kamera</span>`;
+        }
+    } catch (err) {
+        console.error('Camera start error:', err);
+        pinjamIsCameraRunning = false;
+        showToast('Tidak dapat mengakses kamera: ' + (err.message || err), 'error');
+    }
+}
+
+async function stopPinjamCameraStream() {
+    if (pinjamHtml5QrCode && pinjamIsCameraRunning) {
+        try {
+            await pinjamHtml5QrCode.stop();
+        } catch (e) {
+            console.warn('Error saat menghentikan kamera:', e);
+        }
+        pinjamIsCameraRunning = false;
+    }
+    const placeholder = document.getElementById('pinjam_camera_placeholder');
+    const btnToggle = document.getElementById('btn_toggle_camera');
+    if (placeholder) placeholder.classList.remove('hidden');
+    if (btnToggle) {
+        btnToggle.className = 'px-4 py-2 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-md shadow-sage-600/20 transition-all';
+        btnToggle.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span>Nyalakan Kamera</span>`;
+    }
+}
+
+async function changePinjamCamera(deviceId) {
+    if (pinjamIsCameraRunning) {
+        await stopPinjamCameraStream();
+        await startPinjamCameraStream(deviceId);
+    }
+}
+
+async function handlePinjamBarcodeFileUpload(input) {
+    if (!input || !input.files || input.files.length === 0) return;
+    const file = input.files[0];
+    const statusEl = document.getElementById('pinjam_file_scan_status');
+    if (statusEl) statusEl.classList.remove('hidden');
+
+    try {
+        if (typeof Html5Qrcode === 'undefined') {
+            throw new Error('Library pemindai belum siap.');
+        }
+
+        const fileScanner = new Html5Qrcode("pinjam_barcode_reader");
+        const decodedText = await fileScanner.scanFile(file, true);
+        if (statusEl) statusEl.classList.add('hidden');
+        await onPinjamBarcodeScanned(decodedText);
+    } catch (err) {
+        if (statusEl) statusEl.classList.add('hidden');
+        console.warn('File scan error:', err);
+        showPinjamScanFeedback(false, null, 'Tidak ditemukan barcode atau QR code pada gambar ini. Pastikan gambar jelas, tajam, dan tidak buram.');
+    } finally {
+        input.value = '';
+    }
+}
+
+async function onPinjamBarcodeScanned(code) {
+    if (!code) return;
+    const cleanCode = String(code).trim();
+    if (!cleanCode) return;
+
+    // Bunyikan nada beep indikator sukses
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.value = 880;
+        gain.gain.value = 0.2;
+        osc.start();
+        setTimeout(() => { osc.stop(); audioCtx.close(); }, 120);
+    } catch (e) {}
+
+    // Cari di window.dbBarang
+    let found = (window.dbBarang || []).find(b => 
+        (b.barcode && String(b.barcode).trim().toLowerCase() === cleanCode.toLowerCase()) ||
+        (b.kode_barang && String(b.kode_barang).trim().toLowerCase() === cleanCode.toLowerCase()) ||
+        (b.id && String(b.id).trim().toLowerCase() === cleanCode.toLowerCase())
+    );
+
+    // Jika tidak ditemukan di lokal, cari lewat API scan.php
+    if (!found) {
+        try {
+            const resp = await fetch('api/scan.php?code=' + encodeURIComponent(cleanCode));
+            const json = await resp.json();
+            if (json && json.success && json.data) {
+                found = json.data;
+            }
+        } catch (e) {
+            console.warn('Gagal memanggil fallback scan API:', e);
+        }
+    }
+
+    if (found) {
+        // Sinkronisasi otomatis ke form peminjaman!
+        const selectJur = document.getElementById('pinjam_jurusan_id');
+        const selectJenis = document.getElementById('pinjam_jenis');
+        const selectBarang = document.getElementById('pinjam_barang_id');
+
+        if (selectJur && found.jurusan_id) {
+            selectJur.value = found.jurusan_id;
+        }
+
+        if (selectJenis && found.jenis) {
+            selectJenis.value = found.jenis.toLowerCase();
+        }
+
+        filterBarangPinjamOptions(found.id);
+        if (selectBarang) {
+            selectBarang.value = found.id;
+            selectBarang.classList.add('ring-2', 'ring-emerald-500');
+            setTimeout(() => selectBarang.classList.remove('ring-2', 'ring-emerald-500'), 2500);
+        }
+
+        // Hentikan streaming kamera setelah barcode berhasil dideteksi
+        await stopPinjamCameraStream();
+
+        showPinjamScanFeedback(true, found, cleanCode);
+        showToast('Barang berhasil disinkronkan: ' + found.nama_barang, 'success');
+    } else {
+        showPinjamScanFeedback(false, null, 'Barcode "' + cleanCode + '" terdeteksi, namun data barang tidak ditemukan dalam inventaris.');
+        showToast('Barang tidak ditemukan untuk barcode: ' + cleanCode, 'warning');
+    }
+}
+
+function showPinjamScanFeedback(isSuccess, item, messageOrCode) {
+    const box = document.getElementById('pinjam_scan_feedback');
+    if (!box) return;
+    box.classList.remove('hidden');
+
+    if (isSuccess && item) {
+        const jenisLabel = (item.jenis || 'alat').toLowerCase() === 'alat' ? 'Alat' : 'Bahan';
+        box.className = 'p-3.5 bg-sage-50/80 dark:bg-slate-900 border border-sage-300 dark:border-slate-700 rounded-2xl text-xs space-y-1.5 animate-fade-in-up';
+        box.innerHTML = `
+            <div class="flex items-center justify-between text-sage-800 dark:text-sage-300 font-bold">
+                <span class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-sage-600 dark:text-sage-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Barcode Berhasil Terdeteksi & Tersinkronkan!
+                </span>
+                <button type="button" onclick="startPinjamCameraStream()" class="text-[11px] px-2 py-0.5 bg-sage-600 text-white rounded-lg hover:bg-sage-700 font-semibold shadow-xs">Scan Ulang</button>
+            </div>
+            <div class="text-slate-700 dark:text-slate-200">
+                <div class="font-extrabold text-sm text-slate-800 dark:text-white">${escapeHtml(item.nama_barang)}</div>
+                <div class="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-slate-600 dark:text-slate-400 mt-1">
+                    <span>Jenis: <b>${jenisLabel}</b></span>
+                    <span>Kode / Barcode: <code class="font-mono bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded border border-sage-200 dark:border-slate-700 font-bold text-sage-700 dark:text-sage-300">${escapeHtml(item.barcode || messageOrCode)}</code></span>
+                    <span>Stok Tersedia: <b class="text-sage-700 dark:text-sage-400">${item.stok_tersedia ?? 0} ${escapeHtml(item.satuan || 'Unit')}</b></span>
+                </div>
+            </div>
+        `;
+    } else {
+        box.className = 'p-3.5 bg-amber-50/80 dark:bg-slate-900 border border-amber-300 dark:border-slate-700 rounded-2xl text-xs space-y-1 animate-fade-in-up';
+        box.innerHTML = `
+            <div class="flex items-center justify-between text-amber-800 dark:text-amber-300 font-bold">
+                <span class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    Peringatan Barcode
+                </span>
+                <button type="button" onclick="clearPinjamScanFeedback(); startPinjamCameraStream();" class="text-[11px] px-2 py-0.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-semibold shadow-xs">Coba Lagi</button>
+            </div>
+            <p class="text-slate-700 dark:text-slate-300">${escapeHtml(messageOrCode)}</p>
+        `;
+    }
+}
+
+function clearPinjamScanFeedback() {
+    const box = document.getElementById('pinjam_scan_feedback');
+    if (box) {
+        box.classList.add('hidden');
+        box.innerHTML = '';
+    }
+}
+
+function filterBarangKeluarOptions(preselectedBarangId = null) {
+    const el = document.getElementById('keluar_barang_id');
+    const selectJur = document.getElementById('keluar_jurusan_id');
+    if (!el || !window.dbBarang) return;
+
+    const isAdminSekolah = window.currentUser && window.currentUser.peran === 'admin_sekolah';
+    const chosenJur = (isAdminSekolah && selectJur && selectJur.value) ? selectJur.value : (window.currentUser?.jurusan_id || null);
+
+    let filtered = window.dbBarang;
+    if (chosenJur) {
+        filtered = filtered.filter(b => String(b.jurusan_id) === String(chosenJur));
+    }
+
+    // Hanya tampilkan data dengan jenis barang "bahan"
+    filtered = filtered.filter(b => String(b.jenis || 'alat').toLowerCase() === 'bahan');
+
+    el.innerHTML = '<option value="">-- Pilih Bahan --</option>' +
+        filtered.map(b => `<option value="${b.id}">${b.nama_barang} (Tersedia: ${b.stok_tersedia} ${b.satuan || 'Unit'})</option>`).join('');
+
+    const targetVal = preselectedBarangId !== null ? preselectedBarangId : el.value;
+    if (targetVal && filtered.some(b => String(b.id) === String(targetVal))) {
+        el.value = targetVal;
+    } else {
+        el.value = '';
+    }
+}
+
+function filterBarangPinjamOptions(preselectedBarangId = null) {
+    const selectJenis = document.getElementById('pinjam_jenis');
+    const selectBarang = document.getElementById('pinjam_barang_id');
+    const selectJur = document.getElementById('pinjam_jurusan_id');
+    const labelBarang = document.getElementById('pinjam_barang_label');
+
+    if (!selectBarang || !window.dbBarang) return;
+
+    const chosenJenis = selectJenis ? selectJenis.value.toLowerCase() : '';
+    const isAdminSekolah = window.currentUser && window.currentUser.peran === 'admin_sekolah';
+    const chosenJur = (isAdminSekolah && selectJur && selectJur.value) ? selectJur.value : (window.currentUser?.jurusan_id || null);
+
+    let filtered = window.dbBarang;
+
+    if (chosenJur) {
+        filtered = filtered.filter(b => String(b.jurusan_id) === String(chosenJur));
+    }
+
+    if (chosenJenis === 'alat') {
+        filtered = filtered.filter(b => String(b.jenis || 'alat').toLowerCase() === 'alat');
+        if (labelBarang) labelBarang.innerHTML = 'Pilih Alat <span class="text-red-500">*</span>';
+    } else if (chosenJenis === 'bahan') {
+        filtered = filtered.filter(b => String(b.jenis || 'alat').toLowerCase() === 'bahan');
+        if (labelBarang) labelBarang.innerHTML = 'Pilih Bahan <span class="text-red-500">*</span>';
+    } else {
+        if (labelBarang) labelBarang.innerHTML = 'Pilih Inventaris <span class="text-red-500">*</span>';
+    }
+
+    const defaultPrompt = chosenJenis === 'alat' ? '-- Pilih Alat --' : (chosenJenis === 'bahan' ? '-- Pilih Bahan --' : '-- Pilih Inventaris --');
+
+    selectBarang.innerHTML = `<option value="">${defaultPrompt}</option>` +
+        filtered.map(b => `<option value="${b.id}">${b.nama_barang} (Tersedia: ${b.stok_tersedia} ${b.satuan || 'Unit'})</option>`).join('');
+
+    const targetVal = preselectedBarangId !== null ? preselectedBarangId : selectBarang.value;
+    if (targetVal && filtered.some(b => String(b.id) === String(targetVal))) {
+        selectBarang.value = targetVal;
+    } else {
+        selectBarang.value = '';
+    }
+}
+
+function filterGuruPinjamOptions(preselectedGuru = null) {
+    const selectGuru = document.getElementById('pinjam_guru_peminjam_select');
+    if (!selectGuru || !window.dbGuru) return;
+
+    const selectJur = document.getElementById('pinjam_jurusan_id');
+    const isAdminSekolah = window.currentUser && window.currentUser.peran === 'admin_sekolah';
+    const chosenJur = (isAdminSekolah && selectJur && selectJur.value) ? selectJur.value : (window.currentUser?.jurusan_id || null);
+
+    let filtered = window.dbGuru;
+    if (chosenJur) {
+        filtered = filtered.filter(g => String(g.jurusan_id) === String(chosenJur));
+        if (filtered.length === 0) {
+            filtered = window.dbGuru.filter(g => String(g.jurusan_id) === String(chosenJur) || g.mengajar === 'umum');
+        }
+    }
+
+    let targetVal = preselectedGuru !== null ? preselectedGuru : selectGuru.value;
+
+    let optionsHtml = '<option value="">-- Pilih Guru Peminjam --</option>';
+    filtered.forEach(g => {
+        optionsHtml += `<option value="${escapeHtml(g.nama_guru)}">${escapeHtml(g.nama_guru)}</option>`;
+    });
+    optionsHtml += '<option value="__custom__">-- + Input Nama Guru Manual --</option>';
+    selectGuru.innerHTML = optionsHtml;
+
+    if (targetVal) {
+        let matched = false;
+        for (let opt of selectGuru.options) {
+            if (opt.value && opt.value.trim().toLowerCase() === targetVal.trim().toLowerCase()) {
+                selectGuru.value = opt.value;
+                matched = true;
+                break;
+            }
+        }
+        const customGuru = document.getElementById('pinjam_guru_peminjam_custom');
+        if (matched) {
+            if (customGuru) { customGuru.classList.add('hidden'); customGuru.value = ''; }
+        } else if (targetVal !== '__custom__') {
+            selectGuru.value = '__custom__';
+            if (customGuru) { customGuru.classList.remove('hidden'); customGuru.value = targetVal; }
+        }
+    }
+}
+
+function filterSiswaPinjamOptions(preselectedSiswa = null) {
+    const selectSiswa = document.getElementById('pinjam_peminjam_select');
+    if (!selectSiswa || !window.dbSiswa) return;
+
+    const jurSelect = document.getElementById('pinjam_jurusan_id');
+    const isAdminSekolah = window.currentUser && window.currentUser.peran === 'admin_sekolah';
+    const chosenJur = (isAdminSekolah && jurSelect && jurSelect.value) ? jurSelect.value : (window.currentUser?.jurusan_id || null);
+
+    let filteredSiswa = window.dbSiswa || [];
+    if (chosenJur) {
+        filteredSiswa = filteredSiswa.filter(s => String(s.jurusan_id) === String(chosenJur));
+    }
+
+    let optionsHtml = '<option value="">-- Pilih Siswa Peminjam --</option>';
+    filteredSiswa.forEach(s => {
+        const displayName = s.nama_lengkap || s.nama_siswa;
+        const nisnPart = s.nisn ? s.nisn + ' - ' : '';
+        optionsHtml += `<option value="${escapeHtml(displayName)}" data-nisn="${escapeHtml(s.nisn || '')}" data-ta="${escapeHtml(s.tahun_ajaran || '2026/2027')}">${escapeHtml(displayName)} (${escapeHtml(nisnPart)}${escapeHtml(s.kelas || '-')})</option>`;
+    });
+    optionsHtml += '<option value="__custom__">-- + Input Nama Siswa Manual --</option>';
+    selectSiswa.innerHTML = optionsHtml;
+
+    let targetVal = preselectedSiswa !== null ? preselectedSiswa : selectSiswa.value;
+    if (targetVal) {
+        let matched = false;
+        for (let opt of selectSiswa.options) {
+            if (opt.value && opt.value.trim().toLowerCase() === targetVal.trim().toLowerCase()) {
+                selectSiswa.value = opt.value;
+                matched = true;
+                break;
+            }
+        }
+        const customSiswa = document.getElementById('pinjam_peminjam_custom');
+        if (matched) {
+            if (customSiswa) { customSiswa.classList.add('hidden'); customSiswa.required = false; customSiswa.value = ''; }
+        } else if (targetVal !== '__custom__') {
+            selectSiswa.value = '__custom__';
+            if (customSiswa) { customSiswa.classList.remove('hidden'); customSiswa.required = true; customSiswa.value = targetVal; }
+        }
+    }
 }
 
 function filterKategoriAndRakByJurusan(selectedJurusanId, selectedKategoriId = null, selectedRakId = null) {
@@ -979,36 +1810,61 @@ function openModal(modalId, customTitle = null, editData = null) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
 
-    if ((modalId === 'modalBarangMasuk' || modalId === 'modalBarangKeluar' || modalId === 'modalPeminjaman') && window.dbBarang) {
-        const selectElem = modal.querySelector('select');
-        if (selectElem) {
-            selectElem.innerHTML = '<option value="">-- Pilih Barang --</option>' +
-                window.dbBarang.map(b => `<option value="${b.id}">${b.nama_barang} (Tersedia: ${b.stok_tersedia} ${b.satuan || 'Unit'})</option>`).join('');
+    if (modalId === 'modalBarangMasuk') {
+        filterBarangMasukOptions(editData ? editData.barang_id : null);
+    } else if (modalId === 'modalBarangKeluar') {
+        filterBarangKeluarOptions(editData ? editData.barang_id : null);
+    } else if (modalId === 'modalPeminjaman') {
+        const chkBarcode = document.getElementById('pinjam_use_barcode');
+        if (chkBarcode) {
+            chkBarcode.checked = false;
+            togglePinjamBarcodeScanner(false);
         }
+        filterBarangPinjamOptions(editData ? editData.barang_id : null);
+        filterGuruPinjamOptions(editData ? editData.guru_peminjam : null);
+        filterSiswaPinjamOptions(editData ? editData.nama_peminjam : null);
     }
 
     if (window.dbJurusan) {
         const isAdminSekolah = window.currentUser && window.currentUser.peran === 'admin_sekolah';
         const userJurusanId = window.currentUser ? window.currentUser.jurusan_id : null;
 
-        ['pengguna_jurusan_id', 'kategori_jurusan_id', 'rak_jurusan_id', 'barang_jurusan_id', 'masuk_jurusan_id', 'keluar_jurusan_id', 'pinjam_jurusan_id'].forEach(selectId => {
-            const el = document.getElementById(selectId);
-            if (el) {
-                if (isAdminSekolah) {
-                    el.removeAttribute('disabled');
-                    el.innerHTML = '<option value="">-- Semua / Pilih Jurusan --</option>' +
-                        window.dbJurusan.map(j => `<option value="${j.id}">${j.nama_jurusan}</option>`).join('');
-                } else {
-                    el.innerHTML = window.dbJurusan
-                        .filter(j => String(j.id) === String(userJurusanId))
-                        .map(j => `<option value="${j.id}" selected>${j.nama_jurusan}</option>`).join('');
-                    if (!el.innerHTML && userJurusanId) {
-                        el.innerHTML = `<option value="${userJurusanId}" selected>Jurusan Saya</option>`;
-                    }
-                    el.setAttribute('disabled', 'disabled');
+        const allJurSelects = modal.querySelectorAll('select[id$="_jurusan_id"]');
+        allJurSelects.forEach(el => {
+            const selectId = el.id;
+            const defaultLabel = (selectId === 'pengguna_jurusan_id' || selectId === 'siswa_jurusan_id') ? '-- Tidak Ada Jurusan (Umum) --' : '-- Pilih Jurusan --';
+            if (isAdminSekolah) {
+                el.removeAttribute('disabled');
+                el.innerHTML = `<option value="">${defaultLabel}</option>` +
+                    window.dbJurusan.map(j => `<option value="${j.id}">${j.nama_jurusan}</option>`).join('');
+            } else {
+                el.innerHTML = window.dbJurusan
+                    .filter(j => String(j.id) === String(userJurusanId))
+                    .map(j => `<option value="${j.id}" selected>${j.nama_jurusan}</option>`).join('');
+                if (!el.innerHTML && userJurusanId) {
+                    el.innerHTML = `<option value="${userJurusanId}" selected>Jurusan Saya</option>`;
                 }
+                el.setAttribute('disabled', 'disabled');
             }
         });
+    }
+
+    if (modalId === 'modalPengguna') {
+        const selectGuru = document.getElementById('pengguna_guru_id');
+        if (selectGuru && window.dbGuru) {
+            selectGuru.innerHTML = '<option value="">-- Pilih Guru --</option>' +
+                window.dbGuru.map(g => `<option value="${g.id}">${g.nama_guru} (${g.mengajar === 'umum' ? 'Umum' : (g.nama_jurusan || 'Bengkel')})</option>`).join('');
+        }
+        const selectSiswa = document.getElementById('pengguna_siswa_id');
+        if (selectSiswa && window.dbSiswa) {
+            selectSiswa.innerHTML = '<option value="">-- Pilih Siswa --</option>' +
+                window.dbSiswa.map(s => `<option value="${s.id}">${s.nama_lengkap || s.nama_siswa} (${s.kelas} - ${s.nama_jurusan || 'Semua'})</option>`).join('');
+        }
+    }
+
+    if (modalId === 'modalPeminjaman') {
+        filterGuruPinjamOptions(editData ? editData.guru_peminjam : null);
+        filterSiswaPinjamOptions(editData ? editData.nama_peminjam : null);
     }
 
     if (modalId === 'modalBarang') {
@@ -1017,10 +1873,34 @@ function openModal(modalId, customTitle = null, editData = null) {
         filterKategoriAndRakByJurusan(initialJurId, editData ? editData.kategori_id : null, editData ? editData.rak_id : null);
     }
 
-    // Set judul modal
-    if (customTitle) {
-        const titleElem = modal.querySelector('h3');
-        if (titleElem) titleElem.innerText = customTitle;
+    // Set judul modal & tombol submit
+    const defaultModalTitles = {
+        'modalPeminjaman': editData ? 'Edit Transaksi Peminjaman' : 'Tambah Transaksi Peminjaman',
+        'modalBarangMasuk': editData ? 'Edit Transaksi Alat & Bahan Masuk' : 'Catat Transaksi Alat & Bahan Masuk',
+        'modalBarangKeluar': editData ? 'Edit Transaksi Bahan Keluar' : 'Catat Transaksi Bahan Keluar',
+        'modalBarang': editData ? 'Edit Alat & Bahan' : 'Tambah / Edit Alat & Bahan',
+        'modalGuru': editData ? 'Edit Data Guru' : 'Tambah Guru Baru',
+        'modalSiswa': editData ? 'Edit Data Siswa' : 'Tambah Siswa Baru',
+        'modalPengguna': editData ? 'Edit Data Pengguna' : 'Tambah Pengguna Baru',
+        'modalJurusan': editData ? 'Edit Jurusan' : 'Tambah Jurusan Baru',
+        'modalKategori': editData ? 'Edit Kategori' : 'Tambah Kategori Baru',
+        'modalRak': editData ? 'Edit Rak' : 'Tambah Rak Baru'
+    };
+
+    const titleElem = modal.querySelector('h3');
+    if (titleElem) {
+        if (customTitle) {
+            titleElem.innerText = customTitle;
+        } else if (defaultModalTitles[modalId]) {
+            titleElem.innerText = defaultModalTitles[modalId];
+        }
+    }
+
+    if (modalId === 'modalPeminjaman') {
+        const submitBtn = document.getElementById('modalPeminjamanSubmitBtn');
+        if (submitBtn) {
+            submitBtn.innerText = editData ? 'Simpan Perubahan' : 'Kirim Pengajuan';
+        }
     }
 
     // Reset semua field terlebih dahulu
@@ -1029,7 +1909,44 @@ function openModal(modalId, customTitle = null, editData = null) {
 
     const populateFields = () => {
         if (editData) {
-            if (modalId === 'modalJurusan') {
+            if (modalId === 'modalGuru') {
+                const elId = document.getElementById('guru_edit_id');
+                const elNama = document.getElementById('guru_nama_guru');
+                const elUsername = document.getElementById('guru_nama_pengguna');
+                const elMengajar = document.getElementById('guru_mengajar');
+                const elJurusan = document.getElementById('guru_jurusan_id');
+                const elToken = document.getElementById('guru_token');
+
+                if (elId) elId.value = editData.id || '';
+                if (elNama) elNama.value = editData.nama_guru || '';
+                if (elUsername) elUsername.value = editData.nama_pengguna || (editData.nama_guru ? editData.nama_guru.toLowerCase().replace(/[^a-z0-9]/g, '') : '');
+                if (elToken) elToken.value = editData.token || '';
+                if (elMengajar) {
+                    elMengajar.value = editData.mengajar || 'bengkel';
+                    handleGuruMengajarChange(editData.mengajar || 'bengkel');
+                }
+                if (elJurusan) elJurusan.value = editData.jurusan_id || '';
+            }
+            else if (modalId === 'modalSiswa') {
+                const elId = document.getElementById('siswa_edit_id');
+                const elNisn = document.getElementById('siswa_nisn');
+                const elNama = document.getElementById('siswa_nama_siswa');
+                const elLengkap = document.getElementById('siswa_nama_lengkap');
+                const elToken = document.getElementById('siswa_token');
+                const elKelas = document.getElementById('siswa_kelas');
+                const elJurusan = document.getElementById('siswa_jurusan_id');
+                const elTA = document.getElementById('siswa_tahun_ajaran');
+
+                if (elId) elId.value = editData.id || '';
+                if (elNisn) elNisn.value = editData.nisn || '';
+                if (elNama) elNama.value = editData.nama_siswa || '';
+                if (elLengkap) elLengkap.value = editData.nama_lengkap || editData.nama_siswa || '';
+                if (elToken) elToken.value = editData.token || '';
+                if (elKelas) elKelas.value = editData.kelas || '';
+                if (elJurusan) elJurusan.value = editData.jurusan_id || '';
+                if (elTA) elTA.value = editData.tahun_ajaran || '2026/2027';
+            }
+            else if (modalId === 'modalJurusan') {
                 const elId = document.getElementById('jurusan_edit_id');
                 const elNama = document.getElementById('jurusan_nama');
                 const elDesk = document.getElementById('jurusan_deskripsi');
@@ -1049,6 +1966,18 @@ function openModal(modalId, customTitle = null, editData = null) {
                 if (elPicker) elPicker.value = colorVal;
             }
             else if (modalId === 'modalPengguna') {
+                const elStatus = document.getElementById('pengguna_status_pengguna');
+                const elGuru = document.getElementById('pengguna_guru_id');
+                const elSiswa = document.getElementById('pengguna_siswa_id');
+                const elToken = document.getElementById('pengguna_token');
+
+                const statusVal = editData.status_pengguna || 'tidak_ada';
+                if (elStatus) elStatus.value = statusVal;
+                if (elGuru) elGuru.value = editData.guru_id || '';
+                if (elSiswa) elSiswa.value = editData.siswa_id || '';
+                if (elToken) elToken.value = editData.token || '';
+                handleStatusPenggunaChange(statusVal);
+
                 const elId = document.getElementById('pengguna_edit_id');
                 const elJurusan = document.getElementById('pengguna_jurusan_id');
                 const elNama = document.getElementById('pengguna_nama_pengguna');
@@ -1113,6 +2042,7 @@ function openModal(modalId, customTitle = null, editData = null) {
                 const elJurusan = document.getElementById('barang_jurusan_id');
                 const elBarcode = document.getElementById('barang_barcode');
                 const elNama = document.getElementById('barang_nama');
+                const elJenis = document.getElementById('barang_jenis');
                 const elKategori = document.getElementById('barang_kategori_id');
                 const elRak = document.getElementById('barang_rak_id');
                 const elMerek = document.getElementById('barang_merek');
@@ -1123,35 +2053,36 @@ function openModal(modalId, customTitle = null, editData = null) {
                 if (elJurusan) elJurusan.value = editData.jurusan_id || '';
                 if (elBarcode) elBarcode.value = editData.barcode || '';
                 if (elNama) elNama.value = editData.nama_barang || '';
+                if (elJenis) elJenis.value = editData.jenis || 'alat';
                 filterKategoriAndRakByJurusan(editData.jurusan_id || '', editData.kategori_id || '', editData.rak_id || '');
                 if (elMerek) elMerek.value = editData.merek || '';
-                if (elStok) elStok.value = editData.stok_total || 0;
+                if (elStok) elStok.value = editData.stok_awal !== undefined ? editData.stok_awal : (editData.stok_total || 0);
                 if (elSatuan) elSatuan.value = editData.satuan || 'Unit';
             }
             else if (modalId === 'modalBarangMasuk') {
                 const elId = document.getElementById('masuk_edit_id');
                 const elJurusan = document.getElementById('masuk_jurusan_id');
+                const elJenis = document.getElementById('masuk_jenis');
                 const elBarang = document.getElementById('masuk_barang_id');
-                const elPemasok = document.getElementById('masuk_pemasok');
                 const elJumlah = document.getElementById('masuk_jumlah');
 
                 if (elId) elId.value = editData.id || '';
                 if (elJurusan) elJurusan.value = editData.jurusan_id || '';
-                if (elBarang) elBarang.value = editData.barang_id || '';
-                if (elPemasok) elPemasok.value = editData.nama_pemasok || '';
+                const foundB = (window.dbBarang || []).find(b => String(b.id) === String(editData.barang_id));
+                if (elJenis) elJenis.value = foundB ? (foundB.jenis || '') : '';
+                filterBarangMasukOptions(editData.barang_id || '');
                 if (elJumlah) elJumlah.value = editData.jumlah || 1;
             }
             else if (modalId === 'modalBarangKeluar') {
                 const elId = document.getElementById('keluar_edit_id');
                 const elJurusan = document.getElementById('keluar_jurusan_id');
-                const elBarang = document.getElementById('keluar_barang_id');
                 const elPenerima = document.getElementById('keluar_penerima');
                 const elJumlah = document.getElementById('keluar_jumlah');
                 const elKet = document.getElementById('keluar_keterangan');
 
                 if (elId) elId.value = editData.id || '';
                 if (elJurusan) elJurusan.value = editData.jurusan_id || '';
-                if (elBarang) elBarang.value = editData.barang_id || '';
+                filterBarangKeluarOptions(editData.barang_id || '');
                 if (elPenerima) elPenerima.value = editData.nama_penerima || '';
                 if (elJumlah) elJumlah.value = editData.jumlah || 1;
                 if (elKet) elKet.value = editData.catatan || '';
@@ -1159,29 +2090,115 @@ function openModal(modalId, customTitle = null, editData = null) {
             else if (modalId === 'modalPeminjaman') {
                 const elId = document.getElementById('pinjam_edit_id');
                 const elJurusan = document.getElementById('pinjam_jurusan_id');
+                const elJenis = document.getElementById('pinjam_jenis');
                 const elBarang = document.getElementById('pinjam_barang_id');
-                const elPeminjam = document.getElementById('pinjam_peminjam');
                 const elJumlah = document.getElementById('pinjam_jumlah');
                 const elTugas = document.getElementById('pinjam_tugas');
                 const elTahun = document.getElementById('pinjam_tahun_ajaran');
                 const elTglPinjam = document.getElementById('pinjam_tanggal_pinjam');
                 const elTglKembali = document.getElementById('pinjam_tanggal_kembali');
                 const elStatus = document.getElementById('pinjam_status');
+                const elNisn = document.getElementById('pinjam_nisn');
+                const elCheckSiswa = document.getElementById('pinjam_untuk_siswa');
+
+                const selectGuru = document.getElementById('pinjam_guru_peminjam_select');
+                const customGuru = document.getElementById('pinjam_guru_peminjam_custom');
+                const selectSiswa = document.getElementById('pinjam_peminjam_select');
+                const customSiswa = document.getElementById('pinjam_peminjam_custom');
 
                 if (elId) elId.value = editData.id || '';
                 if (elJurusan) elJurusan.value = editData.jurusan_id || '';
+
+                filterGuruPinjamOptions(editData.guru_peminjam || null);
+                filterSiswaPinjamOptions(editData.nama_peminjam || null);
+
+                const foundB = (window.dbBarang || []).find(b => String(b.id) === String(editData.barang_id));
+                if (elJenis) elJenis.value = foundB ? (foundB.jenis || '') : '';
+                filterBarangPinjamOptions(editData.barang_id || '');
                 if (elBarang) elBarang.value = editData.barang_id || '';
-                if (elPeminjam) elPeminjam.value = editData.nama_peminjam || '';
+
                 if (elJumlah) elJumlah.value = editData.jumlah || 1;
-                if (elTugas) elTugas.value = editData.keperluan_tugas || '';
+                if (elTugas) elTugas.value = editData.tugas || editData.keperluan_tugas || '';
                 if (elTglPinjam) elTglPinjam.value = formatForDateTimeLocal(editData.tanggal_pinjam);
                 if (elTglKembali) elTglKembali.value = formatForDateTimeLocal(editData.tanggal_kembali);
                 if (elStatus) elStatus.value = editData.status || 'dipinjam';
-                if (elTahun) elTahun.value = editData.tahun_ajaran || '2025/2026';
+
+                // 1. Sinkronisasi Guru Penanggung Jawab
+                if (selectGuru && editData.guru_peminjam) {
+                    let matchedGuruOpt = false;
+                    for (let opt of selectGuru.options) {
+                        if (opt.value && opt.value.trim().toLowerCase() === editData.guru_peminjam.trim().toLowerCase()) {
+                            selectGuru.value = opt.value;
+                            matchedGuruOpt = true;
+                            break;
+                        }
+                    }
+                    if (matchedGuruOpt) {
+                        if (customGuru) { customGuru.classList.add('hidden'); customGuru.value = ''; }
+                    } else {
+                        selectGuru.value = '__custom__';
+                        if (customGuru) { customGuru.classList.remove('hidden'); customGuru.value = editData.guru_peminjam; }
+                    }
+                }
+
+                // 2. Sinkronisasi Apakah Peminjam Siswa
+                const isUntukSiswa = Boolean(
+                    (editData.nisn && String(editData.nisn).trim() !== '') ||
+                    (editData.nama_peminjam && (!editData.guru_peminjam || editData.nama_peminjam.trim().toLowerCase() !== editData.guru_peminjam.trim().toLowerCase()))
+                );
+
+                if (elCheckSiswa) {
+                    elCheckSiswa.checked = isUntukSiswa;
+                }
+                togglePinjamUntukSiswa(isUntukSiswa);
+
+                // 3. Sinkronisasi Data Siswa
+                if (isUntukSiswa) {
+                    const rawPeminjam = (editData.nama_peminjam || '').trim();
+                    const rawNisn = (editData.nisn || '').trim();
+
+                    const matchedSiswa = (window.dbSiswa || []).find(s =>
+                        (rawNisn && s.nisn && String(s.nisn).trim() === rawNisn) ||
+                        (rawPeminjam && s.nama_lengkap && s.nama_lengkap.trim().toLowerCase() === rawPeminjam.toLowerCase()) ||
+                        (rawPeminjam && s.nama_siswa && s.nama_siswa.trim().toLowerCase() === rawPeminjam.toLowerCase())
+                    );
+
+                    let matchedOpt = false;
+                    if (selectSiswa) {
+                        for (let opt of selectSiswa.options) {
+                            const optNisn = (opt.getAttribute('data-nisn') || '').trim();
+                            const optVal = opt.value.trim().toLowerCase();
+                            if (
+                                (rawNisn && optNisn && optNisn === rawNisn) ||
+                                (rawPeminjam && optVal === rawPeminjam.toLowerCase()) ||
+                                (matchedSiswa && (optVal === (matchedSiswa.nama_lengkap || '').toLowerCase() || optVal === (matchedSiswa.nama_siswa || '').toLowerCase()))
+                            ) {
+                                selectSiswa.value = opt.value;
+                                matchedOpt = true;
+                                break;
+                            }
+                        }
+
+                        if (matchedOpt) {
+                            if (customSiswa) { customSiswa.classList.add('hidden'); customSiswa.required = false; customSiswa.value = ''; }
+                        } else if (rawPeminjam) {
+                            selectSiswa.value = '__custom__';
+                            if (customSiswa) { customSiswa.classList.remove('hidden'); customSiswa.required = true; customSiswa.value = rawPeminjam; }
+                        }
+                    }
+
+                    if (elNisn) elNisn.value = rawNisn || (matchedSiswa ? matchedSiswa.nisn : '');
+                    if (elTahun) elTahun.value = editData.tahun_ajaran || (matchedSiswa ? matchedSiswa.tahun_ajaran : '2026/2027');
+                } else {
+                    if (selectSiswa) selectSiswa.value = '';
+                    if (customSiswa) { customSiswa.classList.add('hidden'); customSiswa.required = false; customSiswa.value = ''; }
+                    if (elNisn) elNisn.value = '';
+                    if (elTahun) elTahun.value = '';
+                }
 
                 // Jika status sudah 'dikembalikan', KUNCI (disable) semua field kecuali Tanggal dan Status!
                 const isReturned = (editData.status === 'dikembalikan');
-                [elJurusan, elBarang, elPeminjam, elJumlah, elTugas, elTahun].forEach(el => {
+                [elJurusan, elJenis, elBarang, selectSiswa, customSiswa, elJumlah, elTugas, elTahun, elCheckSiswa, selectGuru, customGuru].forEach(el => {
                     if (el) {
                         el.disabled = isReturned;
                         if (isReturned) {
@@ -1194,10 +2211,43 @@ function openModal(modalId, customTitle = null, editData = null) {
             }
         } else {
             // Reset semua hidden ID dan input saat mode Tambah Data Baru
-            ['jurusan_edit_id', 'pengguna_edit_id', 'kategori_edit_id', 'rak_edit_id', 'barang_edit_id', 'masuk_edit_id', 'keluar_edit_id', 'pinjam_edit_id'].forEach(id => {
+            ['guru_edit_id', 'siswa_edit_id', 'jurusan_edit_id', 'pengguna_edit_id', 'kategori_edit_id', 'rak_edit_id', 'barang_edit_id', 'masuk_edit_id', 'keluar_edit_id', 'pinjam_edit_id'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.value = '';
             });
+
+            if (modalId === 'modalGuru') {
+                const elNama = document.getElementById('guru_nama_guru');
+                const elUsername = document.getElementById('guru_nama_pengguna');
+                const elMengajar = document.getElementById('guru_mengajar');
+                const elJur = document.getElementById('guru_jurusan_id');
+                const elToken = document.getElementById('guru_token');
+                if (elNama) elNama.value = '';
+                if (elUsername) elUsername.value = '';
+                if (elMengajar) {
+                    elMengajar.value = 'bengkel';
+                    handleGuruMengajarChange('bengkel');
+                }
+                if (elJur) elJur.value = '';
+                if (elToken) elToken.value = '';
+                generateTokenForGuruForm();
+            }
+
+            if (modalId === 'modalSiswa') {
+                const elNisn = document.getElementById('siswa_nisn');
+                const elNama = document.getElementById('siswa_nama_siswa');
+                const elLengkap = document.getElementById('siswa_nama_lengkap');
+                const elKelas = document.getElementById('siswa_kelas');
+                const elTA = document.getElementById('siswa_tahun_ajaran');
+                const elJur = document.getElementById('siswa_jurusan_id');
+                if (elNisn) elNisn.value = '';
+                if (elNama) elNama.value = '';
+                if (elLengkap) elLengkap.value = '';
+                if (elKelas) elKelas.value = '';
+                if (elTA) elTA.value = '2026/2027';
+                if (elJur) elJur.value = '';
+                generateTokenForSiswaForm();
+            }
 
             if (modalId === 'modalJurusan') {
                 const elNama = document.getElementById('jurusan_nama');
@@ -1218,6 +2268,10 @@ function openModal(modalId, customTitle = null, editData = null) {
                 if (elKat) elKat.value = '';
                 if (elKet) elKet.value = '';
             } else if (modalId === 'modalPengguna') {
+                const elStatus = document.getElementById('pengguna_status_pengguna');
+                const elGuru = document.getElementById('pengguna_guru_id');
+                const elSiswa = document.getElementById('pengguna_siswa_id');
+                const elToken = document.getElementById('pengguna_token');
                 const elNama = document.getElementById('pengguna_nama_pengguna');
                 const elLengkap = document.getElementById('pengguna_nama_lengkap');
                 const elPrefix = document.getElementById('pengguna_email_prefix');
@@ -1227,6 +2281,12 @@ function openModal(modalId, customTitle = null, editData = null) {
                 const elTel = document.getElementById('pengguna_telepon');
                 const elFoto = document.getElementById('pengguna_foto');
                 const pwHint = document.getElementById('pengguna_password_hint');
+
+                if (elStatus) elStatus.value = 'tidak_ada';
+                if (elGuru) elGuru.value = '';
+                if (elSiswa) elSiswa.value = '';
+                if (elToken) elToken.value = '';
+                handleStatusPenggunaChange('tidak_ada');
 
                 if (elNama) elNama.value = '';
                 if (elLengkap) elLengkap.value = '';
@@ -1247,16 +2307,20 @@ function openModal(modalId, customTitle = null, editData = null) {
                 const initialJurId = elJurusan ? elJurusan.value : null;
                 filterKategoriAndRakByJurusan(initialJurId);
 
+                const elJenis = document.getElementById('barang_jenis');
+                if (elJenis) elJenis.value = 'alat';
                 if (elKategori) elKategori.value = '';
                 if (elRak) elRak.value = '';
                 if (elSatuan) elSatuan.value = 'Unit';
                 if (elBarcode) elBarcode.value = window.nextCodes?.barcode || '';
             } else if (modalId === 'modalBarangMasuk') {
-                const elPemasok = document.getElementById('masuk_pemasok');
+                const elJenis = document.getElementById('masuk_jenis');
+                if (elJenis) elJenis.value = '';
+                filterBarangMasukOptions();
                 const elJumlah = document.getElementById('masuk_jumlah');
-                if (elPemasok) elPemasok.value = '';
                 if (elJumlah) elJumlah.value = 5;
             } else if (modalId === 'modalBarangKeluar') {
+                filterBarangKeluarOptions();
                 const elPenerima = document.getElementById('keluar_penerima');
                 const elJumlah = document.getElementById('keluar_jumlah');
                 const elKet = document.getElementById('keluar_keterangan');
@@ -1264,23 +2328,64 @@ function openModal(modalId, customTitle = null, editData = null) {
                 if (elJumlah) elJumlah.value = 1;
                 if (elKet) elKet.value = '';
             } else if (modalId === 'modalPeminjaman') {
+                const elJenis = document.getElementById('pinjam_jenis');
+                if (elJenis) elJenis.value = '';
+                filterBarangPinjamOptions();
+                filterGuruPinjamOptions();
+                filterSiswaPinjamOptions();
+
                 const elJurusan = document.getElementById('pinjam_jurusan_id');
                 const elBarang = document.getElementById('pinjam_barang_id');
-                const elPeminjam = document.getElementById('pinjam_peminjam');
                 const elJumlah = document.getElementById('pinjam_jumlah');
                 const elTugas = document.getElementById('pinjam_tugas');
                 const elTglPinjam = document.getElementById('pinjam_tanggal_pinjam');
                 const elTglKembali = document.getElementById('pinjam_tanggal_kembali');
                 const elStatus = document.getElementById('pinjam_status');
 
-                [elJurusan, elBarang, elPeminjam, elJumlah, elTugas, elTglPinjam, elTglKembali, elStatus].forEach(el => {
+                const checkUntukSiswa = document.getElementById('pinjam_untuk_siswa');
+                const selectSiswa = document.getElementById('pinjam_peminjam_select');
+                const customSiswa = document.getElementById('pinjam_peminjam_custom');
+                const inputNisn = document.getElementById('pinjam_nisn');
+                const inputTA = document.getElementById('pinjam_tahun_ajaran');
+
+                const selectGuru = document.getElementById('pinjam_guru_peminjam_select');
+                const customGuru = document.getElementById('pinjam_guru_peminjam_custom');
+
+                [elJurusan, elJenis, elBarang, selectSiswa, customSiswa, elJumlah, elTugas, elTglPinjam, elTglKembali, elStatus, checkUntukSiswa, selectGuru, customGuru, inputNisn, inputTA].forEach(el => {
                     if (el) {
                         el.disabled = false;
                         el.classList.remove('bg-slate-100/80', 'cursor-not-allowed');
                     }
                 });
 
-                if (elPeminjam) elPeminjam.value = window.currentUser?.nama_lengkap || window.currentUser?.nama_pengguna || '';
+                if (checkUntukSiswa) {
+                    checkUntukSiswa.checked = false;
+                }
+                togglePinjamUntukSiswa(false);
+
+                if (selectSiswa) selectSiswa.value = '';
+                if (customSiswa) { customSiswa.classList.add('hidden'); customSiswa.required = false; customSiswa.value = ''; }
+                if (inputNisn) inputNisn.value = '';
+                if (inputTA) inputTA.value = '2026/2027';
+
+                if (selectGuru) {
+                    const currentUserFullName = (window.currentUser && (window.currentUser.nama_lengkap || window.currentUser.nama_pengguna)) || '';
+                    const matchedGuru = (window.dbGuru || []).find(g =>
+                        g.nama_guru.toLowerCase().includes(currentUserFullName.toLowerCase()) ||
+                        currentUserFullName.toLowerCase().includes(g.nama_guru.toLowerCase())
+                    );
+                    if (matchedGuru) {
+                        selectGuru.value = matchedGuru.nama_guru;
+                        if (customGuru) { customGuru.classList.add('hidden'); customGuru.value = ''; }
+                    } else if (currentUserFullName && window.currentUser?.peran !== 'admin_sekolah') {
+                        selectGuru.value = '__custom__';
+                        if (customGuru) { customGuru.classList.remove('hidden'); customGuru.value = currentUserFullName; }
+                    } else {
+                        selectGuru.value = '';
+                        if (customGuru) { customGuru.classList.add('hidden'); customGuru.value = ''; }
+                    }
+                }
+
                 if (elJumlah) elJumlah.value = 1;
                 if (elTugas) elTugas.value = '';
                 if (elTglPinjam) elTglPinjam.value = formatForDateTimeLocal(new Date());
@@ -1351,6 +2456,23 @@ function closeModal(modalId) {
         modal.querySelectorAll('input[type="hidden"]').forEach(el => {
             if (el.id && el.id.includes('_edit_id')) el.value = '';
         });
+
+        if (modalId === 'modalPengguna') {
+            const elStatus = document.getElementById('pengguna_status_pengguna');
+            const elGuru = document.getElementById('pengguna_guru_id');
+            const elSiswa = document.getElementById('pengguna_siswa_id');
+            if (elStatus) elStatus.value = 'tidak_ada';
+            if (elGuru) elGuru.value = '';
+            if (elSiswa) elSiswa.value = '';
+            handleStatusPenggunaChange('tidak_ada');
+        } else if (modalId === 'modalPeminjaman') {
+            stopPinjamCameraStream();
+            const chkBarcode = document.getElementById('pinjam_use_barcode');
+            if (chkBarcode) {
+                chkBarcode.checked = false;
+                togglePinjamBarcodeScanner(false);
+            }
+        }
     }
 
     const remainingModals = document.querySelectorAll('.fixed.inset-0.z-50:not(.hidden)');
@@ -1404,6 +2526,10 @@ async function handleFormSubmit(event, actionName) {
         formData.append('email', combinedEmail);
 
         formData.append('peran', document.getElementById('pengguna_peran')?.value || 'siswa');
+        formData.append('status_pengguna', document.getElementById('pengguna_status_pengguna')?.value || 'tidak_ada');
+        formData.append('guru_id', document.getElementById('pengguna_guru_id')?.value || '');
+        formData.append('siswa_id', document.getElementById('pengguna_siswa_id')?.value || '');
+        formData.append('token', document.getElementById('pengguna_token')?.value || '');
         formData.append('password', document.getElementById('pengguna_password')?.value || '');
         formData.append('nomor_telepon', document.getElementById('pengguna_telepon')?.value || '');
 
@@ -1430,10 +2556,12 @@ async function handleFormSubmit(event, actionName) {
         formData.append('id', document.getElementById('barang_edit_id')?.value || '');
         formData.append('jurusan_id', document.getElementById('barang_jurusan_id')?.value || '');
         formData.append('nama_barang', document.getElementById('barang_nama')?.value || '');
+        formData.append('jenis', document.getElementById('barang_jenis')?.value || 'alat');
         formData.append('kategori_id', document.getElementById('barang_kategori_id')?.value || '');
         formData.append('rak_id', document.getElementById('barang_rak_id')?.value || '');
         formData.append('merek', document.getElementById('barang_merek')?.value || '');
         formData.append('barcode', document.getElementById('barang_barcode')?.value || '');
+        formData.append('stok_awal', document.getElementById('barang_stok')?.value || '0');
         formData.append('stok_total', document.getElementById('barang_stok')?.value || '0');
         formData.append('satuan', document.getElementById('barang_satuan')?.value || 'Unit');
     } else if (actionName === 'Barang Keluar') {
@@ -1449,20 +2577,76 @@ async function handleFormSubmit(event, actionName) {
         formData.append('id', document.getElementById('masuk_edit_id')?.value || '');
         formData.append('jurusan_id', document.getElementById('masuk_jurusan_id')?.value || '');
         formData.append('barang_id', document.getElementById('masuk_barang_id')?.value || '');
-        formData.append('nama_pemasok', document.getElementById('masuk_pemasok')?.value || '');
         formData.append('jumlah', document.getElementById('masuk_jumlah')?.value || '1');
     } else if (actionName === 'Peminjaman Alat' || actionName === 'Peminjaman') {
         apiAction = 'save_peminjaman';
         formData.append('id', document.getElementById('pinjam_edit_id')?.value || '');
         formData.append('jurusan_id', document.getElementById('pinjam_jurusan_id')?.value || '');
         formData.append('barang_id', document.getElementById('pinjam_barang_id')?.value || '');
-        formData.append('peminjam', document.getElementById('pinjam_peminjam')?.value || '');
+
+        const elGuruSel = document.getElementById('pinjam_guru_peminjam_select');
+        const elGuruCust = document.getElementById('pinjam_guru_peminjam_custom');
+        const elGuruAuto = document.getElementById('pinjam_guru_peminjam_auto');
+        let guruVal = '';
+        if (elGuruSel) {
+            guruVal = (elGuruSel.value === '__custom__') ? (elGuruCust ? elGuruCust.value : '') : elGuruSel.value;
+        } else if (elGuruAuto) {
+            guruVal = elGuruAuto.value;
+        } else if (window.currentUser) {
+            guruVal = window.currentUser.nama_lengkap || window.currentUser.nama_pengguna || '';
+        }
+
+        if (!guruVal || !guruVal.trim()) {
+            showNotification('Pilih atau masukkan nama Guru Peminjam!', 'warning');
+            return;
+        }
+
+        const isUntukSiswa = document.getElementById('pinjam_untuk_siswa')?.checked;
+        let siswaVal = '';
+        let nisnVal = '';
+        let taVal = '';
+
+        if (isUntukSiswa) {
+            const elSiswaSel = document.getElementById('pinjam_peminjam_select');
+            const elSiswaCust = document.getElementById('pinjam_peminjam_custom');
+            siswaVal = (elSiswaSel && elSiswaSel.value === '__custom__') ? (elSiswaCust ? elSiswaCust.value : '') : (elSiswaSel ? elSiswaSel.value : '');
+            nisnVal = document.getElementById('pinjam_nisn')?.value || '';
+            taVal = document.getElementById('pinjam_tahun_ajaran')?.value || '2026/2027';
+
+            if (!siswaVal || !siswaVal.trim()) {
+                showNotification('Pilih atau masukkan nama Siswa Peminjam!', 'warning');
+                return;
+            }
+        }
+
+        formData.append('guru_peminjam', guruVal);
+        formData.append('untuk_siswa', isUntukSiswa ? '1' : '0');
+        formData.append('peminjam', siswaVal);
+        formData.append('nisn', nisnVal);
+        formData.append('tahun_ajaran', taVal);
         formData.append('jumlah', document.getElementById('pinjam_jumlah')?.value || '1');
         formData.append('tugas', document.getElementById('pinjam_tugas')?.value || '');
-        formData.append('tahun_ajaran', document.getElementById('pinjam_tahun_ajaran')?.value || '2025/2026');
         formData.append('tanggal_pinjam', document.getElementById('pinjam_tanggal_pinjam')?.value || '');
         formData.append('tanggal_kembali', document.getElementById('pinjam_tanggal_kembali')?.value || '');
         formData.append('status', document.getElementById('pinjam_status')?.value || 'dipinjam');
+    } else if (actionName === 'Guru') {
+        apiAction = 'save_guru';
+        formData.append('id', document.getElementById('guru_edit_id')?.value || '');
+        formData.append('nama_guru', document.getElementById('guru_nama_guru')?.value || '');
+        formData.append('nama_pengguna', document.getElementById('guru_nama_pengguna')?.value || '');
+        formData.append('token', document.getElementById('guru_token')?.value || '');
+        formData.append('mengajar', document.getElementById('guru_mengajar')?.value || 'bengkel');
+        formData.append('jurusan_id', document.getElementById('guru_jurusan_id')?.value || '');
+    } else if (actionName === 'Siswa') {
+        apiAction = 'save_siswa';
+        formData.append('id', document.getElementById('siswa_edit_id')?.value || '');
+        formData.append('nisn', document.getElementById('siswa_nisn')?.value || '');
+        formData.append('nama_siswa', document.getElementById('siswa_nama_siswa')?.value || '');
+        formData.append('nama_lengkap', document.getElementById('siswa_nama_lengkap')?.value || '');
+        formData.append('token', document.getElementById('siswa_token')?.value || '');
+        formData.append('kelas', document.getElementById('siswa_kelas')?.value || '');
+        formData.append('jurusan_id', document.getElementById('siswa_jurusan_id')?.value || '');
+        formData.append('tahun_ajaran', document.getElementById('siswa_tahun_ajaran')?.value || '2026/2027');
     }
 
     if (apiAction) {
@@ -2040,6 +3224,12 @@ async function executeBatchDelete() {
     if (tableId === 'tableJurusan') {
         action = 'bulk_delete_jurusan';
         entityName = selectedIds.length + ' data jurusan';
+    } else if (tableId === 'tableGuru') {
+        action = 'bulk_delete_guru';
+        entityName = selectedIds.length + ' data guru';
+    } else if (tableId === 'tableSiswa') {
+        action = 'bulk_delete_siswa';
+        entityName = selectedIds.length + ' data siswa';
     } else if (tableId === 'tablePengguna') {
         action = 'bulk_delete_pengguna';
         entityName = selectedIds.length + ' data pengguna';
@@ -2306,6 +3496,330 @@ function rejectPeminjaman(id) {
             showToast('Terjadi kesalahan koneksi server.', 'error');
         }
     });
+}
+
+function handleStatusPenggunaChange(val) {
+    const groupGuru = document.getElementById('field_group_pilih_guru');
+    const groupSiswa = document.getElementById('field_group_pilih_siswa');
+    const groupToken = document.getElementById('field_group_token_siswa');
+    const tokenLabel = document.getElementById('pengguna_token_label');
+    const groupPassword = document.getElementById('field_group_password');
+    const elPeran = document.getElementById('pengguna_peran');
+
+    if (groupGuru) groupGuru.classList.toggle('hidden', val !== 'guru');
+    if (groupSiswa) groupSiswa.classList.toggle('hidden', val !== 'siswa');
+    if (groupToken) groupToken.classList.toggle('hidden', val !== 'siswa' && val !== 'guru');
+
+    if (tokenLabel) {
+        tokenLabel.innerText = val === 'guru' ? 'Token Login Guru (Password)' : 'Token Login Siswa (Password)';
+    }
+
+    // Sembunyikan field kata sandi jika status adalah siswa atau guru
+    if (groupPassword) {
+        groupPassword.classList.toggle('hidden', val === 'siswa' || val === 'guru');
+    }
+
+    if (val === 'siswa') {
+        if (elPeran) elPeran.value = 'siswa';
+        const elSiswaId = document.getElementById('pengguna_siswa_id');
+        if (elSiswaId && elSiswaId.value) onSiswaSelectedInUserForm(elSiswaId.value);
+    } else if (val === 'guru') {
+        const elGuruId = document.getElementById('pengguna_guru_id');
+        if (elGuruId && elGuruId.value) onGuruSelectedInUserForm(elGuruId.value);
+    }
+}
+
+function onGuruSelectedInUserForm(guruId) {
+    if (!guruId || !window.dbGuru) return;
+    const guru = window.dbGuru.find(g => String(g.id) === String(guruId));
+    if (guru) {
+        const elUsername = document.getElementById('pengguna_nama_pengguna');
+        const elNamaLengkap = document.getElementById('pengguna_nama_lengkap');
+        const elJurusan = document.getElementById('pengguna_jurusan_id');
+        const elPeran = document.getElementById('pengguna_peran');
+        const elToken = document.getElementById('pengguna_token');
+
+        if (elNamaLengkap) elNamaLengkap.value = guru.nama_guru;
+        if (elUsername) {
+            const cleanUser = guru.nama_guru.toLowerCase().replace(/[^a-z0-9]/g, '');
+            elUsername.value = cleanUser;
+        }
+        if (elToken) elToken.value = guru.token || '';
+
+        // Aturan Peran & Jurusan Guru:
+        // Guru Bengkel -> Peran: Admin Jurusan ('admin_jurusan'), Jurusan: jurusan_id guru
+        // Guru Umum -> Peran: Guru Umum ('guru_umum'), Jurusan: "" (Tidak Ada)
+        if (guru.mengajar === 'bengkel') {
+            if (elPeran) elPeran.value = 'admin_jurusan';
+            if (elJurusan && guru.jurusan_id) elJurusan.value = guru.jurusan_id;
+        } else {
+            if (elPeran) elPeran.value = 'guru_umum';
+            if (elJurusan) elJurusan.value = '';
+        }
+    }
+}
+
+function onSiswaSelectedInUserForm(siswaId) {
+    if (!siswaId || !window.dbSiswa) return;
+    const siswa = window.dbSiswa.find(s => String(s.id) === String(siswaId));
+    if (siswa) {
+        const elUsername = document.getElementById('pengguna_nama_pengguna');
+        const elNamaLengkap = document.getElementById('pengguna_nama_lengkap');
+        const elToken = document.getElementById('pengguna_token');
+        const elJurusan = document.getElementById('pengguna_jurusan_id');
+        const elPeran = document.getElementById('pengguna_peran');
+
+        if (elNamaLengkap) elNamaLengkap.value = siswa.nama_lengkap || siswa.nama_siswa;
+        if (elUsername) {
+            const cleanUser = siswa.nama_siswa.toLowerCase().replace(/[^a-z0-9]/g, '');
+            elUsername.value = cleanUser;
+        }
+        if (elToken) elToken.value = siswa.token || '';
+        if (elJurusan && siswa.jurusan_id) {
+            elJurusan.value = siswa.jurusan_id;
+        }
+        if (elPeran) elPeran.value = 'siswa';
+    }
+}
+
+function autoFormatNamaSiswaUsername(val) {
+    const elUsername = document.getElementById('siswa_nama_siswa');
+    if (elUsername) {
+        elUsername.value = String(val).toLowerCase().replace(/[^a-z0-9]/g, '');
+    }
+}
+
+function toggleGuruPeminjamMode(val) {
+    const elCustom = document.getElementById('pinjam_guru_peminjam_custom');
+    if (!elCustom) return;
+    if (val === '__custom__') {
+        elCustom.classList.remove('hidden');
+        elCustom.focus();
+    } else {
+        elCustom.classList.add('hidden');
+        elCustom.value = '';
+    }
+}
+
+function togglePinjamUntukSiswa(isChecked) {
+    const sec = document.getElementById('section_siswa_peminjam');
+    const badge = document.getElementById('pinjam_untuk_siswa_badge');
+    const selSiswa = document.getElementById('pinjam_peminjam_select');
+    const elNisn = document.getElementById('pinjam_nisn');
+    const elTA = document.getElementById('pinjam_tahun_ajaran');
+
+    if (isChecked) {
+        if (sec) sec.classList.remove('hidden');
+        if (badge) {
+            badge.textContent = 'Ya (Peminjam Siswa)';
+            badge.className = 'text-xs font-bold text-sage-600 dark:text-amber-400';
+        }
+        if (selSiswa) selSiswa.required = true;
+    } else {
+        if (sec) sec.classList.add('hidden');
+        if (badge) {
+            badge.textContent = 'Tidak (Guru Langsung)';
+            badge.className = 'text-xs font-medium text-slate-400 dark:text-slate-400';
+        }
+        if (selSiswa) {
+            selSiswa.required = false;
+            selSiswa.value = '';
+        }
+        const custSiswa = document.getElementById('pinjam_peminjam_custom');
+        if (custSiswa) {
+            custSiswa.classList.add('hidden');
+            custSiswa.required = false;
+            custSiswa.value = '';
+        }
+        if (elNisn) elNisn.value = '';
+        if (elTA) elTA.value = '';
+    }
+}
+
+function autoFillGuruUsername(val) {
+    const elUsername = document.getElementById('guru_nama_pengguna');
+    const elEditId = document.getElementById('guru_edit_id');
+    if (elUsername && (!elEditId || !elEditId.value)) {
+        elUsername.value = (val || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    }
+}
+
+function onSiswaSelectedInPeminjamanForm(val) {
+    const elCustom = document.getElementById('pinjam_peminjam_custom');
+    if (elCustom) {
+        if (val === '__custom__') {
+            elCustom.classList.remove('hidden');
+            elCustom.required = true;
+            elCustom.focus();
+        } else {
+            elCustom.classList.add('hidden');
+            elCustom.required = false;
+            elCustom.value = '';
+        }
+    }
+
+    const elNisn = document.getElementById('pinjam_nisn');
+    const elTA = document.getElementById('pinjam_tahun_ajaran');
+
+    if (!val || val === '__custom__' || !window.dbSiswa) {
+        if (elNisn) elNisn.value = '';
+        return;
+    }
+
+    const cleanVal = String(val).trim().toLowerCase();
+    const siswa = window.dbSiswa.find(s => 
+        String(s.nama_siswa).trim().toLowerCase() === cleanVal || 
+        String(s.nama_lengkap || '').trim().toLowerCase() === cleanVal ||
+        String(s.id) === cleanVal
+    );
+    if (siswa) {
+        const elJurusan = document.getElementById('pinjam_jurusan_id');
+
+        if (elNisn) elNisn.value = siswa.nisn || '-';
+        if (elTA) elTA.value = siswa.tahun_ajaran || '2026/2027';
+        if (elJurusan && siswa.jurusan_id) {
+            elJurusan.value = siswa.jurusan_id;
+            if (typeof filterBarangSelectByJurusan === 'function') {
+                filterBarangSelectByJurusan('pinjam_barang_id', siswa.jurusan_id);
+            }
+        }
+    } else {
+        if (elNisn) elNisn.value = '';
+    }
+}
+
+function handleGuruMengajarChange(val) {
+    const groupJurusan = document.getElementById('group_guru_jurusan');
+    if (groupJurusan) {
+        groupJurusan.classList.toggle('hidden', val === 'umum');
+    }
+}
+
+async function generateTokenForUserForm() {
+    try {
+        const res = await fetch('api.php?action=generate_siswa_token');
+        const data = await res.json();
+        if (data.success && data.token) {
+            const el = document.getElementById('pengguna_token');
+            if (el) el.value = data.token;
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+async function generateTokenForGuruForm() {
+    try {
+        const res = await fetch('api.php?action=generate_guru_token');
+        const data = await res.json();
+        if (data.success && data.token) {
+            const el = document.getElementById('guru_token');
+            if (el) el.value = data.token;
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+async function generateTokenForSiswaForm() {
+    try {
+        const res = await fetch('api.php?action=generate_siswa_token');
+        const data = await res.json();
+        if (data.success && data.token) {
+            const el = document.getElementById('siswa_token');
+            if (el) el.value = data.token;
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+function editGuru(id) {
+    const item = (window.dbGuru || []).find(x => String(x.id) === String(id));
+    if (item) {
+        setUrlParam('tab', 'guru');
+        setUrlParam('id', id);
+        openModal('modalGuru', 'Edit Data Guru', item);
+    }
+}
+
+function deleteGuru(id, name) {
+    showDeleteConfirm('data guru ' + name, async () => {
+        const formData = new FormData();
+        formData.append('action', 'delete_guru');
+        formData.append('id', id);
+        const csrfInput = document.querySelector('input[name="csrf_token"]');
+        if (csrfInput) formData.append('csrf_token', csrfInput.value);
+        try {
+            const res = await fetch('api.php', { method: 'POST', body: formData });
+            const data = await res.json();
+            if (data.success) {
+                showToast(data.message, 'success');
+                setTimeout(() => location.reload(), 800);
+            } else {
+                showToast(data.message || 'Gagal menghapus data guru.', 'error');
+            }
+        } catch (e) {
+            showToast('Kesalahan server.', 'error');
+        }
+    });
+}
+
+function editSiswa(id) {
+    const item = (window.dbSiswa || []).find(x => String(x.id) === String(id));
+    if (item) {
+        setUrlParam('tab', 'siswa');
+        setUrlParam('id', id);
+        openModal('modalSiswa', 'Edit Data Siswa', item);
+    }
+}
+
+function deleteSiswa(id, name) {
+    showDeleteConfirm('data siswa ' + name, async () => {
+        const formData = new FormData();
+        formData.append('action', 'delete_siswa');
+        formData.append('id', id);
+        const csrfInput = document.querySelector('input[name="csrf_token"]');
+        if (csrfInput) formData.append('csrf_token', csrfInput.value);
+        try {
+            const res = await fetch('api.php', { method: 'POST', body: formData });
+            const data = await res.json();
+            if (data.success) {
+                showToast(data.message, 'success');
+                setTimeout(() => location.reload(), 800);
+            } else {
+                showToast(data.message || 'Gagal menghapus data siswa.', 'error');
+            }
+        } catch (e) {
+            showToast('Kesalahan server.', 'error');
+        }
+    });
+}
+
+async function handleImportCSVSubmit(e, type) {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    formData.append('action', type === 'guru' ? 'import_guru_csv' : 'import_siswa_csv');
+    const fileInput = document.getElementById(type === 'guru' ? 'import_guru_file' : 'import_siswa_file');
+    if (fileInput && fileInput.files[0]) {
+        formData.append('file_csv', fileInput.files[0]);
+    }
+
+    try {
+        const res = await fetch('api.php', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (data.success) {
+            showToast(data.message, 'success');
+            closeModal(type === 'guru' ? 'modalImportGuruCSV' : 'modalImportSiswaCSV');
+            setTimeout(() => location.reload(), 800);
+        } else {
+            showToast(data.message || 'Gagal mengimpor berkas CSV.', 'error');
+        }
+    } catch (err) {
+        console.error(err);
+        showToast('Kesalahan koneksi saat import CSV.', 'error');
+    }
 }
 </script>
 
