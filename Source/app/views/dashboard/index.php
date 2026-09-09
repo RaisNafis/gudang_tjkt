@@ -621,7 +621,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             <div class="flex items-center justify-between gap-2 mb-4">
                                 <div>
                                     <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-white leading-snug">
-                                        <?= $isSuperAdmin ? 'Grafik Sirkulasi & Stok Inventaris per Jurusan' : 'Grafik Sirkulasi Inventaris & Peminjaman'; ?>
+                                        <?= $isSuperAdmin ? 'Sirkulasi & Stok Inventaris per Jurusan' : 'Sirkulasi Inventaris & Peminjaman'; ?>
                                     </h3>
                                     <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
                                         <?= $isSuperAdmin ? 'Perbandingan Alat & Bahan Masuk, Bahan Keluar, dan Peminjaman Alat per Jurusan' : 'Perbandingan Alat & Bahan Masuk, Bahan Keluar, dan Peminjaman Alat per Bulan'; ?>
@@ -635,16 +635,19 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             </div>
                         </div>
 
-                        <!-- Custom Legend below Bar Chart -->
-                        <div class="flex items-center justify-center gap-3 sm:gap-4 pt-3 mt-3 border-t border-slate-100 dark:border-[#262626] text-xs font-semibold text-slate-600 dark:text-slate-300 flex-wrap">
-                            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-slate-50/80 dark:bg-[#1a1a1a] border border-slate-100 dark:border-[#262626]">
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-2xs"></span> Alat & Bahan Masuk
+                        <!-- Custom Legend below Bar Chart (Hanya Teks & Lingkaran Kecil Tanpa Badge) -->
+                        <div class="flex items-center justify-center gap-5 sm:gap-6 pt-3 mt-3 border-t border-slate-100 dark:border-[#262626] text-xs flex-wrap">
+                            <span class="inline-flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-400">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0 inline-block"></span>
+                                <span>Alat & Bahan Masuk</span>
                             </span>
-                            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-slate-50/80 dark:bg-[#1a1a1a] border border-slate-100 dark:border-[#262626]">
-                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block shadow-2xs"></span> Bahan Keluar
+                            <span class="inline-flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-400">
+                                <span class="w-2 h-2 rounded-full bg-amber-500 shrink-0 inline-block"></span>
+                                <span>Bahan Keluar</span>
                             </span>
-                            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-slate-50/80 dark:bg-[#1a1a1a] border border-slate-100 dark:border-[#262626]">
-                                <span class="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block shadow-2xs"></span> Peminjaman
+                            <span class="inline-flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-400">
+                                <span class="w-2 h-2 rounded-full bg-sky-500 shrink-0 inline-block"></span>
+                                <span>Peminjaman</span>
                             </span>
                         </div>
                     </div>
