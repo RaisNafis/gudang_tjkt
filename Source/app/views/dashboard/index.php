@@ -782,10 +782,10 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             }
                             $sampleActivities = [
                                 ['tindakan' => 'TAMBAH', 'deskripsi' => '3 item baru ditambahkan', 'nama_pengguna' => 'Penambahan barang inventaris', 'waktu' => date('Y-m-d 10:30:00')],
-                                ['tindakan' => 'PINJAM', 'deskripsi' => 'oleh siswa - RPL', 'nama_pengguna' => 'Peminjaman alat', 'waktu' => date('Y-m-d 09:15:00')],
+                                ['tindakan' => 'PINJAM', 'deskripsi' => 'oleh siswa', 'nama_pengguna' => 'Peminjaman alat', 'waktu' => date('Y-m-d 09:15:00')],
                                 ['tindakan' => 'KEMBALI', 'deskripsi' => '1 transaksi selesai', 'nama_pengguna' => 'Pengembalian barang', 'waktu' => date('Y-m-d 14:20:00', strtotime('-1 day'))],
-                                ['tindakan' => 'EDIT', 'deskripsi' => 'Informasi jurusan diperbarui', 'nama_pengguna' => 'Update data jurusan', 'waktu' => date('Y-m-d 11:05:00', strtotime('-1 day'))],
-                                ['tindakan' => 'LOGIN', 'deskripsi' => 'admin masuk ke sistem', 'nama_pengguna' => 'Login pengguna', 'waktu' => date('Y-m-d 08:12:00', strtotime('-1 day'))]
+                                ['tindakan' => 'EDIT', 'deskripsi' => 'Informasi inventaris diperbarui', 'nama_pengguna' => 'Update data barang', 'waktu' => date('Y-m-d 11:05:00', strtotime('-1 day'))],
+                                ['tindakan' => 'LOGIN', 'deskripsi' => 'pengguna masuk ke sistem', 'nama_pengguna' => 'Login pengguna', 'waktu' => date('Y-m-d 08:12:00', strtotime('-1 day'))]
                             ];
                             if (count($recentActivities) < 5) {
                                 for ($si = count($recentActivities); $si < 5; $si++) {
@@ -3237,46 +3237,83 @@ function initInventoryChart() {
             window.dbJurusan.forEach(j => {
                 let name = j.nama_jurusan || j.kode_jurusan || 'Jurusan';
                 const match = name.match(/\(([^)]+)\)/);
-                pieLabels.push(match ? match[1] : name);
+                const shortName = match ? match[1] : name;
 
                 const totalStokJur = (window.dbBarang || [])
                     .filter(b => String(b.jurusan_id) === String(j.id) || b.nama_jurusan === j.nama_jurusan)
-                    .reduce((acc, b) => acc + parseInt(b.stok_total || 0), 0);
-                pieData.push(totalStokJur);
+                    .reduce((acc, b) => acc + parseInt(b.stok_tersedia !== undefined ? b.stok_tersedia : (b.stok_total || 0)), 0);
+
+                if (totalStokJur > 0) {
+                    pieLabels.push(shortName);
+                    pieData.push(totalStokJur);
+                }
             });
         } else {
-            // Per Category Stock Pie Chart for Single Jurusan
-            if (window.dbKategori && window.dbKategori.length > 0) {
-                window.dbKategori.forEach(c => {
-                    pieLabels.push(c.nama_kategori);
-                    const totalStokCat = (window.dbBarang || [])
-                        .filter(b => String(b.kategori_id) === String(c.id))
-                        .reduce((acc, b) => acc + parseInt(b.stok_total || 0), 0);
-                    pieData.push(totalStokCat);
-                });
-            }
+            // Per Category Stock Pie Chart for Single Jurusan (Admin Jurusan, Petugas, Guru, Siswa)
+            const categoryStockMap = {};
+
+            // 1. Inisialisasi dari kategori yang telah terdaftar di jurusan ini
+            (window.dbKategori || []).forEach(c => {
+                const catName = (c.nama_kategori || '').trim();
+                if (catName) {
+                    categoryStockMap[catName] = 0;
+                }
+            });
+
+            // 2. Agregasi stok barang riil milik jurusan ini berdasarkan kategori
+            (window.dbBarang || []).forEach(b => {
+                const stock = parseInt(b.stok_tersedia !== undefined ? b.stok_tersedia : (b.stok_total || 0)) || 0;
+                let catName = (b.nama_kategori || '').trim();
+                if (!catName && b.kategori_id) {
+                    const foundCat = (window.dbKategori || []).find(c => String(c.id) === String(b.kategori_id));
+                    if (foundCat && foundCat.nama_kategori) {
+                        catName = foundCat.nama_kategori.trim();
+                    }
+                }
+                if (!catName) {
+                    catName = 'Umum';
+                }
+                categoryStockMap[catName] = (categoryStockMap[catName] || 0) + stock;
+            });
+
+            // Ambil kategori yang memiliki stok > 0, atau tampilkan semua jika belum ada stok sama sekali
+            const allEntries = Object.entries(categoryStockMap);
+            const activeEntries = allEntries.filter(([_, val]) => val > 0);
+            const chosenEntries = activeEntries.length > 0 ? activeEntries : allEntries;
+
+            chosenEntries.forEach(([lbl, val]) => {
+                pieLabels.push(lbl);
+                pieData.push(val);
+            });
         }
 
         const totalStokSum = pieData.reduce((a, b) => a + b, 0);
-        if (pieLabels.length === 0 || totalStokSum === 0) {
-            pieLabels = ['RPL', 'TKR', 'TKJ', 'TBSM', 'OTKP', 'Lainnya'];
-            pieData = [493, 254, 169, 141, 113, 239];
-        }
+        const isEmptyData = pieLabels.length === 0 || totalStokSum === 0;
 
-        const pieBgColors = pieLabels.map((_, idx) => donutPalette[idx % donutPalette.length]);
+        let displayLabels = pieLabels;
+        let displayData = pieData;
+        let pieBgColors = [];
+
+        if (isEmptyData) {
+            displayLabels = ['Belum Ada Barang'];
+            displayData = [1];
+            pieBgColors = [isDark ? '#262626' : '#e2e8f0'];
+        } else {
+            pieBgColors = displayLabels.map((_, idx) => donutPalette[idx % donutPalette.length]);
+        }
 
         categoryChart = new Chart(ctxPie, {
             type: 'doughnut',
             data: {
-                labels: pieLabels,
+                labels: displayLabels,
                 datasets: [{
-                    data: pieData,
+                    data: displayData,
                     backgroundColor: pieBgColors,
                     hoverBackgroundColor: pieBgColors,
                     borderWidth: 3,
                     borderColor: isDark ? '#161616' : '#ffffff',
-                    spacing: 2,
-                    hoverOffset: 4
+                    spacing: isEmptyData ? 0 : 2,
+                    hoverOffset: isEmptyData ? 0 : 4
                 }]
             },
             options: {
@@ -3287,11 +3324,12 @@ function initInventoryChart() {
                 plugins: {
                     legend: { display: false },
                     tooltip: {
+                        enabled: !isEmptyData,
                         callbacks: {
                             label: function(context) {
                                 const val = context.raw || 0;
-                                const sum = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const pct = sum ? Math.round((val / sum) * 100) : 0;
+                                const sum = totalStokSum || 1;
+                                const pct = Math.round((val / sum) * 100);
                                 return ` ${context.label}: ${val.toLocaleString()} Unit (${pct}%)`;
                             }
                         }
@@ -3303,28 +3341,35 @@ function initInventoryChart() {
         // Update Center Total Text
         const centerTotalEl = document.getElementById('donutTotalStokCenter');
         if (centerTotalEl) {
-            const sum = pieData.reduce((a, b) => a + b, 0);
-            centerTotalEl.innerText = Number(sum).toLocaleString();
+            centerTotalEl.innerText = Number(totalStokSum).toLocaleString();
         }
 
         // Render 2-Column Percentage Legend
         const legendContainer = document.getElementById('donutLegendContainer');
         if (legendContainer) {
-            const total = pieData.reduce((a, b) => a + b, 0) || 1;
-            legendContainer.innerHTML = pieLabels.map((lbl, idx) => {
-                const val = pieData[idx] || 0;
-                const pct = Math.round((val / total) * 100);
-                const col = pieBgColors[idx % pieBgColors.length];
-                return `
-                    <div class="flex items-center justify-between text-xs py-0.5">
-                        <div class="flex items-center gap-1.5 min-w-0">
-                            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${col};"></span>
-                            <span class="font-medium text-slate-600 dark:text-slate-300 truncate">${lbl}</span>
-                        </div>
-                        <span class="font-bold text-slate-700 dark:text-slate-200 ml-2">${pct}%</span>
+            if (isEmptyData) {
+                legendContainer.innerHTML = `
+                    <div class="col-span-2 text-center py-2 text-slate-400 dark:text-slate-500 font-medium text-xs">
+                        Belum ada data barang atau kategori di jurusan ini
                     </div>
                 `;
-            }).join('');
+            } else {
+                const total = totalStokSum || 1;
+                legendContainer.innerHTML = displayLabels.map((lbl, idx) => {
+                    const val = displayData[idx] || 0;
+                    const pct = total > 0 ? Math.round((val / total) * 100) : 0;
+                    const col = pieBgColors[idx % pieBgColors.length];
+                    return `
+                        <div class="flex items-center justify-between text-xs py-0.5">
+                            <div class="flex items-center gap-1.5 min-w-0">
+                                <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${col};"></span>
+                                <span class="font-medium text-slate-600 dark:text-slate-300 truncate" title="${lbl}">${lbl}</span>
+                            </div>
+                            <span class="font-bold text-slate-700 dark:text-slate-200 ml-2">${pct}%</span>
+                        </div>
+                    `;
+                }).join('');
+            }
         }
     }
 }
