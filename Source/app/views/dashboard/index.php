@@ -758,97 +758,118 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">5 aktivitas terakhir di sistem</p>
                                     </div>
                                 </div>
-                                <button type="button" onclick="switchTab('log-aktivitas')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/50 dark:hover:bg-sky-900/60 text-sky-600 dark:text-sky-400 border border-sky-100/80 dark:border-sky-900/30 transition-all shadow-2xs">
+                                <button type="button" onclick="switchTab('log-aktivitas')" class="text-xs font-semibold text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300 transition-colors inline-flex items-center gap-1 shrink-0">
                                     <span>Lihat Semua</span>
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                                 </button>
                             </div>
 
                             <!-- List of 5 Recent Activities -->
-                            <?php
-                            $recentActivities = [];
-                            if (!empty($dbLogAktivitas)) {
-                                foreach ($dbLogAktivitas as $la) {
-                                    $recentActivities[] = [
-                                        'tindakan' => $la['tindakan'] ?? 'AKTIVITAS',
-                                        'deskripsi' => $la['deskripsi'] ?? '',
-                                        'nama_pengguna' => $la['nama_pengguna'] ?? ($la['nama_lengkap'] ?? 'Admin'),
-                                        'waktu' => $la['created_at'] ?? date('Y-m-d H:i:s')
-                                    ];
-                                }
-                            }
-                            $sampleActivities = [
-                                ['tindakan' => 'TAMBAH', 'deskripsi' => '3 item baru ditambahkan', 'nama_pengguna' => 'Penambahan barang inventaris', 'waktu' => date('Y-m-d 10:30:00')],
-                                ['tindakan' => 'PINJAM', 'deskripsi' => 'oleh siswa', 'nama_pengguna' => 'Peminjaman alat', 'waktu' => date('Y-m-d 09:15:00')],
-                                ['tindakan' => 'KEMBALI', 'deskripsi' => '1 transaksi selesai', 'nama_pengguna' => 'Pengembalian barang', 'waktu' => date('Y-m-d 14:20:00', strtotime('-1 day'))],
-                                ['tindakan' => 'EDIT', 'deskripsi' => 'Informasi inventaris diperbarui', 'nama_pengguna' => 'Update data barang', 'waktu' => date('Y-m-d 11:05:00', strtotime('-1 day'))],
-                                ['tindakan' => 'LOGIN', 'deskripsi' => 'pengguna masuk ke sistem', 'nama_pengguna' => 'Login pengguna', 'waktu' => date('Y-m-d 08:12:00', strtotime('-1 day'))]
-                            ];
-                            if (count($recentActivities) < 5) {
-                                for ($si = count($recentActivities); $si < 5; $si++) {
-                                    $recentActivities[] = $sampleActivities[$si];
-                                }
-                            }
-                            $recentActivities = array_slice($recentActivities, 0, 5);
-                            ?>
-
-                            <div class="divide-y divide-slate-100 dark:divide-slate-800/80">
-                                <?php foreach ($recentActivities as $act): ?>
-                                    <?php
-                                    $actTime = strtotime($act['waktu'] ?? 'now');
-                                    $timeStr = date('H:i', $actTime);
-                                    $mIdx = (int)date('n', $actTime) - 1;
-                                    $dateStr = (int)date('j', $actTime) . ' ' . $monthsIndo[$mIdx] . ' ' . date('Y', $actTime);
-
-                                    $tindakanUpper = strtoupper($act['tindakan']);
-                                    if (strpos($tindakanUpper, 'TAMBAH') !== false || strpos($tindakanUpper, 'MASUK') !== false) {
-                                        $iconBg = 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400';
-                                        $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>';
-                                        $actTitle = !empty($act['nama_pengguna']) && $act['nama_pengguna'] !== 'admin' && !is_numeric($act['nama_pengguna']) ? $act['nama_pengguna'] : 'Penambahan barang inventaris';
-                                        $actDesc = $act['deskripsi'] ?: 'Item baru berhasil ditambahkan';
-                                    } elseif (strpos($tindakanUpper, 'PINJAM') !== false) {
-                                        $iconBg = 'bg-sky-50 dark:bg-sky-950/50 text-sky-500 dark:text-sky-400';
-                                        $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>';
-                                        $actTitle = 'Peminjaman alat';
-                                        $actDesc = $act['deskripsi'] ?: 'Peminjaman alat oleh peminjam';
-                                    } elseif (strpos($tindakanUpper, 'KEMBALI') !== false) {
-                                        $iconBg = 'bg-amber-50 dark:bg-amber-950/50 text-amber-500 dark:text-amber-400';
-                                        $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2m0 0l-4-4m4 4l4-4"/></svg>';
-                                        $actTitle = 'Pengembalian barang';
-                                        $actDesc = $act['deskripsi'] ?: 'Transaksi selesai dan dikembalikan';
-                                    } elseif (strpos($tindakanUpper, 'EDIT') !== false || strpos($tindakanUpper, 'UPDATE') !== false) {
-                                        $iconBg = 'bg-purple-50 dark:bg-purple-950/50 text-purple-500 dark:text-purple-400';
-                                        $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>';
-                                        $actTitle = 'Update data jurusan';
-                                        $actDesc = $act['deskripsi'] ?: 'Informasi jurusan diperbarui';
-                                    } elseif (strpos($tindakanUpper, 'LOGIN') !== false) {
-                                        $iconBg = 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400';
-                                        $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>';
-                                        $actTitle = 'Login pengguna';
-                                        $actDesc = $act['deskripsi'] ?: ($act['nama_pengguna'] . ' masuk ke sistem');
-                                    } else {
-                                        $iconBg = 'bg-teal-50 dark:bg-teal-950/50 text-teal-500 dark:text-teal-400';
-                                        $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
-                                        $actTitle = ucfirst(strtolower(str_replace('_', ' ', $act['tindakan'])));
-                                        $actDesc = $act['deskripsi'] ?: 'Aktivitas sistem';
-                                    }
-                                    ?>
-                                    <div class="py-2.5 first:pt-1 last:pb-0 flex items-center justify-between gap-3">
-                                        <div class="flex items-center gap-3 min-w-0">
-                                            <div class="w-8 h-8 rounded-full <?= $iconBg; ?> flex items-center justify-center shrink-0">
-                                                <?= $iconSvg; ?>
-                                            </div>
-                                            <div class="min-w-0">
-                                                <h4 class="text-xs font-bold text-slate-800 dark:text-white truncate"><?= htmlspecialchars($actTitle); ?></h4>
-                                                <p class="text-[11px] text-slate-400 truncate"><?= htmlspecialchars($actDesc); ?></p>
-                                            </div>
-                                        </div>
-                                        <div class="text-right shrink-0">
-                                            <span class="block text-xs font-semibold text-slate-700 dark:text-slate-300"><?= $timeStr; ?></span>
-                                            <span class="block text-[10px] text-slate-400 dark:text-slate-500"><?= $dateStr; ?></span>
-                                        </div>
+                            <div id="recentActivitiesListContainer" class="divide-y divide-slate-100 dark:divide-slate-800/80">
+                                <?php
+                                $recentLogs = array_slice($dbLogAktivitas ?: [], 0, 5);
+                                if (empty($recentLogs)):
+                                ?>
+                                    <div class="py-6 text-center text-xs text-slate-400 dark:text-slate-500 italic">
+                                        Belum ada aktivitas yang tercatat di sistem
                                     </div>
-                                <?php endforeach; ?>
+                                <?php else: ?>
+                                    <?php foreach ($recentLogs as $act): ?>
+                                        <?php
+                                        $actTime = strtotime($act['created_at'] ?? 'now');
+                                        $timeStr = date('H:i', $actTime);
+                                        $mIdx = (int)date('n', $actTime) - 1;
+                                        $dateStr = (int)date('j', $actTime) . ' ' . $monthsIndo[$mIdx] . ' ' . date('Y', $actTime);
+
+                                        $rawTindakan = strtoupper($act['tindakan'] ?? 'AKTIVITAS');
+                                        $actionLabels = [
+                                            'LOGIN' => 'Login',
+                                            'LOGOUT' => 'Logout',
+                                            'EDIT_PENGGUNA' => 'Edit Pengguna',
+                                            'TAMBAH_PENGGUNA' => 'Tambah Pengguna',
+                                            'HAPUS_PENGGUNA' => 'Hapus Pengguna',
+                                            'EDIT_BARANG' => 'Edit Barang',
+                                            'TAMBAH_BARANG' => 'Tambah Barang',
+                                            'HAPUS_BARANG' => 'Hapus Barang',
+                                            'TAMBAH_BARANG_MASUK' => 'Barang Masuk',
+                                            'TAMBAH_BARANG_KELUAR' => 'Barang Keluar',
+                                            'PINJAM' => 'Peminjaman Alat',
+                                            'KEMBALI' => 'Pengembalian Alat',
+                                            'EDIT_JURUSAN' => 'Edit Jurusan',
+                                            'TAMBAH_JURUSAN' => 'Tambah Jurusan',
+                                            'HAPUS_JURUSAN' => 'Hapus Jurusan',
+                                            'EDIT_KATEGORI' => 'Edit Kategori',
+                                            'TAMBAH_KATEGORI' => 'Tambah Kategori',
+                                            'HAPUS_KATEGORI' => 'Hapus Kategori',
+                                            'EDIT_RAK' => 'Edit Rak',
+                                            'TAMBAH_RAK' => 'Tambah Rak',
+                                            'HAPUS_RAK' => 'Hapus Rak'
+                                        ];
+                                        $actTitle = $actionLabels[$rawTindakan] ?? ucwords(strtolower(str_replace('_', ' ', $rawTindakan)));
+
+                                        $actPengguna = !empty($act['nama_pengguna']) ? $act['nama_pengguna'] : (!empty($act['nama_lengkap']) ? $act['nama_lengkap'] : 'Sistem');
+                                        $actJurusan = $act['nama_jurusan'] ?? '';
+                                        $shortJurusan = '';
+                                        if (!empty($actJurusan) && $actJurusan !== '-') {
+                                            if (preg_match('/\(([^)]+)\)/', $actJurusan, $matches)) {
+                                                $shortJurusan = $matches[1];
+                                            } else {
+                                                $shortJurusan = $actJurusan;
+                                            }
+                                        }
+                                        $actDesc = !empty($act['deskripsi']) ? $act['deskripsi'] : 'Aktivitas sistem';
+
+                                        if (strpos($rawTindakan, 'TAMBAH') !== false || strpos($rawTindakan, 'MASUK') !== false) {
+                                            $iconBg = 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400';
+                                            $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>';
+                                        } elseif (strpos($rawTindakan, 'PINJAM') !== false) {
+                                            $iconBg = 'bg-sky-50 dark:bg-sky-950/50 text-sky-500 dark:text-sky-400';
+                                            $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>';
+                                        } elseif (strpos($rawTindakan, 'KEMBALI') !== false) {
+                                            $iconBg = 'bg-amber-50 dark:bg-amber-950/50 text-amber-500 dark:text-amber-400';
+                                            $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                                        } elseif (strpos($rawTindakan, 'EDIT') !== false || strpos($rawTindakan, 'UPDATE') !== false) {
+                                            $iconBg = 'bg-purple-50 dark:bg-purple-950/50 text-purple-500 dark:text-purple-400';
+                                            $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>';
+                                        } elseif (strpos($rawTindakan, 'HAPUS') !== false || strpos($rawTindakan, 'DELETE') !== false) {
+                                            $iconBg = 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400';
+                                            $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>';
+                                        } elseif (strpos($rawTindakan, 'LOGIN') !== false) {
+                                            $iconBg = 'bg-sky-50 dark:bg-sky-950/50 text-sky-500 dark:text-sky-400';
+                                            $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>';
+                                        } elseif (strpos($rawTindakan, 'LOGOUT') !== false) {
+                                            $iconBg = 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400';
+                                            $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>';
+                                        } else {
+                                            $iconBg = 'bg-teal-50 dark:bg-teal-950/50 text-teal-500 dark:text-teal-400';
+                                            $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                                        }
+                                        ?>
+                                        <div class="py-2.5 first:pt-1 last:pb-0 flex items-center justify-between gap-3">
+                                            <div class="flex items-center gap-3 min-w-0">
+                                                <div class="w-8 h-8 rounded-full <?= $iconBg; ?> flex items-center justify-center shrink-0">
+                                                    <?= $iconSvg; ?>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="flex items-center gap-1.5 flex-wrap min-w-0">
+                                                        <h4 class="text-xs font-bold text-slate-800 dark:text-white truncate"><?= htmlspecialchars($actTitle); ?></h4>
+                                                        <span class="text-[10px] text-slate-400 dark:text-slate-600">•</span>
+                                                        <span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 truncate"><?= htmlspecialchars($actPengguna); ?></span>
+                                                        <?php if (!empty($shortJurusan)): ?>
+                                                            <span class="text-[10px] text-slate-400 dark:text-slate-600">•</span>
+                                                            <span class="text-[10px] font-medium px-1.5 py-0.2 bg-slate-100 dark:bg-[#202020] text-slate-600 dark:text-slate-300 rounded border border-slate-200/60 dark:border-[#2a2a2a] truncate"><?= htmlspecialchars($shortJurusan); ?></span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate" title="<?= htmlspecialchars($actDesc); ?>"><?= htmlspecialchars($actDesc); ?></p>
+                                                </div>
+                                            </div>
+                                            <div class="text-right shrink-0">
+                                                <span class="block text-xs font-semibold text-slate-700 dark:text-slate-300"><?= $timeStr; ?></span>
+                                                <span class="block text-[10px] text-slate-400 dark:text-slate-500"><?= $dateStr; ?></span>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -4996,6 +5017,117 @@ function renderRecentLogMasukKeluar() {
     }).join('');
 }
 
+function renderDashboardRecentActivities() {
+    const container = document.getElementById('recentActivitiesListContainer');
+    if (!container || !window.dbLogAktivitas) return;
+
+    const list = (window.dbLogAktivitas || []).slice(0, 5);
+    if (list.length === 0) {
+        container.innerHTML = '<div class="py-6 text-center text-xs text-slate-400 dark:text-slate-500 italic">Belum ada aktivitas yang tercatat di sistem</div>';
+        return;
+    }
+
+    const monthsIndo = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    const actionLabels = {
+        'LOGIN': 'Login',
+        'LOGOUT': 'Logout',
+        'EDIT_PENGGUNA': 'Edit Pengguna',
+        'TAMBAH_PENGGUNA': 'Tambah Pengguna',
+        'HAPUS_PENGGUNA': 'Hapus Pengguna',
+        'EDIT_BARANG': 'Edit Barang',
+        'TAMBAH_BARANG': 'Tambah Barang',
+        'HAPUS_BARANG': 'Hapus Barang',
+        'TAMBAH_BARANG_MASUK': 'Barang Masuk',
+        'TAMBAH_BARANG_KELUAR': 'Barang Keluar',
+        'PINJAM': 'Peminjaman Alat',
+        'KEMBALI': 'Pengembalian Alat',
+        'EDIT_JURUSAN': 'Edit Jurusan',
+        'TAMBAH_JURUSAN': 'Tambah Jurusan',
+        'HAPUS_JURUSAN': 'Hapus Jurusan',
+        'EDIT_KATEGORI': 'Edit Kategori',
+        'TAMBAH_KATEGORI': 'Tambah Kategori',
+        'HAPUS_KATEGORI': 'Hapus Kategori',
+        'EDIT_RAK': 'Edit Rak',
+        'TAMBAH_RAK': 'Tambah Rak',
+        'HAPUS_RAK': 'Hapus Rak'
+    };
+
+    container.innerHTML = list.map(act => {
+        const d = act.created_at ? new Date(act.created_at) : new Date();
+        const timeStr = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+        const dateStr = d.getDate() + ' ' + (monthsIndo[d.getMonth()] || '') + ' ' + d.getFullYear();
+
+        const rawTindakan = (act.tindakan || 'AKTIVITAS').toUpperCase();
+        let actTitle = actionLabels[rawTindakan];
+        if (!actTitle) {
+            actTitle = rawTindakan.toLowerCase().replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        }
+
+        const actPengguna = act.nama_pengguna || act.nama_lengkap || 'Sistem';
+        let shortJurusan = '';
+        if (act.nama_jurusan && act.nama_jurusan !== '-') {
+            const match = act.nama_jurusan.match(/\(([^)]+)\)/);
+            shortJurusan = match ? match[1] : act.nama_jurusan;
+        }
+
+        const actDesc = act.deskripsi || 'Aktivitas sistem';
+
+        let iconBg = '';
+        let iconSvg = '';
+        if (rawTindakan.includes('TAMBAH') || rawTindakan.includes('MASUK')) {
+            iconBg = 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400';
+            iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>';
+        } else if (rawTindakan.includes('PINJAM')) {
+            iconBg = 'bg-sky-50 dark:bg-sky-950/50 text-sky-500 dark:text-sky-400';
+            iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>';
+        } else if (rawTindakan.includes('KEMBALI')) {
+            iconBg = 'bg-amber-50 dark:bg-amber-950/50 text-amber-500 dark:text-amber-400';
+            iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+        } else if (rawTindakan.includes('EDIT') || rawTindakan.includes('UPDATE')) {
+            iconBg = 'bg-purple-50 dark:bg-purple-950/50 text-purple-500 dark:text-purple-400';
+            iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>';
+        } else if (rawTindakan.includes('HAPUS') || rawTindakan.includes('DELETE')) {
+            iconBg = 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400';
+            iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>';
+        } else if (rawTindakan.includes('LOGIN')) {
+            iconBg = 'bg-sky-50 dark:bg-sky-950/50 text-sky-500 dark:text-sky-400';
+            iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>';
+        } else if (rawTindakan.includes('LOGOUT')) {
+            iconBg = 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400';
+            iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>';
+        } else {
+            iconBg = 'bg-teal-50 dark:bg-teal-950/50 text-teal-500 dark:text-teal-400';
+            iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+        }
+
+        const jurBadgeHtml = shortJurusan
+            ? `<span class="text-[10px] text-slate-400 dark:text-slate-600">•</span>
+               <span class="text-[10px] font-medium px-1.5 py-0.2 bg-slate-100 dark:bg-[#202020] text-slate-600 dark:text-slate-300 rounded border border-slate-200/60 dark:border-[#2a2a2a] truncate">${escapeHtml(shortJurusan)}</span>`
+            : '';
+
+        return `<div class="py-2.5 first:pt-1 last:pb-0 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="w-8 h-8 rounded-full ${iconBg} flex items-center justify-center shrink-0">
+                    ${iconSvg}
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5 flex-wrap min-w-0">
+                        <h4 class="text-xs font-bold text-slate-800 dark:text-white truncate">${escapeHtml(actTitle)}</h4>
+                        <span class="text-[10px] text-slate-400 dark:text-slate-600">•</span>
+                        <span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 truncate">${escapeHtml(actPengguna)}</span>
+                        ${jurBadgeHtml}
+                    </div>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate" title="${escapeHtml(actDesc)}">${escapeHtml(actDesc)}</p>
+                </div>
+            </div>
+            <div class="text-right shrink-0">
+                <span class="block text-xs font-semibold text-slate-700 dark:text-slate-300">${timeStr}</span>
+                <span class="block text-[10px] text-slate-400 dark:text-slate-500">${dateStr}</span>
+            </div>
+        </div>`;
+    }).join('');
+}
+
 function renderActiveTabTable(tabId) {
     if (!tabId) tabId = (new URLSearchParams(window.location.search).get('tab') || 'dashboard');
     if (tabId === 'siswa') {
@@ -5045,6 +5177,7 @@ function renderActiveTabTable(tabId) {
         if (typeof initInventoryChart === 'function') initInventoryChart();
         if (typeof renderRecentLogMasukKeluar === 'function') renderRecentLogMasukKeluar();
         if (typeof renderDashboardRecentPeminjaman === 'function') renderDashboardRecentPeminjaman();
+        if (typeof renderDashboardRecentActivities === 'function') renderDashboardRecentActivities();
     }
 }
 
@@ -5053,6 +5186,7 @@ function renderAllTableBodies() {
     renderActiveTabTable(currentTab);
     if (typeof renderRecentLogMasukKeluar === 'function') renderRecentLogMasukKeluar();
     if (typeof renderDashboardRecentPeminjaman === 'function') renderDashboardRecentPeminjaman();
+    if (typeof renderDashboardRecentActivities === 'function') renderDashboardRecentActivities();
 }
 
 let isFetchingFreshData = false;
