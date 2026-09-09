@@ -78,6 +78,10 @@ foreach ($dbPeminjaman as $pmItem) {
     }
 }
 $totalLogsCount = $stats['total_logs'] ?? 0;
+
+$daysIndo = ['Minggu', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+$monthsIndo = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+$todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $monthsIndo[(int)date('n') - 1] . ' ' . date('Y');
 ?>
 
 <div class="flex h-screen w-screen bg-slate-50/70 dark:bg-[#0b0f19] font-sans overflow-hidden">
@@ -89,9 +93,9 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
     <div class="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
         
         <!-- Top Bar Header: Mobile Hamburger, Page Title, User Profile & Controls -->
-        <header class="bg-white dark:bg-[#111625] border-b border-slate-100 dark:border-slate-800/80 px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shadow-xs flex-shrink-0 z-10 gap-2">
+        <header class="bg-white dark:bg-[#111625] border-b border-slate-100 dark:border-slate-800/80 px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between shadow-xs flex-shrink-0 z-20 gap-3">
             <!-- UJUNG KIRI: Hamburger Menu Button (Mobile) + Text Title Halaman -->
-            <div class="flex items-center gap-3 min-w-0">
+            <div class="flex items-center gap-3 min-w-0 shrink-0">
                 <button type="button" onclick="openMobileSidebar()" class="lg:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-sage-700 hover:bg-sage-100 dark:hover:bg-slate-800 transition-colors border border-sage-200 dark:border-slate-800 shrink-0" title="Buka Menu Sidebar">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -100,17 +104,32 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                 <h2 class="text-base sm:text-xl font-bold text-slate-800 dark:text-white truncate" id="pageTitle">Dashboard Overview</h2>
             </div>
 
-            <!-- UJUNG KANAN: Theme Toggle, Sekolah Badge & Profile -->
+            <!-- UJUNG KANAN: Search, Date, Theme Toggle, Sekolah Badge & Profile Dropdown -->
             <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-                <button type="button" onclick="toggleTheme()" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors flex items-center justify-center border border-sage-100 dark:border-slate-800" title="Beralih Mode Gelap / Terang">
-                    <svg class="themeSunIcon w-5 h-5 hidden text-slate-700 dark:text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <!-- Search Box Pill in Navbar -->
+                <div class="relative hidden md:block">
+                    <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <input type="text" id="dashboardQuickSearch" placeholder="Cari data..." class="pl-9 pr-4 py-1.5 text-xs rounded-full bg-slate-100/90 dark:bg-[#151b28] border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 w-36 lg:w-56 transition-all shadow-xs" oninput="handleDashboardQuickSearch(this.value)">
+                </div>
+
+                <!-- Date Pill in Navbar -->
+                <div class="hidden xl:inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold bg-slate-100/80 dark:bg-[#151b28] border border-slate-200/80 dark:border-slate-800 text-slate-600 dark:text-slate-300 rounded-full shadow-xs">
+                    <svg class="w-3.5 h-3.5 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <span><?= $todayFormatted; ?></span>
+                </div>
+
+                <!-- Theme Toggle -->
+                <button type="button" onclick="toggleTheme()" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors flex items-center justify-center border border-slate-200/80 dark:border-slate-800" title="Beralih Mode Gelap / Terang">
+                    <svg class="themeSunIcon w-4.5 h-4.5 hidden text-slate-700 dark:text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
                     </svg>
-                    <svg class="themeMoonIcon w-5 h-5 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="themeMoonIcon w-4.5 h-4.5 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                     </svg>
                 </button>
-                <span class="hidden md:inline-block px-3 py-1 text-xs font-semibold bg-sage-100 dark:bg-sage-900/40 text-sage-800 dark:text-sage-300 rounded-full border border-sage-200/80 dark:border-sage-800/60">SMK NEGERI 2 PANGKALPINANG</span>
+
+                <!-- School Badge -->
+                <span class="hidden 2xl:inline-block px-3 py-1 text-xs font-semibold bg-sage-100 dark:bg-sage-900/40 text-sage-800 dark:text-sage-300 rounded-full border border-sage-200/80 dark:border-sage-800/60">SMK NEGERI 2 PANGKALPINANG</span>
                 <?php 
                 $topRole = $user['peran'] ?? 'siswa';
                 if ($topRole === 'admin_sekolah') {
@@ -129,16 +148,21 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                 ?>
                 <!-- Top Header Profile Pill with Dropdown Arrow -->
                 <div class="relative" id="topHeaderProfileContainer">
-                    <button type="button" id="topHeaderProfileBtn" onclick="toggleProfilePopover('topHeaderProfilePopover', 'topHeaderProfileArrow', event)" class="pl-2 sm:pl-3 border-l border-sage-200 dark:border-slate-800 text-right flex items-center gap-2 group cursor-pointer focus:outline-none" title="Menu Pengaturan Profil">
-                        <div class="text-right">
-                            <span class="block text-xs font-bold text-slate-800 dark:text-white leading-tight truncate max-w-[110px] sm:max-w-none group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
-                                <?= htmlspecialchars($user['nama_lengkap'] ?? $user['nama_pengguna'] ?? 'User'); ?>
-                            </span>
-                            <span class="block text-[10px] font-bold text-sage-600 dark:text-sage-400 leading-tight mt-0.5 truncate">
-                                <?= htmlspecialchars($topRoleText); ?>
-                            </span>
+                    <button type="button" id="topHeaderProfileBtn" onclick="toggleProfilePopover('topHeaderProfilePopover', 'topHeaderProfileArrow', event)" class="inline-flex items-center gap-2.5 px-3 py-1.5 bg-slate-100/90 dark:bg-[#151b28] border border-slate-200/80 dark:border-slate-800 hover:border-sky-300 dark:hover:border-slate-700 rounded-full shadow-xs transition-all cursor-pointer group focus:outline-none focus:ring-2 focus:ring-sky-500/20" title="Menu Pengaturan Profil">
+                        <div class="w-7 h-7 rounded-full bg-sky-100 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold text-xs overflow-hidden shrink-0">
+                            <?php if (!empty($user['foto_url']) && file_exists(__DIR__ . '/../../../' . $user['foto_url'])): ?>
+                                <img src="<?= htmlspecialchars($user['foto_url']); ?>" class="w-full h-full object-cover" alt="Avatar">
+                            <?php else: ?>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            <?php endif; ?>
                         </div>
-                        <svg id="topHeaderProfileArrow" class="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-transform duration-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <div class="text-left leading-tight pr-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
+                                <span><?= htmlspecialchars($user['nama_pengguna'] ?? 'admin'); ?></span>
+                                <svg id="topHeaderProfileArrow" class="w-3 h-3 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                            <div class="text-[10px] text-slate-400 dark:text-slate-400 font-medium"><?= htmlspecialchars($topRoleText); ?></div>
+                        </div>
                     </button>
 
                     <!-- Top Header Popover Settings Menu -->
@@ -217,103 +241,10 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
             <!-- SECTION 1: TAB DASHBOARD -->
             <div id="tab-dashboard" class="tab-content animate-fade-in-up space-y-6">
                 
-                <!-- TOP GREETING HEADER (Matches Image 1) -->
-                <?php
-                $daysIndo = ['Minggu', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-                $monthsIndo = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-                $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $monthsIndo[(int)date('n') - 1] . ' ' . date('Y');
-                ?>
-                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                    <div>
-                        <h1 class="text-2xl sm:text-3xl font-black text-slate-800 dark:text-white tracking-tight">Dashboard</h1>
-                        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Selamat datang, <?= htmlspecialchars($user['nama_lengkap'] ?? $user['nama_pengguna'] ?? 'Admin'); ?>! Berikut ringkasan data inventaris SMK Negeri 2 Pangkalpinang.</p>
-                    </div>
-                    <div class="flex items-center gap-2.5 sm:gap-3 flex-wrap">
-                        <!-- Search Box Pill -->
-                        <div class="relative">
-                            <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                            <input type="text" id="dashboardQuickSearch" placeholder="Cari data, barang, atau jurusan..." class="pl-9 pr-4 py-2 text-xs rounded-full bg-white dark:bg-[#151b28] border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 w-52 sm:w-64 transition-all shadow-xs" oninput="handleDashboardQuickSearch(this.value)">
-                        </div>
-                        <!-- Date Pill -->
-                        <div class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold bg-white dark:bg-[#151b28] border border-slate-200/80 dark:border-slate-800 text-slate-600 dark:text-slate-300 rounded-full shadow-xs">
-                            <svg class="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            <span><?= $todayFormatted; ?></span>
-                        </div>
-                        <!-- User Profile Dropdown Pill & Popover -->
-                        <div class="relative" id="dashboardProfileContainer">
-                            <button type="button" id="dashboardProfileBtn" onclick="toggleProfilePopover('dashboardProfilePopover', 'dashboardProfileArrow', event)" class="inline-flex items-center gap-2.5 px-3 py-1.5 bg-white dark:bg-[#151b28] border border-slate-200/80 dark:border-slate-800 hover:border-sky-300 dark:hover:border-slate-700 rounded-full shadow-xs transition-all cursor-pointer group focus:outline-none focus:ring-2 focus:ring-sky-500/20" title="Menu Pengaturan Profil">
-                                <div class="w-7 h-7 rounded-full bg-sky-100 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold text-xs overflow-hidden shrink-0">
-                                    <?php if (!empty($user['foto_url']) && file_exists(__DIR__ . '/../../../' . $user['foto_url'])): ?>
-                                        <img src="<?= htmlspecialchars($user['foto_url']); ?>" class="w-full h-full object-cover" alt="Avatar">
-                                    <?php else: ?>
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                                    <?php endif; ?>
-                                </div>
-                                <div class="text-left leading-tight pr-1">
-                                    <div class="text-xs font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
-                                        <span><?= htmlspecialchars($user['nama_pengguna'] ?? 'admin'); ?></span>
-                                        <svg id="dashboardProfileArrow" class="w-3 h-3 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                                    </div>
-                                    <div class="text-[10px] text-slate-400 dark:text-slate-400 font-medium"><?= htmlspecialchars($topRoleText); ?></div>
-                                </div>
-                            </button>
-
-                            <!-- Dropdown Popover Settings -->
-                            <div id="dashboardProfilePopover" class="hidden absolute right-0 mt-2 w-72 bg-white dark:bg-[#151b28] border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-xl z-50 p-2 text-slate-700 dark:text-slate-200 transition-all origin-top-right text-left">
-                                <!-- User Info Header -->
-                                <div class="px-3 py-2.5 bg-slate-50/70 dark:bg-[#111625] rounded-xl mb-2 flex items-center gap-3 border border-slate-100 dark:border-slate-800/60">
-                                    <div class="w-10 h-10 rounded-full bg-sky-100 dark:bg-sky-950/80 text-sky-600 dark:text-sky-400 font-bold text-sm flex items-center justify-center shrink-0 overflow-hidden shadow-xs">
-                                        <?php if (!empty($user['foto_url']) && file_exists(__DIR__ . '/../../../' . $user['foto_url'])): ?>
-                                            <img src="<?= htmlspecialchars($user['foto_url']); ?>" class="w-full h-full object-cover" alt="Avatar">
-                                        <?php else: ?>
-                                            <?= strtoupper(substr($user['nama_lengkap'] ?? $user['nama_pengguna'] ?? 'U', 0, 1)); ?>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="min-w-0 flex-1">
-                                        <h4 class="text-xs font-bold text-slate-800 dark:text-white truncate"><?= htmlspecialchars($user['nama_lengkap'] ?? $user['nama_pengguna'] ?? 'User'); ?></h4>
-                                        <p class="text-[11px] text-slate-400 truncate"><?= htmlspecialchars($user['email'] ?? ($user['nama_pengguna'] . '@smk2pangkalpinang.sch.id')); ?></p>
-                                        <span class="inline-block mt-1 px-2 py-0.5 text-[9px] font-bold rounded-md bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300"><?= htmlspecialchars($topRoleText); ?></span>
-                                    </div>
-                                </div>
-
-                                <!-- Menu Action Items -->
-                                <div class="space-y-1">
-                                    <!-- Settings Profile Link -->
-                                    <button type="button" onclick="goToSettingsProfile()" class="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-slate-800/70 rounded-xl transition-colors text-left group cursor-pointer">
-                                        <div class="w-7 h-7 rounded-lg bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                </div>
-                                        <div class="flex-1 min-w-0">
-                                            <div class="font-bold text-slate-800 dark:text-white leading-tight">Pengaturan Profil</div>
-                                            <div class="text-[10px] text-slate-400 font-normal truncate">Perbarui akun, info diri & sandi</div>
-                                        </div>
-                                        <svg class="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                    </button>
-
-                                    <!-- Mode Tema Toggle -->
-                                    <button type="button" onclick="toggleTheme()" class="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-slate-800/70 rounded-xl transition-colors text-left group cursor-pointer">
-                                        <div class="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <div class="font-bold text-slate-800 dark:text-white leading-tight">Beralih Tema</div>
-                                            <div class="text-[10px] text-slate-400 font-normal">Mode Terang / Gelap</div>
-                                        </div>
-                                    </button>
-                                </div>
-
-                                <div class="border-t border-slate-100 dark:border-slate-800/80 my-1.5"></div>
-
-                                <!-- Logout Button -->
-                                <a href="logout.php" class="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition-colors cursor-pointer">
-                                    <div class="w-7 h-7 rounded-lg bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 01-3-3H6a3 3 0 01-3 3v1"/></svg>
-                                    </div>
-                                    <div class="font-bold leading-tight">Keluar (Logout)</div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                <!-- TOP GREETING HEADER -->
+                <div class="mb-1">
+                    <h1 class="text-2xl sm:text-3xl font-black text-slate-800 dark:text-white tracking-tight">Dashboard</h1>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Selamat datang, <?= htmlspecialchars($user['nama_lengkap'] ?? $user['nama_pengguna'] ?? 'Admin'); ?>! Berikut ringkasan data inventaris SMK Negeri 2 Pangkalpinang.</p>
                 </div>
 
                 <!-- Statistics Cards Row Live from MySQL Database -->
