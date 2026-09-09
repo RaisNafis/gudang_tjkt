@@ -627,18 +627,13 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                     <div class="lg:col-span-12 xl:col-span-5 bg-white dark:bg-[#161616] p-5 sm:p-6 rounded-3xl border border-slate-100/90 dark:border-[#262626] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] dark:shadow-none flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between gap-2 mb-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-2xl bg-sky-50/80 dark:bg-sky-950/40 text-sky-500 dark:text-sky-400 flex items-center justify-center shrink-0 border border-sky-100/80 dark:border-sky-900/30 shadow-2xs">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                                    </div>
-                                    <div>
-                                        <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-white leading-snug">
-                                            <?= $isSuperAdmin ? 'Grafik Sirkulasi & Stok Inventaris per Jurusan' : 'Grafik Sirkulasi Inventaris & Peminjaman'; ?>
-                                        </h3>
-                                        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
-                                            <?= $isSuperAdmin ? 'Perbandingan Alat & Bahan Masuk, Bahan Keluar, dan Peminjaman Alat per Jurusan' : 'Perbandingan Alat & Bahan Masuk, Bahan Keluar, dan Peminjaman Alat per Bulan'; ?>
-                                        </p>
-                                    </div>
+                                <div>
+                                    <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-white leading-snug">
+                                        <?= $isSuperAdmin ? 'Grafik Sirkulasi & Stok Inventaris per Jurusan' : 'Grafik Sirkulasi Inventaris & Peminjaman'; ?>
+                                    </h3>
+                                    <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
+                                        <?= $isSuperAdmin ? 'Perbandingan Alat & Bahan Masuk, Bahan Keluar, dan Peminjaman Alat per Jurusan' : 'Perbandingan Alat & Bahan Masuk, Bahan Keluar, dan Peminjaman Alat per Bulan'; ?>
+                                    </p>
                                 </div>
                                 <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 shrink-0">Tahun <?= date('Y'); ?></span>
                             </div>
@@ -665,18 +660,13 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                     <!-- Col 2 (3 Cols on xl): Sebaran Total Stok per Jurusan (Donut Chart) -->
                     <div class="lg:col-span-6 xl:col-span-3 bg-white dark:bg-[#161616] p-5 sm:p-6 rounded-3xl border border-slate-100/90 dark:border-[#262626] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] dark:shadow-none flex flex-col justify-between">
                         <div>
-                            <div class="flex items-center gap-3 mb-2">
-                                <div class="w-10 h-10 rounded-2xl bg-sky-50/80 dark:bg-sky-950/40 text-sky-500 dark:text-sky-400 flex items-center justify-center shrink-0 border border-sky-100/80 dark:border-sky-900/30 shadow-2xs">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
-                                </div>
-                                <div class="min-w-0">
-                                    <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-white leading-snug truncate">
-                                        <?= $isSuperAdmin ? 'Sebaran Total Stok per Jurusan' : 'Komposisi Kategori Barang'; ?>
-                                    </h3>
-                                    <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">
-                                        <?= $isSuperAdmin ? 'Persentase total stok inventaris' : 'Persentase jumlah stok per kategori'; ?>
-                                    </p>
-                                </div>
+                            <div class="mb-2">
+                                <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-white leading-snug truncate">
+                                    <?= $isSuperAdmin ? 'Sebaran Total Stok per Jurusan' : 'Komposisi Kategori Barang'; ?>
+                                </h3>
+                                <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">
+                                    <?= $isSuperAdmin ? 'Persentase total stok inventaris' : 'Persentase jumlah stok per kategori'; ?>
+                                </p>
                             </div>
 
                             <!-- Donut Canvas with Center Unit Overlay -->
@@ -698,18 +688,13 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         </div>
                     </div>
 
-                    <!-- Col 3 (4 Cols on xl): Aktivitas Terbaru (Matches Image 1) -->
+                    <!-- Col 3 (4 Cols on xl): Aktivitas Terbaru -->
                     <div class="lg:col-span-6 xl:col-span-4 bg-white dark:bg-[#161616] p-5 sm:p-6 rounded-3xl border border-slate-100/90 dark:border-[#262626] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] dark:shadow-none flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-2xl bg-sky-50/80 dark:bg-sky-950/40 text-sky-500 dark:text-sky-400 flex items-center justify-center shrink-0 border border-sky-100/80 dark:border-sky-900/30 shadow-2xs">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                    </div>
-                                    <div>
-                                        <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-white leading-snug">Aktivitas Terbaru</h3>
-                                        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">5 aktivitas terakhir di sistem</p>
-                                    </div>
+                                <div>
+                                    <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-white leading-snug">Aktivitas Terbaru</h3>
+                                    <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">5 aktivitas terakhir di sistem</p>
                                 </div>
                                 <button type="button" onclick="switchTab('log-aktivitas')" class="text-xs font-semibold text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300 transition-colors inline-flex items-center gap-1 shrink-0">
                                     <span>Lihat Semua</span>
@@ -733,88 +718,31 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         $timeStr = date('H:i', $actTime);
                                         $mIdx = (int)date('n', $actTime) - 1;
                                         $dateStr = (int)date('j', $actTime) . ' ' . $monthsIndo[$mIdx] . ' ' . date('Y', $actTime);
-
-                                        $rawTindakan = strtoupper($act['tindakan'] ?? 'AKTIVITAS');
-                                        $actionLabels = [
-                                            'LOGIN' => 'Login',
-                                            'LOGOUT' => 'Logout',
-                                            'EDIT_PENGGUNA' => 'Edit Pengguna',
-                                            'TAMBAH_PENGGUNA' => 'Tambah Pengguna',
-                                            'HAPUS_PENGGUNA' => 'Hapus Pengguna',
-                                            'EDIT_BARANG' => 'Edit Barang',
-                                            'TAMBAH_BARANG' => 'Tambah Barang',
-                                            'HAPUS_BARANG' => 'Hapus Barang',
-                                            'TAMBAH_BARANG_MASUK' => 'Barang Masuk',
-                                            'TAMBAH_BARANG_KELUAR' => 'Barang Keluar',
-                                            'PINJAM' => 'Peminjaman Alat',
-                                            'KEMBALI' => 'Pengembalian Alat',
-                                            'EDIT_JURUSAN' => 'Edit Jurusan',
-                                            'TAMBAH_JURUSAN' => 'Tambah Jurusan',
-                                            'HAPUS_JURUSAN' => 'Hapus Jurusan',
-                                            'EDIT_KATEGORI' => 'Edit Kategori',
-                                            'TAMBAH_KATEGORI' => 'Tambah Kategori',
-                                            'HAPUS_KATEGORI' => 'Hapus Kategori',
-                                            'EDIT_RAK' => 'Edit Rak',
-                                            'TAMBAH_RAK' => 'Tambah Rak',
-                                            'HAPUS_RAK' => 'Hapus Rak'
-                                        ];
-                                        $actTitle = $actionLabels[$rawTindakan] ?? ucwords(strtolower(str_replace('_', ' ', $rawTindakan)));
-
-                                        $actPengguna = !empty($act['nama_pengguna']) ? $act['nama_pengguna'] : (!empty($act['nama_lengkap']) ? $act['nama_lengkap'] : 'Sistem');
+                                        
+                                        $rawTindakan = strtoupper(trim($act['tindakan'] ?? 'AKTIVITAS'));
+                                        $actTitle = ucwords(strtolower(str_replace('_', ' ', $rawTindakan)));
+                                        $actPengguna = $act['nama_pengguna'] ?? ($act['username'] ?? 'User');
                                         $actJurusan = $act['nama_jurusan'] ?? '';
+                                        
                                         $shortJurusan = '';
                                         if (!empty($actJurusan) && $actJurusan !== '-') {
-                                            if (preg_match('/\(([^)]+)\)/', $actJurusan, $matches)) {
-                                                $shortJurusan = $matches[1];
-                                            } else {
-                                                $shortJurusan = $actJurusan;
-                                            }
+                                            $shortJurusan = (preg_match('/\(([^)]+)\)/', $actJurusan, $matches)) ? $matches[1] : $actJurusan;
                                         }
-                                        $actDesc = !empty($act['deskripsi']) ? $act['deskripsi'] : 'Aktivitas sistem';
-
-                                        if (strpos($rawTindakan, 'TAMBAH') !== false || strpos($rawTindakan, 'MASUK') !== false) {
-                                            $iconBg = 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400';
-                                            $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>';
-                                        } elseif (strpos($rawTindakan, 'PINJAM') !== false) {
-                                            $iconBg = 'bg-sky-50 dark:bg-sky-950/50 text-sky-500 dark:text-sky-400';
-                                            $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>';
-                                        } elseif (strpos($rawTindakan, 'KEMBALI') !== false) {
-                                            $iconBg = 'bg-amber-50 dark:bg-amber-950/50 text-amber-500 dark:text-amber-400';
-                                            $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
-                                        } elseif (strpos($rawTindakan, 'EDIT') !== false || strpos($rawTindakan, 'UPDATE') !== false) {
-                                            $iconBg = 'bg-purple-50 dark:bg-purple-950/50 text-purple-500 dark:text-purple-400';
-                                            $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>';
-                                        } elseif (strpos($rawTindakan, 'HAPUS') !== false || strpos($rawTindakan, 'DELETE') !== false) {
-                                            $iconBg = 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400';
-                                            $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>';
-                                        } elseif (strpos($rawTindakan, 'LOGIN') !== false) {
-                                            $iconBg = 'bg-sky-50 dark:bg-sky-950/50 text-sky-500 dark:text-sky-400';
-                                            $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>';
-                                        } elseif (strpos($rawTindakan, 'LOGOUT') !== false) {
-                                            $iconBg = 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400';
-                                            $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>';
-                                        } else {
-                                            $iconBg = 'bg-teal-50 dark:bg-teal-950/50 text-teal-500 dark:text-teal-400';
-                                            $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
-                                        }
+                                        
+                                        $actDesc = $act['deskripsi'] ?? 'Aktivitas sistem';
                                         ?>
                                         <div class="py-2.5 first:pt-1 last:pb-0 flex items-center justify-between gap-3">
-                                            <div class="flex items-center gap-3 min-w-0">
-                                                <div class="w-8 h-8 rounded-full <?= $iconBg; ?> flex items-center justify-center shrink-0">
-                                                    <?= $iconSvg; ?>
-                                                </div>
-                                                <div class="min-w-0">
-                                                    <div class="flex items-center gap-1.5 flex-wrap min-w-0">
-                                                        <h4 class="text-xs font-bold text-slate-800 dark:text-white truncate"><?= htmlspecialchars($actTitle); ?></h4>
+                                            <div class="min-w-0">
+                                                <div class="flex items-center gap-1.5 flex-wrap min-w-0">
+                                                    <h4 class="text-xs font-bold text-slate-800 dark:text-white truncate"><?= htmlspecialchars($actTitle); ?></h4>
+                                                    <span class="text-[10px] text-slate-400 dark:text-slate-600">•</span>
+                                                    <span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 truncate"><?= htmlspecialchars($actPengguna); ?></span>
+                                                    <?php if (!empty($shortJurusan)): ?>
                                                         <span class="text-[10px] text-slate-400 dark:text-slate-600">•</span>
-                                                        <span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 truncate"><?= htmlspecialchars($actPengguna); ?></span>
-                                                        <?php if (!empty($shortJurusan)): ?>
-                                                            <span class="text-[10px] text-slate-400 dark:text-slate-600">•</span>
-                                                            <span class="text-[10px] font-medium px-1.5 py-0.2 bg-slate-100 dark:bg-[#202020] text-slate-600 dark:text-slate-300 rounded border border-slate-200/60 dark:border-[#2a2a2a] truncate"><?= htmlspecialchars($shortJurusan); ?></span>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate" title="<?= htmlspecialchars($actDesc); ?>"><?= htmlspecialchars($actDesc); ?></p>
+                                                        <span class="text-[11px] font-medium text-slate-400 dark:text-slate-500 truncate"><?= htmlspecialchars($shortJurusan); ?></span>
+                                                    <?php endif; ?>
                                                 </div>
+                                                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate" title="<?= htmlspecialchars($actDesc); ?>"><?= htmlspecialchars($actDesc); ?></p>
                                             </div>
                                             <div class="text-right shrink-0">
                                                 <span class="block text-xs font-semibold text-slate-700 dark:text-slate-300"><?= $timeStr; ?></span>
@@ -5051,23 +4979,18 @@ function renderDashboardRecentActivities() {
 
         const jurBadgeHtml = shortJurusan
             ? `<span class="text-[10px] text-slate-400 dark:text-slate-600">•</span>
-               <span class="text-[10px] font-medium px-1.5 py-0.2 bg-slate-100 dark:bg-[#202020] text-slate-600 dark:text-slate-300 rounded border border-slate-200/60 dark:border-[#2a2a2a] truncate">${escapeHtml(shortJurusan)}</span>`
+               <span class="text-[11px] font-medium text-slate-400 dark:text-slate-500 truncate">${escapeHtml(shortJurusan)}</span>`
             : '';
 
         return `<div class="py-2.5 first:pt-1 last:pb-0 flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3 min-w-0">
-                <div class="w-8 h-8 rounded-full ${iconBg} flex items-center justify-center shrink-0">
-                    ${iconSvg}
+            <div class="min-w-0">
+                <div class="flex items-center gap-1.5 flex-wrap min-w-0">
+                    <h4 class="text-xs font-bold text-slate-800 dark:text-white truncate">${escapeHtml(actTitle)}</h4>
+                    <span class="text-[10px] text-slate-400 dark:text-slate-600">•</span>
+                    <span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 truncate">${escapeHtml(actPengguna)}</span>
+                    ${jurBadgeHtml}
                 </div>
-                <div class="min-w-0">
-                    <div class="flex items-center gap-1.5 flex-wrap min-w-0">
-                        <h4 class="text-xs font-bold text-slate-800 dark:text-white truncate">${escapeHtml(actTitle)}</h4>
-                        <span class="text-[10px] text-slate-400 dark:text-slate-600">•</span>
-                        <span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 truncate">${escapeHtml(actPengguna)}</span>
-                        ${jurBadgeHtml}
-                    </div>
-                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate" title="${escapeHtml(actDesc)}">${escapeHtml(actDesc)}</p>
-                </div>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate" title="${escapeHtml(actDesc)}">${escapeHtml(actDesc)}</p>
             </div>
             <div class="text-right shrink-0">
                 <span class="block text-xs font-semibold text-slate-700 dark:text-slate-300">${timeStr}</span>
