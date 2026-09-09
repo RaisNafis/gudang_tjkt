@@ -671,12 +671,10 @@
             <div class="p-3 bg-sage-50/60 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
                 <label class="flex items-center gap-2.5 cursor-pointer select-none">
                     <input type="checkbox" id="pinjam_use_barcode" onchange="togglePinjamBarcodeScanner(this.checked)" class="w-4 h-4 rounded accent-sage-600 cursor-pointer">
-                    <span class="font-bold text-slate-800 dark:text-slate-200 text-xs flex items-center gap-1.5">
-                        <svg class="w-4 h-4 text-sage-600 dark:text-sage-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                    <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">
                         Pinjam Menggunakan Scan Barcode / QR Code Barang
                     </span>
                 </label>
-                <span id="pinjam_use_barcode_badge" class="text-xs font-medium text-slate-400 dark:text-slate-400">Tidak (Manual)</span>
             </div>
 
             <!-- CONTAINER SCANNER BARCODE (TAMPIL JIKA CHECKBOX DICENTANG) -->
@@ -1328,18 +1326,10 @@ let pinjamActiveScanMode = 'kamera';
 
 function togglePinjamBarcodeScanner(checked) {
     const section = document.getElementById('section_scan_barcode_peminjaman');
-    const badge = document.getElementById('pinjam_use_barcode_badge');
     const wrapJurusan = document.getElementById('wrap_pinjam_jurusan');
     const wrapJenis = document.getElementById('wrap_pinjam_jenis');
     const wrapBarang = document.getElementById('wrap_pinjam_barang');
     const selectBarang = document.getElementById('pinjam_barang_id');
-
-    if (badge) {
-        badge.innerText = checked ? 'Aktif (Scan)' : 'Tidak (Manual)';
-        badge.className = checked 
-            ? 'text-xs font-bold text-emerald-600 dark:text-emerald-400' 
-            : 'text-xs font-medium text-slate-400 dark:text-slate-400';
-    }
 
     if (wrapJurusan) wrapJurusan.classList.toggle('hidden', checked);
     if (wrapJenis) wrapJenis.classList.toggle('hidden', checked);
