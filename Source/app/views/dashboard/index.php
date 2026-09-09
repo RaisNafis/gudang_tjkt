@@ -4472,9 +4472,10 @@ function initTabAnalytics(tabId) {
                 }));
             }
 
+            const totalStudents = (data || []).reduce((a, b) => a + b, 0);
+
             const legendContainer = document.getElementById('siswaJurusanLegendList');
             if (legendContainer) {
-                const totalStudents = data.reduce((a, b) => a + b, 0);
                 legendContainer.innerHTML = legendItems.map(item => {
                     const pct = totalStudents > 0 ? Math.round((item.count / totalStudents) * 100) : 0;
                     return `
@@ -4500,36 +4501,47 @@ function initTabAnalytics(tabId) {
                 centerTotalSiswaEl.innerText = totalStudents.toLocaleString('en-US');
             }
 
+            const isDataEmpty = !data || data.length === 0;
+            const chartData = isDataEmpty ? [1] : data;
+            const chartLabels = isDataEmpty ? ['Belum Ada Data'] : labels;
+            const chartColors = isDataEmpty ? [isDark ? '#262626' : '#e2e8f0'] : bgColors;
+
             tabAnalyticsCharts['siswaJurusan'] = new Chart(ctxSiswaJur, {
                 type: 'doughnut',
                 data: {
-                    labels: labels,
+                    labels: chartLabels,
                     datasets: [{
-                        data: data,
-                        backgroundColor: bgColors,
-                        hoverBackgroundColor: bgColors,
+                        data: chartData,
+                        backgroundColor: chartColors,
+                        hoverBackgroundColor: chartColors,
                         borderWidth: 0,
                         borderColor: 'transparent',
-                        borderRadius: 8,
-                        spacing: 2,
-                        hoverOffset: 6
+                        borderRadius: isDataEmpty ? 0 : 8,
+                        spacing: chartData.length > 1 && !isDataEmpty ? 2 : 0,
+                        hoverOffset: isDataEmpty ? 0 : 6
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     cutout: '72%',
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true,
+                        duration: 800,
+                        easing: 'easeOutQuart'
+                    },
                     transitions: { active: { animation: { duration: 300, easing: 'easeOutCubic' } } },
                     plugins: {
                         legend: { display: false },
                         tooltip: {
+                            enabled: !isDataEmpty,
                             callbacks: {
                                 title: function() { return ''; },
                                 label: function(context) {
                                     const shortLabel = context.label || '';
                                     const val = Number(context.raw || 0).toLocaleString('en-US');
-                                    const total = data.reduce((a, b) => a + b, 0);
-                                    const pct = total > 0 ? Math.round(((context.raw || 0) / total) * 100) : 0;
+                                    const pct = totalStudents > 0 ? Math.round(((context.raw || 0) / totalStudents) * 100) : 0;
                                     return ` ${shortLabel}: ${val} (${pct}%)`;
                                 }
                             }
