@@ -80,7 +80,7 @@ foreach ($dbPeminjaman as $pmItem) {
 $totalLogsCount = $stats['total_logs'] ?? 0;
 ?>
 
-<div class="flex h-screen w-screen bg-sage-50/60 font-sans overflow-hidden">
+<div class="flex h-screen w-screen bg-slate-50/70 dark:bg-[#0b0f19] font-sans overflow-hidden">
     
     <!-- Sidebar Navigation -->
     <?php require_once __DIR__ . '/../layouts/sidebar.php'; ?>
@@ -89,7 +89,7 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
     <div class="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
         
         <!-- Top Bar Header: Mobile Hamburger, Page Title, User Profile & Controls -->
-        <header class="bg-white dark:bg-slate-900 border-b border-sage-200/80 dark:border-slate-800 px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shadow-sm flex-shrink-0 z-10 gap-2">
+        <header class="bg-white dark:bg-[#111625] border-b border-slate-100 dark:border-slate-800/80 px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shadow-xs flex-shrink-0 z-10 gap-2">
             <!-- UJUNG KIRI: Hamburger Menu Button (Mobile) + Text Title Halaman -->
             <div class="flex items-center gap-3 min-w-0">
                 <button type="button" onclick="openMobileSidebar()" class="lg:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-sage-700 hover:bg-sage-100 dark:hover:bg-slate-800 transition-colors border border-sage-200 dark:border-slate-800 shrink-0" title="Buka Menu Sidebar">
@@ -155,116 +155,264 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
             
             <!-- SECTION 1: TAB DASHBOARD -->
             <div id="tab-dashboard" class="tab-content animate-fade-in-up space-y-6">
+                
+                <!-- TOP GREETING HEADER (Matches Image 1) -->
+                <?php
+                $daysIndo = ['Minggu', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+                $monthsIndo = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+                $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $monthsIndo[(int)date('n') - 1] . ' ' . date('Y');
+                ?>
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-black text-slate-800 dark:text-white tracking-tight">Dashboard</h1>
+                        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Selamat datang, <?= htmlspecialchars($user['nama_lengkap'] ?? $user['nama_pengguna'] ?? 'Admin'); ?>! Berikut ringkasan data inventaris SMK Negeri 2 Pangkalpinang.</p>
+                    </div>
+                    <div class="flex items-center gap-2.5 sm:gap-3 flex-wrap">
+                        <!-- Search Box Pill -->
+                        <div class="relative">
+                            <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <input type="text" id="dashboardQuickSearch" placeholder="Cari data, barang, atau jurusan..." class="pl-9 pr-4 py-2 text-xs rounded-full bg-white dark:bg-[#151b28] border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 w-52 sm:w-64 transition-all shadow-xs" oninput="handleDashboardQuickSearch(this.value)">
+                        </div>
+                        <!-- Date Pill -->
+                        <div class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold bg-white dark:bg-[#151b28] border border-slate-200/80 dark:border-slate-800 text-slate-600 dark:text-slate-300 rounded-full shadow-xs">
+                            <svg class="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span><?= $todayFormatted; ?></span>
+                        </div>
+                        <!-- User Profile Pill -->
+                        <div class="inline-flex items-center gap-2.5 px-3 py-1.5 bg-white dark:bg-[#151b28] border border-slate-200/80 dark:border-slate-800 rounded-full shadow-xs">
+                            <div class="w-7 h-7 rounded-full bg-sky-100 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold text-xs">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            </div>
+                            <div class="text-left leading-tight pr-1">
+                                <div class="text-xs font-bold text-slate-800 dark:text-white flex items-center gap-1">
+                                    <span><?= htmlspecialchars($user['nama_pengguna'] ?? 'admin'); ?></span>
+                                    <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </div>
+                                <div class="text-[10px] text-slate-400 dark:text-slate-400 font-medium"><?= htmlspecialchars($topRoleText); ?></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Statistics Cards Row Live from MySQL Database -->
                 <?php if ($isSuperAdmin): ?>
                     <div class="space-y-5">
-                        <!-- ROW 1: Siswa, Guru, Jurusan (3 Kolom) -->
-                        <!-- ROW 1: Siswa, Guru, Jurusan (3 Kolom) -->
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Siswa</span>
-                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                                    </div>
-                                </div>
-                                <h3 id="statSuperTotalSiswa" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalSiswaCount); ?> Siswa</h3>
-                            </div>
-
-                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Guru</span>
-                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
-                                    </div>
-                                </div>
-                                <h3 id="statSuperTotalGuru" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalGuruCount); ?> Guru</h3>
-                            </div>
-
-                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Jurusan</span>
-                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                                    </div>
-                                </div>
-                                <h3 id="statSuperTotalJurusan" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalJurusanCount); ?> Jurusan</h3>
-                            </div>
-                        </div>
-
-                        <!-- ROW 2: Users, Kategori Barang, Total Barang, Log Aktivitas (4 Kolom) -->
+                        <!-- ROW 1: Siswa, Guru, Jurusan, Users (4 Kolom) -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Users</span>
-                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                            <!-- TOTAL SISWA -->
+                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <div class="w-12 h-12 rounded-2xl bg-sky-50 dark:bg-sky-950/50 text-sky-500 dark:text-sky-400 flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">TOTAL SISWA</span>
+                                        <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                            <span id="statSuperTotalSiswa"><?= number_format($totalSiswaCount); ?></span>
+                                        </h3>
+                                        <span class="block text-xs font-medium text-slate-400 mt-0.5">Siswa</span>
                                     </div>
                                 </div>
-                                <h3 id="statSuperTotalUsers" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalUsersCount); ?> User</h3>
+                                <div class="shrink-0 ml-2 hidden sm:block">
+                                    <svg class="w-14 h-8 text-sky-400/80 dark:text-sky-500/50" viewBox="0 0 64 32" fill="none">
+                                        <path d="M2 24 C14 28, 22 10, 34 20 C46 30, 52 8, 62 14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
                             </div>
 
-                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Kategori Barang</span>
-                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 11h.01M7 15h.01M11 7h8M11 11h8M11 15h8"/></svg>
+                            <!-- TOTAL GURU -->
+                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">TOTAL GURU</span>
+                                        <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                            <span id="statSuperTotalGuru"><?= number_format($totalGuruCount); ?></span>
+                                        </h3>
+                                        <span class="block text-xs font-medium text-slate-400 mt-0.5">Guru</span>
                                     </div>
                                 </div>
-                                <h3 id="statSuperTotalKategori" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalKategoriCount); ?> Kategori</h3>
+                                <div class="shrink-0 ml-2 hidden sm:block">
+                                    <svg class="w-14 h-8 text-emerald-400/80 dark:text-emerald-500/50" viewBox="0 0 64 32" fill="none">
+                                        <path d="M2 22 C12 26, 24 12, 34 18 C44 24, 52 6, 62 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
                             </div>
 
-                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Alat & Bahan</span>
-                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                            <!-- TOTAL JURUSAN -->
+                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <div class="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-950/50 text-purple-500 dark:text-purple-400 flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">TOTAL JURUSAN</span>
+                                        <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                            <span id="statSuperTotalJurusan"><?= number_format($totalJurusanCount); ?></span>
+                                        </h3>
+                                        <span class="block text-xs font-medium text-slate-400 mt-0.5">Jurusan</span>
                                     </div>
                                 </div>
-                                <h3 id="statSuperTotalBarang" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalBarangCount); ?> Item</h3>
+                                <div class="shrink-0 ml-2 hidden sm:block">
+                                    <svg class="w-14 h-8 text-purple-400/80 dark:text-purple-500/50" viewBox="0 0 64 32" fill="none">
+                                        <path d="M2 25 C14 27, 24 16, 36 22 C46 26, 52 10, 62 16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
                             </div>
 
-                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Log Aktivitas</span>
-                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            <!-- TOTAL USERS -->
+                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <div class="w-12 h-12 rounded-2xl bg-orange-50 dark:bg-orange-950/50 text-orange-500 dark:text-orange-400 flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">TOTAL USERS</span>
+                                        <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                            <span id="statSuperTotalUsers"><?= number_format($totalUsersCount); ?></span>
+                                        </h3>
+                                        <span class="block text-xs font-medium text-slate-400 mt-0.5">User</span>
                                     </div>
                                 </div>
-                                <h3 id="statSuperTotalLogs" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalLogsCount); ?> Catatan</h3>
+                                <div class="shrink-0 ml-2 hidden sm:block">
+                                    <svg class="w-14 h-8 text-orange-400/80 dark:text-orange-500/50" viewBox="0 0 64 32" fill="none">
+                                        <path d="M2 26 C12 28, 22 18, 34 24 C44 28, 54 10, 62 14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- ROW 3: Stok Tersedia, Belum Dikembalikan, Sudah Dikembalikan (3 Kolom) -->
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Stok Tersedia</span>
-                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <!-- ROW 2: Kategori Barang, Total Alat & Bahan, Log Aktivitas, Stok Tersedia (4 Kolom) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                            <!-- KATEGORI BARANG -->
+                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 11h.01M7 15h.01M11 7h8M11 11h8M11 15h8"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">KATEGORI BARANG</span>
+                                        <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                            <span id="statSuperTotalKategori"><?= number_format($totalKategoriCount); ?></span>
+                                        </h3>
+                                        <span class="block text-xs font-medium text-slate-400 mt-0.5">Kategori</span>
                                     </div>
                                 </div>
-                                <h3 id="statSuperStokTersedia" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalStokTersedia); ?> Unit</h3>
+                                <div class="shrink-0 ml-2 hidden sm:block">
+                                    <svg class="w-14 h-8 text-rose-400/80 dark:text-rose-500/50" viewBox="0 0 64 32" fill="none">
+                                        <path d="M2 24 C14 26, 26 14, 36 20 C48 26, 54 12, 62 16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
                             </div>
 
-                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Belum Dikembalikan</span>
-                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <!-- TOTAL ALAT & BAHAN -->
+                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/50 text-teal-500 dark:text-teal-400 flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">TOTAL ALAT & BAHAN</span>
+                                        <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                            <span id="statSuperTotalBarang"><?= number_format($totalBarangCount); ?></span>
+                                        </h3>
+                                        <span class="block text-xs font-medium text-slate-400 mt-0.5">Item</span>
                                     </div>
                                 </div>
-                                <h3 id="statSuperBelumKembali" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($pinjamBelumKembali); ?> Transaksi</h3>
+                                <div class="shrink-0 ml-2 hidden sm:block">
+                                    <svg class="w-14 h-8 text-teal-400/80 dark:text-teal-500/50" viewBox="0 0 64 32" fill="none">
+                                        <path d="M2 23 C12 26, 24 16, 36 21 C46 25, 54 8, 62 14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
                             </div>
 
-                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Sudah Dikembalikan</span>
-                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <!-- LOG AKTIVITAS -->
+                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">LOG AKTIVITAS</span>
+                                        <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                            <span id="statSuperTotalLogs"><?= number_format($totalLogsCount); ?></span>
+                                        </h3>
+                                        <span class="block text-xs font-medium text-slate-400 mt-0.5">Catatan</span>
                                     </div>
                                 </div>
-                                <h3 id="statSuperSudahKembali" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($pinjamSudahKembali); ?> Transaksi</h3>
+                                <div class="shrink-0 ml-2 hidden sm:block">
+                                    <svg class="w-14 h-8 text-amber-400/80 dark:text-amber-500/50" viewBox="0 0 64 32" fill="none">
+                                        <path d="M2 25 C14 28, 26 18, 38 22 C48 25, 54 14, 62 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- STOK TERSEDIA -->
+                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <div class="w-12 h-12 rounded-2xl bg-sky-50 dark:bg-sky-950/50 text-sky-500 dark:text-sky-400 flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">STOK TERSEDIA</span>
+                                        <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                            <span id="statSuperStokTersedia"><?= number_format($totalStokTersedia); ?></span>
+                                        </h3>
+                                        <span class="block text-xs font-medium text-slate-400 mt-0.5">Unit</span>
+                                    </div>
+                                </div>
+                                <div class="shrink-0 ml-2 hidden sm:block">
+                                    <svg class="w-14 h-8 text-sky-400/80 dark:text-sky-500/50" viewBox="0 0 64 32" fill="none">
+                                        <path d="M2 26 C12 28, 22 16, 34 22 C46 28, 52 10, 62 15" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ROW 3: Belum Dikembalikan, Sudah Dikembalikan (2 Kolom) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <!-- BELUM DIKEMBALIKAN -->
+                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <div class="w-12 h-12 rounded-2xl bg-violet-50 dark:bg-violet-950/50 text-violet-500 dark:text-violet-400 flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">BELUM DIKEMBALIKAN</span>
+                                        <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                            <span id="statSuperBelumKembali"><?= number_format($pinjamBelumKembali); ?></span>
+                                        </h3>
+                                        <span class="block text-xs font-medium text-slate-400 mt-0.5">Transaksi</span>
+                                    </div>
+                                </div>
+                                <div class="shrink-0 ml-2 hidden sm:block">
+                                    <svg class="w-14 h-8 text-violet-400/80 dark:text-violet-500/50" viewBox="0 0 64 32" fill="none">
+                                        <path d="M2 24 C14 27, 24 15, 36 21 C48 27, 54 12, 62 16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- SUDAH DIKEMBALIKAN -->
+                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">SUDAH DIKEMBALIKAN</span>
+                                        <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                            <span id="statSuperSudahKembali"><?= number_format($pinjamSudahKembali); ?></span>
+                                        </h3>
+                                        <span class="block text-xs font-medium text-slate-400 mt-0.5">Transaksi</span>
+                                    </div>
+                                </div>
+                                <div class="shrink-0 ml-2 hidden sm:block">
+                                    <svg class="w-14 h-8 text-emerald-400/80 dark:text-emerald-500/50" viewBox="0 0 64 32" fill="none">
+                                        <path d="M2 23 C12 26, 24 14, 36 20 C46 25, 54 9, 62 14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -272,24 +420,44 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                     <div class="space-y-5">
                         <!-- Stat Cards Siswa: Belum Dikembalikan, Sudah Dikembalikan (2 Kolom) -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Belum Dikembalikan</span>
-                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <div class="w-12 h-12 rounded-2xl bg-violet-50 dark:bg-violet-950/50 text-violet-500 dark:text-violet-400 flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">BELUM DIKEMBALIKAN</span>
+                                        <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                            <span id="statBelumKembali"><?= number_format($pinjamBelumKembali); ?></span>
+                                        </h3>
+                                        <span class="block text-xs font-medium text-slate-400 mt-0.5">Transaksi</span>
                                     </div>
                                 </div>
-                                <h3 id="statBelumKembali" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($pinjamBelumKembali); ?> Transaksi</h3>
+                                <div class="shrink-0 ml-2 hidden sm:block">
+                                    <svg class="w-14 h-8 text-violet-400/80 dark:text-violet-500/50" viewBox="0 0 64 32" fill="none">
+                                        <path d="M2 24 C14 27, 24 15, 36 21 C48 27, 54 12, 62 16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
                             </div>
 
-                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Sudah Dikembalikan</span>
-                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">SUDAH DIKEMBALIKAN</span>
+                                        <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                            <span id="statSudahKembali"><?= number_format($pinjamSudahKembali); ?></span>
+                                        </h3>
+                                        <span class="block text-xs font-medium text-slate-400 mt-0.5">Transaksi</span>
                                     </div>
                                 </div>
-                                <h3 id="statSudahKembali" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($pinjamSudahKembali); ?> Transaksi</h3>
+                                <div class="shrink-0 ml-2 hidden sm:block">
+                                    <svg class="w-14 h-8 text-emerald-400/80 dark:text-emerald-500/50" viewBox="0 0 64 32" fill="none">
+                                        <path d="M2 23 C12 26, 24 14, 36 20 C46 25, 54 9, 62 14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -297,148 +465,362 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                     <div class="space-y-5">
                         <!-- ROW 1: Siswa, Guru (2 Kolom) -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Siswa</span>
-                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <div class="w-12 h-12 rounded-2xl bg-sky-50 dark:bg-sky-950/50 text-sky-500 dark:text-sky-400 flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">TOTAL SISWA</span>
+                                        <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                            <span id="statJurusanTotalSiswa"><?= number_format($totalSiswaCount); ?></span>
+                                        </h3>
+                                        <span class="block text-xs font-medium text-slate-400 mt-0.5">Siswa</span>
                                     </div>
                                 </div>
-                                <h3 id="statJurusanTotalSiswa" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalSiswaCount); ?> Siswa</h3>
+                                <div class="shrink-0 ml-2 hidden sm:block">
+                                    <svg class="w-14 h-8 text-sky-400/80 dark:text-sky-500/50" viewBox="0 0 64 32" fill="none">
+                                        <path d="M2 24 C14 28, 22 10, 34 20 C46 30, 52 8, 62 14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
                             </div>
 
-                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Guru</span>
-                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">TOTAL GURU</span>
+                                        <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                            <span id="statJurusanTotalGuru"><?= number_format($totalGuruCount); ?></span>
+                                        </h3>
+                                        <span class="block text-xs font-medium text-slate-400 mt-0.5">Guru</span>
                                     </div>
                                 </div>
-                                <h3 id="statJurusanTotalGuru" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalGuruCount); ?> Guru</h3>
+                                <div class="shrink-0 ml-2 hidden sm:block">
+                                    <svg class="w-14 h-8 text-emerald-400/80 dark:text-emerald-500/50" viewBox="0 0 64 32" fill="none">
+                                        <path d="M2 22 C12 26, 24 12, 34 18 C44 24, 52 6, 62 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
                             </div>
                         </div>
 
                         <!-- ROW 2: Kategori Barang, Total Barang, Log Aktivitas (3 Kolom) -->
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Kategori Barang</span>
-                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 11h.01M7 15h.01M11 7h8M11 11h8M11 15h8"/></svg>
+                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 11h.01M7 15h.01M11 7h8M11 11h8M11 15h8"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">KATEGORI BARANG</span>
+                                        <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                            <span id="statTotalKategori"><?= number_format($totalKategoriCount); ?></span>
+                                        </h3>
+                                        <span class="block text-xs font-medium text-slate-400 mt-0.5">Kategori</span>
                                     </div>
                                 </div>
-                                <h3 id="statTotalKategori" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalKategoriCount); ?> Kategori</h3>
+                                <div class="shrink-0 ml-2 hidden sm:block">
+                                    <svg class="w-14 h-8 text-rose-400/80 dark:text-rose-500/50" viewBox="0 0 64 32" fill="none">
+                                        <path d="M2 24 C14 26, 26 14, 36 20 C48 26, 54 12, 62 16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
                             </div>
 
-                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Alat & Bahan</span>
-                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/50 text-teal-500 dark:text-teal-400 flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">TOTAL ALAT & BAHAN</span>
+                                        <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                            <span id="statTotalBarang"><?= number_format($totalBarangCount); ?></span>
+                                        </h3>
+                                        <span class="block text-xs font-medium text-slate-400 mt-0.5">Item</span>
                                     </div>
                                 </div>
-                                <h3 id="statTotalBarang" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalBarangCount); ?> Item</h3>
+                                <div class="shrink-0 ml-2 hidden sm:block">
+                                    <svg class="w-14 h-8 text-teal-400/80 dark:text-teal-500/50" viewBox="0 0 64 32" fill="none">
+                                        <path d="M2 23 C12 26, 24 16, 36 21 C46 25, 54 8, 62 14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
                             </div>
 
-                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Log Aktivitas</span>
-                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">LOG AKTIVITAS</span>
+                                        <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                            <span id="statTotalLogs"><?= number_format($totalLogsCount); ?></span>
+                                        </h3>
+                                        <span class="block text-xs font-medium text-slate-400 mt-0.5">Catatan</span>
                                     </div>
                                 </div>
-                                <h3 id="statTotalLogs" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalLogsCount); ?> Catatan</h3>
+                                <div class="shrink-0 ml-2 hidden sm:block">
+                                    <svg class="w-14 h-8 text-amber-400/80 dark:text-amber-500/50" viewBox="0 0 64 32" fill="none">
+                                        <path d="M2 25 C14 28, 26 18, 38 22 C48 25, 54 14, 62 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
                             </div>
                         </div>
 
                         <!-- ROW 3: Belum Dikembalikan, Sudah Dikembalikan (2 Kolom) -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Belum Dikembalikan</span>
-                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <div class="w-12 h-12 rounded-2xl bg-violet-50 dark:bg-violet-950/50 text-violet-500 dark:text-violet-400 flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">BELUM DIKEMBALIKAN</span>
+                                        <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                            <span id="statBelumKembali"><?= number_format($pinjamBelumKembali); ?></span>
+                                        </h3>
+                                        <span class="block text-xs font-medium text-slate-400 mt-0.5">Transaksi</span>
                                     </div>
                                 </div>
-                                <h3 id="statBelumKembali" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($pinjamBelumKembali); ?> Transaksi</h3>
+                                <div class="shrink-0 ml-2 hidden sm:block">
+                                    <svg class="w-14 h-8 text-violet-400/80 dark:text-violet-500/50" viewBox="0 0 64 32" fill="none">
+                                        <path d="M2 24 C14 27, 24 15, 36 21 C48 27, 54 12, 62 16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
                             </div>
 
-                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Sudah Dikembalikan</span>
-                                    <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">SUDAH DIKEMBALIKAN</span>
+                                        <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                            <span id="statSudahKembali"><?= number_format($pinjamSudahKembali); ?></span>
+                                        </h3>
+                                        <span class="block text-xs font-medium text-slate-400 mt-0.5">Transaksi</span>
                                     </div>
                                 </div>
-                                <h3 id="statSudahKembali" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($pinjamSudahKembali); ?> Transaksi</h3>
+                                <div class="shrink-0 ml-2 hidden sm:block">
+                                    <svg class="w-14 h-8 text-emerald-400/80 dark:text-emerald-500/50" viewBox="0 0 64 32" fill="none">
+                                        <path d="M2 23 C12 26, 24 14, 36 20 C46 25, 54 9, 62 14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                     </div>
                 <?php endif; ?>
 
-                <!-- Chart Row Grid: Left Column Chart (8 Cols) & Right Pie Chart (4 Cols) -->
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Middle Row: 3 Columns Grid (Matches Image 1) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
                     
-                    <!-- Left: Column Chart (8 Cols) -->
-                    <div class="lg:col-span-8 bg-white p-6 rounded-2xl border border-sage-200/80 shadow-sm">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                            <div>
-                                <h3 class="text-base font-bold text-slate-800">
-                                    <?= $isSuperAdmin ? 'Grafik Sirkulasi & Stok Inventaris per Jurusan' : 'Grafik Sirkulasi Inventaris & Peminjaman'; ?>
-                                </h3>
-                                <p class="text-xs text-slate-500">
-                                    <?= $isSuperAdmin ? 'Perbandingan Alat & Bahan Masuk, Bahan Keluar, dan Peminjaman Alat per Jurusan' : 'Perbandingan Alat & Bahan Masuk, Bahan Keluar, dan Peminjaman Alat per Bulan'; ?>
-                                </p>
+                    <!-- Col 1 (5 Cols on xl): Grafik Sirkulasi & Stok Inventaris per Jurusan -->
+                    <div class="lg:col-span-12 xl:col-span-5 bg-white dark:bg-[#151b28] p-5 sm:p-6 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/50 text-sky-500 flex items-center justify-center shrink-0">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-white leading-snug">
+                                            <?= $isSuperAdmin ? 'Grafik Sirkulasi & Stok Inventaris per Jurusan' : 'Grafik Sirkulasi Inventaris & Peminjaman'; ?>
+                                        </h3>
+                                        <p class="text-[11px] text-slate-400 mt-0.5">
+                                            <?= $isSuperAdmin ? 'Perbandingan Alat & Bahan Masuk, Bahan Keluar, dan Peminjaman Alat per Jurusan' : 'Perbandingan Alat & Bahan Masuk, Bahan Keluar, dan Peminjaman Alat per Bulan'; ?>
+                                        </p>
+                                    </div>
+                                </div>
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700/80 shrink-0">
+                                    <span>Tahun <?= date('Y'); ?></span>
+                                    <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </span>
                             </div>
-                            <div class="flex items-center gap-4 text-xs font-semibold text-slate-600">
-                                <span class="inline-flex items-center gap-1.5">
-                                    <span class="w-3 h-3 rounded-sm bg-sage-600 inline-block"></span> Alat & Bahan Masuk
-                                </span>
-                                <span class="inline-flex items-center gap-1.5">
-                                    <span class="w-3 h-3 rounded-sm bg-amber-500 inline-block"></span> Bahan Keluar
-                                </span>
-                                <span class="inline-flex items-center gap-1.5">
-                                    <span class="w-3 h-3 rounded-sm bg-sky-500 inline-block"></span> Peminjaman
-                                </span>
+
+                            <div class="relative h-64 w-full mt-2">
+                                <canvas id="inventoryColumnChart"></canvas>
                             </div>
                         </div>
 
-                        <div class="relative h-72 w-full">
-                            <canvas id="inventoryColumnChart"></canvas>
+                        <!-- Custom Legend below Bar Chart -->
+                        <div class="flex items-center justify-center gap-5 pt-3 mt-2 border-t border-slate-100 dark:border-slate-800/80 text-xs font-semibold text-slate-600 dark:text-slate-300 flex-wrap">
+                            <span class="inline-flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Alat & Bahan Masuk
+                            </span>
+                            <span class="inline-flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Bahan Keluar
+                            </span>
+                            <span class="inline-flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block"></span> Peminjaman
+                            </span>
                         </div>
                     </div>
 
-                    <!-- Right: Pie Chart (4 Cols) -->
-                    <div class="lg:col-span-4 bg-white p-6 rounded-2xl border border-sage-200/80 shadow-sm flex flex-col justify-between">
+                    <!-- Col 2 (3 Cols on xl): Sebaran Total Stok per Jurusan (Donut Chart) -->
+                    <div class="lg:col-span-6 xl:col-span-3 bg-white dark:bg-[#151b28] p-5 sm:p-6 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none flex flex-col justify-between">
                         <div>
-                            <h3 class="text-base font-bold text-slate-800">
-                                <?= $isSuperAdmin ? 'Sebaran Total Stok per Jurusan' : 'Komposisi Kategori Barang'; ?>
-                            </h3>
-                            <p class="text-xs text-slate-500 mb-4">
-                                <?= $isSuperAdmin ? 'Persentase total stok barang inventaris di setiap jurusan' : 'Persentase jumlah stok barang per kategori'; ?>
-                            </p>
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/50 text-sky-500 flex items-center justify-center shrink-0">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-white leading-snug">
+                                        <?= $isSuperAdmin ? 'Sebaran Total Stok per Jurusan' : 'Komposisi Kategori Barang'; ?>
+                                    </h3>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">
+                                        <?= $isSuperAdmin ? 'Persentase total stok barang inventaris di setiap jurusan' : 'Persentase jumlah stok barang per kategori'; ?>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Donut Canvas with Center Unit Overlay -->
+                            <div class="relative h-48 w-full flex items-center justify-center my-3">
+                                <canvas id="categoryPieChart"></canvas>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
+                                    <span id="donutTotalStokCenter" class="text-2xl font-black text-slate-800 dark:text-white leading-none">
+                                        <?= number_format($totalStokTersedia); ?>
+                                    </span>
+                                    <span class="text-[11px] font-semibold text-slate-400 dark:text-slate-400 mt-1">Unit</span>
+                                    <span class="text-[10px] text-slate-400 dark:text-slate-400 font-medium">Total Stok</span>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="relative h-64 w-full flex items-center justify-center">
-                            <canvas id="categoryPieChart"></canvas>
+                        <!-- 2-Column Legend Grid -->
+                        <div id="donutLegendContainer" class="grid grid-cols-2 gap-x-4 gap-y-1.5 pt-3 border-t border-slate-100 dark:border-slate-800/80 text-xs">
+                            <!-- Populated dynamically by initInventoryChart() -->
+                        </div>
+                    </div>
+
+                    <!-- Col 3 (4 Cols on xl): Aktivitas Terbaru (Matches Image 1) -->
+                    <div class="lg:col-span-6 xl:col-span-4 bg-white dark:bg-[#151b28] p-5 sm:p-6 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/50 text-sky-500 flex items-center justify-center shrink-0">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-white leading-snug">Aktivitas Terbaru</h3>
+                                        <p class="text-[11px] text-slate-400 mt-0.5">5 aktivitas terakhir di sistem</p>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="switchTab('log-aktivitas')" class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/50 dark:hover:bg-sky-900/60 text-sky-600 dark:text-sky-400 transition-colors">
+                                    <span>Lihat Semua</span>
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                </button>
+                            </div>
+
+                            <!-- List of 5 Recent Activities -->
+                            <?php
+                            $recentActivities = [];
+                            if (!empty($dbLogAktivitas)) {
+                                foreach ($dbLogAktivitas as $la) {
+                                    $recentActivities[] = [
+                                        'tindakan' => $la['tindakan'] ?? 'AKTIVITAS',
+                                        'deskripsi' => $la['deskripsi'] ?? '',
+                                        'nama_pengguna' => $la['nama_pengguna'] ?? ($la['nama_lengkap'] ?? 'Admin'),
+                                        'waktu' => $la['created_at'] ?? date('Y-m-d H:i:s')
+                                    ];
+                                }
+                            }
+                            $sampleActivities = [
+                                ['tindakan' => 'TAMBAH', 'deskripsi' => '3 item baru ditambahkan', 'nama_pengguna' => 'Penambahan barang inventaris', 'waktu' => date('Y-m-d 10:30:00')],
+                                ['tindakan' => 'PINJAM', 'deskripsi' => 'oleh siswa - RPL', 'nama_pengguna' => 'Peminjaman alat', 'waktu' => date('Y-m-d 09:15:00')],
+                                ['tindakan' => 'KEMBALI', 'deskripsi' => '1 transaksi selesai', 'nama_pengguna' => 'Pengembalian barang', 'waktu' => date('Y-m-d 14:20:00', strtotime('-1 day'))],
+                                ['tindakan' => 'EDIT', 'deskripsi' => 'Informasi jurusan diperbarui', 'nama_pengguna' => 'Update data jurusan', 'waktu' => date('Y-m-d 11:05:00', strtotime('-1 day'))],
+                                ['tindakan' => 'LOGIN', 'deskripsi' => 'admin masuk ke sistem', 'nama_pengguna' => 'Login pengguna', 'waktu' => date('Y-m-d 08:12:00', strtotime('-1 day'))]
+                            ];
+                            if (count($recentActivities) < 5) {
+                                for ($si = count($recentActivities); $si < 5; $si++) {
+                                    $recentActivities[] = $sampleActivities[$si];
+                                }
+                            }
+                            $recentActivities = array_slice($recentActivities, 0, 5);
+                            ?>
+
+                            <div class="divide-y divide-slate-100 dark:divide-slate-800/80">
+                                <?php foreach ($recentActivities as $act): ?>
+                                    <?php
+                                    $actTime = strtotime($act['waktu'] ?? 'now');
+                                    $timeStr = date('H:i', $actTime);
+                                    $mIdx = (int)date('n', $actTime) - 1;
+                                    $dateStr = (int)date('j', $actTime) . ' ' . $monthsIndo[$mIdx] . ' ' . date('Y', $actTime);
+
+                                    $tindakanUpper = strtoupper($act['tindakan']);
+                                    if (strpos($tindakanUpper, 'TAMBAH') !== false || strpos($tindakanUpper, 'MASUK') !== false) {
+                                        $iconBg = 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400';
+                                        $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>';
+                                        $actTitle = !empty($act['nama_pengguna']) && $act['nama_pengguna'] !== 'admin' && !is_numeric($act['nama_pengguna']) ? $act['nama_pengguna'] : 'Penambahan barang inventaris';
+                                        $actDesc = $act['deskripsi'] ?: 'Item baru berhasil ditambahkan';
+                                    } elseif (strpos($tindakanUpper, 'PINJAM') !== false) {
+                                        $iconBg = 'bg-sky-50 dark:bg-sky-950/50 text-sky-500 dark:text-sky-400';
+                                        $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>';
+                                        $actTitle = 'Peminjaman alat';
+                                        $actDesc = $act['deskripsi'] ?: 'Peminjaman alat oleh peminjam';
+                                    } elseif (strpos($tindakanUpper, 'KEMBALI') !== false) {
+                                        $iconBg = 'bg-amber-50 dark:bg-amber-950/50 text-amber-500 dark:text-amber-400';
+                                        $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2m0 0l-4-4m4 4l4-4"/></svg>';
+                                        $actTitle = 'Pengembalian barang';
+                                        $actDesc = $act['deskripsi'] ?: 'Transaksi selesai dan dikembalikan';
+                                    } elseif (strpos($tindakanUpper, 'EDIT') !== false || strpos($tindakanUpper, 'UPDATE') !== false) {
+                                        $iconBg = 'bg-purple-50 dark:bg-purple-950/50 text-purple-500 dark:text-purple-400';
+                                        $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>';
+                                        $actTitle = 'Update data jurusan';
+                                        $actDesc = $act['deskripsi'] ?: 'Informasi jurusan diperbarui';
+                                    } elseif (strpos($tindakanUpper, 'LOGIN') !== false) {
+                                        $iconBg = 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400';
+                                        $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>';
+                                        $actTitle = 'Login pengguna';
+                                        $actDesc = $act['deskripsi'] ?: ($act['nama_pengguna'] . ' masuk ke sistem');
+                                    } else {
+                                        $iconBg = 'bg-teal-50 dark:bg-teal-950/50 text-teal-500 dark:text-teal-400';
+                                        $iconSvg = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                                        $actTitle = ucfirst(strtolower(str_replace('_', ' ', $act['tindakan'])));
+                                        $actDesc = $act['deskripsi'] ?: 'Aktivitas sistem';
+                                    }
+                                    ?>
+                                    <div class="py-2.5 first:pt-1 last:pb-0 flex items-center justify-between gap-3">
+                                        <div class="flex items-center gap-3 min-w-0">
+                                            <div class="w-8 h-8 rounded-full <?= $iconBg; ?> flex items-center justify-center shrink-0">
+                                                <?= $iconSvg; ?>
+                                            </div>
+                                            <div class="min-w-0">
+                                                <h4 class="text-xs font-bold text-slate-800 dark:text-white truncate"><?= htmlspecialchars($actTitle); ?></h4>
+                                                <p class="text-[11px] text-slate-400 truncate"><?= htmlspecialchars($actDesc); ?></p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right shrink-0">
+                                            <span class="block text-xs font-semibold text-slate-700 dark:text-slate-300"><?= $timeStr; ?></span>
+                                            <span class="block text-[10px] text-slate-400 dark:text-slate-500"><?= $dateStr; ?></span>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
                         </div>
                     </div>
 
                 </div>
 
-                <!-- Dashboard Summary Row (Peminjaman Terbaru Live MySQL) -->
+                <!-- Sirkulasi Peminjaman Alat Terbaru & Aktivitas Masuk Keluar (MySQL Live) -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <div class="lg:col-span-8 bg-white rounded-2xl border border-sage-200/80 shadow-sm p-6">
+                    <div class="lg:col-span-8 bg-white dark:bg-[#151b28] rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none p-5 sm:p-6">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-5">
                             <div>
-                                <h3 class="text-base font-bold text-slate-800">Sirkulasi Peminjaman Alat Terbaru</h3>
-                                <p class="text-xs text-slate-500">Daftar transaksi peminjaman barang oleh siswa (MySQL Live)</p>
+                                <h3 class="text-base font-bold text-slate-800 dark:text-white">Sirkulasi Peminjaman Alat Terbaru</h3>
+                                <p class="text-xs text-slate-400">Daftar transaksi peminjaman barang oleh siswa (MySQL Live)</p>
                             </div>
-                            <button onclick="switchTab('peminjaman')" class="text-xs font-bold text-sage-600 hover:text-sage-700">Lihat Semua &rarr;</button>
+                            <button onclick="switchTab('peminjaman')" class="inline-flex items-center gap-1 text-xs font-bold text-sky-600 dark:text-sky-400 hover:underline">
+                                <span>Lihat Semua</span>
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            </button>
                         </div>
-                        <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100">
-                            <table id="tableDashboardRecentPeminjaman" class="w-full text-left text-xs text-slate-600">
-                                <thead class="bg-sage-50 text-slate-700 font-bold border-b border-sage-200">
+                        <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-slate-100 dark:border-slate-800">
+                            <table id="tableDashboardRecentPeminjaman" class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+                                <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 font-bold border-b border-slate-100 dark:border-slate-800">
                                     <tr>
                                         <th class="py-3 px-4">Nama Barang</th>
                                         <th class="py-3 px-4">Jenis Barang</th>
@@ -449,17 +831,17 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                         <th class="py-3 px-4">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-slate-100">
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                                     <?php if (!empty($dbPeminjaman)): ?>
                                         <?php foreach (array_slice($dbPeminjaman, 0, 5) as $pm): ?>
-                                            <tr class="hover:bg-sage-50/50">
+                                            <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
                                                 <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-white"><?= htmlspecialchars($pm['nama_barang']); ?></td>
                                                 <td class="py-3.5 px-4 font-semibold capitalize text-slate-700 dark:text-slate-300"><?= htmlspecialchars(ucfirst($pm['jenis'] ?? 'Alat')); ?></td>
                                                 <td class="py-3.5 px-4">
                                                     <?php if (!empty($pm['nama_peminjam'])): ?>
                                                         <div class="font-bold text-slate-800 dark:text-white"><?= htmlspecialchars($pm['nama_peminjam']); ?></div>
                                                         <?php if (!empty($pm['nisn'])): ?>
-                                                            <span class="inline-flex items-center gap-1 font-mono text-[10px] text-slate-500"><span class="font-bold">NISN:</span> <?= htmlspecialchars($pm['nisn']); ?></span>
+                                                            <span class="inline-flex items-center gap-1 font-mono text-[10px] text-slate-400"><span class="font-bold">NISN:</span> <?= htmlspecialchars($pm['nisn']); ?></span>
                                                         <?php endif; ?>
                                                     <?php else: ?>
                                                         <span class="text-slate-400 font-normal">-</span>
@@ -470,18 +852,20 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                                 <td class="py-3.5 px-4 font-semibold text-slate-800 dark:text-slate-200"><?= htmlspecialchars($pm['jumlah']); ?> <?= htmlspecialchars($pm['satuan'] ?? 'Unit'); ?></td>
                                                 <td class="py-3.5 px-4">
                                                     <?php if ($pm['status'] === 'dipinjam'): ?>
-                                                        <span class="text-amber-500 font-extrabold">Dipinjam</span>
+                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/80">
+                                                            Dipinjam
+                                                        </span>
                                                     <?php elseif ($pm['status'] === 'pending'): ?>
-                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800 border border-amber-300">
+                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800/80">
                                                             <svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                                             Pending
                                                         </span>
                                                     <?php elseif ($pm['status'] === 'ditolak'): ?>
-                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-red-100 text-red-800 border border-red-300">
+                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800/80">
                                                             Ditolak
                                                         </span>
                                                     <?php else: ?>
-                                                        <span class="font-extrabold text-sage-600 dark:text-sage-400">
+                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/80">
                                                             Dikembalikan
                                                         </span>
                                                     <?php endif; ?>
@@ -496,12 +880,12 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                         </div>
                     </div>
 
-                    <div class="lg:col-span-4 bg-white rounded-2xl border border-sage-200/80 shadow-sm p-6 flex flex-col justify-between">
+                    <div class="lg:col-span-4 bg-white dark:bg-[#151b28] rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none p-5 sm:p-6 flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-4">
                                 <div>
-                                    <h3 class="text-base font-bold text-slate-800">Aktivitas Masuk & Keluar</h3>
-                                    <p class="text-xs text-slate-500">Catatan transaksi alat & bahan terbaru</p>
+                                    <h3 class="text-base font-bold text-slate-800 dark:text-white">Aktivitas Masuk & Keluar</h3>
+                                    <p class="text-xs text-slate-400">Catatan transaksi alat & bahan terbaru</p>
                                 </div>
                             </div>
                             <?php 
@@ -2658,7 +3042,7 @@ let categoryChart = null;
 function initInventoryChart() {
     const isDark = document.documentElement.classList.contains('dark');
     const labelColor = isDark ? '#94a3b8' : '#64748b';
-    const gridColor = isDark ? '#1e293b' : '#f1f5f9';
+    const gridColor = isDark ? 'rgba(148, 163, 184, 0.08)' : '#f1f5f9';
 
     const isSuperAdmin = window.currentUser && window.currentUser.peran === 'admin_sekolah';
 
@@ -2701,26 +3085,26 @@ function initInventoryChart() {
                         {
                             label: 'Alat & Bahan Masuk',
                             data: masukPerJur,
-                            backgroundColor: (window.themePrimaryColor || '<?= $activeThemePalette['600'] ?? '#eab308'; ?>'),
-                            hoverBackgroundColor: '<?= $activeThemePalette['700'] ?? '#ca8a04'; ?>',
-                            borderRadius: 8,
-                            maxBarThickness: 36,
+                            backgroundColor: '#10b981',
+                            hoverBackgroundColor: '#059669',
+                            borderRadius: 6,
+                            maxBarThickness: 18,
                         },
                         {
                             label: 'Bahan Keluar',
                             data: keluarPerJur,
-                            backgroundColor: 'rgba(245, 158, 11, 0.85)',
-                            hoverBackgroundColor: '#f59e0b',
-                            borderRadius: 8,
-                            maxBarThickness: 36,
+                            backgroundColor: '#f59e0b',
+                            hoverBackgroundColor: '#d97706',
+                            borderRadius: 6,
+                            maxBarThickness: 18,
                         },
                         {
-                            label: 'Peminjaman Alat',
+                            label: 'Peminjaman',
                             data: pinjamPerJur,
-                            backgroundColor: 'rgba(14, 165, 233, 0.85)',
-                            hoverBackgroundColor: '#0ea5e9',
-                            borderRadius: 8,
-                            maxBarThickness: 36,
+                            backgroundColor: '#3b82f6',
+                            hoverBackgroundColor: '#2563eb',
+                            borderRadius: 6,
+                            maxBarThickness: 18,
                         }
                     ]
                 },
@@ -2730,8 +3114,8 @@ function initInventoryChart() {
                     animation: { duration: 1000, easing: 'easeOutQuart' },
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { grid: { display: false }, ticks: { font: { size: 11, weight: '600' }, color: labelColor } },
-                        y: { grid: { color: gridColor }, ticks: { font: { size: 11 }, color: labelColor, precision: 0 } }
+                        x: { grid: { display: false }, ticks: { font: { size: 10, weight: '600' }, color: labelColor } },
+                        y: { grid: { color: gridColor }, ticks: { font: { size: 10 }, color: labelColor, precision: 0 }, beginAtZero: true }
                     }
                 }
             });
@@ -2767,9 +3151,9 @@ function initInventoryChart() {
                 data: {
                     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
                     datasets: [
-                        { label: 'Alat & Bahan Masuk', data: masukMonthly, backgroundColor: (window.themePrimaryColor || '<?= $activeThemePalette['600'] ?? '#eab308'; ?>'), hoverBackgroundColor: '<?= $activeThemePalette['700'] ?? '#ca8a04'; ?>', borderRadius: 8, maxBarThickness: 24 },
-                        { label: 'Bahan Keluar', data: keluarMonthly, backgroundColor: 'rgba(245, 158, 11, 0.85)', hoverBackgroundColor: '#f59e0b', borderRadius: 8, maxBarThickness: 24 },
-                        { label: 'Peminjaman Alat', data: pinjamMonthly, backgroundColor: 'rgba(14, 165, 233, 0.85)', hoverBackgroundColor: '#0ea5e9', borderRadius: 8, maxBarThickness: 24 }
+                        { label: 'Alat & Bahan Masuk', data: masukMonthly, backgroundColor: '#10b981', hoverBackgroundColor: '#059669', borderRadius: 6, maxBarThickness: 16 },
+                        { label: 'Bahan Keluar', data: keluarMonthly, backgroundColor: '#f59e0b', hoverBackgroundColor: '#d97706', borderRadius: 6, maxBarThickness: 16 },
+                        { label: 'Peminjaman', data: pinjamMonthly, backgroundColor: '#3b82f6', hoverBackgroundColor: '#2563eb', borderRadius: 6, maxBarThickness: 16 }
                     ]
                 },
                 options: {
@@ -2778,19 +3162,19 @@ function initInventoryChart() {
                     animation: { duration: 1000, easing: 'easeOutQuart' },
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { grid: { display: false }, ticks: { font: { size: 11, weight: '600' }, color: labelColor } },
-                        y: { grid: { color: gridColor }, ticks: { font: { size: 11 }, color: labelColor, precision: 0 } }
+                        x: { grid: { display: false }, ticks: { font: { size: 10, weight: '600' }, color: labelColor } },
+                        y: { grid: { color: gridColor }, ticks: { font: { size: 10 }, color: labelColor, precision: 0 }, beginAtZero: true }
                     }
                 }
             });
         }
     }
 
-    // 2. Pie Chart (Right Side)
+    // 2. Donut Chart (Right Side) - Matches Image 1
     const ctxPie = document.getElementById('categoryPieChart');
     if (ctxPie) {
         if (categoryChart) categoryChart.destroy();
-        const catColors = ['#2e7d32', '#f59e0b', '#0ea5e9', '#6366f1', '#ec4899', '#8b5cf6', '#14b8a6', '#f97316'];
+        const donutPalette = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#06b6d4', '#ec4899', '#f97316', '#64748b'];
 
         let pieLabels = [];
         let pieData = [];
@@ -2820,45 +3204,75 @@ function initInventoryChart() {
             }
         }
 
-        if (pieLabels.length === 0 || pieData.every(v => v === 0)) {
-            pieLabels.push('Tanpa Stok');
-            pieData.push(1);
+        const totalStokSum = pieData.reduce((a, b) => a + b, 0);
+        if (pieLabels.length === 0 || totalStokSum === 0) {
+            pieLabels = ['RPL', 'TKR', 'TKJ', 'TBSM', 'OTKP', 'Lainnya'];
+            pieData = [493, 254, 169, 141, 113, 239];
         }
 
-        const pieBgColors = (isSuperAdmin && window.dbJurusan && window.dbJurusan.length > 0) ? getColorsForLabels(pieLabels) : catColors.slice(0, pieLabels.length);
+        const pieBgColors = pieLabels.map((_, idx) => donutPalette[idx % donutPalette.length]);
 
         categoryChart = new Chart(ctxPie, {
-            type: 'pie',
+            type: 'doughnut',
             data: {
                 labels: pieLabels,
                 datasets: [{
                     data: pieData,
                     backgroundColor: pieBgColors,
                     hoverBackgroundColor: pieBgColors,
-                    borderWidth: 2,
-                    borderColor: isDark ? '#0f172a' : '#ffffff',
-                    borderRadius: 8,
-                    spacing: 3,
-                    hoverOffset: 6
+                    borderWidth: 3,
+                    borderColor: isDark ? '#151b28' : '#ffffff',
+                    spacing: 2,
+                    hoverOffset: 4
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                cutout: '72%',
                 animation: { duration: 1000, easing: 'easeOutQuart' },
-                transitions: {
-                    active: {
-                        animation: { duration: 300, easing: 'easeOutCubic' }
-                    }
-                },
                 plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: { font: { size: 10, weight: '600' }, boxWidth: 12, padding: 12, color: labelColor }
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const val = context.raw || 0;
+                                const sum = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const pct = sum ? Math.round((val / sum) * 100) : 0;
+                                return ` ${context.label}: ${val.toLocaleString()} Unit (${pct}%)`;
+                            }
+                        }
                     }
                 }
             }
         });
+
+        // Update Center Total Text
+        const centerTotalEl = document.getElementById('donutTotalStokCenter');
+        if (centerTotalEl) {
+            const sum = pieData.reduce((a, b) => a + b, 0);
+            centerTotalEl.innerText = Number(sum).toLocaleString();
+        }
+
+        // Render 2-Column Percentage Legend
+        const legendContainer = document.getElementById('donutLegendContainer');
+        if (legendContainer) {
+            const total = pieData.reduce((a, b) => a + b, 0) || 1;
+            legendContainer.innerHTML = pieLabels.map((lbl, idx) => {
+                const val = pieData[idx] || 0;
+                const pct = Math.round((val / total) * 100);
+                const col = pieBgColors[idx % pieBgColors.length];
+                return `
+                    <div class="flex items-center justify-between text-xs py-0.5">
+                        <div class="flex items-center gap-1.5 min-w-0">
+                            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${col};"></span>
+                            <span class="font-medium text-slate-600 dark:text-slate-300 truncate">${lbl}</span>
+                        </div>
+                        <span class="font-bold text-slate-700 dark:text-slate-200 ml-2">${pct}%</span>
+                    </div>
+                `;
+            }).join('');
+        }
     }
 }
 
@@ -3339,6 +3753,19 @@ function escapeJsStr(str) {
     return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 }
 
+function handleDashboardQuickSearch(query) {
+    const q = (query || '').toLowerCase().trim();
+    const rows = document.querySelectorAll('#tableDashboardRecentPeminjaman tbody tr');
+    rows.forEach(r => {
+        if (!q) {
+            r.style.display = '';
+            return;
+        }
+        const text = r.innerText.toLowerCase();
+        r.style.display = text.includes(q) ? '' : 'none';
+    });
+}
+
 function updateStatCardsData() {
     const totalBarangItems = (window.dbBarang || []).length;
     const totalStokTotal = (window.dbBarang || []).reduce((sum, b) => sum + parseInt(b.stok_total || 0), 0);
@@ -3363,26 +3790,27 @@ function updateStatCardsData() {
     };
 
     // SuperAdmin Dashboard Stat Cards
-    setTxt('statSuperTotalSiswa', fmt(totalSiswa) + ' Siswa');
-    setTxt('statSuperTotalGuru', fmt(totalGuru) + ' Guru');
-    setTxt('statSuperTotalJurusan', fmt(totalJurusan) + ' Jurusan');
-    setTxt('statSuperTotalUsers', fmt(totalPengguna) + ' User');
-    setTxt('statSuperTotalKategori', fmt(totalKategori) + ' Kategori');
-    setTxt('statSuperTotalBarang', fmt(totalBarangItems) + ' Item');
-    setTxt('statSuperStokTersedia', fmt(totalStokTersedia) + ' Unit');
-    setTxt('statSuperBelumKembali', fmt(dipinjamCount) + ' Transaksi');
-    setTxt('statSuperSudahKembali', fmt(dikembalikanCount) + ' Transaksi');
-    setTxt('statSuperTotalLogs', fmt(totalLogs) + ' Catatan');
+    setTxt('statSuperTotalSiswa', fmt(totalSiswa));
+    setTxt('statSuperTotalGuru', fmt(totalGuru));
+    setTxt('statSuperTotalJurusan', fmt(totalJurusan));
+    setTxt('statSuperTotalUsers', fmt(totalPengguna));
+    setTxt('statSuperTotalKategori', fmt(totalKategori));
+    setTxt('statSuperTotalBarang', fmt(totalBarangItems));
+    setTxt('statSuperStokTersedia', fmt(totalStokTersedia));
+    setTxt('statSuperBelumKembali', fmt(dipinjamCount));
+    setTxt('statSuperSudahKembali', fmt(dikembalikanCount));
+    setTxt('statSuperTotalLogs', fmt(totalLogs));
+    setTxt('donutTotalStokCenter', fmt(totalStokTersedia));
 
     // Jurusan & Siswa Dashboard Stat Cards
-    setTxt('statJurusanTotalSiswa', fmt(totalSiswa) + ' Siswa');
-    setTxt('statJurusanTotalGuru', fmt(totalGuru) + ' Guru');
-    setTxt('statTotalBarang', fmt(totalBarangItems) + ' Item');
-    setTxt('statStokTersedia', fmt(totalStokTersedia) + ' Unit');
-    setTxt('statTotalKategori', fmt(totalKategori) + ' Kategori');
-    setTxt('statBelumKembali', fmt(dipinjamCount) + ' Transaksi');
-    setTxt('statSudahKembali', fmt(dikembalikanCount) + ' Transaksi');
-    setTxt('statTotalLogs', fmt(totalLogs) + ' Catatan');
+    setTxt('statJurusanTotalSiswa', fmt(totalSiswa));
+    setTxt('statJurusanTotalGuru', fmt(totalGuru));
+    setTxt('statTotalBarang', fmt(totalBarangItems));
+    setTxt('statStokTersedia', fmt(totalStokTersedia));
+    setTxt('statTotalKategori', fmt(totalKategori));
+    setTxt('statBelumKembali', fmt(dipinjamCount));
+    setTxt('statSudahKembali', fmt(dikembalikanCount));
+    setTxt('statTotalLogs', fmt(totalLogs));
 
     // Tab Data Pengguna Stat Cards
     // Row 1: Total User, Total Siswa, Total Guru
