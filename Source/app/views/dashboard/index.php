@@ -831,7 +831,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
 
                 <!-- Sirkulasi Peminjaman Alat Terbaru & Aktivitas Masuk Keluar (MySQL Live) -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <div class="lg:col-span-8 bg-white dark:bg-[#161616] rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none p-5 sm:p-6">
+                    <div class="lg:col-span-8 bg-white dark:bg-[#161616] rounded-3xl border border-slate-100/90 dark:border-[#262626] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] dark:shadow-none p-5 sm:p-6">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-5">
                             <div>
                                 <h3 class="text-base font-bold text-slate-800 dark:text-white">Sirkulasi Peminjaman Alat Terbaru</h3>
@@ -876,20 +876,20 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                                 <td class="py-3.5 px-4 font-semibold text-slate-800 dark:text-slate-200"><?= htmlspecialchars($pm['jumlah']); ?> <?= htmlspecialchars($pm['satuan'] ?? 'Unit'); ?></td>
                                                 <td class="py-3.5 px-4">
                                                     <?php if ($pm['status'] === 'dipinjam'): ?>
-                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/80">
+                                                        <span class="font-extrabold text-amber-500 dark:text-amber-400">
                                                             Dipinjam
                                                         </span>
                                                     <?php elseif ($pm['status'] === 'pending'): ?>
-                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800/80">
+                                                        <span class="font-extrabold text-sky-500 dark:text-sky-400 inline-flex items-center gap-1">
                                                             <svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                                             Pending
                                                         </span>
                                                     <?php elseif ($pm['status'] === 'ditolak'): ?>
-                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800/80">
+                                                        <span class="font-extrabold text-rose-500 dark:text-rose-400">
                                                             Ditolak
                                                         </span>
                                                     <?php else: ?>
-                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/80">
+                                                        <span class="font-extrabold text-emerald-500 dark:text-emerald-400">
                                                             Dikembalikan
                                                         </span>
                                                     <?php endif; ?>
@@ -904,7 +904,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         </div>
                     </div>
 
-                    <div class="lg:col-span-4 bg-white dark:bg-[#161616] rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none p-5 sm:p-6 flex flex-col justify-between">
+                    <div class="lg:col-span-4 bg-white dark:bg-[#161616] rounded-3xl border border-slate-100/90 dark:border-[#262626] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] dark:shadow-none p-5 sm:p-6 flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-4">
                                 <div>
@@ -947,11 +947,9 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         <?php 
                                             $isMasuk = ($log['type'] === 'masuk');
                                         ?>
-                                        <div class="p-3 rounded-xl <?= $isMasuk 
-                                            ? 'bg-emerald-50/60 border border-emerald-200/60 dark:bg-[#1a1a1a] dark:border-[#262626]' 
-                                            : 'bg-amber-50/60 border border-amber-200/60 dark:bg-[#1a1a1a] dark:border-[#262626]'; ?> flex items-center justify-between transition-all">
+                                        <div class="p-3 sm:p-3.5 rounded-2xl bg-transparent border border-slate-200/80 dark:border-[#262626] hover:border-slate-300 dark:hover:border-[#383838] hover:bg-slate-50/40 dark:hover:bg-white/[0.02] flex items-center justify-between transition-all duration-200">
                                             <div class="flex items-center gap-3 min-w-0">
-                                                <div class="w-8 h-8 rounded-lg <?= $isMasuk ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'; ?> flex items-center justify-center text-xs font-bold shrink-0 shadow-sm">
+                                                <div class="w-9 h-9 rounded-xl <?= $isMasuk ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'; ?> flex items-center justify-center text-xs font-bold shrink-0 shadow-xs">
                                                     <?php if ($isMasuk): ?>
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
                                                     <?php else: ?>
@@ -959,15 +957,15 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                                     <?php endif; ?>
                                                 </div>
                                                 <div class="min-w-0">
-                                                    <p class="text-xs font-extrabold line-clamp-1 text-slate-800 dark:text-slate-100"><?= htmlspecialchars($log['nama_barang']); ?></p>
-                                                    <p class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold truncate"><?= $isMasuk ? 'Petugas: ' : 'Untuk: '; ?><span class="text-slate-700 dark:text-slate-200"><?= htmlspecialchars($log['pihak']); ?></span></p>
+                                                    <p class="text-xs font-bold line-clamp-1 text-slate-800 dark:text-slate-100"><?= htmlspecialchars($log['nama_barang']); ?></p>
+                                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5"><?= $isMasuk ? 'Petugas: ' : 'Untuk: '; ?><span class="text-slate-700 dark:text-slate-200 font-semibold"><?= htmlspecialchars($log['pihak']); ?></span></p>
                                                 </div>
                                             </div>
                                             <div class="text-right shrink-0 ml-3">
-                                                <span class="text-xs font-extrabold <?= $isMasuk ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'; ?>">
+                                                <span class="text-xs font-black <?= $isMasuk ? 'text-emerald-500 dark:text-emerald-400' : 'text-amber-500 dark:text-amber-400'; ?>">
                                                     <?= $isMasuk ? '+' : '-'; ?><?= htmlspecialchars($log['jumlah']); ?> <?= htmlspecialchars($log['satuan']); ?>
                                                 </span>
-                                                <p class="text-[9px] text-slate-400 dark:text-slate-500 font-medium mt-0.5"><?= date('d/m/H:i', strtotime($log['tanggal'])); ?></p>
+                                                <p class="text-[10px] text-slate-400 dark:text-slate-500 font-medium mt-0.5"><?= date('d/m/H:i', strtotime($log['tanggal'])); ?></p>
                                             </div>
                                         </div>
                                     <?php endforeach; ?>
@@ -4836,9 +4834,9 @@ function renderDashboardRecentPeminjaman() {
     tbody.innerHTML = window.dbPeminjaman.slice(0, 5).map(pm => {
         let statusHtml = '';
         if (pm.status === 'dipinjam') statusHtml = '<span class="text-amber-500 font-extrabold">Dipinjam</span>';
-        else if (pm.status === 'pending') statusHtml = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800 border border-amber-300"><svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Pending</span>';
-        else if (pm.status === 'ditolak') statusHtml = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-red-100 text-red-800 border border-red-300">Ditolak</span>';
-        else statusHtml = '<span class="font-extrabold text-sage-600 dark:text-sage-400">Dikembalikan</span>';
+        else if (pm.status === 'pending') statusHtml = '<span class="text-sky-500 font-extrabold inline-flex items-center gap-1"><svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Pending</span>';
+        else if (pm.status === 'ditolak') statusHtml = '<span class="font-extrabold text-rose-500 dark:text-rose-400">Ditolak</span>';
+        else statusHtml = '<span class="font-extrabold text-emerald-500 dark:text-emerald-400">Dikembalikan</span>';
 
         const brgMatch = (window.dbBarang || []).find(b => String(b.id) === String(pm.barang_id));
         const jenisDisplay = (pm.jenis || (brgMatch ? brgMatch.jenis : 'alat')) || 'alat';
@@ -4939,32 +4937,30 @@ function renderRecentLogMasukKeluar() {
             ? window.jurusanColors[log.jurusan_id]
             : (window.themePrimaryColor || '#eab308');
 
-        const boxClass = isMasuk
-            ? 'bg-emerald-50/60 border border-emerald-200/60 dark:bg-[#1a1a1a] dark:border-[#262626]'
-            : 'bg-amber-50/60 border border-amber-200/60 dark:bg-[#1a1a1a] dark:border-[#262626]';
+        const boxClass = 'bg-transparent border border-slate-200/80 dark:border-[#262626] hover:border-slate-300 dark:hover:border-[#383838] hover:bg-slate-50/40 dark:hover:bg-white/[0.02]';
 
         const iconBg = isMasuk ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white';
         const iconSvg = isMasuk
             ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>'
             : '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>';
 
-        const amountClass = isMasuk ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400';
+        const amountClass = isMasuk ? 'text-emerald-500 dark:text-emerald-400' : 'text-amber-500 dark:text-amber-400';
         const sign = isMasuk ? '+' : '-';
         const pihakLabel = isMasuk ? 'Petugas: ' : 'Untuk: ';
 
-        return `<div class="p-3 rounded-xl ${boxClass} flex items-center justify-between transition-all">
+        return `<div class="p-3 sm:p-3.5 rounded-2xl ${boxClass} flex items-center justify-between transition-all duration-200">
             <div class="flex items-center gap-3 min-w-0">
-                <div class="w-8 h-8 rounded-lg ${iconBg} flex items-center justify-center text-xs font-bold shrink-0 shadow-sm">
+                <div class="w-9 h-9 rounded-xl ${iconBg} flex items-center justify-center text-xs font-bold shrink-0 shadow-xs">
                     ${iconSvg}
                 </div>
                 <div class="min-w-0">
-                    <p class="text-xs font-extrabold line-clamp-1 text-slate-800 dark:text-slate-100">${escapeHtml(log.nama_barang)}</p>
-                    <p class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold truncate">${pihakLabel}<span class="text-slate-700 dark:text-slate-200">${escapeHtml(log.pihak)}</span></p>
+                    <p class="text-xs font-bold line-clamp-1 text-slate-800 dark:text-slate-100">${escapeHtml(log.nama_barang)}</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">${pihakLabel}<span class="text-slate-700 dark:text-slate-200 font-semibold">${escapeHtml(log.pihak)}</span></p>
                 </div>
             </div>
             <div class="text-right shrink-0 ml-3">
-                <span class="text-xs font-extrabold ${amountClass}">${sign}${escapeHtml(String(log.jumlah))} ${escapeHtml(log.satuan)}</span>
-                <p class="text-[9px] text-slate-400 dark:text-slate-500 font-medium mt-0.5">${dateFormatted}</p>
+                <span class="text-xs font-black ${amountClass}">${sign}${escapeHtml(String(log.jumlah))} ${escapeHtml(log.satuan)}</span>
+                <p class="text-[10px] text-slate-400 dark:text-slate-500 font-medium mt-0.5">${dateFormatted}</p>
             </div>
         </div>`;
     }).join('');
