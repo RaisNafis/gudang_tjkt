@@ -194,11 +194,11 @@ if ($roleName === 'admin_sekolah') {
                 </div>
             </div>
             <div class="flex items-center gap-1 shrink-0">
-                <button type="button" onclick="toggleTheme()" class="sidebar-text p-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors" title="Beralih Mode Gelap / Terang">
-                    <svg class="themeSunIcon w-4 h-4 hidden text-amber-400 dark:text-amber-300" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button type="button" onclick="toggleTheme()" class="sidebar-text p-1.5 text-black dark:text-white hover:text-slate-900 dark:hover:text-white transition-colors" title="Beralih Mode Gelap / Terang">
+                    <svg class="themeSunIcon w-4 h-4 hidden text-black dark:text-white" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
                     </svg>
-                    <svg class="themeMoonIcon w-4 h-4 text-slate-600 dark:text-slate-300" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="themeMoonIcon w-4 h-4 text-black dark:text-white" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                     </svg>
                 </button>
