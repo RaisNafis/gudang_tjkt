@@ -29,10 +29,10 @@ if ($roleName === 'admin_sekolah') {
 <div id="sidebarBackdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-30 hidden lg:hidden transition-opacity duration-300 opacity-0 pointer-events-none"></div>
 
 <!-- Sidebar Navigation - Collapsible & Responsive Mobile Drawer -->
-<aside id="mainSidebar" class="w-[270px] bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 h-full flex flex-col flex-shrink-0 border-r border-sage-200 shadow-xl lg:shadow-sm z-40 transition-all duration-300 fixed lg:static inset-y-0 left-0 -translate-x-full lg:translate-x-0 overflow-x-hidden">
+<aside id="mainSidebar" class="w-[270px] bg-white dark:bg-[#121212] text-slate-700 dark:text-slate-200 h-full flex flex-col flex-shrink-0 border-r border-sage-200 shadow-xl lg:shadow-sm z-40 transition-all duration-300 fixed lg:static inset-y-0 left-0 -translate-x-full lg:translate-x-0 overflow-x-hidden">
     
     <!-- Brand Logo Area & Toggle Button -->
-    <div class="p-4 border-b border-sage-100 dark:border-slate-800 flex items-center justify-between gap-2 flex-shrink-0 h-16 overflow-hidden">
+    <div class="p-4 border-b border-sage-100 dark:border-[#262626] flex items-center justify-between gap-2 flex-shrink-0 h-16 overflow-hidden">
         <!-- Expanded Logo View -->
         <div class="brand-header-full flex items-center gap-3 overflow-hidden">
             <div class="w-9 h-9 rounded-xl overflow-hidden shadow-md shrink-0 flex items-center justify-center transition-all duration-300" style="background: linear-gradient(135deg, <?= $activeThemePalette['600'] ?? '#eab308'; ?>, <?= $activeThemePalette['700'] ?? '#ca8a04'; ?>); box-shadow: 0 4px 14px 0 rgba(<?= implode(',', sscanf($activeThemePalette['600'] ?? '#eab308', "#%02x%02x%02x")); ?>, 0.35);">
@@ -45,7 +45,7 @@ if ($roleName === 'admin_sekolah') {
         </div>
 
         <!-- Toggle Button for Desktop Mini Mode / Mobile Close -->
-        <button type="button" id="sidebarToggleBtn" class="p-1.5 rounded-lg text-slate-400 hover:text-sage-600 hover:bg-sage-50 dark:hover:bg-slate-800 transition-colors shrink-0 mx-auto" title="Kecilkan / Perluas Sidebar">
+        <button type="button" id="sidebarToggleBtn" class="p-1.5 rounded-lg text-slate-400 hover:text-sage-600 hover:bg-sage-50 dark:hover:bg-[#202020] transition-colors shrink-0 mx-auto" title="Kecilkan / Perluas Sidebar">
             <svg class="w-5 h-5 transition-transform duration-300" id="toggleIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
             </svg>

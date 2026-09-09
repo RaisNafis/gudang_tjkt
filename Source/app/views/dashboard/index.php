@@ -84,7 +84,7 @@ $monthsIndo = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'O
 $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $monthsIndo[(int)date('n') - 1] . ' ' . date('Y');
 ?>
 
-<div class="flex h-screen w-screen bg-slate-50/70 dark:bg-[#0b0f19] font-sans overflow-hidden">
+<div class="flex h-screen w-screen bg-slate-50/70 dark:bg-[#0a0a0a] font-sans overflow-hidden">
     
     <!-- Sidebar Navigation -->
     <?php require_once __DIR__ . '/../layouts/sidebar.php'; ?>
@@ -93,10 +93,10 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
     <div class="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
         
         <!-- Top Bar Header: Mobile Hamburger, Page Title, User Profile & Controls -->
-        <header class="bg-white dark:bg-[#111625] border-b border-slate-100 dark:border-slate-800/80 px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between shadow-xs flex-shrink-0 z-20 gap-3">
+        <header class="bg-white dark:bg-[#121212] border-b border-slate-100 dark:border-[#262626] px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between shadow-xs flex-shrink-0 z-20 gap-3">
             <!-- UJUNG KIRI: Hamburger Menu Button (Mobile) + Text Title Halaman -->
             <div class="flex items-center gap-3 min-w-0 shrink-0">
-                <button type="button" onclick="openMobileSidebar()" class="lg:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-sage-700 hover:bg-sage-100 dark:hover:bg-slate-800 transition-colors border border-sage-200 dark:border-slate-800 shrink-0" title="Buka Menu Sidebar">
+                <button type="button" onclick="openMobileSidebar()" class="lg:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-sage-700 hover:bg-sage-100 dark:hover:bg-[#222222] transition-colors border border-sage-200 dark:border-[#262626] shrink-0" title="Buka Menu Sidebar">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
@@ -109,17 +109,17 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                 <!-- Search Box Pill in Navbar -->
                 <div class="relative hidden md:block">
                     <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    <input type="text" id="dashboardQuickSearch" placeholder="Cari data..." class="pl-9 pr-4 py-1.5 text-xs rounded-full bg-slate-100/90 dark:bg-[#151b28] border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 w-36 lg:w-56 transition-all shadow-xs" oninput="handleDashboardQuickSearch(this.value)">
+                    <input type="text" id="dashboardQuickSearch" placeholder="Cari data..." class="pl-9 pr-4 py-1.5 text-xs rounded-full bg-slate-100/90 dark:bg-[#161616] border border-slate-200/80 dark:border-[#262626] text-slate-700 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 w-36 lg:w-56 transition-all shadow-xs" oninput="handleDashboardQuickSearch(this.value)">
                 </div>
 
                 <!-- Date Pill in Navbar -->
-                <div class="hidden xl:inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold bg-slate-100/80 dark:bg-[#151b28] border border-slate-200/80 dark:border-slate-800 text-slate-600 dark:text-slate-300 rounded-full shadow-xs">
+                <div class="hidden xl:inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold bg-slate-100/80 dark:bg-[#161616] border border-slate-200/80 dark:border-[#262626] text-slate-600 dark:text-slate-300 rounded-full shadow-xs">
                     <svg class="w-3.5 h-3.5 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     <span><?= $todayFormatted; ?></span>
                 </div>
 
                 <!-- Theme Toggle -->
-                <button type="button" onclick="toggleTheme()" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors flex items-center justify-center border border-slate-200/80 dark:border-slate-800" title="Beralih Mode Gelap / Terang">
+                <button type="button" onclick="toggleTheme()" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors flex items-center justify-center border border-slate-200/80 dark:border-[#262626]" title="Beralih Mode Gelap / Terang">
                     <svg class="themeSunIcon w-4.5 h-4.5 hidden text-slate-700 dark:text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
                     </svg>
@@ -148,7 +148,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                 ?>
                 <!-- Top Header Profile Pill with Dropdown Arrow -->
                 <div class="relative" id="topHeaderProfileContainer">
-                    <button type="button" id="topHeaderProfileBtn" onclick="toggleProfilePopover('topHeaderProfilePopover', 'topHeaderProfileArrow', event)" class="inline-flex items-center gap-2.5 px-3 py-1.5 bg-slate-100/90 dark:bg-[#151b28] border border-slate-200/80 dark:border-slate-800 hover:border-sky-300 dark:hover:border-slate-700 rounded-full shadow-xs transition-all cursor-pointer group focus:outline-none focus:ring-2 focus:ring-sky-500/20" title="Menu Pengaturan Profil">
+                    <button type="button" id="topHeaderProfileBtn" onclick="toggleProfilePopover('topHeaderProfilePopover', 'topHeaderProfileArrow', event)" class="inline-flex items-center gap-2.5 px-3 py-1.5 bg-slate-100/90 dark:bg-[#161616] border border-slate-200/80 dark:border-[#262626] hover:border-sky-300 dark:hover:border-[#333333] rounded-full shadow-xs transition-all cursor-pointer group focus:outline-none focus:ring-2 focus:ring-sky-500/20" title="Menu Pengaturan Profil">
                         <div class="w-7 h-7 rounded-full bg-sky-100 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold text-xs overflow-hidden shrink-0">
                             <?php if (!empty($user['foto_url']) && file_exists(__DIR__ . '/../../../' . $user['foto_url'])): ?>
                                 <img src="<?= htmlspecialchars($user['foto_url']); ?>" class="w-full h-full object-cover" alt="Avatar">
@@ -166,9 +166,9 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                     </button>
 
                     <!-- Top Header Popover Settings Menu -->
-                    <div id="topHeaderProfilePopover" class="hidden absolute right-0 mt-2 w-72 bg-white dark:bg-[#151b28] border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-xl z-50 p-2 text-slate-700 dark:text-slate-200 transition-all origin-top-right text-left">
+                    <div id="topHeaderProfilePopover" class="hidden absolute right-0 mt-2 w-72 bg-white dark:bg-[#161616] border border-slate-200/90 dark:border-[#262626] rounded-2xl shadow-xl z-50 p-2 text-slate-700 dark:text-slate-200 transition-all origin-top-right text-left">
                         <!-- User Info Header -->
-                        <div class="px-3 py-2.5 bg-slate-50/70 dark:bg-[#111625] rounded-xl mb-2 flex items-center gap-3 border border-slate-100 dark:border-slate-800/60">
+                        <div class="px-3 py-2.5 bg-slate-50/70 dark:bg-[#121212] rounded-xl mb-2 flex items-center gap-3 border border-slate-100 dark:border-[#262626]">
                             <div class="w-10 h-10 rounded-full bg-sky-100 dark:bg-sky-950/80 text-sky-600 dark:text-sky-400 font-bold text-sm flex items-center justify-center shrink-0 overflow-hidden shadow-xs">
                                 <?php if (!empty($user['foto_url']) && file_exists(__DIR__ . '/../../../' . $user['foto_url'])): ?>
                                     <img src="<?= htmlspecialchars($user['foto_url']); ?>" class="w-full h-full object-cover" alt="Avatar">
@@ -186,7 +186,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         <!-- Menu Action Items -->
                         <div class="space-y-1">
                             <!-- Settings Profile Link -->
-                            <button type="button" onclick="goToSettingsProfile()" class="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-slate-800/70 rounded-xl transition-colors text-left group cursor-pointer">
+                            <button type="button" onclick="goToSettingsProfile()" class="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-[#222222] rounded-xl transition-colors text-left group cursor-pointer">
                                 <div class="w-7 h-7 rounded-lg bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                 </div>
@@ -198,7 +198,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             </button>
 
                             <!-- Mode Tema Toggle -->
-                            <button type="button" onclick="toggleTheme()" class="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-slate-800/70 rounded-xl transition-colors text-left group cursor-pointer">
+                            <button type="button" onclick="toggleTheme()" class="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-[#222222] rounded-xl transition-colors text-left group cursor-pointer">
                                 <div class="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                                 </div>
@@ -209,7 +209,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             </button>
                         </div>
 
-                        <div class="border-t border-slate-100 dark:border-slate-800/80 my-1.5"></div>
+                        <div class="border-t border-slate-100 dark:border-[#262626] my-1.5"></div>
 
                         <!-- Logout Button -->
                         <a href="logout.php" class="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition-colors cursor-pointer">
@@ -253,7 +253,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         <!-- ROW 1: Siswa, Guru, Jurusan, Users (4 Kolom) -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                             <!-- TOTAL SISWA -->
-                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                            <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
                                 <div class="flex items-center gap-3.5 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl bg-sky-50 dark:bg-sky-950/50 text-sky-500 dark:text-sky-400 flex items-center justify-center shrink-0">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
@@ -274,7 +274,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             </div>
 
                             <!-- TOTAL GURU -->
-                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                            <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
                                 <div class="flex items-center gap-3.5 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400 flex items-center justify-center shrink-0">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
@@ -295,7 +295,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             </div>
 
                             <!-- TOTAL JURUSAN -->
-                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                            <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
                                 <div class="flex items-center gap-3.5 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-950/50 text-purple-500 dark:text-purple-400 flex items-center justify-center shrink-0">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
@@ -316,7 +316,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             </div>
 
                             <!-- TOTAL USERS -->
-                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                            <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
                                 <div class="flex items-center gap-3.5 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl bg-orange-50 dark:bg-orange-950/50 text-orange-500 dark:text-orange-400 flex items-center justify-center shrink-0">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
@@ -340,7 +340,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         <!-- ROW 2: Kategori Barang, Total Alat & Bahan, Log Aktivitas, Stok Tersedia (4 Kolom) -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                             <!-- KATEGORI BARANG -->
-                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                            <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
                                 <div class="flex items-center gap-3.5 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 11h.01M7 15h.01M11 7h8M11 11h8M11 15h8"/></svg>
@@ -361,7 +361,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             </div>
 
                             <!-- TOTAL ALAT & BAHAN -->
-                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                            <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
                                 <div class="flex items-center gap-3.5 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/50 text-teal-500 dark:text-teal-400 flex items-center justify-center shrink-0">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
@@ -382,7 +382,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             </div>
 
                             <!-- LOG AKTIVITAS -->
-                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                            <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
                                 <div class="flex items-center gap-3.5 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -403,7 +403,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             </div>
 
                             <!-- STOK TERSEDIA -->
-                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                            <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
                                 <div class="flex items-center gap-3.5 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl bg-sky-50 dark:bg-sky-950/50 text-sky-500 dark:text-sky-400 flex items-center justify-center shrink-0">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
@@ -427,7 +427,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         <!-- ROW 3: Belum Dikembalikan, Sudah Dikembalikan (2 Kolom) -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <!-- BELUM DIKEMBALIKAN -->
-                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                            <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
                                 <div class="flex items-center gap-3.5 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl bg-violet-50 dark:bg-violet-950/50 text-violet-500 dark:text-violet-400 flex items-center justify-center shrink-0">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -448,7 +448,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             </div>
 
                             <!-- SUDAH DIKEMBALIKAN -->
-                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                            <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
                                 <div class="flex items-center gap-3.5 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400 flex items-center justify-center shrink-0">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -473,7 +473,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                     <div class="space-y-5">
                         <!-- Stat Cards Siswa: Belum Dikembalikan, Sudah Dikembalikan (2 Kolom) -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                            <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
                                 <div class="flex items-center gap-3.5 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl bg-violet-50 dark:bg-violet-950/50 text-violet-500 dark:text-violet-400 flex items-center justify-center shrink-0">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -493,7 +493,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 </div>
                             </div>
 
-                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                            <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
                                 <div class="flex items-center gap-3.5 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400 flex items-center justify-center shrink-0">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -518,7 +518,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                     <div class="space-y-5">
                         <!-- ROW 1: Siswa, Guru (2 Kolom) -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                            <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
                                 <div class="flex items-center gap-3.5 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl bg-sky-50 dark:bg-sky-950/50 text-sky-500 dark:text-sky-400 flex items-center justify-center shrink-0">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
@@ -538,7 +538,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 </div>
                             </div>
 
-                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                            <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
                                 <div class="flex items-center gap-3.5 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400 flex items-center justify-center shrink-0">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
@@ -561,7 +561,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
 
                         <!-- ROW 2: Kategori Barang, Total Barang, Log Aktivitas (3 Kolom) -->
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                            <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
                                 <div class="flex items-center gap-3.5 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 11h.01M7 15h.01M11 7h8M11 11h8M11 15h8"/></svg>
@@ -581,7 +581,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 </div>
                             </div>
 
-                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                            <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
                                 <div class="flex items-center gap-3.5 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/50 text-teal-500 dark:text-teal-400 flex items-center justify-center shrink-0">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
@@ -601,7 +601,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 </div>
                             </div>
 
-                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                            <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
                                 <div class="flex items-center gap-3.5 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -624,7 +624,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
 
                         <!-- ROW 3: Belum Dikembalikan, Sudah Dikembalikan (2 Kolom) -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                            <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
                                 <div class="flex items-center gap-3.5 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl bg-violet-50 dark:bg-violet-950/50 text-violet-500 dark:text-violet-400 flex items-center justify-center shrink-0">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -644,7 +644,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 </div>
                             </div>
 
-                            <div class="bg-white dark:bg-[#151b28] p-5 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                            <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
                                 <div class="flex items-center gap-3.5 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400 flex items-center justify-center shrink-0">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -671,7 +671,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
                     
                     <!-- Col 1 (5 Cols on xl): Grafik Sirkulasi & Stok Inventaris per Jurusan -->
-                    <div class="lg:col-span-12 xl:col-span-5 bg-white dark:bg-[#151b28] p-5 sm:p-6 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none flex flex-col justify-between">
+                    <div class="lg:col-span-12 xl:col-span-5 bg-white dark:bg-[#161616] p-5 sm:p-6 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between gap-2 mb-4">
                                 <div class="flex items-center gap-3">
@@ -687,7 +687,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         </p>
                                     </div>
                                 </div>
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700/80 shrink-0">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-[#2a2a2a]/80 shrink-0">
                                     <span>Tahun <?= date('Y'); ?></span>
                                     <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </span>
@@ -699,7 +699,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         </div>
 
                         <!-- Custom Legend below Bar Chart -->
-                        <div class="flex items-center justify-center gap-5 pt-3 mt-2 border-t border-slate-100 dark:border-slate-800/80 text-xs font-semibold text-slate-600 dark:text-slate-300 flex-wrap">
+                        <div class="flex items-center justify-center gap-5 pt-3 mt-2 border-t border-slate-100 dark:border-[#262626] text-xs font-semibold text-slate-600 dark:text-slate-300 flex-wrap">
                             <span class="inline-flex items-center gap-1.5">
                                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Alat & Bahan Masuk
                             </span>
@@ -713,7 +713,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                     </div>
 
                     <!-- Col 2 (3 Cols on xl): Sebaran Total Stok per Jurusan (Donut Chart) -->
-                    <div class="lg:col-span-6 xl:col-span-3 bg-white dark:bg-[#151b28] p-5 sm:p-6 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none flex flex-col justify-between">
+                    <div class="lg:col-span-6 xl:col-span-3 bg-white dark:bg-[#161616] p-5 sm:p-6 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none flex flex-col justify-between">
                         <div>
                             <div class="flex items-center gap-3 mb-2">
                                 <div class="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/50 text-sky-500 flex items-center justify-center shrink-0">
@@ -743,13 +743,13 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         </div>
 
                         <!-- 2-Column Legend Grid -->
-                        <div id="donutLegendContainer" class="grid grid-cols-2 gap-x-4 gap-y-1.5 pt-3 border-t border-slate-100 dark:border-slate-800/80 text-xs">
+                        <div id="donutLegendContainer" class="grid grid-cols-2 gap-x-4 gap-y-1.5 pt-3 border-t border-slate-100 dark:border-[#262626] text-xs">
                             <!-- Populated dynamically by initInventoryChart() -->
                         </div>
                     </div>
 
                     <!-- Col 3 (4 Cols on xl): Aktivitas Terbaru (Matches Image 1) -->
-                    <div class="lg:col-span-6 xl:col-span-4 bg-white dark:bg-[#151b28] p-5 sm:p-6 rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none flex flex-col justify-between">
+                    <div class="lg:col-span-6 xl:col-span-4 bg-white dark:bg-[#161616] p-5 sm:p-6 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-4">
                                 <div class="flex items-center gap-3">
@@ -860,7 +860,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
 
                 <!-- Sirkulasi Peminjaman Alat Terbaru & Aktivitas Masuk Keluar (MySQL Live) -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <div class="lg:col-span-8 bg-white dark:bg-[#151b28] rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none p-5 sm:p-6">
+                    <div class="lg:col-span-8 bg-white dark:bg-[#161616] rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none p-5 sm:p-6">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-5">
                             <div>
                                 <h3 class="text-base font-bold text-slate-800 dark:text-white">Sirkulasi Peminjaman Alat Terbaru</h3>
@@ -871,9 +871,9 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                             </button>
                         </div>
-                        <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-slate-100 dark:border-slate-800">
+                        <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-slate-100 dark:border-[#262626]">
                             <table id="tableDashboardRecentPeminjaman" class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
-                                <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 font-bold border-b border-slate-100 dark:border-slate-800">
+                                <thead class="bg-slate-50 dark:bg-[#202020] text-slate-700 dark:text-slate-200 font-bold border-b border-slate-100 dark:border-[#262626]">
                                     <tr>
                                         <th class="py-3 px-4">Nama Barang</th>
                                         <th class="py-3 px-4">Jenis Barang</th>
@@ -887,7 +887,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                                     <?php if (!empty($dbPeminjaman)): ?>
                                         <?php foreach (array_slice($dbPeminjaman, 0, 5) as $pm): ?>
-                                            <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                                            <tr class="hover:bg-slate-50/60 dark:hover:bg-[#222222]/40 transition-colors">
                                                 <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-white"><?= htmlspecialchars($pm['nama_barang']); ?></td>
                                                 <td class="py-3.5 px-4 font-semibold capitalize text-slate-700 dark:text-slate-300"><?= htmlspecialchars(ucfirst($pm['jenis'] ?? 'Alat')); ?></td>
                                                 <td class="py-3.5 px-4">
@@ -933,7 +933,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         </div>
                     </div>
 
-                    <div class="lg:col-span-4 bg-white dark:bg-[#151b28] rounded-2xl border border-slate-100/90 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none p-5 sm:p-6 flex flex-col justify-between">
+                    <div class="lg:col-span-4 bg-white dark:bg-[#161616] rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none p-5 sm:p-6 flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-4">
                                 <div>
@@ -977,8 +977,8 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                             $isMasuk = ($log['type'] === 'masuk');
                                         ?>
                                         <div class="p-3 rounded-xl <?= $isMasuk 
-                                            ? 'bg-emerald-50/60 border border-emerald-200/60 dark:bg-slate-800/40 dark:border-slate-800/80' 
-                                            : 'bg-amber-50/60 border border-amber-200/60 dark:bg-slate-800/40 dark:border-slate-800/80'; ?> flex items-center justify-between transition-all">
+                                            ? 'bg-emerald-50/60 border border-emerald-200/60 dark:bg-[#1a1a1a] dark:border-[#262626]' 
+                                            : 'bg-amber-50/60 border border-amber-200/60 dark:bg-[#1a1a1a] dark:border-[#262626]'; ?> flex items-center justify-between transition-all">
                                             <div class="flex items-center gap-3 min-w-0">
                                                 <div class="w-8 h-8 rounded-lg <?= $isMasuk ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'; ?> flex items-center justify-center text-xs font-bold shrink-0 shadow-sm">
                                                     <?php if ($isMasuk): ?>
@@ -1016,7 +1016,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                 <!-- Stat Cards Row for Data Pengguna -->
                 <!-- Stat Cards Row 1: Total User, Total Siswa, Total Guru (3 Kolom) -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total User</span>
                             <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
@@ -1026,7 +1026,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         <h3 id="statTabPenggunaTotal" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalUsersCount); ?> User</h3>
                     </div>
 
-                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Siswa</span>
                             <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
@@ -1036,7 +1036,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         <h3 id="statTabPenggunaTotalSiswa" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalSiswaCount); ?> Siswa</h3>
                     </div>
 
-                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Guru</span>
                             <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
@@ -1050,7 +1050,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                 <!-- Stat Cards Row 2: Admin Sekolah, Admin Jurusan, Petugas Gudang, Guru Umum -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 <?= $isSuperAdmin ? 'lg:grid-cols-4' : 'lg:grid-cols-2'; ?> gap-5">
                     <?php if ($isSuperAdmin): ?>
-                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Admin Sekolah</span>
                             <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
@@ -1061,7 +1061,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                     </div>
                     <?php endif; ?>
 
-                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Admin Jurusan</span>
                             <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
@@ -1071,7 +1071,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         <h3 id="statPenggunaAdminJurusan" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($cntAdminJurusan); ?> Admin</h3>
                     </div>
 
-                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Petugas Gudang</span>
                             <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
@@ -1082,7 +1082,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                     </div>
 
                     <?php if ($isSuperAdmin): ?>
-                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Guru Umum</span>
                             <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
@@ -1096,12 +1096,12 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
 
                 <!-- Charts Row for Data Pengguna -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <div class="lg:col-span-6 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm">
+                    <div class="lg:col-span-6 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm">
                         <h3 class="text-base font-bold text-slate-800 dark:text-white mb-1">Distribusi Pengguna per Peran (Role)</h3>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Jumlah Admin Sekolah, Admin Jurusan, Petugas, Guru Umum, dan Siswa</p>
                         <div class="relative h-64 w-full"><canvas id="userRoleChart"></canvas></div>
                     </div>
-                    <div class="lg:col-span-6 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                    <div class="lg:col-span-6 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm flex flex-col justify-between">
                         <div>
                             <h3 class="text-base font-bold text-slate-800 dark:text-white mb-1"><?= $isSuperAdmin ? 'Sebaran Pengguna per Jurusan' : 'Persentase Peran Pengguna'; ?></h3>
                             <p class="text-xs text-slate-500 dark:text-slate-400 mb-3"><?= $isSuperAdmin ? 'Persentase dan jumlah anggota di setiap jurusan sekolah' : 'Proporsi Admin Jurusan, Petugas Gudang, dan Siswa'; ?></p>
@@ -1137,11 +1137,11 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                     <!-- Filter Controls Data Pengguna -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
                         <div class="relative">
-                            <input type="text" id="filter_pengguna_search" oninput="debouncedRenderTablePengguna()" placeholder="Cari nama, email, kelas..." class="w-full pl-9 pr-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-medium">
+                            <input type="text" id="filter_pengguna_search" oninput="debouncedRenderTablePengguna()" placeholder="Cari nama, email, kelas..." class="w-full pl-9 pr-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-medium">
                             <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         </div>
                         <div>
-                            <select id="filter_pengguna_tingkat_kelas" onchange="currentPenggunaPage=1; renderTablePengguna()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
+                            <select id="filter_pengguna_tingkat_kelas" onchange="currentPenggunaPage=1; renderTablePengguna()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
                                 <option value="">Semua Tingkat Kelas</option>
                                 <option value="10">Kelas 10</option>
                                 <option value="11">Kelas 11</option>
@@ -1149,7 +1149,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             </select>
                         </div>
                         <div>
-                            <select id="filter_pengguna_peran" onchange="currentPenggunaPage=1; renderTablePengguna()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
+                            <select id="filter_pengguna_peran" onchange="currentPenggunaPage=1; renderTablePengguna()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
                                 <option value="">Semua Peran</option>
                                 <?php if ($isSuperAdmin): ?><option value="admin_sekolah">Admin Sekolah</option><?php endif; ?>
                                 <option value="admin_jurusan">Admin Jurusan</option>
@@ -1160,7 +1160,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         </div>
                         <div>
                             <?php if ($isSuperAdmin): ?>
-                                <select id="filter_pengguna_jurusan" onchange="currentPenggunaPage=1; renderTablePengguna()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
+                                <select id="filter_pengguna_jurusan" onchange="currentPenggunaPage=1; renderTablePengguna()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
                                     <option value="">Semua Jurusan</option>
                                     <option value="none">Tanpa Jurusan (Umum)</option>
                                     <?php foreach ($dbJurusan as $j): ?>
@@ -1168,16 +1168,16 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                     <?php endforeach; ?>
                                 </select>
                             <?php else: ?>
-                                <select id="filter_pengguna_jurusan" disabled class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-500 dark:text-slate-400 font-semibold cursor-not-allowed">
+                                <select id="filter_pengguna_jurusan" disabled class="w-full px-3 py-2 bg-slate-100 dark:bg-[#202020] border border-slate-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-500 dark:text-slate-400 font-semibold cursor-not-allowed">
                                     <option value="<?= htmlspecialchars($user['jurusan_id'] ?? ''); ?>" selected><?= htmlspecialchars($user['nama_jurusan'] ?? 'Jurusan Saya'); ?></option>
                                 </select>
                             <?php endif; ?>
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100 dark:border-slate-800">
+                    <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100 dark:border-[#262626]">
                         <table id="tablePengguna" class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
-                            <thead class="bg-sage-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 font-bold border-b border-sage-200 dark:border-slate-700">
+                            <thead class="bg-sage-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 font-bold border-b border-sage-200 dark:border-[#2a2a2a]">
                                 <tr>
                                     <th class="py-3 px-3 w-10 text-center"><input type="checkbox" class="select-all-checkbox rounded accent-sage-600 cursor-pointer" onchange="toggleSelectAll(this)"></th>
                                     <th class="py-3 px-4 w-12 text-center">No</th>
@@ -1197,10 +1197,10 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                     </div>
 
                     <!-- Pagination Controls Data Pengguna -->
-                    <div id="pagination_pengguna" class="mt-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-slate-800 gap-3">
+                    <div id="pagination_pengguna" class="mt-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-[#262626] gap-3">
                         <div class="flex items-center gap-2.5">
                             <span>Tampilkan</span>
-                            <select id="pengguna_per_page" onchange="changePenggunaPerPage(this.value)" class="px-2 py-1 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300 focus:outline-none focus:border-sage-600">
+                            <select id="pengguna_per_page" onchange="changePenggunaPerPage(this.value)" class="px-2 py-1 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300 focus:outline-none focus:border-sage-600">
                                 <option value="10" selected>10</option>
                                 <option value="25">25</option>
                                 <option value="50">50</option>
@@ -1220,18 +1220,18 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
 
             <!-- SECTION 2.1: TAB DATA GURU -->
             <div id="tab-guru" class="tab-content hidden space-y-6">
-                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm p-6">
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-5">
                         <div>
                             <h3 class="text-base font-bold text-slate-800 dark:text-white">Master Data Guru</h3>
                             <p class="text-xs text-slate-500 dark:text-slate-400">Kelola data guru pengajar (Bengkel / Umum)</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
-                            <button onclick="openModal('modalImportGuruCSV')" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Import data dari berkas CSV">
+                            <button onclick="openModal('modalImportGuruCSV')" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-[#2a2a2a] rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Import data dari berkas CSV">
                                 <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12"/></svg>
                                 <span>Import CSV</span>
                             </button>
-                            <button onclick="exportTableToCSV('tableGuru', 'data_guru.csv')" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Download data sebagai CSV">
+                            <button onclick="exportTableToCSV('tableGuru', 'data_guru.csv')" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-[#2a2a2a] rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Download data sebagai CSV">
                                 <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                 <span>Export CSV</span>
                             </button>
@@ -1242,25 +1242,25 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                     <!-- Filter Controls Data Guru -->
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
                         <div class="relative">
-                            <input type="text" id="filter_guru_search" oninput="debouncedRenderTableGuru()" placeholder="Cari nama guru atau token..." class="w-full pl-9 pr-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-medium">
+                            <input type="text" id="filter_guru_search" oninput="debouncedRenderTableGuru()" placeholder="Cari nama guru atau token..." class="w-full pl-9 pr-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-medium">
                             <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         </div>
                         <div>
                             <?php if ($isSuperAdmin): ?>
-                                <select id="filter_guru_mengajar" onchange="currentGuruPage=1; renderTableGuru()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
+                                <select id="filter_guru_mengajar" onchange="currentGuruPage=1; renderTableGuru()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
                                     <option value="">Semua Kategori Mengajar</option>
                                     <option value="bengkel">Guru Bengkel</option>
                                     <option value="umum">Guru Umum</option>
                                 </select>
                             <?php else: ?>
-                                <select id="filter_guru_mengajar" disabled class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-500 dark:text-slate-400 font-semibold cursor-not-allowed">
+                                <select id="filter_guru_mengajar" disabled class="w-full px-3 py-2 bg-slate-100 dark:bg-[#202020] border border-slate-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-500 dark:text-slate-400 font-semibold cursor-not-allowed">
                                     <option value="bengkel" selected>Guru Bengkel (Kejuruan)</option>
                                 </select>
                             <?php endif; ?>
                         </div>
                         <div>
                             <?php if ($isSuperAdmin): ?>
-                                <select id="filter_guru_jurusan" onchange="currentGuruPage=1; renderTableGuru()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
+                                <select id="filter_guru_jurusan" onchange="currentGuruPage=1; renderTableGuru()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
                                     <option value="">Semua Jurusan</option>
                                     <option value="none">Guru Umum (Tidak Ada Jurusan)</option>
                                     <?php foreach ($dbJurusan as $j): ?>
@@ -1268,16 +1268,16 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                     <?php endforeach; ?>
                                 </select>
                             <?php else: ?>
-                                <select id="filter_guru_jurusan" disabled class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-500 dark:text-slate-400 font-semibold cursor-not-allowed">
+                                <select id="filter_guru_jurusan" disabled class="w-full px-3 py-2 bg-slate-100 dark:bg-[#202020] border border-slate-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-500 dark:text-slate-400 font-semibold cursor-not-allowed">
                                     <option value="<?= htmlspecialchars($user['jurusan_id'] ?? ''); ?>" selected><?= htmlspecialchars($user['nama_jurusan'] ?? 'Jurusan Saya'); ?></option>
                                 </select>
                             <?php endif; ?>
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100 dark:border-slate-800">
+                    <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100 dark:border-[#262626]">
                         <table id="tableGuru" class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
-                            <thead class="bg-sage-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 font-bold border-b border-sage-200 dark:border-slate-700">
+                            <thead class="bg-sage-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 font-bold border-b border-sage-200 dark:border-[#2a2a2a]">
                                 <tr>
                                     <th class="py-3 px-3 w-10 text-center"><input type="checkbox" class="select-all-checkbox rounded accent-sage-600 cursor-pointer" onchange="toggleSelectAll(this)"></th>
                                     <th class="py-3 px-4 w-12 text-center">No</th>
@@ -1295,12 +1295,12 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                     </div>
 
                     <!-- Pagination Controls Data Guru -->
-                    <div id="pagination_guru" class="mt-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-slate-800 gap-3">
+                    <div id="pagination_guru" class="mt-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-[#262626] gap-3">
                         <div class="flex items-center gap-2.5">
                             <span id="guru_pagination_info" class="font-medium text-slate-600 dark:text-slate-300">Menampilkan 0 data</span>
                             <div class="flex items-center gap-1.5 ml-2">
                                 <span class="text-[11px] text-slate-400">Tampilkan:</span>
-                                <select id="guru_per_page" onchange="changeGuruPerPage(this.value)" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-sage-600 cursor-pointer">
+                                <select id="guru_per_page" onchange="changeGuruPerPage(this.value)" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-[#2a2a2a] rounded-lg px-2 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-sage-600 cursor-pointer">
                                     <option value="10" selected>10 / hal</option>
                                     <option value="25">25 / hal</option>
                                     <option value="50">50 / hal</option>
@@ -1314,18 +1314,18 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
 
             <!-- SECTION 2.2: TAB DATA SISWA -->
             <div id="tab-siswa" class="tab-content hidden space-y-6">
-                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm p-6">
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-5">
                         <div>
                             <h3 class="text-base font-bold text-slate-800 dark:text-white">Master Data Siswa</h3>
                             <p class="text-xs text-slate-500 dark:text-slate-400">Kelola data siswa</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
-                            <button onclick="openModal('modalImportSiswaCSV')" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Import data dari berkas CSV">
+                            <button onclick="openModal('modalImportSiswaCSV')" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-[#2a2a2a] rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Import data dari berkas CSV">
                                 <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12"/></svg>
                                 <span>Import CSV</span>
                             </button>
-                            <button onclick="exportTableToCSV('tableSiswa', 'data_siswa.csv')" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Download data sebagai CSV">
+                            <button onclick="exportTableToCSV('tableSiswa', 'data_siswa.csv')" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-[#2a2a2a] rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Download data sebagai CSV">
                                 <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                 <span>Export CSV</span>
                             </button>
@@ -1336,11 +1336,11 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                     <!-- Filter Controls Data Siswa -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
                         <div class="relative">
-                            <input type="text" id="filter_siswa_search" oninput="debouncedRenderTableSiswa()" placeholder="Cari nama, NISN, token, atau kelas..." class="w-full pl-9 pr-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-medium">
+                            <input type="text" id="filter_siswa_search" oninput="debouncedRenderTableSiswa()" placeholder="Cari nama, NISN, token, atau kelas..." class="w-full pl-9 pr-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-medium">
                             <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         </div>
                         <div>
-                            <select id="filter_siswa_tingkat_kelas" onchange="currentSiswaPage=1; renderTableSiswa()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
+                            <select id="filter_siswa_tingkat_kelas" onchange="currentSiswaPage=1; renderTableSiswa()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
                                 <option value="">Semua Tingkat Kelas</option>
                                 <option value="10">Kelas 10</option>
                                 <option value="11">Kelas 11</option>
@@ -1349,7 +1349,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         </div>
                         <div>
                             <?php if ($isSuperAdmin): ?>
-                                <select id="filter_siswa_jurusan" onchange="currentSiswaPage=1; renderTableSiswa()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
+                                <select id="filter_siswa_jurusan" onchange="currentSiswaPage=1; renderTableSiswa()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
                                     <option value="">Semua Jurusan</option>
                                     <option value="none">Tidak Ada Jurusan (Umum)</option>
                                     <?php foreach ($dbJurusan as $j): ?>
@@ -1357,13 +1357,13 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                     <?php endforeach; ?>
                                 </select>
                             <?php else: ?>
-                                <select id="filter_siswa_jurusan" disabled class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-500 dark:text-slate-400 font-semibold cursor-not-allowed">
+                                <select id="filter_siswa_jurusan" disabled class="w-full px-3 py-2 bg-slate-100 dark:bg-[#202020] border border-slate-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-500 dark:text-slate-400 font-semibold cursor-not-allowed">
                                     <option value="<?= htmlspecialchars($user['jurusan_id'] ?? ''); ?>" selected><?= htmlspecialchars($user['nama_jurusan'] ?? 'Jurusan Saya'); ?></option>
                                 </select>
                             <?php endif; ?>
                         </div>
                         <div>
-                            <select id="filter_siswa_tahun" onchange="currentSiswaPage=1; renderTableSiswa()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
+                            <select id="filter_siswa_tahun" onchange="currentSiswaPage=1; renderTableSiswa()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
                                 <option value="">Semua Tahun Ajaran</option>
                                 <?php 
                                     $taList = array_values(array_unique(array_filter(array_map(fn($s) => $s['tahun_ajaran'] ?? '', $dbSiswa))));
@@ -1376,9 +1376,9 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100 dark:border-slate-800">
+                    <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100 dark:border-[#262626]">
                         <table id="tableSiswa" class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
-                            <thead class="bg-sage-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 font-bold border-b border-sage-200 dark:border-slate-700">
+                            <thead class="bg-sage-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 font-bold border-b border-sage-200 dark:border-[#2a2a2a]">
                                 <tr>
                                     <th class="py-3 px-3 w-10 text-center"><input type="checkbox" class="select-all-checkbox rounded accent-sage-600 cursor-pointer" onchange="toggleSelectAll(this)"></th>
                                     <th class="py-3 px-4 w-12 text-center">No</th>
@@ -1397,12 +1397,12 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                     </div>
 
                     <!-- Pagination Controls Data Siswa -->
-                    <div id="pagination_siswa" class="mt-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-slate-800 gap-3">
+                    <div id="pagination_siswa" class="mt-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-[#262626] gap-3">
                         <div class="flex items-center gap-2.5">
                             <span id="siswa_pagination_info" class="font-medium text-slate-600 dark:text-slate-300">Menampilkan 0 data</span>
                             <div class="flex items-center gap-1.5 ml-2">
                                 <span class="text-[11px] text-slate-400">Tampilkan:</span>
-                                <select id="siswa_per_page" onchange="changeSiswaPerPage(this.value)" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-sage-600 cursor-pointer">
+                                <select id="siswa_per_page" onchange="changeSiswaPerPage(this.value)" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-[#2a2a2a] rounded-lg px-2 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-sage-600 cursor-pointer">
                                     <option value="10">10 / hal</option>
                                     <option value="25" selected>25 / hal</option>
                                     <option value="50">50 / hal</option>
@@ -1669,7 +1669,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
             <div id="tab-barang" class="tab-content hidden space-y-6">
                 <!-- Stat Cards Row for Barang -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Alat & Bahan</span>
                             <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
@@ -1721,18 +1721,18 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                     <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 mb-4">
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 <?= $isSuperAdmin ? 'xl:grid-cols-5' : ''; ?> gap-3 flex-1">
                             <div class="relative">
-                                <input type="text" id="filter_barang_search" oninput="debouncedFilterTableBarang()" placeholder="Cari nama, merek, barcode..." class="w-full pl-9 pr-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-medium">
+                                <input type="text" id="filter_barang_search" oninput="debouncedFilterTableBarang()" placeholder="Cari nama, merek, barcode..." class="w-full pl-9 pr-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-medium">
                                 <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                             </div>
                             <div>
-                                <select id="filter_barang_jenis" onchange="filterTableBarang()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold cursor-pointer">
+                                <select id="filter_barang_jenis" onchange="filterTableBarang()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold cursor-pointer">
                                     <option value="">Semua Jenis (Alat & Bahan)</option>
                                     <option value="alat">Alat</option>
                                     <option value="bahan">Bahan</option>
                                 </select>
                             </div>
                             <div>
-                                <select id="filter_barang_kategori" onchange="filterTableBarang()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold cursor-pointer">
+                                <select id="filter_barang_kategori" onchange="filterTableBarang()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold cursor-pointer">
                                     <option value="">Semua Kategori</option>
                                     <?php foreach ($dbKategori as $kat): ?>
                                         <option value="<?= htmlspecialchars(strval($kat['id'])); ?>"><?= htmlspecialchars($kat['nama_kategori']); ?></option>
@@ -1741,7 +1741,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 </select>
                             </div>
                             <div>
-                                <select id="filter_barang_rak" onchange="filterTableBarang()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold cursor-pointer">
+                                <select id="filter_barang_rak" onchange="filterTableBarang()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold cursor-pointer">
                                     <option value="">Semua Rak</option>
                                     <?php foreach ($dbRak as $rk): ?>
                                         <option value="<?= htmlspecialchars(strval($rk['id'])); ?>"><?= htmlspecialchars($rk['nama_rak'] . (!empty($rk['kategori_rak']) ? ' (' . $rk['kategori_rak'] . ')' : '')); ?></option>
@@ -1751,7 +1751,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             </div>
                             <?php if ($isSuperAdmin): ?>
                             <div>
-                                <select id="filter_barang_jurusan" onchange="onBarangJurusanFilterChange()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold cursor-pointer">
+                                <select id="filter_barang_jurusan" onchange="onBarangJurusanFilterChange()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold cursor-pointer">
                                     <option value="">Semua Jurusan</option>
                                     <?php foreach ($dbJurusan as $j): ?>
                                         <option value="<?= htmlspecialchars(strval($j['id'])); ?>"><?= htmlspecialchars($j['nama_jurusan']); ?></option>
@@ -1761,7 +1761,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             <?php endif; ?>
                         </div>
                         <div class="flex items-center shrink-0">
-                            <button type="button" onclick="resetBarangFilters()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 transition-colors flex items-center gap-1.5" title="Reset Semua Filter">
+                            <button type="button" onclick="resetBarangFilters()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-[#2a2a2a] rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 transition-colors flex items-center gap-1.5" title="Reset Semua Filter">
                                 <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                                 <span>Reset Filter</span>
                             </button>
@@ -2497,11 +2497,11 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
             <!-- SECTION 9: TAB PENGATURAN PROFIL -->
             <div id="tab-pengaturan-profil" class="tab-content hidden space-y-6">
                 <div class="max-w-4xl mx-auto space-y-6">
-                    <form action="update_profile.php" method="POST" enctype="multipart/form-data" class="bg-white dark:bg-[#151b28] rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm p-6 space-y-6">
+                    <form action="update_profile.php" method="POST" enctype="multipart/form-data" class="bg-white dark:bg-[#161616] rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm p-6 space-y-6">
                         <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
                         
                         <!-- Header Title Profil -->
-                        <div class="border-b border-sage-100 dark:border-slate-800/80 pb-4 mb-2 flex items-center justify-between">
+                        <div class="border-b border-sage-100 dark:border-[#262626] pb-4 mb-2 flex items-center justify-between">
                             <div>
                                 <h3 class="text-lg font-bold text-slate-800 dark:text-white">Pengaturan Akun & Profil</h3>
                                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Perbarui informasi data diri dan kata sandi akun Anda</p>
@@ -2518,8 +2518,8 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             </h4>
 
                             <!-- Foto Profil Avatar Row -->
-                            <div class="flex items-center gap-4 p-4 bg-sage-50/50 dark:bg-slate-900/50 rounded-2xl border border-sage-100 dark:border-slate-800 mb-5">
-                                <div class="w-16 h-16 rounded-full bg-sage-600 text-white font-bold flex items-center justify-center text-xl shrink-0 shadow-md overflow-hidden border-2 border-white dark:border-slate-700">
+                            <div class="flex items-center gap-4 p-4 bg-sage-50/50 dark:bg-slate-900/50 rounded-2xl border border-sage-100 dark:border-[#262626] mb-5">
+                                <div class="w-16 h-16 rounded-full bg-sage-600 text-white font-bold flex items-center justify-center text-xl shrink-0 shadow-md overflow-hidden border-2 border-white dark:border-[#2a2a2a]">
                                     <?php if (!empty($user['foto_url']) && file_exists(__DIR__ . '/../../../' . $user['foto_url'])): ?>
                                         <img id="profileAvatarPreview" src="<?= htmlspecialchars($user['foto_url']);  ?>" class="w-full h-full object-cover" alt="Avatar">
                                     <?php else: ?>
@@ -2550,29 +2550,29 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5">Nama Pengguna (Username)</label>
-                                    <input type="text" value="<?= htmlspecialchars($user['nama_pengguna'] ?? 'admin'); ?>" disabled class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-500 dark:text-slate-400 cursor-not-allowed">
+                                    <input type="text" value="<?= htmlspecialchars($user['nama_pengguna'] ?? 'admin'); ?>" disabled class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-[#202020] border border-slate-200 dark:border-[#2a2a2a] rounded-xl text-xs font-semibold text-slate-500 dark:text-slate-400 cursor-not-allowed">
                                     <p class="text-[10px] text-slate-400 mt-1">*Nama pengguna tidak dapat diubah</p>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Nama Lengkap <span class="text-red-500">*</span></label>
-                                    <input type="text" name="nama_lengkap" required value="<?= htmlspecialchars($user['nama_lengkap'] ?? ''); ?>" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-[#111625] border border-sage-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-[#151b28] transition-all">
+                                    <input type="text" name="nama_lengkap" required value="<?= htmlspecialchars($user['nama_lengkap'] ?? ''); ?>" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-[#121212] border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-[#161616] transition-all">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Alamat Email</label>
                                     <div class="flex items-center gap-2">
-                                        <input type="text" name="email_prefix" value="<?= htmlspecialchars($profEmailPrefix); ?>" placeholder="nama_email" class="w-1/2 px-3.5 py-2.5 bg-sage-50/50 dark:bg-[#111625] border border-sage-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-[#151b28] transition-all">
+                                        <input type="text" name="email_prefix" value="<?= htmlspecialchars($profEmailPrefix); ?>" placeholder="nama_email" class="w-1/2 px-3.5 py-2.5 bg-sage-50/50 dark:bg-[#121212] border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-[#161616] transition-all">
                                         <span class="text-slate-400 font-bold text-sm">@</span>
-                                        <input type="text" name="email_domain" value="<?= htmlspecialchars($profEmailDomain); ?>" placeholder="smk2pangkalpinang.sch.id" class="w-1/2 px-3.5 py-2.5 bg-sage-50/50 dark:bg-[#111625] border border-sage-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-[#151b28] transition-all">
+                                        <input type="text" name="email_domain" value="<?= htmlspecialchars($profEmailDomain); ?>" placeholder="smk2pangkalpinang.sch.id" class="w-1/2 px-3.5 py-2.5 bg-sage-50/50 dark:bg-[#121212] border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-[#161616] transition-all">
                                     </div>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Nomor Telepon / WhatsApp</label>
-                                    <input type="text" name="nomor_telepon" value="<?= htmlspecialchars($user['nomor_telepon'] ?? ''); ?>" placeholder="081234567890" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-[#111625] border border-sage-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-[#151b28] transition-all">
+                                    <input type="text" name="nomor_telepon" value="<?= htmlspecialchars($user['nomor_telepon'] ?? ''); ?>" placeholder="081234567890" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-[#121212] border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-[#161616] transition-all">
                                 </div>
                             </div>
                         </div>
 
-                        <div class="pt-4 border-t border-sage-100 dark:border-slate-800/80">
+                        <div class="pt-4 border-t border-sage-100 dark:border-[#262626]">
                             <h4 class="text-sm font-bold text-slate-800 dark:text-white pb-3 mb-4 flex items-center gap-2">
                                 <svg class="w-4 h-4 text-sage-600 dark:text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                                 Ubah Kata Sandi <span class="text-xs font-normal text-slate-400">(Biarkan kosong jika tidak ingin diubah)</span>
@@ -2581,11 +2581,11 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Kata Sandi Lama</label>
-                                    <input type="password" name="password_lama" placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-[#111625] border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white focus:outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-[#151b28] transition-all">
+                                    <input type="password" name="password_lama" placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-[#121212] border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-white focus:outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-[#161616] transition-all">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Kata Sandi Baru</label>
-                                    <input type="password" name="password_baru" placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-[#111625] border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white focus:outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-[#151b28] transition-all">
+                                    <input type="password" name="password_baru" placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-[#121212] border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-white focus:outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-[#161616] transition-all">
                                 </div>
                             </div>
                         </div>
@@ -2604,7 +2604,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
         <?php if ($isSuperAdmin): ?>
         <div id="tab-swagger" class="tab-content hidden space-y-6">
             <!-- Header Section -->
-            <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl text-slate-800 dark:text-white shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl text-slate-800 dark:text-white shadow-sm border border-slate-200 dark:border-[#262626] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div class="space-y-1">
                     <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-100 dark:bg-emerald-500/20 border border-emerald-300 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-400 rounded-full text-xs font-mono font-bold">
                         <span>OPENAPI 3.0.3 SPECIFICATION</span>
@@ -2624,7 +2624,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
             </div>
 
             <!-- Swagger UI Isolated Iframe Container -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm">
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-[#262626] rounded-3xl overflow-hidden shadow-sm">
                 <iframe src="swagger_ui.php" class="w-full h-[85vh] border-0" style="min-height: 750px;"></iframe>
             </div>
         </div>
@@ -3274,7 +3274,7 @@ function initInventoryChart() {
                     backgroundColor: pieBgColors,
                     hoverBackgroundColor: pieBgColors,
                     borderWidth: 3,
-                    borderColor: isDark ? '#151b28' : '#ffffff',
+                    borderColor: isDark ? '#161616' : '#ffffff',
                     spacing: 2,
                     hoverOffset: 4
                 }]
@@ -3462,7 +3462,7 @@ function initTabAnalytics(tabId) {
             const legendContainer = document.getElementById('userJurusanLegendList');
             if (legendContainer) {
                 legendContainer.innerHTML = legendItems.map(item => `
-                    <div class="flex items-center justify-between py-1.5 px-2.5 rounded-xl hover:bg-slate-100/70 dark:hover:bg-slate-800/70 transition-colors text-xs border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                    <div class="flex items-center justify-between py-1.5 px-2.5 rounded-xl hover:bg-slate-100/70 dark:hover:bg-[#222222] transition-colors text-xs border border-transparent hover:border-slate-200 dark:hover:border-[#333333]">
                         <div class="flex items-center gap-2 min-w-0 pr-2">
                             <span class="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm" style="background-color: ${item.color}"></span>
                             <span class="font-medium text-slate-700 dark:text-slate-200 truncate" title="${escapeHtml(item.fullName)}">
@@ -3963,14 +3963,14 @@ function renderPenggunaPaginationControls(totalItems, totalPages, startIdx, endI
     const prevDisabled = currentPenggunaPage <= 1;
     const nextDisabled = currentPenggunaPage >= totalPages;
 
-    html += `<button type="button" onclick="setPenggunaPage(1)" ${prevDisabled ? 'disabled' : ''} class="px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-xs ${prevDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}" title="Halaman Pertama">&laquo;</button>`;
-    html += `<button type="button" onclick="setPenggunaPage(${currentPenggunaPage - 1})" ${prevDisabled ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-xs ${prevDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}" title="Sebelumnya">&lsaquo;</button>`;
+    html += `<button type="button" onclick="setPenggunaPage(1)" ${prevDisabled ? 'disabled' : ''} class="px-2 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] font-bold text-xs ${prevDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200'}" title="Halaman Pertama">&laquo;</button>`;
+    html += `<button type="button" onclick="setPenggunaPage(${currentPenggunaPage - 1})" ${prevDisabled ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] font-bold text-xs ${prevDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200'}" title="Sebelumnya">&lsaquo;</button>`;
 
     let startPage = Math.max(1, currentPenggunaPage - 2);
     let endPage = Math.min(totalPages, currentPenggunaPage + 2);
 
     if (startPage > 1) {
-        html += `<button type="button" onclick="setPenggunaPage(1)" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">1</button>`;
+        html += `<button type="button" onclick="setPenggunaPage(1)" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] text-xs font-semibold hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200">1</button>`;
         if (startPage > 2) {
             html += `<span class="px-1 text-slate-400">...</span>`;
         }
@@ -3980,7 +3980,7 @@ function renderPenggunaPaginationControls(totalItems, totalPages, startIdx, endI
         if (p === currentPenggunaPage) {
             html += `<button type="button" class="px-2.5 py-1 rounded-lg bg-sage-600 text-white font-bold text-xs shadow-sm">${p}</button>`;
         } else {
-            html += `<button type="button" onclick="setPenggunaPage(${p})" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">${p}</button>`;
+            html += `<button type="button" onclick="setPenggunaPage(${p})" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] text-xs font-semibold hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200">${p}</button>`;
         }
     }
 
@@ -3988,11 +3988,11 @@ function renderPenggunaPaginationControls(totalItems, totalPages, startIdx, endI
         if (endPage < totalPages - 1) {
             html += `<span class="px-1 text-slate-400">...</span>`;
         }
-        html += `<button type="button" onclick="setPenggunaPage(${totalPages})" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">${totalPages}</button>`;
+        html += `<button type="button" onclick="setPenggunaPage(${totalPages})" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] text-xs font-semibold hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200">${totalPages}</button>`;
     }
 
-    html += `<button type="button" onclick="setPenggunaPage(${currentPenggunaPage + 1})" ${nextDisabled ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-xs ${nextDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}" title="Selanjutnya">&rsaquo;</button>`;
-    html += `<button type="button" onclick="setPenggunaPage(${totalPages})" ${nextDisabled ? 'disabled' : ''} class="px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-xs ${nextDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}" title="Halaman Terakhir">&raquo;</button>`;
+    html += `<button type="button" onclick="setPenggunaPage(${currentPenggunaPage + 1})" ${nextDisabled ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] font-bold text-xs ${nextDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200'}" title="Selanjutnya">&rsaquo;</button>`;
+    html += `<button type="button" onclick="setPenggunaPage(${totalPages})" ${nextDisabled ? 'disabled' : ''} class="px-2 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] font-bold text-xs ${nextDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200'}" title="Halaman Terakhir">&raquo;</button>`;
 
     btnsElem.innerHTML = html;
 }
@@ -4065,7 +4065,7 @@ function renderTablePengguna() {
             ? `<span class="font-bold text-slate-700 dark:text-slate-300 whitespace-nowrap">${escapeHtml(p.kelas)}</span>`
             : '<span class="text-slate-400 font-normal">-</span>';
 
-        return `<tr class="hover:bg-sage-50/50 dark:hover:bg-slate-800/40">
+        return `<tr class="hover:bg-sage-50/50 dark:hover:bg-[#222222]/40">
             <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${p.id}" onchange="updateBatchDeleteBar()"></td>
             <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${rowNo}</td>
             <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2.5">${avatarHtml}<span>${escapeHtml(p.nama_pengguna)}</span></td>
@@ -4153,7 +4153,7 @@ function renderGuruPaginationControls(totalItems, totalPages, startIdx, endIdx) 
     const prevDisabled = currentGuruPage <= 1;
     const nextDisabled = currentGuruPage >= totalPages;
 
-    html += `<button type="button" onclick="setGuruPage(${currentGuruPage - 1})" ${prevDisabled ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-xs ${prevDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}" title="Sebelumnya">&lsaquo;</button>`;
+    html += `<button type="button" onclick="setGuruPage(${currentGuruPage - 1})" ${prevDisabled ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] font-bold text-xs ${prevDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200'}" title="Sebelumnya">&lsaquo;</button>`;
 
     let startPage = Math.max(1, currentGuruPage - 2);
     let endPage = Math.min(totalPages, currentGuruPage + 2);
@@ -4162,11 +4162,11 @@ function renderGuruPaginationControls(totalItems, totalPages, startIdx, endIdx) 
         if (p === currentGuruPage) {
             html += `<button type="button" class="px-2.5 py-1 rounded-lg bg-sage-600 text-white font-bold text-xs shadow-sm">${p}</button>`;
         } else {
-            html += `<button type="button" onclick="setGuruPage(${p})" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">${p}</button>`;
+            html += `<button type="button" onclick="setGuruPage(${p})" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] text-xs font-semibold hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200">${p}</button>`;
         }
     }
 
-    html += `<button type="button" onclick="setGuruPage(${currentGuruPage + 1})" ${nextDisabled ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-xs ${nextDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}" title="Selanjutnya">&rsaquo;</button>`;
+    html += `<button type="button" onclick="setGuruPage(${currentGuruPage + 1})" ${nextDisabled ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] font-bold text-xs ${nextDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200'}" title="Selanjutnya">&rsaquo;</button>`;
 
     btnsElem.innerHTML = html;
 }
@@ -4221,7 +4221,7 @@ function renderTableGuru() {
         const usernameClean = escapeHtml(g.nama_pengguna || g.nama_guru.toLowerCase().replace(/[^a-z0-9]/g, ''));
         const usernameText = `<span class="font-mono font-bold text-sage-600 dark:text-amber-400">${usernameClean}</span>`;
 
-        return `<tr class="hover:bg-sage-50/50 dark:hover:bg-slate-800/40">
+        return `<tr class="hover:bg-sage-50/50 dark:hover:bg-[#222222]/40">
             <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${g.id}" onchange="updateBatchDeleteBar()"></td>
             <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${rowNo}</td>
             <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-slate-200">${escapeHtml(g.nama_guru)}</td>
@@ -4261,14 +4261,14 @@ function renderSiswaPaginationControls(totalItems, totalPages, startIdx, endIdx)
     const prevDisabled = currentSiswaPage <= 1;
     const nextDisabled = currentSiswaPage >= totalPages;
 
-    html += `<button type="button" onclick="setSiswaPage(1)" ${prevDisabled ? 'disabled' : ''} class="px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-xs ${prevDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}" title="Halaman Pertama">&laquo;</button>`;
-    html += `<button type="button" onclick="setSiswaPage(${currentSiswaPage - 1})" ${prevDisabled ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-xs ${prevDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}" title="Sebelumnya">&lsaquo;</button>`;
+    html += `<button type="button" onclick="setSiswaPage(1)" ${prevDisabled ? 'disabled' : ''} class="px-2 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] font-bold text-xs ${prevDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200'}" title="Halaman Pertama">&laquo;</button>`;
+    html += `<button type="button" onclick="setSiswaPage(${currentSiswaPage - 1})" ${prevDisabled ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] font-bold text-xs ${prevDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200'}" title="Sebelumnya">&lsaquo;</button>`;
 
     let startPage = Math.max(1, currentSiswaPage - 2);
     let endPage = Math.min(totalPages, currentSiswaPage + 2);
 
     if (startPage > 1) {
-        html += `<button type="button" onclick="setSiswaPage(1)" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">1</button>`;
+        html += `<button type="button" onclick="setSiswaPage(1)" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] text-xs font-semibold hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200">1</button>`;
         if (startPage > 2) {
             html += `<span class="px-1 text-slate-400">...</span>`;
         }
@@ -4278,7 +4278,7 @@ function renderSiswaPaginationControls(totalItems, totalPages, startIdx, endIdx)
         if (p === currentSiswaPage) {
             html += `<button type="button" class="px-2.5 py-1 rounded-lg bg-sage-600 text-white font-bold text-xs shadow-sm">${p}</button>`;
         } else {
-            html += `<button type="button" onclick="setSiswaPage(${p})" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">${p}</button>`;
+            html += `<button type="button" onclick="setSiswaPage(${p})" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] text-xs font-semibold hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200">${p}</button>`;
         }
     }
 
@@ -4286,11 +4286,11 @@ function renderSiswaPaginationControls(totalItems, totalPages, startIdx, endIdx)
         if (endPage < totalPages - 1) {
             html += `<span class="px-1 text-slate-400">...</span>`;
         }
-        html += `<button type="button" onclick="setSiswaPage(${totalPages})" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">${totalPages}</button>`;
+        html += `<button type="button" onclick="setSiswaPage(${totalPages})" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] text-xs font-semibold hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200">${totalPages}</button>`;
     }
 
-    html += `<button type="button" onclick="setSiswaPage(${currentSiswaPage + 1})" ${nextDisabled ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-xs ${nextDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}" title="Selanjutnya">&rsaquo;</button>`;
-    html += `<button type="button" onclick="setSiswaPage(${totalPages})" ${nextDisabled ? 'disabled' : ''} class="px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-xs ${nextDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}" title="Halaman Terakhir">&raquo;</button>`;
+    html += `<button type="button" onclick="setSiswaPage(${currentSiswaPage + 1})" ${nextDisabled ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] font-bold text-xs ${nextDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200'}" title="Selanjutnya">&rsaquo;</button>`;
+    html += `<button type="button" onclick="setSiswaPage(${totalPages})" ${nextDisabled ? 'disabled' : ''} class="px-2 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] font-bold text-xs ${nextDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200'}" title="Halaman Terakhir">&raquo;</button>`;
 
     btnsElem.innerHTML = html;
 }
@@ -4349,7 +4349,7 @@ function renderTableSiswa() {
             ? `<span class="font-mono font-bold text-slate-700 dark:text-slate-300 tracking-wider">${escapeHtml(s.nisn)}</span>`
             : `<span class="text-slate-400 italic text-[11px]">-</span>`;
 
-        return `<tr class="hover:bg-sage-50/50 dark:hover:bg-slate-800/40">
+        return `<tr class="hover:bg-sage-50/50 dark:hover:bg-[#222222]/40">
             <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${s.id}" onchange="updateBatchDeleteBar()"></td>
             <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${rowNo}</td>
             <td class="py-3.5 px-4">${nisnHtml}</td>
@@ -4822,8 +4822,8 @@ function renderRecentLogMasukKeluar() {
             : (window.themePrimaryColor || '#eab308');
 
         const boxClass = isMasuk
-            ? 'bg-emerald-50/60 border border-emerald-200/60 dark:bg-slate-800/40 dark:border-slate-800/80'
-            : 'bg-amber-50/60 border border-amber-200/60 dark:bg-slate-800/40 dark:border-slate-800/80';
+            ? 'bg-emerald-50/60 border border-emerald-200/60 dark:bg-[#1a1a1a] dark:border-[#262626]'
+            : 'bg-amber-50/60 border border-amber-200/60 dark:bg-[#1a1a1a] dark:border-[#262626]';
 
         const iconBg = isMasuk ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white';
         const iconSvg = isMasuk
@@ -5163,13 +5163,13 @@ class TablePaginationManager {
         const overflowDiv = this.table.closest('.overflow-x-auto');
         if (overflowDiv && !overflowDiv.parentNode.querySelector(`.pagination-footer-${this.table.id}`)) {
             const footer = document.createElement('div');
-            footer.className = `pagination-footer-${this.table.id} mt-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-slate-800 gap-3`;
+            footer.className = `pagination-footer-${this.table.id} mt-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-[#262626] gap-3`;
             footer.innerHTML = `
                 <div class="flex items-center gap-2.5">
                     <span class="font-medium info-text text-slate-600 dark:text-slate-300">Menampilkan 0 data</span>
                     <div class="flex items-center gap-1.5 ml-2">
                         <span class="text-[11px] text-slate-400">Tampilkan:</span>
-                        <select class="page-size-select bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-sage-600 cursor-pointer">
+                        <select class="page-size-select bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-[#2a2a2a] rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-sage-600 cursor-pointer">
                             <option value="5" ${this.pageSize === 5 ? 'selected' : ''}>5 / hal</option>
                             <option value="10" ${this.pageSize === 10 ? 'selected' : ''}>10 / hal</option>
                             <option value="25" ${this.pageSize === 25 ? 'selected' : ''}>25 / hal</option>
@@ -5321,9 +5321,9 @@ class TablePaginationManager {
                         if (isActive) {
                             btn.className = 'px-2.5 py-1 rounded-lg bg-sage-600 text-white font-bold text-xs shadow-sm';
                         } else if (isDisabled) {
-                            btn.className = 'px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-300 dark:text-slate-600 opacity-40 cursor-not-allowed';
+                            btn.className = 'px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#262626] text-xs font-bold text-slate-300 dark:text-slate-600 opacity-40 cursor-not-allowed';
                         } else {
-                            btn.className = 'px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-sage-100 dark:hover:bg-slate-800 transition-colors cursor-pointer';
+                            btn.className = 'px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-sage-100 dark:hover:bg-[#222222] transition-colors cursor-pointer';
                             btn.onclick = () => {
                                 this.currentPage = page;
                                 this.update();
