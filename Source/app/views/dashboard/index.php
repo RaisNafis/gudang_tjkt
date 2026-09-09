@@ -94,17 +94,20 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
         
         <!-- Top Bar Header: Mobile Hamburger, Page Title, User Profile & Controls -->
         <header class="bg-white dark:bg-[#121212] border-b border-slate-100 dark:border-[#262626] px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between shadow-xs flex-shrink-0 z-20 gap-3">
-            <!-- UJUNG KIRI: Hamburger Menu Button (Mobile) + Text Title Halaman -->
+            <!-- UJUNG KIRI: Hamburger Menu Button (Mobile) + SMK Text -->
             <div class="flex items-center gap-3 min-w-0 shrink-0">
                 <button type="button" onclick="openMobileSidebar()" class="lg:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-sage-700 hover:bg-sage-100 dark:hover:bg-[#222222] transition-colors border border-sage-200 dark:border-[#262626] shrink-0" title="Buka Menu Sidebar">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
                 </button>
-                <h2 class="text-base sm:text-xl font-bold text-slate-800 dark:text-white truncate" id="pageTitle">Dashboard Overview</h2>
+                <span class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 tracking-wider uppercase">
+                    SMK NEGERI 2 PANGKALPINANG
+                </span>
+                <span id="pageTitle" class="hidden"></span>
             </div>
 
-            <!-- UJUNG KANAN: Date, Theme Toggle, Profile Dropdown, & Sekolah Text di Ujung Kanan -->
+            <!-- UJUNG KANAN: Date, Theme Toggle, & Profile Dropdown -->
             <div class="flex items-center gap-3 sm:gap-4 shrink-0">
                 <!-- Date in Navbar (Hanya Teks Saja) -->
                 <span class="hidden xl:inline-block text-xs font-semibold text-slate-400 dark:text-slate-500">
@@ -168,11 +171,6 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         </div>
                     </div>
                 </div>
-
-                <!-- School Text (Pindah ke Ujung Paling Kanan Navbar) -->
-                <span class="hidden md:inline-block text-xs font-semibold text-slate-400 dark:text-slate-500 shrink-0">
-                    SMK NEGERI 2 PANGKALPINANG
-                </span>
             </div>
         </header>
 
