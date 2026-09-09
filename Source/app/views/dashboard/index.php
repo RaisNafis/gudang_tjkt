@@ -127,13 +127,74 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                     $topRoleText = 'Siswa';
                 }
                 ?>
-                <div class="pl-2 sm:pl-3 border-l border-sage-200 dark:border-slate-800 text-right">
-                    <span class="block text-xs font-bold text-slate-800 dark:text-white leading-tight truncate max-w-[110px] sm:max-w-none">
-                        <?= htmlspecialchars($user['nama_lengkap'] ?? $user['nama_pengguna'] ?? 'User'); ?>
-                    </span>
-                    <span class="block text-[10px] font-bold text-sage-600 dark:text-sage-400 leading-tight mt-0.5 truncate">
-                        <?= htmlspecialchars($topRoleText); ?>
-                    </span>
+                <!-- Top Header Profile Pill with Dropdown Arrow -->
+                <div class="relative" id="topHeaderProfileContainer">
+                    <button type="button" id="topHeaderProfileBtn" onclick="toggleProfilePopover('topHeaderProfilePopover', 'topHeaderProfileArrow', event)" class="pl-2 sm:pl-3 border-l border-sage-200 dark:border-slate-800 text-right flex items-center gap-2 group cursor-pointer focus:outline-none" title="Menu Pengaturan Profil">
+                        <div class="text-right">
+                            <span class="block text-xs font-bold text-slate-800 dark:text-white leading-tight truncate max-w-[110px] sm:max-w-none group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+                                <?= htmlspecialchars($user['nama_lengkap'] ?? $user['nama_pengguna'] ?? 'User'); ?>
+                            </span>
+                            <span class="block text-[10px] font-bold text-sage-600 dark:text-sage-400 leading-tight mt-0.5 truncate">
+                                <?= htmlspecialchars($topRoleText); ?>
+                            </span>
+                        </div>
+                        <svg id="topHeaderProfileArrow" class="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-transform duration-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+
+                    <!-- Top Header Popover Settings Menu -->
+                    <div id="topHeaderProfilePopover" class="hidden absolute right-0 mt-2 w-72 bg-white dark:bg-[#151b28] border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-xl z-50 p-2 text-slate-700 dark:text-slate-200 transition-all origin-top-right text-left">
+                        <!-- User Info Header -->
+                        <div class="px-3 py-2.5 bg-slate-50/70 dark:bg-[#111625] rounded-xl mb-2 flex items-center gap-3 border border-slate-100 dark:border-slate-800/60">
+                            <div class="w-10 h-10 rounded-full bg-sky-100 dark:bg-sky-950/80 text-sky-600 dark:text-sky-400 font-bold text-sm flex items-center justify-center shrink-0 overflow-hidden shadow-xs">
+                                <?php if (!empty($user['foto_url']) && file_exists(__DIR__ . '/../../../' . $user['foto_url'])): ?>
+                                    <img src="<?= htmlspecialchars($user['foto_url']); ?>" class="w-full h-full object-cover" alt="Avatar">
+                                <?php else: ?>
+                                    <?= strtoupper(substr($user['nama_lengkap'] ?? $user['nama_pengguna'] ?? 'U', 0, 1)); ?>
+                                <?php endif; ?>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <h4 class="text-xs font-bold text-slate-800 dark:text-white truncate"><?= htmlspecialchars($user['nama_lengkap'] ?? $user['nama_pengguna'] ?? 'User'); ?></h4>
+                                <p class="text-[11px] text-slate-400 truncate"><?= htmlspecialchars($user['email'] ?? ($user['nama_pengguna'] . '@smk2pangkalpinang.sch.id')); ?></p>
+                                <span class="inline-block mt-1 px-2 py-0.5 text-[9px] font-bold rounded-md bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300"><?= htmlspecialchars($topRoleText); ?></span>
+                            </div>
+                        </div>
+
+                        <!-- Menu Action Items -->
+                        <div class="space-y-1">
+                            <!-- Settings Profile Link -->
+                            <button type="button" onclick="goToSettingsProfile()" class="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-slate-800/70 rounded-xl transition-colors text-left group cursor-pointer">
+                                <div class="w-7 h-7 rounded-lg bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-bold text-slate-800 dark:text-white leading-tight">Pengaturan Profil</div>
+                                    <div class="text-[10px] text-slate-400 font-normal truncate">Perbarui akun, info diri & sandi</div>
+                                </div>
+                                <svg class="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+
+                            <!-- Mode Tema Toggle -->
+                            <button type="button" onclick="toggleTheme()" class="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-slate-800/70 rounded-xl transition-colors text-left group cursor-pointer">
+                                <div class="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-bold text-slate-800 dark:text-white leading-tight">Beralih Tema</div>
+                                    <div class="text-[10px] text-slate-400 font-normal">Mode Terang / Gelap</div>
+                                </div>
+                            </button>
+                        </div>
+
+                        <div class="border-t border-slate-100 dark:border-slate-800/80 my-1.5"></div>
+
+                        <!-- Logout Button -->
+                        <a href="logout.php" class="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition-colors cursor-pointer">
+                            <div class="w-7 h-7 rounded-lg bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 01-3-3H6a3 3 0 01-3 3v1"/></svg>
+                            </div>
+                            <div class="font-bold leading-tight">Keluar (Logout)</div>
+                        </a>
+                    </div>
                 </div>
             </div>
         </header>
@@ -178,17 +239,78 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                             <svg class="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                             <span><?= $todayFormatted; ?></span>
                         </div>
-                        <!-- User Profile Pill -->
-                        <div class="inline-flex items-center gap-2.5 px-3 py-1.5 bg-white dark:bg-[#151b28] border border-slate-200/80 dark:border-slate-800 rounded-full shadow-xs">
-                            <div class="w-7 h-7 rounded-full bg-sky-100 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold text-xs">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                            </div>
-                            <div class="text-left leading-tight pr-1">
-                                <div class="text-xs font-bold text-slate-800 dark:text-white flex items-center gap-1">
-                                    <span><?= htmlspecialchars($user['nama_pengguna'] ?? 'admin'); ?></span>
-                                    <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <!-- User Profile Dropdown Pill & Popover -->
+                        <div class="relative" id="dashboardProfileContainer">
+                            <button type="button" id="dashboardProfileBtn" onclick="toggleProfilePopover('dashboardProfilePopover', 'dashboardProfileArrow', event)" class="inline-flex items-center gap-2.5 px-3 py-1.5 bg-white dark:bg-[#151b28] border border-slate-200/80 dark:border-slate-800 hover:border-sky-300 dark:hover:border-slate-700 rounded-full shadow-xs transition-all cursor-pointer group focus:outline-none focus:ring-2 focus:ring-sky-500/20" title="Menu Pengaturan Profil">
+                                <div class="w-7 h-7 rounded-full bg-sky-100 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold text-xs overflow-hidden shrink-0">
+                                    <?php if (!empty($user['foto_url']) && file_exists(__DIR__ . '/../../../' . $user['foto_url'])): ?>
+                                        <img src="<?= htmlspecialchars($user['foto_url']); ?>" class="w-full h-full object-cover" alt="Avatar">
+                                    <?php else: ?>
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                    <?php endif; ?>
                                 </div>
-                                <div class="text-[10px] text-slate-400 dark:text-slate-400 font-medium"><?= htmlspecialchars($topRoleText); ?></div>
+                                <div class="text-left leading-tight pr-1">
+                                    <div class="text-xs font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
+                                        <span><?= htmlspecialchars($user['nama_pengguna'] ?? 'admin'); ?></span>
+                                        <svg id="dashboardProfileArrow" class="w-3 h-3 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    </div>
+                                    <div class="text-[10px] text-slate-400 dark:text-slate-400 font-medium"><?= htmlspecialchars($topRoleText); ?></div>
+                                </div>
+                            </button>
+
+                            <!-- Dropdown Popover Settings -->
+                            <div id="dashboardProfilePopover" class="hidden absolute right-0 mt-2 w-72 bg-white dark:bg-[#151b28] border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-xl z-50 p-2 text-slate-700 dark:text-slate-200 transition-all origin-top-right text-left">
+                                <!-- User Info Header -->
+                                <div class="px-3 py-2.5 bg-slate-50/70 dark:bg-[#111625] rounded-xl mb-2 flex items-center gap-3 border border-slate-100 dark:border-slate-800/60">
+                                    <div class="w-10 h-10 rounded-full bg-sky-100 dark:bg-sky-950/80 text-sky-600 dark:text-sky-400 font-bold text-sm flex items-center justify-center shrink-0 overflow-hidden shadow-xs">
+                                        <?php if (!empty($user['foto_url']) && file_exists(__DIR__ . '/../../../' . $user['foto_url'])): ?>
+                                            <img src="<?= htmlspecialchars($user['foto_url']); ?>" class="w-full h-full object-cover" alt="Avatar">
+                                        <?php else: ?>
+                                            <?= strtoupper(substr($user['nama_lengkap'] ?? $user['nama_pengguna'] ?? 'U', 0, 1)); ?>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <h4 class="text-xs font-bold text-slate-800 dark:text-white truncate"><?= htmlspecialchars($user['nama_lengkap'] ?? $user['nama_pengguna'] ?? 'User'); ?></h4>
+                                        <p class="text-[11px] text-slate-400 truncate"><?= htmlspecialchars($user['email'] ?? ($user['nama_pengguna'] . '@smk2pangkalpinang.sch.id')); ?></p>
+                                        <span class="inline-block mt-1 px-2 py-0.5 text-[9px] font-bold rounded-md bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300"><?= htmlspecialchars($topRoleText); ?></span>
+                                    </div>
+                                </div>
+
+                                <!-- Menu Action Items -->
+                                <div class="space-y-1">
+                                    <!-- Settings Profile Link -->
+                                    <button type="button" onclick="goToSettingsProfile()" class="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-slate-800/70 rounded-xl transition-colors text-left group cursor-pointer">
+                                        <div class="w-7 h-7 rounded-lg bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="font-bold text-slate-800 dark:text-white leading-tight">Pengaturan Profil</div>
+                                            <div class="text-[10px] text-slate-400 font-normal truncate">Perbarui akun, info diri & sandi</div>
+                                        </div>
+                                        <svg class="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    </button>
+
+                                    <!-- Mode Tema Toggle -->
+                                    <button type="button" onclick="toggleTheme()" class="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-slate-800/70 rounded-xl transition-colors text-left group cursor-pointer">
+                                        <div class="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="font-bold text-slate-800 dark:text-white leading-tight">Beralih Tema</div>
+                                            <div class="text-[10px] text-slate-400 font-normal">Mode Terang / Gelap</div>
+                                        </div>
+                                    </button>
+                                </div>
+
+                                <div class="border-t border-slate-100 dark:border-slate-800/80 my-1.5"></div>
+
+                                <!-- Logout Button -->
+                                <a href="logout.php" class="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition-colors cursor-pointer">
+                                    <div class="w-7 h-7 rounded-lg bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 01-3-3H6a3 3 0 01-3 3v1"/></svg>
+                                    </div>
+                                    <div class="font-bold leading-tight">Keluar (Logout)</div>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -2444,29 +2566,29 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
             <!-- SECTION 9: TAB PENGATURAN PROFIL -->
             <div id="tab-pengaturan-profil" class="tab-content hidden space-y-6">
                 <div class="max-w-4xl mx-auto space-y-6">
-                    <form action="update_profile.php" method="POST" enctype="multipart/form-data" class="bg-white rounded-2xl border border-sage-200/80 shadow-sm p-6 space-y-6">
+                    <form action="update_profile.php" method="POST" enctype="multipart/form-data" class="bg-white dark:bg-[#151b28] rounded-2xl border border-sage-200/80 dark:border-slate-800 shadow-sm p-6 space-y-6">
                         <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
                         
                         <!-- Header Title Profil -->
-                        <div class="border-b border-sage-100 pb-4 mb-2 flex items-center justify-between">
+                        <div class="border-b border-sage-100 dark:border-slate-800/80 pb-4 mb-2 flex items-center justify-between">
                             <div>
-                                <h3 class="text-lg font-bold text-slate-800">Pengaturan Akun & Profil</h3>
-                                <p class="text-xs text-slate-500 mt-0.5">Perbarui informasi data diri dan kata sandi akun Anda</p>
+                                <h3 class="text-lg font-bold text-slate-800 dark:text-white">Pengaturan Akun & Profil</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Perbarui informasi data diri dan kata sandi akun Anda</p>
                             </div>
-                            <span class="text-xs font-bold text-slate-600 dark:text-slate-400 capitalize">
+                            <span class="text-xs font-bold text-slate-600 dark:text-slate-400 capitalize px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800">
                                 <?= htmlspecialchars($user['peran'] ?? 'admin'); ?>
                             </span>
                         </div>
 
                         <div>
-                            <h4 class="text-sm font-bold text-slate-800 pb-3 mb-4 flex items-center gap-2">
-                                <svg class="w-4 h-4 text-sage-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            <h4 class="text-sm font-bold text-slate-800 dark:text-white pb-3 mb-4 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-sage-600 dark:text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                 Data Informasi Akun
                             </h4>
 
                             <!-- Foto Profil Avatar Row -->
-                            <div class="flex items-center gap-4 p-4 bg-sage-50/50 rounded-2xl border border-sage-100 mb-5">
-                                <div class="w-16 h-16 rounded-full bg-sage-600 text-white font-bold flex items-center justify-center text-xl shrink-0 shadow-md overflow-hidden border-2 border-white">
+                            <div class="flex items-center gap-4 p-4 bg-sage-50/50 dark:bg-slate-900/50 rounded-2xl border border-sage-100 dark:border-slate-800 mb-5">
+                                <div class="w-16 h-16 rounded-full bg-sage-600 text-white font-bold flex items-center justify-center text-xl shrink-0 shadow-md overflow-hidden border-2 border-white dark:border-slate-700">
                                     <?php if (!empty($user['foto_url']) && file_exists(__DIR__ . '/../../../' . $user['foto_url'])): ?>
                                         <img id="profileAvatarPreview" src="<?= htmlspecialchars($user['foto_url']);  ?>" class="w-full h-full object-cover" alt="Avatar">
                                     <?php else: ?>
@@ -2475,11 +2597,11 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                                     <?php endif; ?>
                                 </div>
                                 <div class="flex-1">
-                                    <label class="block text-xs font-bold text-slate-700 mb-1">Unggah Foto Profil <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Unggah Foto Profil <span class="text-slate-400 font-normal">(Opsional)</span></label>
                                     <div class="flex items-center gap-3 flex-wrap">
-                                        <input type="file" name="foto" accept="image/png, image/jpeg, image/jpg, image/webp" onchange="previewProfilePhoto(event)" class="text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-sage-600 file:text-white hover:file:bg-sage-700 transition-all cursor-pointer">
+                                        <input type="file" name="foto" accept="image/png, image/jpeg, image/jpg, image/webp" onchange="previewProfilePhoto(event)" class="text-xs text-slate-600 dark:text-slate-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-sage-600 file:text-white hover:file:bg-sage-700 transition-all cursor-pointer">
                                         <?php if (!empty($user['foto_url'])): ?>
-                                            <button type="button" onclick="hapusFotoProfil()" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 shadow-sm" title="Hapus Foto Profil">
+                                            <button type="button" onclick="hapusFotoProfil()" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 shadow-sm cursor-pointer" title="Hapus Foto Profil">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                                 <span>Hapus Foto</span>
                                             </button>
@@ -2496,49 +2618,49 @@ $totalLogsCount = $stats['total_logs'] ?? 0;
                             ?>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-600 mb-1.5">Nama Pengguna (Username)</label>
-                                    <input type="text" value="<?= htmlspecialchars($user['nama_pengguna'] ?? 'admin'); ?>" disabled class="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs font-semibold text-slate-500 cursor-not-allowed">
+                                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5">Nama Pengguna (Username)</label>
+                                    <input type="text" value="<?= htmlspecialchars($user['nama_pengguna'] ?? 'admin'); ?>" disabled class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-500 dark:text-slate-400 cursor-not-allowed">
                                     <p class="text-[10px] text-slate-400 mt-1">*Nama pengguna tidak dapat diubah</p>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Lengkap <span class="text-red-500">*</span></label>
-                                    <input type="text" name="nama_lengkap" required value="<?= htmlspecialchars($user['nama_lengkap'] ?? ''); ?>" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-sage-600 focus:bg-white transition-all">
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Nama Lengkap <span class="text-red-500">*</span></label>
+                                    <input type="text" name="nama_lengkap" required value="<?= htmlspecialchars($user['nama_lengkap'] ?? ''); ?>" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-[#111625] border border-sage-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-[#151b28] transition-all">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Alamat Email</label>
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Alamat Email</label>
                                     <div class="flex items-center gap-2">
-                                        <input type="text" name="email_prefix" value="<?= htmlspecialchars($profEmailPrefix); ?>" placeholder="nama_email" class="w-1/2 px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-sage-600 focus:bg-white transition-all">
+                                        <input type="text" name="email_prefix" value="<?= htmlspecialchars($profEmailPrefix); ?>" placeholder="nama_email" class="w-1/2 px-3.5 py-2.5 bg-sage-50/50 dark:bg-[#111625] border border-sage-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-[#151b28] transition-all">
                                         <span class="text-slate-400 font-bold text-sm">@</span>
-                                        <input type="text" name="email_domain" value="<?= htmlspecialchars($profEmailDomain); ?>" placeholder="smk2pangkalpinang.sch.id" class="w-1/2 px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-sage-600 focus:bg-white transition-all">
+                                        <input type="text" name="email_domain" value="<?= htmlspecialchars($profEmailDomain); ?>" placeholder="smk2pangkalpinang.sch.id" class="w-1/2 px-3.5 py-2.5 bg-sage-50/50 dark:bg-[#111625] border border-sage-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-[#151b28] transition-all">
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Nomor Telepon / WhatsApp</label>
-                                    <input type="text" name="nomor_telepon" value="<?= htmlspecialchars($user['nomor_telepon'] ?? ''); ?>" placeholder="081234567890" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-sage-600 focus:bg-white transition-all">
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Nomor Telepon / WhatsApp</label>
+                                    <input type="text" name="nomor_telepon" value="<?= htmlspecialchars($user['nomor_telepon'] ?? ''); ?>" placeholder="081234567890" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-[#111625] border border-sage-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-[#151b28] transition-all">
                                 </div>
                             </div>
                         </div>
 
-                        <div class="pt-4 border-t border-sage-100">
-                            <h4 class="text-sm font-bold text-slate-800 pb-3 mb-4 flex items-center gap-2">
-                                <svg class="w-4 h-4 text-sage-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        <div class="pt-4 border-t border-sage-100 dark:border-slate-800/80">
+                            <h4 class="text-sm font-bold text-slate-800 dark:text-white pb-3 mb-4 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-sage-600 dark:text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                                 Ubah Kata Sandi <span class="text-xs font-normal text-slate-400">(Biarkan kosong jika tidak ingin diubah)</span>
                             </h4>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Kata Sandi Lama</label>
-                                    <input type="password" name="password_lama" placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl text-xs focus:outline-none focus:border-sage-600 focus:bg-white transition-all">
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Kata Sandi Lama</label>
+                                    <input type="password" name="password_lama" placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-[#111625] border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white focus:outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-[#151b28] transition-all">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Kata Sandi Baru</label>
-                                    <input type="password" name="password_baru" placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl text-xs focus:outline-none focus:border-sage-600 focus:bg-white transition-all">
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Kata Sandi Baru</label>
+                                    <input type="password" name="password_baru" placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-[#111625] border border-sage-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white focus:outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-[#151b28] transition-all">
                                 </div>
                             </div>
                         </div>
 
                         <div class="pt-4 flex justify-end">
-                            <button type="submit" class="px-6 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-sage-600/25 transition-all flex items-center gap-2">
+                            <button type="submit" class="px-6 py-2.5 bg-sage-600 hover:bg-sage-700 dark:bg-sky-600 dark:hover:bg-sky-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-sage-600/25 dark:shadow-sky-600/20 transition-all flex items-center gap-2 cursor-pointer">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                                 Simpan Perubahan Profil
                             </button>
@@ -4894,6 +5016,65 @@ async function fetchFreshDataAndRefreshUI(tabId = null) {
         isFetchingFreshData = false;
     }
 }
+
+function toggleProfilePopover(popoverId, arrowId, event) {
+    if (event) {
+        event.stopPropagation();
+    }
+    const popover = document.getElementById(popoverId);
+    const arrow = document.getElementById(arrowId);
+    if (!popover) return;
+
+    const isHidden = popover.classList.contains('hidden');
+
+    // Close all profile dropdown popovers first
+    closeAllProfileDropdowns();
+
+    if (isHidden) {
+        popover.classList.remove('hidden');
+        if (arrow) arrow.classList.add('rotate-180');
+    }
+}
+
+function closeAllProfileDropdowns() {
+    ['dashboardProfilePopover', 'topHeaderProfilePopover'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+    });
+    ['dashboardProfileArrow', 'topHeaderProfileArrow'].forEach(id => {
+        const arrow = document.getElementById(id);
+        if (arrow) arrow.classList.remove('rotate-180');
+    });
+}
+
+function goToSettingsProfile() {
+    closeAllProfileDropdowns();
+    if (typeof switchTab === 'function') {
+        switchTab('pengaturan-profil');
+    }
+    const mainContainer = document.querySelector('main');
+    if (mainContainer) {
+        mainContainer.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+// Global outside-click listener & ESC key listener for profile popovers
+window.addEventListener('click', function(e) {
+    const dContainer = document.getElementById('dashboardProfileContainer');
+    const tContainer = document.getElementById('topHeaderProfileContainer');
+    const clickedInsideD = dContainer && dContainer.contains(e.target);
+    const clickedInsideT = tContainer && tContainer.contains(e.target);
+
+    if (!clickedInsideD && !clickedInsideT) {
+        closeAllProfileDropdowns();
+    }
+});
+
+window.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeAllProfileDropdowns();
+    }
+});
 
 function switchTab(tabId) {
     if (!tabId) tabId = 'dashboard';
