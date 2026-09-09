@@ -444,10 +444,13 @@
         moonIcons.forEach(icon => isDark ? icon.classList.add('hidden') : icon.classList.remove('hidden'));
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const isDark = document.documentElement.classList.contains('dark');
-        updateThemeToggleIcons(isDark);
-    });
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            updateThemeToggleIcons(document.documentElement.classList.contains('dark'));
+        });
+    } else {
+        updateThemeToggleIcons(document.documentElement.classList.contains('dark'));
+    }
     function showToast(message, type = 'success') {
         let container = document.getElementById('toastContainer');
         if (!container) {
