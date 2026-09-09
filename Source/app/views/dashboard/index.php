@@ -2404,7 +2404,14 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
-                                <?php $no = 1; foreach ($dbPeminjaman as $pm): ?>
+                                <?php 
+                                $activePeminjaman = array_values(array_filter($dbPeminjaman, function($pm) {
+                                    return ($pm['status'] ?? '') !== 'dikembalikan';
+                                }));
+                                $no = 1; 
+                                if (!empty($activePeminjaman)):
+                                    foreach ($activePeminjaman as $pm): 
+                                ?>
                                     <tr class="hover:bg-sage-50/50">
                                         <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="<?= htmlspecialchars($pm['id']); ?>" onchange="updateBatchDeleteBar()"></td>
                                         <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell"><?= $no++; ?></td>
@@ -2489,24 +2496,22 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                                     <?php endif; ?>
                                                 <?php endif; ?>
 
-                                                <?php if ($pm['status'] !== 'dikembalikan'): ?>
-                                                    <button type="button" onclick="editPeminjaman('<?= htmlspecialchars($pm['id']); ?>')" class="p-1.5 rounded-lg bg-sage-600 hover:bg-sage-700 text-white shadow-sm transition-all" title="Edit Transaksi Peminjaman">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 01-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                                    </button>
-                                                    <button type="button" onclick="deletePeminjaman('<?= htmlspecialchars($pm['id']); ?>', '<?= htmlspecialchars(addslashes($pm['nama_peminjam'])); ?>')" class="p-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm transition-all" title="Hapus Transaksi Peminjaman">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                                    </button>
-                                                <?php else: ?>
-                                                    <?php if (!empty($pm['bukti_foto'])): ?>
-                                                        <button type="button" onclick="showFotoPreview('<?= htmlspecialchars($pm['bukti_foto']); ?>', 'Bukti Foto Pengembalian Alat', 'Peminjam: <?= htmlspecialchars(addslashes($pm['nama_peminjam'] ?? '')); ?> | Alat: <?= htmlspecialchars(addslashes($pm['nama_barang'] ?? '')); ?>')" class="p-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all" title="Lihat Bukti Foto">
-                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                                        </button>
-                                                    <?php endif; ?>
-                                                <?php endif; ?>
+                                                <button type="button" onclick="editPeminjaman('<?= htmlspecialchars($pm['id']); ?>')" class="p-1.5 rounded-lg bg-sage-600 hover:bg-sage-700 text-white shadow-sm transition-all" title="Edit Transaksi Peminjaman">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 01-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                                </button>
+                                                <button type="button" onclick="deletePeminjaman('<?= htmlspecialchars($pm['id']); ?>', '<?= htmlspecialchars(addslashes($pm['nama_peminjam'] ?? $pm['guru_peminjam'] ?? '')); ?>')" class="p-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm transition-all" title="Hapus Transaksi Peminjaman">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
-                                <?php endforeach; ?>
+                                <?php endforeach; else: ?>
+                                    <tr class="empty-filter-row">
+                                        <td colspan="<?= (!empty($user['peran']) && $user['peran'] === 'admin_sekolah') ? '14' : '13'; ?>" class="py-8 text-center text-slate-400 font-medium">
+                                            Tidak ada transaksi peminjaman aktif
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
@@ -3097,7 +3102,15 @@ function exportTableToCSV(tableId, filename) {
             'nama_penerima', 'jumlah', 'tanggal_keluar', 'catatan', 'nama_petugas', 
             'nama_jurusan', 'created_at', 'updated_at'
         ];
-    } else if (tableId === 'tablePeminjaman' || tableId === 'tableLogPeminjaman') {
+    } else if (tableId === 'tablePeminjaman') {
+        dataset = (window.dbPeminjaman || []).filter(pm => pm.status !== 'dikembalikan');
+        tableSchema = [
+            'id', 'kode_peminjaman', 'barang_id', 'pengguna_id', 'jurusan_id', 
+            'nama_barang', 'guru_peminjam', 'nama_peminjam', 'nisn', 'jumlah', 'tanggal_pinjam', 'tenggat_kembali', 
+            'tanggal_kembali', 'status', 'kondisi_sebelum', 'kondisi_sesudah', 'catatan', 
+            'bukti_foto_url', 'nama_petugas', 'nama_jurusan', 'created_at', 'updated_at'
+        ];
+    } else if (tableId === 'tableLogPeminjaman') {
         dataset = window.dbPeminjaman;
         tableSchema = [
             'id', 'kode_peminjaman', 'barang_id', 'pengguna_id', 'jurusan_id', 
@@ -5333,8 +5346,16 @@ function renderTablePeminjaman() {
     const tbody = document.querySelector('#tablePeminjaman tbody');
     if (!tbody || !window.dbPeminjaman) return;
     const isSuperAdmin = window.currentUser && window.currentUser.peran === 'admin_sekolah';
+    const colSpan = isSuperAdmin ? 14 : 13;
 
-    tbody.innerHTML = window.dbPeminjaman.map((pm, idx) => {
+    const activeList = (window.dbPeminjaman || []).filter(pm => pm.status !== 'dikembalikan');
+
+    if (activeList.length === 0) {
+        tbody.innerHTML = `<tr class="empty-filter-row"><td colspan="${colSpan}" class="py-8 text-center text-slate-400 font-medium">Tidak ada transaksi peminjaman aktif</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = activeList.map((pm, idx) => {
         const jurTd = isSuperAdmin ? `<td class="py-3.5 px-4 font-bold text-sage-700">${escapeHtml(pm.nama_jurusan || '-')}</td>` : '';
         const tglPinjam = pm.tanggal_pinjam ? formatJakartaDate(pm.tanggal_pinjam, { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
         const tglKembali = (pm.tanggal_kembali && pm.status === 'dikembalikan') ? formatJakartaDate(pm.tanggal_kembali, { day: '2-digit', month: 'short', year: 'numeric' }) : '<span class="text-slate-400 font-normal">-</span>';
@@ -5373,12 +5394,8 @@ function renderTablePeminjaman() {
             }
         }
 
-        if (pm.status !== 'dikembalikan') {
-            actionBtns += `<button type="button" onclick="editPeminjaman('${pm.id}')" class="p-1.5 rounded-lg bg-sage-600 hover:bg-sage-700 text-white shadow-sm transition-all" title="Edit Transaksi Peminjaman"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 01-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
-            <button type="button" onclick="deletePeminjaman('${pm.id}', '${escapeJsStr(pm.nama_peminjam || pm.guru_peminjam)}')" class="p-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm transition-all" title="Hapus Transaksi Peminjaman"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>`;
-        } else if (pm.bukti_foto) {
-            actionBtns += `<button type="button" onclick="showFotoPreview('${pm.bukti_foto}', 'Bukti Foto Pengembalian Alat', 'Peminjam: ${escapeJsStr(pm.nama_peminjam || pm.guru_peminjam)} | Alat: ${escapeJsStr(pm.nama_barang)}')" class="p-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all" title="Lihat Bukti Foto"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>`;
-        }
+        actionBtns += `<button type="button" onclick="editPeminjaman('${pm.id}')" class="p-1.5 rounded-lg bg-sage-600 hover:bg-sage-700 text-white shadow-sm transition-all" title="Edit Transaksi Peminjaman"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 01-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+        <button type="button" onclick="deletePeminjaman('${pm.id}', '${escapeJsStr(pm.nama_peminjam || pm.guru_peminjam)}')" class="p-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm transition-all" title="Hapus Transaksi Peminjaman"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>`;
 
         const brgMatch = (window.dbBarang || []).find(b => String(b.id) === String(pm.barang_id));
         const satuanDisplay = (brgMatch && brgMatch.satuan) ? brgMatch.satuan : (pm.satuan || 'Unit');
