@@ -1125,9 +1125,8 @@ require_once __DIR__ . '/app/models/BarangKeluar.php';
         $nisn = $untuk_siswa ? trim($_POST['nisn'] ?? '') : null;
         if (empty($nisn)) $nisn = null;
 
-        $isSuperAdmin = ($_SESSION['user']['peran'] ?? '') === 'admin_sekolah';
         $guru_peminjam = trim($_POST['guru_peminjam'] ?? '');
-        if (!$isSuperAdmin && empty($guru_peminjam)) {
+        if (empty($guru_peminjam)) {
             $guru_peminjam = $_SESSION['user']['nama_lengkap'] ?? $_SESSION['user']['nama_pengguna'] ?? 'Guru';
         }
 
@@ -1141,11 +1140,6 @@ require_once __DIR__ . '/app/models/BarangKeluar.php';
 
         if ($untuk_siswa && empty($peminjam)) {
             echo json_encode(['success' => false, 'message' => 'Pilih atau isi nama siswa peminjam!']);
-            exit;
-        }
-
-        if (!$untuk_siswa && empty($guru_peminjam)) {
-            echo json_encode(['success' => false, 'message' => 'Nama guru penanggung jawab / peminjam tidak boleh kosong!']);
             exit;
         }
 

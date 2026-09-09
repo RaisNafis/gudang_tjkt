@@ -756,9 +756,9 @@
                 </select>
             </div>
             <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Guru Peminjam <span class="text-red-500">*</span></label>
-                <select id="pinjam_guru_peminjam_select" onchange="toggleGuruPeminjamMode(this.value)" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
-                    <option value="">-- Pilih Guru Peminjam --</option>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Guru Peminjam</label>
+                <select id="pinjam_guru_peminjam_select" onchange="toggleGuruPeminjamMode(this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
+                    <option value="">-- Pilih Guru Peminjam (Otomatis Guru Login jika kosong) --</option>
                 </select>
                 <input type="text" id="pinjam_guru_peminjam_custom" placeholder="Ketik nama guru peminjam manual..." class="mt-2 hidden w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
             </div>
@@ -1743,14 +1743,17 @@ function filterGuruPinjamOptions(preselectedGuru = null) {
         }
     }
 
-    let targetVal = preselectedGuru !== null ? preselectedGuru : selectGuru.value;
+    const currentTeacherName = (window.currentUser && (window.currentUser.nama_lengkap || window.currentUser.nama_pengguna)) || '';
+    const defaultLabel = currentTeacherName ? `-- Pilih Guru Peminjam (Otomatis: ${escapeHtml(currentTeacherName)}) --` : '-- Pilih Guru Peminjam (Otomatis Guru Login) --';
 
-    let optionsHtml = '<option value="">-- Pilih Guru Peminjam --</option>';
+    let optionsHtml = `<option value="">${defaultLabel}</option>`;
     filtered.forEach(g => {
         optionsHtml += `<option value="${escapeHtml(g.nama_guru)}">${escapeHtml(g.nama_guru)}</option>`;
     });
     optionsHtml += '<option value="__custom__">-- + Input Nama Guru Manual --</option>';
     selectGuru.innerHTML = optionsHtml;
+
+    let targetVal = preselectedGuru !== null ? preselectedGuru : selectGuru.value;
 
     if (targetVal) {
         let matched = false;
@@ -1767,6 +1770,15 @@ function filterGuruPinjamOptions(preselectedGuru = null) {
         } else if (targetVal !== '__custom__') {
             selectGuru.value = '__custom__';
             if (customGuru) { customGuru.classList.remove('hidden'); customGuru.value = targetVal; }
+        }
+    } else if (currentTeacherName && preselectedGuru === null) {
+        for (let opt of selectGuru.options) {
+            if (opt.value && (opt.value.trim().toLowerCase() === currentTeacherName.trim().toLowerCase() ||
+                opt.value.trim().toLowerCase().includes(currentTeacherName.trim().toLowerCase()) ||
+                currentTeacherName.trim().toLowerCase().includes(opt.value.trim().toLowerCase()))) {
+                selectGuru.value = opt.value;
+                break;
+            }
         }
     }
 }
@@ -2422,9 +2434,6 @@ function openModal(modalId, customTitle = null, editData = null) {
                     if (matchedGuru) {
                         selectGuru.value = matchedGuru.nama_guru;
                         if (customGuru) { customGuru.classList.add('hidden'); customGuru.value = ''; }
-                    } else if (currentUserFullName && window.currentUser?.peran !== 'admin_sekolah') {
-                        selectGuru.value = '__custom__';
-                        if (customGuru) { customGuru.classList.remove('hidden'); customGuru.value = currentUserFullName; }
                     } else {
                         selectGuru.value = '';
                         if (customGuru) { customGuru.classList.add('hidden'); customGuru.value = ''; }
@@ -2648,13 +2657,11 @@ async function handleFormSubmit(event, actionName) {
             guruVal = (elGuruSel.value === '__custom__') ? (elGuruCust ? elGuruCust.value : '') : elGuruSel.value;
         } else if (elGuruAuto) {
             guruVal = elGuruAuto.value;
-        } else if (window.currentUser) {
-            guruVal = window.currentUser.nama_lengkap || window.currentUser.nama_pengguna || '';
         }
 
+        // Jika input kosong, otomatis gunakan guru yang sedang login di akun tersebut
         if (!guruVal || !guruVal.trim()) {
-            showNotification('Pilih atau masukkan nama Guru Peminjam!', 'warning');
-            return;
+            guruVal = (window.currentUser && (window.currentUser.nama_lengkap || window.currentUser.nama_pengguna)) || 'Guru';
         }
 
         const isUntukSiswa = document.getElementById('pinjam_untuk_siswa')?.checked;
