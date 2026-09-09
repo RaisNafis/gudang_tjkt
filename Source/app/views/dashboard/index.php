@@ -146,14 +146,14 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         <div class="text-left leading-tight">
                             <div class="text-xs font-bold text-slate-800 dark:text-white flex items-center gap-1">
                                 <span><?= htmlspecialchars($user['nama_pengguna'] ?? 'admin'); ?></span>
-                                <svg id="topHeaderProfileArrow" class="w-3 h-3 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                <svg id="topHeaderProfileArrow" class="w-3 h-3 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-transform duration-300 ease-out" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                             </div>
                             <div class="text-[10px] text-slate-400 dark:text-slate-500 font-medium"><?= htmlspecialchars($topRoleText); ?></div>
                         </div>
                     </button>
 
-                    <!-- Simple Dropdown Popover (Linear / Minimalist) -->
-                    <div id="topHeaderProfilePopover" class="hidden absolute right-0 mt-2 w-44 bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#262626] rounded-xl shadow-2xl z-50 p-1 text-slate-700 dark:text-slate-200 transition-all origin-top-right text-left">
+                    <!-- Simple Dropdown Popover (Linear / Minimalist) with Ultra Smooth Transition -->
+                    <div id="topHeaderProfilePopover" class="smooth-dropdown-popover popover-closed absolute right-0 mt-2 w-44 bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#262626] rounded-xl shadow-2xl z-50 p-1 text-slate-700 dark:text-slate-200 text-left">
                         <div class="space-y-0.5">
                             <button type="button" onclick="goToSettingsProfile()" class="w-full block px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#222222] rounded-lg transition-all text-left cursor-pointer">
                                 Pengaturan Profil
@@ -3333,25 +3333,27 @@ function initInventoryChart() {
                     `;
                 });
 
-                // 2. Render Inactive/Zero Items sebagai teks polos tanpa badge & tanpa card
+                // 2. Render Inactive/Zero Items sebagai teks polos tanpa badge & tanpa card (dengan transisi smooth)
                 if (zeroItems.length > 0) {
                     html += `
                         <div class="pt-1">
-                            <details class="group/zero">
-                                <summary class="flex items-center justify-between text-[11px] font-semibold text-slate-400 dark:text-slate-500 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition-colors list-none py-1.5 px-0.5">
+                            <details class="group/zero smooth-accordion overflow-hidden">
+                                <summary class="flex items-center justify-between text-[11px] font-semibold text-slate-400 dark:text-slate-500 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition-colors list-none py-1.5 px-0.5 select-none">
                                     <span class="flex items-center gap-1.5">
-                                        <svg class="w-3.5 h-3.5 transition-transform group-open/zero:rotate-90 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                        <svg class="accordion-chevron w-3.5 h-3.5 transition-transform duration-300 ease-out text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                                         <span>${zeroItems.length} Jurusan Lainnya</span>
                                     </span>
                                     <span class="text-[11px] font-medium text-slate-400 dark:text-slate-500">0 Unit</span>
                                 </summary>
-                                <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 pt-2 pb-1 px-1">
-                                    ${zeroItems.map(z => `
-                                        <div class="flex items-center justify-between text-[11px] py-0.5 text-slate-400 dark:text-slate-500">
-                                            <span class="truncate" title="${z.fullName || z.label}">${z.label}</span>
-                                            <span class="font-mono text-[10px] text-slate-400 dark:text-slate-500">0%</span>
-                                        </div>
-                                    `).join('')}
+                                <div class="smooth-accordion-body overflow-hidden" style="max-height: 0px; opacity: 0; transform: translateY(-4px);">
+                                    <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 pt-2 pb-1 px-1">
+                                        ${zeroItems.map(z => `
+                                            <div class="flex items-center justify-between text-[11px] py-0.5 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+                                                <span class="truncate" title="${z.fullName || z.label}">${z.label}</span>
+                                                <span class="font-mono text-[10px] text-slate-400 dark:text-slate-500">0%</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
                                 </div>
                             </details>
                         </div>
@@ -3360,6 +3362,10 @@ function initInventoryChart() {
 
                 html += '</div>';
                 legendContainer.innerHTML = html;
+
+                if (typeof setupSmoothAccordions === 'function') {
+                    setupSmoothAccordions(legendContainer);
+                }
             }
         }
     }
@@ -5090,6 +5096,120 @@ async function fetchFreshDataAndRefreshUI(tabId = null) {
     }
 }
 
+/**
+ * Setup ultra-smooth fluid accordion expand/collapse transitions (Apple / Linear style)
+ * Handles max-height, opacity, and transform transitions with cubic-bezier easing
+ */
+function setupSmoothAccordions(container) {
+    const root = container || document;
+    const accordions = root.querySelectorAll('details.smooth-accordion');
+
+    accordions.forEach(details => {
+        if (details.dataset.smoothAccordionInit === 'true') return;
+        details.dataset.smoothAccordionInit = 'true';
+
+        const summary = details.querySelector('summary');
+        const body = details.querySelector('.smooth-accordion-body');
+        const chevron = details.querySelector('.accordion-chevron');
+
+        if (!summary || !body) return;
+
+        // Set fluid easing transitions
+        body.style.transition = 'max-height 380ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms cubic-bezier(0.16, 1, 0.3, 1), transform 380ms cubic-bezier(0.16, 1, 0.3, 1)';
+        body.style.willChange = 'max-height, opacity, transform';
+
+        if (!details.open) {
+            body.style.maxHeight = '0px';
+            body.style.opacity = '0';
+            body.style.transform = 'translateY(-6px)';
+        } else {
+            body.style.maxHeight = 'none';
+            body.style.opacity = '1';
+            body.style.transform = 'translateY(0px)';
+            if (chevron) chevron.classList.add('rotate-90');
+        }
+
+        let isAnimating = false;
+
+        summary.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (isAnimating) return;
+
+            const isOpen = details.open;
+
+            if (!isOpen) {
+                // Expanding smoothly
+                isAnimating = true;
+                details.open = true;
+                if (chevron) chevron.classList.add('rotate-90');
+
+                // Initial state
+                body.style.maxHeight = '0px';
+                body.style.opacity = '0';
+                body.style.transform = 'translateY(-6px)';
+
+                // Force reflow
+                void body.offsetHeight;
+
+                // Animate to full height
+                const targetHeight = body.scrollHeight;
+                body.style.maxHeight = targetHeight + 'px';
+                body.style.opacity = '1';
+                body.style.transform = 'translateY(0px)';
+
+                const onExpandEnd = function(evt) {
+                    if (evt && evt.propertyName !== 'max-height') return;
+                    body.removeEventListener('transitionend', onExpandEnd);
+                    if (details.open) {
+                        body.style.maxHeight = 'none';
+                    }
+                    isAnimating = false;
+                };
+                body.addEventListener('transitionend', onExpandEnd);
+                setTimeout(() => {
+                    if (isAnimating && details.open) {
+                        body.style.maxHeight = 'none';
+                        isAnimating = false;
+                    }
+                }, 420);
+            } else {
+                // Collapsing smoothly
+                isAnimating = true;
+                if (chevron) chevron.classList.remove('rotate-90');
+
+                // Set explicit height before collapsing
+                body.style.maxHeight = body.scrollHeight + 'px';
+                void body.offsetHeight; // Force reflow
+
+                // Animate down to zero
+                body.style.maxHeight = '0px';
+                body.style.opacity = '0';
+                body.style.transform = 'translateY(-6px)';
+
+                const onCollapseEnd = function(evt) {
+                    if (evt && evt.propertyName !== 'max-height') return;
+                    body.removeEventListener('transitionend', onCollapseEnd);
+                    if (!chevron?.classList.contains('rotate-90')) {
+                        details.open = false;
+                    }
+                    isAnimating = false;
+                };
+                body.addEventListener('transitionend', onCollapseEnd);
+                setTimeout(() => {
+                    if (isAnimating && !chevron?.classList.contains('rotate-90')) {
+                        details.open = false;
+                        isAnimating = false;
+                    }
+                }, 420);
+            }
+        });
+    });
+}
+
+/**
+ * Ultra-smooth Profile Popover Dropdown animations
+ * Uses cubic-bezier(0.16, 1, 0.3, 1) scale + translateY + opacity
+ */
 function toggleProfilePopover(popoverId, arrowId, event) {
     if (event) {
         event.stopPropagation();
@@ -5098,21 +5218,42 @@ function toggleProfilePopover(popoverId, arrowId, event) {
     const arrow = document.getElementById(arrowId);
     if (!popover) return;
 
-    const isHidden = popover.classList.contains('hidden');
+    const isOpen = popover.classList.contains('popover-open');
 
-    // Close all profile dropdown popovers first
+    // Close any other open dropdown popovers smoothly first
     closeAllProfileDropdowns();
 
-    if (isHidden) {
-        popover.classList.remove('hidden');
-        if (arrow) arrow.classList.add('rotate-180');
+    if (!isOpen) {
+        openProfilePopover(popover, arrow);
+    }
+}
+
+function openProfilePopover(popover, arrow) {
+    if (!popover) return;
+    popover.classList.remove('hidden', 'popover-closed');
+    // Force reflow so initial state is computed before adding popover-open
+    void popover.offsetHeight;
+    popover.classList.add('popover-open');
+    if (arrow) {
+        arrow.classList.add('rotate-180');
+    }
+}
+
+function closeProfilePopover(popover, arrow) {
+    if (!popover) return;
+    if (popover.classList.contains('popover-open')) {
+        popover.classList.remove('popover-open');
+        popover.classList.add('popover-closed');
+    }
+    if (arrow) {
+        arrow.classList.remove('rotate-180');
     }
 }
 
 function closeAllProfileDropdowns() {
     ['dashboardProfilePopover', 'topHeaderProfilePopover'].forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.classList.add('hidden');
+        if (el) closeProfilePopover(el, null);
     });
     ['dashboardProfileArrow', 'topHeaderProfileArrow'].forEach(id => {
         const arrow = document.getElementById(id);
@@ -5534,6 +5675,10 @@ document.addEventListener('DOMContentLoaded', function() {
             switchTab(tabId);
         });
     });
+
+    if (typeof setupSmoothAccordions === 'function') {
+        setupSmoothAccordions();
+    }
 
     const urlParams = new URLSearchParams(window.location.search);
     const initialTab = urlParams.get('tab') || 'dashboard';

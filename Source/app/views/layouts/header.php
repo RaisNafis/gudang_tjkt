@@ -184,6 +184,49 @@
             will-change: opacity, transform;
         }
 
+        /* =========================================================
+           ULTRA-SMOOTH EXPAND & DROPDOWN TRANSITIONS (Apple/Linear Easing)
+           ========================================================= */
+        .smooth-dropdown-popover {
+            transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                        visibility 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-origin: top right;
+            will-change: opacity, transform, visibility;
+        }
+        .smooth-dropdown-popover.popover-closed {
+            opacity: 0 !important;
+            transform: scale(0.95) translateY(-6px) !important;
+            pointer-events: none !important;
+            visibility: hidden !important;
+        }
+        .smooth-dropdown-popover.popover-open {
+            opacity: 1 !important;
+            transform: scale(1) translateY(0) !important;
+            pointer-events: auto !important;
+            visibility: visible !important;
+        }
+
+        /* Smooth Accordion Body & Chevron Rotation */
+        .smooth-accordion-body {
+            transition: max-height 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+                        opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: max-height, opacity, transform;
+        }
+        .accordion-chevron {
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .accordion-chevron.rotate-90 {
+            transform: rotate(90deg) !important;
+        }
+        #topHeaderProfileArrow {
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        #topHeaderProfileArrow.rotate-180 {
+            transform: rotate(180deg) !important;
+        }
+
         /* Disable background controls when modal is open */
         body.modal-open {
             overflow: hidden !important;
