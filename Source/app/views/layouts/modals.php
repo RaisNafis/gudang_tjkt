@@ -1646,7 +1646,6 @@ function showPinjamScanFeedback(isSuccess, item, messageOrCode) {
                     <svg class="w-4 h-4 text-sage-600 dark:text-sage-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                     Barcode Berhasil Terdeteksi & Tersinkronkan!
                 </span>
-                <button type="button" onclick="startPinjamCameraStream()" class="text-[11px] px-2 py-0.5 bg-sage-600 text-white rounded-lg hover:bg-sage-700 font-semibold shadow-xs">Scan Ulang</button>
             </div>
             <div class="text-slate-700 dark:text-slate-200">
                 <div class="font-extrabold text-sm text-slate-800 dark:text-white">${escapeHtml(item.nama_barang || '')}</div>
