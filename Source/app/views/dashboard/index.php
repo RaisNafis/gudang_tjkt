@@ -641,7 +641,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                 <div id="section_peminjaman_saya" class="bg-white dark:bg-[#161616] p-5 sm:p-6 rounded-3xl border border-slate-100/90 dark:border-[#262626] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] dark:shadow-none transition-all">
                     <div class="flex items-center justify-between gap-3 mb-4">
                         <div>
-                            <h3 class="text-base font-bold text-slate-800 dark:text-white leading-tight">Barang Sedang Dipinjam</h3>
+                            <h3 class="text-base font-bold text-slate-800 dark:text-white leading-tight">Barang yang Sedang Anda Pinjam</h3>
                             <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Daftar barang inventaris atas nama Anda yang belum dikembalikan atau menunggu verifikasi</p>
                         </div>
                         <span id="myActiveLoansCount" class="text-xs font-semibold text-slate-400 dark:text-slate-500 shrink-0">
