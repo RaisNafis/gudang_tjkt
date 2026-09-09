@@ -687,10 +687,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         </p>
                                     </div>
                                 </div>
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-[#2a2a2a]/80 shrink-0">
-                                    <span>Tahun <?= date('Y'); ?></span>
-                                    <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                                </span>
+                                <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 shrink-0">Tahun <?= date('Y'); ?></span>
                             </div>
 
                             <div class="relative h-64 w-full mt-2">
