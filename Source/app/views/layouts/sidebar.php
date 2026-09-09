@@ -29,139 +29,192 @@ if ($roleName === 'admin_sekolah') {
 <div id="sidebarBackdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-30 hidden lg:hidden transition-opacity duration-300 opacity-0 pointer-events-none"></div>
 
 <!-- Sidebar Navigation - Collapsible & Responsive Mobile Drawer -->
-<aside id="mainSidebar" class="w-[270px] bg-white dark:bg-[#121212] text-slate-700 dark:text-slate-200 h-full flex flex-col flex-shrink-0 border-r border-sage-200 shadow-xl lg:shadow-sm z-40 transition-all duration-300 fixed lg:static inset-y-0 left-0 -translate-x-full lg:translate-x-0 overflow-x-hidden">
+<aside id="mainSidebar" class="w-[265px] bg-white dark:bg-[#121212] text-slate-700 dark:text-slate-200 h-full flex flex-col flex-shrink-0 border-r border-slate-100 dark:border-[#202020] shadow-xl lg:shadow-none z-40 transition-all duration-300 fixed lg:static inset-y-0 left-0 -translate-x-full lg:translate-x-0 overflow-x-hidden">
     
     <!-- Brand Logo Area & Toggle Button -->
-    <div class="p-4 border-b border-sage-100 dark:border-[#262626] flex items-center justify-between gap-2 flex-shrink-0 h-16 overflow-hidden">
+    <div class="px-4 py-3.5 border-b border-slate-100 dark:border-[#202020] flex items-center justify-between gap-2 flex-shrink-0 h-16 overflow-hidden">
         <!-- Expanded Logo View -->
         <div class="brand-header-full flex items-center gap-3 overflow-hidden">
-            <div class="w-9 h-9 rounded-xl overflow-hidden shadow-md shrink-0 flex items-center justify-center transition-all duration-300" style="background: linear-gradient(135deg, <?= $activeThemePalette['600'] ?? '#eab308'; ?>, <?= $activeThemePalette['700'] ?? '#ca8a04'; ?>); box-shadow: 0 4px 14px 0 rgba(<?= implode(',', sscanf($activeThemePalette['600'] ?? '#eab308', "#%02x%02x%02x")); ?>, 0.35);">
-                <img src="assets/img/belmoti.svg" alt="Belmoti Logo" class="w-6 h-6 object-contain p-0.5 filter drop-shadow-sm" onerror="this.style.display='none'" loading="lazy" decoding="async">
+            <div class="w-10 h-10 rounded-2xl shrink-0 flex items-center justify-center text-white shadow-sm transition-all duration-300" style="background-color: <?= $activeThemePalette['600'] ?? '#16a34a'; ?>;">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
             </div>
-            <div class="sidebar-text truncate">
-                <h1 class="text-sm font-extrabold text-slate-800 dark:text-white tracking-wide truncate">Gudang <?= htmlspecialchars($brandShort); ?></h1>
-                <p class="text-[11px] font-medium truncate" style="color: <?= $activeThemePalette['600'] ?? '#eab308'; ?>;">Sistem Inventaris</p>
+            <div class="sidebar-text truncate flex flex-col justify-center">
+                <h1 class="text-sm font-bold text-slate-900 dark:text-white tracking-tight leading-tight truncate">Gudang <?= htmlspecialchars($brandShort); ?></h1>
+                <p class="text-[11px] font-medium text-slate-400 dark:text-slate-400 leading-tight mt-0.5 truncate">Sistem Inventaris</p>
+            </div>
+        </div>
+
+        <!-- Collapsed Mini Logo View -->
+        <div class="brand-header-mini hidden items-center justify-center mx-auto">
+            <div class="w-9 h-9 rounded-xl shrink-0 flex items-center justify-center text-white shadow-sm" style="background-color: <?= $activeThemePalette['600'] ?? '#16a34a'; ?>;">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
             </div>
         </div>
 
         <!-- Toggle Button for Desktop Mini Mode / Mobile Close -->
-        <button type="button" id="sidebarToggleBtn" class="p-1.5 rounded-lg text-slate-400 hover:text-sage-600 hover:bg-sage-50 dark:hover:bg-[#202020] transition-colors shrink-0 mx-auto" title="Kecilkan / Perluas Sidebar">
-            <svg class="w-5 h-5 transition-transform duration-300" id="toggleIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
+        <button type="button" id="sidebarToggleBtn" class="w-8 h-8 rounded-full bg-slate-100/80 hover:bg-slate-200/80 dark:bg-[#1e1e1e] dark:hover:bg-[#282828] text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center transition-all shrink-0 ml-auto" title="Kecilkan / Perluas Sidebar">
+            <svg class="w-4 h-4 transition-transform duration-300" id="toggleIcon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11 17l-5-5 5-5m7 12l-5-5 5-5"/>
             </svg>
         </button>
-        <!-- Mobile Close Cross Button -->
-        <button type="button" onclick="closeMobileSidebar()" class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors shrink-0" title="Tutup Menu">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+
+        <!-- Mobile Close Button -->
+        <button type="button" onclick="closeMobileSidebar()" class="lg:hidden w-8 h-8 rounded-full bg-slate-100 hover:bg-red-50 dark:bg-[#1e1e1e] dark:hover:bg-red-950/40 text-slate-400 hover:text-red-500 flex items-center justify-center transition-colors shrink-0" title="Tutup Menu">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
             </svg>
         </button>
     </div>
 
     <!-- Navigation Menu Scrollable -->
-    <nav class="flex-1 p-3 space-y-1.5 overflow-y-auto overflow-x-hidden text-sm" id="sidebarNav">
+    <nav class="flex-1 px-3 py-2 space-y-1 overflow-y-auto overflow-x-hidden text-sm" id="sidebarNav">
         
-        <div class="sidebar-section-label px-3 pb-1 pt-2 text-[10px] font-bold text-sage-600 uppercase tracking-wider">Main Menu</div>
+        <!-- MAIN MENU SECTION -->
+        <div class="sidebar-section-container px-3.5 pt-2 pb-1.5">
+            <span class="sidebar-section-label text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">MAIN MENU</span>
+        </div>
 
         <!-- Dashboard (Default Active) -->
-        <button type="button" data-tab="dashboard" class="nav-tab-btn active w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-semibold text-left transition-all" title="Dashboard">
-            <span class="sidebar-icon-mask w-5 h-5 shrink-0 transition-all inline-block" style="-webkit-mask-image: url('assets/img/icon-dashboard.svg'); mask-image: url('assets/img/icon-dashboard.svg'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></span>
+        <button type="button" data-tab="dashboard" class="nav-tab-btn active w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-semibold text-left transition-all" title="Dashboard">
+            <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
             <span class="sidebar-text whitespace-nowrap text-left leading-none">Dashboard</span>
         </button>
 
         <!-- Data Jurusan (Admin Sekolah Only) -->
         <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
-        <button type="button" data-tab="jurusan" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Data Jurusan">
-            <span class="sidebar-icon-mask w-5 h-5 shrink-0 transition-all inline-block" style="-webkit-mask-image: url('assets/img/icon-jurusan.svg'); mask-image: url('assets/img/icon-jurusan.svg'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></span>
+        <button type="button" data-tab="jurusan" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Data Jurusan">
+            <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 21h8M12 21v-4a2 2 0 012-2h0a2 2 0 012 2v4M5 21V7a2 2 0 012-2h10a2 2 0 012 2v14M5 21h14"/>
+            </svg>
             <span class="sidebar-text whitespace-nowrap text-left leading-none">Data Jurusan</span>
         </button>
         <?php endif; ?>
 
         <!-- Data Pengguna (Admin Sekolah & Admin Jurusan) -->
         <?php if (in_array($roleName, ['admin_sekolah', 'admin_jurusan'])): ?>
-        <button type="button" data-tab="pengguna" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Data Pengguna">
-            <span class="sidebar-icon-mask w-5 h-5 shrink-0 transition-all inline-block" style="-webkit-mask-image: url('assets/img/icon-pengguna.svg'); mask-image: url('assets/img/icon-pengguna.svg'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></span>
+        <button type="button" data-tab="pengguna" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Data Pengguna">
+            <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
             <span class="sidebar-text whitespace-nowrap text-left leading-none">Data Pengguna</span>
         </button>
 
         <!-- Data Guru (Admin Sekolah & Admin Jurusan) -->
-        <button type="button" data-tab="guru" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Data Guru">
-            <svg class="w-5 h-5 shrink-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+        <button type="button" data-tab="guru" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Data Guru">
+            <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 14v4.5"/>
+            </svg>
             <span class="sidebar-text whitespace-nowrap text-left leading-none">Data Guru</span>
         </button>
 
         <!-- Data Siswa (Admin Sekolah & Admin Jurusan) -->
-        <button type="button" data-tab="siswa" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Data Siswa">
-            <svg class="w-5 h-5 shrink-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        <button type="button" data-tab="siswa" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Data Siswa">
+            <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
             <span class="sidebar-text whitespace-nowrap text-left leading-none">Data Siswa</span>
         </button>
         <?php endif; ?>
 
         <!-- Data Kategori (Admin Sekolah, Admin Jurusan, Petugas) -->
         <?php if (in_array($roleName, ['admin_sekolah', 'admin_jurusan', 'petugas'])): ?>
-        <button type="button" data-tab="kategori" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Kategori Barang">
-            <span class="sidebar-icon-mask w-5 h-5 shrink-0 transition-all inline-block" style="-webkit-mask-image: url('assets/img/icon-kategori.svg'); mask-image: url('assets/img/icon-kategori.svg'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></span>
+        <button type="button" data-tab="kategori" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Kategori Barang">
+            <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h.01M4 12h.01M4 18h.01M8 6h12M8 12h12M8 18h12"/>
+            </svg>
             <span class="sidebar-text whitespace-nowrap text-left leading-none">Kategori Barang</span>
         </button>
         <?php endif; ?>
 
         <!-- Data Rak (Admin Sekolah, Admin Jurusan, Petugas) -->
         <?php if (in_array($roleName, ['admin_sekolah', 'admin_jurusan', 'petugas'])): ?>
-        <button type="button" data-tab="rak" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Data Rak Penyimpanan">
-            <span class="sidebar-icon-mask w-5 h-5 shrink-0 transition-all inline-block" style="-webkit-mask-image: url('assets/img/icon-rak.svg'); mask-image: url('assets/img/icon-rak.svg'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></span>
+        <button type="button" data-tab="rak" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Data Rak Penyimpanan">
+            <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v1a2 2 0 01-2 2M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+            </svg>
             <span class="sidebar-text whitespace-nowrap text-left leading-none">Data Rak</span>
         </button>
         <?php endif; ?>
 
         <!-- Master Barang & Barcode (Semua Peran) -->
-        <button type="button" data-tab="barang" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Alat & Bahan">
-            <span class="sidebar-icon-mask w-5 h-5 shrink-0 transition-all inline-block" style="-webkit-mask-image: url('assets/img/icon-barang.svg'); mask-image: url('assets/img/icon-barang.svg'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></span>
+        <button type="button" data-tab="barang" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Alat & Bahan">
+            <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+            </svg>
             <span class="sidebar-text whitespace-nowrap text-left leading-none">Alat & Bahan</span>
         </button>
 
-        <div class="sidebar-section-label px-3 pb-1 pt-3 text-[10px] font-bold text-sage-600 uppercase tracking-wider">Transaksi & Operasional</div>
+        <!-- TRANSAKSI & OPERASIONAL SECTION -->
+        <div class="sidebar-section-container pt-3 pb-1.5 px-3">
+            <div class="sidebar-divider h-px bg-slate-100 dark:bg-[#202020] mb-3"></div>
+            <span class="sidebar-section-label px-0.5 text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">TRANSAKSI & OPERASIONAL</span>
+        </div>
 
         <!-- Barang Masuk (Admin Sekolah, Admin Jurusan, Petugas) -->
         <?php if (in_array($roleName, ['admin_sekolah', 'admin_jurusan', 'petugas'])): ?>
-        <button type="button" data-tab="barang-masuk" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Alat & Bahan Masuk">
-            <span class="sidebar-icon-mask w-5 h-5 shrink-0 transition-all inline-block" style="-webkit-mask-image: url('assets/img/icon-masuk.svg'); mask-image: url('assets/img/icon-masuk.svg'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></span>
+        <button type="button" data-tab="barang-masuk" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Alat & Bahan Masuk">
+            <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
             <span class="sidebar-text whitespace-nowrap text-left leading-none">Alat & Bahan Masuk</span>
         </button>
 
         <!-- Barang Keluar (Admin Sekolah, Admin Jurusan, Petugas) -->
-        <button type="button" data-tab="barang-keluar" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Bahan Keluar">
-            <span class="sidebar-icon-mask w-5 h-5 shrink-0 transition-all inline-block" style="-webkit-mask-image: url('assets/img/icon-keluar.svg'); mask-image: url('assets/img/icon-keluar.svg'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></span>
+        <button type="button" data-tab="barang-keluar" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Bahan Keluar">
+            <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+            </svg>
             <span class="sidebar-text whitespace-nowrap text-left leading-none">Bahan Keluar</span>
         </button>
         <?php endif; ?>
 
         <!-- Sirkulasi Peminjaman (Semua Peran) -->
-        <button type="button" data-tab="peminjaman" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Peminjaman Alat">
-            <span class="sidebar-icon-mask w-5 h-5 shrink-0 transition-all inline-block" style="-webkit-mask-image: url('assets/img/icon-peminjaman.svg'); mask-image: url('assets/img/icon-peminjaman.svg'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></span>
+        <button type="button" data-tab="peminjaman" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Peminjaman Alat">
+            <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+            </svg>
             <span class="sidebar-text whitespace-nowrap text-left leading-none">Peminjaman Alat</span>
         </button>
 
         <!-- Log Aktivitas (Admin Sekolah & Admin Jurusan) -->
         <?php if (in_array($roleName, ['admin_sekolah', 'admin_jurusan'])): ?>
-        <button type="button" data-tab="log-aktivitas" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Log Aktivitas">
-            <span class="sidebar-icon-mask w-5 h-5 shrink-0 transition-all inline-block" style="-webkit-mask-image: url('assets/img/icon-log.svg'); mask-image: url('assets/img/icon-log.svg'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></span>
+        <button type="button" data-tab="log-aktivitas" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Log Aktivitas">
+            <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
             <span class="sidebar-text whitespace-nowrap text-left leading-none">Log Aktivitas</span>
         </button>
         <?php endif; ?>
 
-        <!-- Kategori Pengaturan -->
-        <div class="sidebar-section-label px-3 pb-1 pt-3 text-[10px] font-bold text-sage-600 uppercase tracking-wider">Pengaturan</div>
+        <!-- PENGATURAN SECTION -->
+        <div class="sidebar-section-container pt-3 pb-1.5 px-3">
+            <div class="sidebar-divider h-px bg-slate-100 dark:bg-[#202020] mb-3"></div>
+            <span class="sidebar-section-label px-0.5 text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">PENGATURAN</span>
+        </div>
 
         <!-- Pengaturan Profil -->
-        <button type="button" data-tab="pengaturan-profil" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Pengaturan Profil">
-            <span class="sidebar-icon-mask w-5 h-5 shrink-0 transition-all inline-block" style="-webkit-mask-image: url('assets/img/icon-profil.svg'); mask-image: url('assets/img/icon-profil.svg'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></span>
+        <button type="button" data-tab="pengaturan-profil" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Pengaturan Profil">
+            <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
             <span class="sidebar-text whitespace-nowrap text-left leading-none">Pengaturan Profil</span>
         </button>
 
         <!-- Swagger API Routes (Khusus Admin Sekolah) -->
         <?php if (!empty($roleName) && $roleName === 'admin_sekolah'): ?>
-        <button type="button" data-tab="swagger" class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-sage-700 hover:bg-sage-50 text-left transition-all" title="Dokumentasi Swagger API">
-            <svg class="w-5 h-5 shrink-0 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+        <button type="button" data-tab="swagger" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Dokumentasi Swagger API">
+            <svg class="w-5 h-5 shrink-0 transition-colors text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+            </svg>
             <span class="sidebar-text whitespace-nowrap text-left leading-none font-bold text-emerald-700 dark:text-emerald-400">Swagger API Docs</span>
         </button>
         <?php endif; ?>
@@ -177,11 +230,11 @@ if ($roleName === 'admin_sekolah') {
     </div>
     <?php endif; ?>
 
-    <!-- User Profile Footer -->
-    <div class="p-3.5 border-t border-sage-100 bg-sage-50/60 flex-shrink-0">
-        <div class="flex items-center justify-between w-full gap-2">
-            <div class="flex items-center gap-3 overflow-hidden">
-                <div class="w-9 h-9 rounded-full bg-sage-600 text-white font-bold flex items-center justify-center shrink-0 text-sm shadow-sm overflow-hidden">
+    <!-- User Profile Floating Pill Card Footer -->
+    <div class="p-3 pt-2 flex-shrink-0">
+        <div class="sidebar-user-pill flex items-center justify-between w-full p-2 px-2.5 rounded-2xl bg-[#f8fafc] dark:bg-[#181818] border border-slate-200/60 dark:border-[#262626] transition-all">
+            <div class="flex items-center gap-2.5 overflow-hidden">
+                <div class="w-9 h-9 rounded-full shrink-0 flex items-center justify-center text-white font-bold text-sm shadow-sm overflow-hidden" style="background-color: <?= $activeThemePalette['600'] ?? '#16a34a'; ?>;">
                     <?php if (!empty($user['foto_url']) && file_exists(__DIR__ . '/../../../' . $user['foto_url'])): ?>
                         <img src="<?= htmlspecialchars($user['foto_url']);  ?>" class="w-full h-full object-cover" alt="Avatar">
                     <?php else: ?>
@@ -189,22 +242,23 @@ if ($roleName === 'admin_sekolah') {
                     <?php endif; ?>
                 </div>
                 <div class="sidebar-text truncate flex flex-col justify-center">
-                    <p class="sidebar-user-name text-xs font-extrabold text-slate-900 dark:text-white truncate leading-tight"><?= htmlspecialchars($user['nama_lengkap'] ?? $user['nama_pengguna'] ?? 'User'); ?></p>
-                    <p class="sidebar-user-role text-[11px] font-bold text-sage-700 capitalize leading-tight mt-0.5"><?= htmlspecialchars($peranText); ?></p>
+                    <p class="sidebar-user-name text-xs font-bold text-slate-900 dark:text-white truncate leading-tight"><?= htmlspecialchars($user['nama_lengkap'] ?? $user['nama_pengguna'] ?? 'User'); ?></p>
+                    <p class="sidebar-user-role text-[11px] font-medium leading-tight mt-0.5 truncate" style="color: <?= $activeThemePalette['600'] ?? '#16a34a'; ?>;"><?= htmlspecialchars($peranText); ?></p>
                 </div>
             </div>
-            <div class="flex items-center gap-1 shrink-0">
-                <button type="button" onclick="toggleTheme()" class="sidebar-text p-1.5 text-black dark:text-white hover:text-slate-900 dark:hover:text-white transition-colors" title="Beralih Mode Gelap / Terang">
-                    <svg class="themeSunIcon w-4 h-4 hidden text-black dark:text-white" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+            <div class="sidebar-actions flex items-center gap-1 shrink-0">
+                <button type="button" onclick="toggleTheme()" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors" title="Beralih Mode Gelap / Terang">
+                    <svg class="themeSunIcon w-4 h-4 hidden text-slate-400 hover:text-amber-500 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
                     </svg>
-                    <svg class="themeMoonIcon w-4 h-4 text-black dark:text-white" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    <svg class="themeMoonIcon w-4 h-4 text-slate-400 hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                     </svg>
                 </button>
-                <a href="logout.php" class="sidebar-text p-1.5 text-slate-400 hover:text-red-600 transition-colors" title="Keluar">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 01-3-3H6a3 3 0 01-3 3v1"/>
+                <div class="h-4 w-px bg-slate-200 dark:bg-[#303030] mx-0.5"></div>
+                <a href="logout.php" class="p-1 text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors" title="Keluar">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 01-3-3H6a3 3 0 01-3 3v1"/>
                     </svg>
                 </a>
             </div>
@@ -213,71 +267,93 @@ if ($roleName === 'admin_sekolah') {
 </aside>
 
 <style>
-/* Dynamic Active Menu Styling & White Mode Theme Text */
-html:not(.dark) .nav-tab-btn {
-    color: <?= $activeThemePalette['800'] ?? '#1b5e20'; ?> !important;
+/* Sidebar Nav Buttons Styling */
+.nav-tab-btn {
+    color: #4b5563;
+    transition: all 0.15s ease-in-out;
 }
-html:not(.dark) .nav-tab-btn span {
-    color: <?= $activeThemePalette['800'] ?? '#1b5e20'; ?> !important;
+.nav-tab-btn svg {
+    color: #64748b;
+    transition: all 0.15s ease-in-out;
+}
+.nav-tab-btn:hover {
+    background-color: #f8fafc;
+    color: #0f172a;
+}
+.nav-tab-btn:hover svg {
+    color: #0f172a;
+}
+
+/* Active tab button - Light Mode: soft green pill with dark green icon & text */
+.nav-tab-btn.active {
+    background-color: <?= $activeThemePalette['50'] ?? '#ecf7ed'; ?> !important;
+    color: <?= $activeThemePalette['700'] ?? '#15803d'; ?> !important;
     font-weight: 600 !important;
 }
-html:not(.dark) .nav-tab-btn:hover {
-    background-color: <?= $activeThemePalette['50'] ?? '#f0fdf4'; ?> !important;
+.nav-tab-btn.active svg {
     color: <?= $activeThemePalette['700'] ?? '#15803d'; ?> !important;
+    stroke-width: 2 !important;
 }
-html:not(.dark) .nav-tab-btn:hover span {
+.nav-tab-btn.active .sidebar-text {
     color: <?= $activeThemePalette['700'] ?? '#15803d'; ?> !important;
+    font-weight: 600 !important;
 }
-html:not(.dark) .nav-tab-btn.active {
-    background-color: <?= $activeThemePalette['600'] ?? '#2e7d32'; ?> !important;
-    color: #ffffff !important;
-    font-weight: 700 !important;
-    box-shadow: none !important;
+
+/* Dark Mode Menu Styling */
+html.dark .nav-tab-btn {
+    color: #94a3b8 !important;
 }
-html:not(.dark) .nav-tab-btn.active span,
-html:not(.dark) .nav-tab-btn.active svg {
-    color: #ffffff !important;
+html.dark .nav-tab-btn svg {
+    color: #94a3b8 !important;
 }
-html:not(.dark) .sidebar-section-label {
-    color: <?= $activeThemePalette['700'] ?? '#15803d'; ?> !important;
-}
-html:not(.dark) #mainSidebar .sidebar-user-name {
-    color: #0f172a !important;
-}
-html.dark #mainSidebar .sidebar-user-name {
+html.dark .nav-tab-btn:hover {
+    background-color: #1a1a1a !important;
     color: #f8fafc !important;
 }
-html:not(.dark) #mainSidebar .sidebar-user-role {
-    color: <?= $activeThemePalette['600'] ?? '#2e7d32'; ?> !important;
+html.dark .nav-tab-btn:hover svg {
+    color: #f8fafc !important;
 }
 
-/* Dynamic Department Theme Colored Sidebar Icons */
-html:not(.dark) .nav-tab-btn:not(.active) .sidebar-icon-mask {
-    background-color: <?= $activeThemePalette['600'] ?? '#2e7d32'; ?> !important;
+/* Dark Mode Active Pill: soft translucent emerald pill */
+html.dark .nav-tab-btn.active {
+    background-color: rgba(<?= implode(',', sscanf($activeThemePalette['500'] ?? '#10b981', "#%02x%02x%02x")); ?>, 0.18) !important;
+    color: <?= $activeThemePalette['400'] ?? '#34d399'; ?> !important;
+    font-weight: 600 !important;
 }
-html:not(.dark) .nav-tab-btn:not(.active):hover .sidebar-icon-mask {
-    background-color: <?= $activeThemePalette['700'] ?? '#15803d'; ?> !important;
+html.dark .nav-tab-btn.active svg {
+    color: <?= $activeThemePalette['400'] ?? '#34d399'; ?> !important;
+    stroke-width: 2 !important;
 }
-html:not(.dark) .nav-tab-btn.active .sidebar-icon-mask {
-    background-color: #ffffff !important;
-}
-
-html.dark .nav-tab-btn:not(.active) .sidebar-icon-mask {
-    background-color: #a3a3a3 !important;
-}
-html.dark .nav-tab-btn.active .sidebar-icon-mask {
-    background-color: #ffffff !important;
+html.dark .nav-tab-btn.active .sidebar-text {
+    color: <?= $activeThemePalette['400'] ?? '#34d399'; ?> !important;
+    font-weight: 600 !important;
 }
 
-/* Collapsed Mini Sidebar Styles (76px mode) */
+/* Section labels & dividers */
+.sidebar-section-label {
+    letter-spacing: 0.05em;
+}
+
+/* Mini Collapsed Sidebar (76px mode) */
 #mainSidebar.collapsed {
     width: 76px !important;
     overflow-x: hidden !important;
 }
 #mainSidebar.collapsed .sidebar-text,
-#mainSidebar.collapsed .sidebar-section-label,
-#mainSidebar.collapsed .brand-header-full {
+#mainSidebar.collapsed .sidebar-section-container,
+#mainSidebar.collapsed .brand-header-full,
+#mainSidebar.collapsed .sidebar-actions,
+#mainSidebar.collapsed .sidebar-divider {
     display: none !important;
+}
+#mainSidebar.collapsed .brand-header-mini {
+    display: flex !important;
+}
+#mainSidebar.collapsed .sidebar-user-pill {
+    padding: 4px !important;
+    justify-content: center !important;
+    background: transparent !important;
+    border-color: transparent !important;
 }
 #mainSidebar.collapsed .nav-tab-btn {
     justify-content: center !important;
@@ -285,7 +361,8 @@ html.dark .nav-tab-btn.active .sidebar-icon-mask {
     padding-right: 0 !important;
     width: 44px !important;
     height: 44px !important;
-    margin: 0 auto !important;
+    margin: 2px auto !important;
+    border-radius: 12px !important;
 }
 #mainSidebar.collapsed #toggleIcon {
     transform: rotate(180deg);
