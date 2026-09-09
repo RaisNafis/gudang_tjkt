@@ -943,36 +943,35 @@
     </div>
 </div>
 
-<!-- MODAL KONFIRMASI PENGEMBALIAN ALAT + UPLOAD FOTO BUKTI (OPSIONAL / NULL) -->
-<div id="modalConfirmPengembalian" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/40 backdrop-blur-sm animate-fade-in-up">
-    <div class="bg-white rounded-3xl border border-sage-200 shadow-2xl w-full max-w-sm overflow-hidden">
-        <form id="formConfirmPengembalian" onsubmit="executeKembalikanPeminjaman(event)" class="p-6 text-center">
+<!-- MODAL KONFIRMASI PENGEMBALIAN ALAT (MINIMALIS & SINGKAT) -->
+<div id="modalConfirmPengembalian" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-[#141414] rounded-2xl border border-slate-200/80 dark:border-[#222222] shadow-xl w-full max-w-sm overflow-hidden">
+        <form id="formConfirmPengembalian" onsubmit="executeKembalikanPeminjaman(event)" class="p-5 text-center">
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
             <input type="hidden" id="confirm_kembali_id" value="">
 
-            <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3.5 shadow-sm">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            <div class="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-2.5">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                 </svg>
             </div>
 
-            <h3 class="text-base font-bold text-slate-800 mb-1">Konfirmasi Pengembalian Alat</h3>
-            <p class="text-xs text-slate-500 mb-4 leading-relaxed" id="confirmKembaliMessage">
-                Apakah Anda yakin barang/alat ini telah dikembalikan oleh peminjam?
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Pengembalian Alat</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-4" id="confirmKembaliMessage">
+                Konfirmasi pengembalian alat?
             </p>
 
-            <div class="text-left mb-5">
-                <label class="block font-bold text-slate-700 text-xs mb-1">Bukti Foto Pengembalian <span class="text-slate-400 font-normal">(Opsional / Boleh Kosong)</span></label>
-                <input type="file" id="confirm_kembali_bukti_foto" accept="image/*" class="w-full px-3 py-2 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600 text-xs cursor-pointer file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700">
-                <p class="text-[10px] text-slate-400 mt-1">*Jika diunggah, foto dikompresi menjadi format file <strong>.dat</strong></p>
+            <div class="text-left mb-4">
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Foto Bukti <span class="text-slate-400 dark:text-slate-500 font-normal">(Opsional)</span></label>
+                <input type="file" id="confirm_kembali_bukti_foto" accept="image/*" class="w-full text-xs text-slate-500 dark:text-slate-400 file:mr-2.5 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-slate-100 dark:file:bg-[#202020] file:text-slate-700 dark:file:text-slate-300 hover:file:bg-slate-200 dark:hover:file:bg-[#282828] cursor-pointer">
             </div>
 
-            <div class="flex items-center justify-center gap-2.5">
-                <button type="button" onclick="closeModal('modalConfirmPengembalian')" class="px-4 py-2 bg-red-600 text-white font-bold text-xs rounded-xl hover:bg-red-700 transition-colors w-1/2">
+            <div class="flex items-center gap-2 pt-1">
+                <button type="button" onclick="closeModal('modalConfirmPengembalian')" class="w-1/2 py-2 px-3.5 bg-slate-100 hover:bg-slate-200/80 dark:bg-[#202020] dark:hover:bg-[#282828] text-slate-600 dark:text-slate-300 font-semibold text-xs rounded-xl transition-colors cursor-pointer">
                     Batal
                 </button>
-                <button type="submit" class="px-4 py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow-md shadow-emerald-600/20 hover:bg-emerald-700 transition-colors w-1/2 flex items-center justify-center gap-1">
-                    <span>Ya, Kembalikan</span>
+                <button type="submit" class="w-1/2 py-2 px-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow-none transition-colors cursor-pointer">
+                    Kembalikan
                 </button>
             </div>
         </form>
@@ -3199,7 +3198,10 @@ function kembalikanPeminjaman(id) {
     if (fileInput) fileInput.value = '';
 
     if (item && msgElem) {
-        msgElem.innerText = `Apakah Anda yakin barang/alat "${item.nama_barang || 'ini'}" (${item.jumlah || 1} ${item.satuan || 'Unit'}) telah dikembalikan oleh ${item.nama_peminjam || 'peminjam'}?`;
+        const jml = (item.jumlah || 1) + ' ' + (item.satuan || 'Unit');
+        const peminjam = item.nama_peminjam || item.guru_peminjam || 'Peminjam';
+        const esc = typeof escapeHtml === 'function' ? escapeHtml : (s => s);
+        msgElem.innerHTML = `<span class="font-bold text-slate-800 dark:text-slate-100">${esc(item.nama_barang || 'Alat')}</span> (${jml}) &bull; ${esc(peminjam)}`;
     }
 
     openModal('modalConfirmPengembalian');

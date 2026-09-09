@@ -3355,7 +3355,10 @@ function kembalikanPeminjaman(id) {
     if (fileInput) fileInput.value = '';
 
     if (item && msgElem) {
-        msgElem.innerText = `Apakah Anda yakin barang/alat "${item.nama_barang || 'ini'}" (${item.jumlah || 1} ${item.satuan || 'Unit'}) telah dikembalikan oleh ${item.nama_peminjam || 'peminjam'}?`;
+        const jml = (item.jumlah || 1) + ' ' + (item.satuan || 'Unit');
+        const peminjam = item.nama_peminjam || item.guru_peminjam || 'Peminjam';
+        const esc = typeof escapeHtml === 'function' ? escapeHtml : (s => s);
+        msgElem.innerHTML = `<span class="font-bold text-slate-800 dark:text-white">${esc(item.nama_barang || 'Alat')}</span> (${jml}) &bull; ${esc(peminjam)}`;
     }
 
     openModal('modalConfirmPengembalian');
