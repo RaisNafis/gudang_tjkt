@@ -671,18 +671,18 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
                     
                     <!-- Col 1 (5 Cols on xl): Grafik Sirkulasi & Stok Inventaris per Jurusan -->
-                    <div class="lg:col-span-12 xl:col-span-5 bg-white dark:bg-[#161616] p-5 sm:p-6 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none flex flex-col justify-between">
+                    <div class="lg:col-span-12 xl:col-span-5 bg-white dark:bg-[#161616] p-5 sm:p-6 rounded-3xl border border-slate-100/90 dark:border-[#262626] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] dark:shadow-none flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between gap-2 mb-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/50 text-sky-500 flex items-center justify-center shrink-0">
+                                    <div class="w-10 h-10 rounded-2xl bg-sky-50/80 dark:bg-sky-950/40 text-sky-500 dark:text-sky-400 flex items-center justify-center shrink-0 border border-sky-100/80 dark:border-sky-900/30 shadow-2xs">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                                     </div>
                                     <div>
                                         <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-white leading-snug">
                                             <?= $isSuperAdmin ? 'Grafik Sirkulasi & Stok Inventaris per Jurusan' : 'Grafik Sirkulasi Inventaris & Peminjaman'; ?>
                                         </h3>
-                                        <p class="text-[11px] text-slate-400 mt-0.5">
+                                        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
                                             <?= $isSuperAdmin ? 'Perbandingan Alat & Bahan Masuk, Bahan Keluar, dan Peminjaman Alat per Jurusan' : 'Perbandingan Alat & Bahan Masuk, Bahan Keluar, dan Peminjaman Alat per Bulan'; ?>
                                         </p>
                                     </div>
@@ -696,32 +696,32 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         </div>
 
                         <!-- Custom Legend below Bar Chart -->
-                        <div class="flex items-center justify-center gap-5 pt-3 mt-2 border-t border-slate-100 dark:border-[#262626] text-xs font-semibold text-slate-600 dark:text-slate-300 flex-wrap">
-                            <span class="inline-flex items-center gap-1.5">
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Alat & Bahan Masuk
+                        <div class="flex items-center justify-center gap-3 sm:gap-4 pt-3 mt-3 border-t border-slate-100 dark:border-[#262626] text-xs font-semibold text-slate-600 dark:text-slate-300 flex-wrap">
+                            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-slate-50/80 dark:bg-[#1a1a1a] border border-slate-100 dark:border-[#262626]">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-2xs"></span> Alat & Bahan Masuk
                             </span>
-                            <span class="inline-flex items-center gap-1.5">
-                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Bahan Keluar
+                            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-slate-50/80 dark:bg-[#1a1a1a] border border-slate-100 dark:border-[#262626]">
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block shadow-2xs"></span> Bahan Keluar
                             </span>
-                            <span class="inline-flex items-center gap-1.5">
-                                <span class="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block"></span> Peminjaman
+                            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-slate-50/80 dark:bg-[#1a1a1a] border border-slate-100 dark:border-[#262626]">
+                                <span class="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block shadow-2xs"></span> Peminjaman
                             </span>
                         </div>
                     </div>
 
                     <!-- Col 2 (3 Cols on xl): Sebaran Total Stok per Jurusan (Donut Chart) -->
-                    <div class="lg:col-span-6 xl:col-span-3 bg-white dark:bg-[#161616] p-5 sm:p-6 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none flex flex-col justify-between">
+                    <div class="lg:col-span-6 xl:col-span-3 bg-white dark:bg-[#161616] p-5 sm:p-6 rounded-3xl border border-slate-100/90 dark:border-[#262626] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] dark:shadow-none flex flex-col justify-between">
                         <div>
                             <div class="flex items-center gap-3 mb-2">
-                                <div class="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/50 text-sky-500 flex items-center justify-center shrink-0">
+                                <div class="w-10 h-10 rounded-2xl bg-sky-50/80 dark:bg-sky-950/40 text-sky-500 dark:text-sky-400 flex items-center justify-center shrink-0 border border-sky-100/80 dark:border-sky-900/30 shadow-2xs">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
                                 </div>
-                                <div>
-                                    <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-white leading-snug">
+                                <div class="min-w-0">
+                                    <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-white leading-snug truncate">
                                         <?= $isSuperAdmin ? 'Sebaran Total Stok per Jurusan' : 'Komposisi Kategori Barang'; ?>
                                     </h3>
-                                    <p class="text-[11px] text-slate-400 mt-0.5">
-                                        <?= $isSuperAdmin ? 'Persentase total stok barang inventaris di setiap jurusan' : 'Persentase jumlah stok barang per kategori'; ?>
+                                    <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">
+                                        <?= $isSuperAdmin ? 'Persentase total stok inventaris' : 'Persentase jumlah stok per kategori'; ?>
                                     </p>
                                 </div>
                             </div>
@@ -729,36 +729,36 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             <!-- Donut Canvas with Center Unit Overlay -->
                             <div class="relative h-48 w-full flex items-center justify-center my-3">
                                 <canvas id="categoryPieChart"></canvas>
-                                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
-                                    <span id="donutTotalStokCenter" class="text-2xl font-black text-slate-800 dark:text-white leading-none">
+                                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center select-none">
+                                    <span id="donutTotalStokCenter" class="text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-none">
                                         <?= number_format($totalStokTersedia); ?>
                                     </span>
-                                    <span class="text-[11px] font-semibold text-slate-400 dark:text-slate-400 mt-1">Unit</span>
-                                    <span class="text-[10px] text-slate-400 dark:text-slate-400 font-medium">Total Stok</span>
+                                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mt-1.5">Total Stok</span>
+                                    <span class="text-[10px] font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 px-2.5 py-0.5 rounded-full border border-sky-200/60 dark:border-sky-800/40 mt-1 shadow-2xs">Unit</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 2-Column Legend Grid -->
-                        <div id="donutLegendContainer" class="grid grid-cols-2 gap-x-4 gap-y-1.5 pt-3 border-t border-slate-100 dark:border-[#262626] text-xs">
+                        <!-- Dynamic Sleek Legend Container -->
+                        <div id="donutLegendContainer" class="pt-3 border-t border-slate-100 dark:border-[#262626] text-xs">
                             <!-- Populated dynamically by initInventoryChart() -->
                         </div>
                     </div>
 
                     <!-- Col 3 (4 Cols on xl): Aktivitas Terbaru (Matches Image 1) -->
-                    <div class="lg:col-span-6 xl:col-span-4 bg-white dark:bg-[#161616] p-5 sm:p-6 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none flex flex-col justify-between">
+                    <div class="lg:col-span-6 xl:col-span-4 bg-white dark:bg-[#161616] p-5 sm:p-6 rounded-3xl border border-slate-100/90 dark:border-[#262626] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] dark:shadow-none flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/50 text-sky-500 flex items-center justify-center shrink-0">
+                                    <div class="w-10 h-10 rounded-2xl bg-sky-50/80 dark:bg-sky-950/40 text-sky-500 dark:text-sky-400 flex items-center justify-center shrink-0 border border-sky-100/80 dark:border-sky-900/30 shadow-2xs">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                     </div>
                                     <div>
                                         <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-white leading-snug">Aktivitas Terbaru</h3>
-                                        <p class="text-[11px] text-slate-400 mt-0.5">5 aktivitas terakhir di sistem</p>
+                                        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">5 aktivitas terakhir di sistem</p>
                                     </div>
                                 </div>
-                                <button type="button" onclick="switchTab('log-aktivitas')" class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/50 dark:hover:bg-sky-900/60 text-sky-600 dark:text-sky-400 transition-colors">
+                                <button type="button" onclick="switchTab('log-aktivitas')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/50 dark:hover:bg-sky-900/60 text-sky-600 dark:text-sky-400 border border-sky-100/80 dark:border-sky-900/30 transition-all shadow-2xs">
                                     <span>Lihat Semua</span>
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                                 </button>
@@ -3137,7 +3137,7 @@ function initInventoryChart() {
                             data: masukPerJur,
                             backgroundColor: '#10b981',
                             hoverBackgroundColor: '#059669',
-                            borderRadius: 6,
+                            borderRadius: 8,
                             maxBarThickness: 18,
                         },
                         {
@@ -3145,7 +3145,7 @@ function initInventoryChart() {
                             data: keluarPerJur,
                             backgroundColor: '#f59e0b',
                             hoverBackgroundColor: '#d97706',
-                            borderRadius: 6,
+                            borderRadius: 8,
                             maxBarThickness: 18,
                         },
                         {
@@ -3153,7 +3153,7 @@ function initInventoryChart() {
                             data: pinjamPerJur,
                             backgroundColor: '#3b82f6',
                             hoverBackgroundColor: '#2563eb',
-                            borderRadius: 6,
+                            borderRadius: 8,
                             maxBarThickness: 18,
                         }
                     ]
@@ -3162,7 +3162,19 @@ function initInventoryChart() {
                     responsive: true,
                     maintainAspectRatio: false,
                     animation: { duration: 1000, easing: 'easeOutQuart' },
-                    plugins: { legend: { display: false } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: isDark ? '#1a1a1a' : '#ffffff',
+                            titleColor: isDark ? '#ffffff' : '#0f172a',
+                            bodyColor: isDark ? '#cbd5e1' : '#334155',
+                            borderColor: isDark ? '#333333' : '#e2e8f0',
+                            borderWidth: 1,
+                            padding: 10,
+                            cornerRadius: 12,
+                            boxPadding: 4
+                        }
+                    },
                     scales: {
                         x: { grid: { display: false }, ticks: { font: { size: 10, weight: '600' }, color: labelColor } },
                         y: { grid: { color: gridColor }, ticks: { font: { size: 10 }, color: labelColor, precision: 0 }, beginAtZero: true }
@@ -3201,16 +3213,28 @@ function initInventoryChart() {
                 data: {
                     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
                     datasets: [
-                        { label: 'Alat & Bahan Masuk', data: masukMonthly, backgroundColor: '#10b981', hoverBackgroundColor: '#059669', borderRadius: 6, maxBarThickness: 16 },
-                        { label: 'Bahan Keluar', data: keluarMonthly, backgroundColor: '#f59e0b', hoverBackgroundColor: '#d97706', borderRadius: 6, maxBarThickness: 16 },
-                        { label: 'Peminjaman', data: pinjamMonthly, backgroundColor: '#3b82f6', hoverBackgroundColor: '#2563eb', borderRadius: 6, maxBarThickness: 16 }
+                        { label: 'Alat & Bahan Masuk', data: masukMonthly, backgroundColor: '#10b981', hoverBackgroundColor: '#059669', borderRadius: 8, maxBarThickness: 16 },
+                        { label: 'Bahan Keluar', data: keluarMonthly, backgroundColor: '#f59e0b', hoverBackgroundColor: '#d97706', borderRadius: 8, maxBarThickness: 16 },
+                        { label: 'Peminjaman', data: pinjamMonthly, backgroundColor: '#3b82f6', hoverBackgroundColor: '#2563eb', borderRadius: 8, maxBarThickness: 16 }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     animation: { duration: 1000, easing: 'easeOutQuart' },
-                    plugins: { legend: { display: false } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: isDark ? '#1a1a1a' : '#ffffff',
+                            titleColor: isDark ? '#ffffff' : '#0f172a',
+                            bodyColor: isDark ? '#cbd5e1' : '#334155',
+                            borderColor: isDark ? '#333333' : '#e2e8f0',
+                            borderWidth: 1,
+                            padding: 10,
+                            cornerRadius: 12,
+                            boxPadding: 4
+                        }
+                    },
                     scales: {
                         x: { grid: { display: false }, ticks: { font: { size: 10, weight: '600' }, color: labelColor } },
                         y: { grid: { color: gridColor }, ticks: { font: { size: 10 }, color: labelColor, precision: 0 }, beginAtZero: true }
@@ -3224,14 +3248,26 @@ function initInventoryChart() {
     const ctxPie = document.getElementById('categoryPieChart');
     if (ctxPie) {
         if (categoryChart) categoryChart.destroy();
-        const donutPalette = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#06b6d4', '#ec4899', '#f97316', '#64748b'];
+        const donutPalette = [
+            '#3b82f6', // Electric Blue
+            '#10b981', // Emerald
+            '#8b5cf6', // Violet
+            '#f59e0b', // Amber
+            '#06b6d4', // Cyan
+            '#ec4899', // Pink
+            '#6366f1', // Indigo
+            '#14b8a6', // Teal
+            '#f97316', // Orange
+            '#a855f7', // Purple
+            '#e11d48', // Rose
+            '#84cc16'  // Lime
+        ];
 
-        let pieLabels = [];
-        let pieData = [];
+        let rawList = [];
 
         if (isSuperAdmin && window.dbJurusan && window.dbJurusan.length > 0) {
             // Per Jurusan Stock Pie Chart for Admin Sekolah
-            window.dbJurusan.forEach(j => {
+            window.dbJurusan.forEach((j, idx) => {
                 let name = j.nama_jurusan || j.kode_jurusan || 'Jurusan';
                 const match = name.match(/\(([^)]+)\)/);
                 const shortName = match ? match[1] : name;
@@ -3240,10 +3276,12 @@ function initInventoryChart() {
                     .filter(b => String(b.jurusan_id) === String(j.id) || b.nama_jurusan === j.nama_jurusan)
                     .reduce((acc, b) => acc + parseInt(b.stok_tersedia !== undefined ? b.stok_tersedia : (b.stok_total || 0)), 0);
 
-                if (totalStokJur > 0) {
-                    pieLabels.push(shortName);
-                    pieData.push(totalStokJur);
-                }
+                rawList.push({
+                    label: shortName,
+                    fullName: name,
+                    value: totalStokJur,
+                    color: (typeof getJurusanColor === 'function' ? getJurusanColor(name) : donutPalette[idx % donutPalette.length])
+                });
             });
         } else {
             // Per Category Stock Pie Chart for Single Jurusan (Admin Jurusan, Petugas, Guru, Siswa)
@@ -3273,55 +3311,81 @@ function initInventoryChart() {
                 categoryStockMap[catName] = (categoryStockMap[catName] || 0) + stock;
             });
 
-            // Ambil kategori yang memiliki stok > 0, atau tampilkan semua jika belum ada stok sama sekali
-            const allEntries = Object.entries(categoryStockMap);
-            const activeEntries = allEntries.filter(([_, val]) => val > 0);
-            const chosenEntries = activeEntries.length > 0 ? activeEntries : allEntries;
-
-            chosenEntries.forEach(([lbl, val]) => {
-                pieLabels.push(lbl);
-                pieData.push(val);
+            Object.entries(categoryStockMap).forEach(([lbl, val], idx) => {
+                rawList.push({
+                    label: lbl,
+                    fullName: lbl,
+                    value: val,
+                    color: donutPalette[idx % donutPalette.length]
+                });
             });
         }
 
-        const totalStokSum = pieData.reduce((a, b) => a + b, 0);
-        const isEmptyData = pieLabels.length === 0 || totalStokSum === 0;
+        // Urutkan data dari stok terbanyak
+        rawList.sort((a, b) => b.value - a.value);
 
-        let displayLabels = pieLabels;
-        let displayData = pieData;
-        let pieBgColors = [];
+        const totalStokSum = rawList.reduce((acc, item) => acc + item.value, 0);
+        const activeItems = rawList.filter(item => item.value > 0);
+        const zeroItems = rawList.filter(item => item.value === 0);
+        const isEmptyData = activeItems.length === 0;
+
+        let chartLabels = [];
+        let chartData = [];
+        let chartColors = [];
 
         if (isEmptyData) {
-            displayLabels = ['Belum Ada Barang'];
-            displayData = [1];
-            pieBgColors = [isDark ? '#262626' : '#e2e8f0'];
+            chartLabels = ['Belum Ada Barang'];
+            chartData = [1];
+            chartColors = [isDark ? '#262626' : '#e2e8f0'];
         } else {
-            pieBgColors = displayLabels.map((_, idx) => donutPalette[idx % donutPalette.length]);
+            // Hanya masukkan activeItems ke doughnut agar setiap slice memiliki bentuk yang proporsional & elegan
+            activeItems.forEach((item, idx) => {
+                chartLabels.push(item.label);
+                chartData.push(item.value);
+                const assignedColor = item.color && item.color !== '#2e7d32' ? item.color : donutPalette[idx % donutPalette.length];
+                item.color = assignedColor;
+                chartColors.push(assignedColor);
+            });
         }
 
         categoryChart = new Chart(ctxPie, {
             type: 'doughnut',
             data: {
-                labels: displayLabels,
+                labels: chartLabels,
                 datasets: [{
-                    data: displayData,
-                    backgroundColor: pieBgColors,
-                    hoverBackgroundColor: pieBgColors,
-                    borderWidth: 3,
+                    data: chartData,
+                    backgroundColor: chartColors,
+                    hoverBackgroundColor: chartColors,
+                    borderWidth: 2,
                     borderColor: isDark ? '#161616' : '#ffffff',
-                    spacing: isEmptyData ? 0 : 2,
-                    hoverOffset: isEmptyData ? 0 : 4
+                    borderRadius: isEmptyData ? 0 : 8, // Rounded ends on each donut slice!
+                    spacing: chartData.length > 1 && !isEmptyData ? 3 : 0,
+                    hoverOffset: isEmptyData ? 0 : 6
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '72%',
-                animation: { duration: 1000, easing: 'easeOutQuart' },
+                cutout: '74%',
+                animation: {
+                    animateScale: true,
+                    animateRotate: true,
+                    duration: 1100,
+                    easing: 'easeOutQuart'
+                },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
                         enabled: !isEmptyData,
+                        backgroundColor: isDark ? '#1a1a1a' : '#ffffff',
+                        titleColor: isDark ? '#ffffff' : '#0f172a',
+                        bodyColor: isDark ? '#cbd5e1' : '#334155',
+                        borderColor: isDark ? '#333333' : '#e2e8f0',
+                        borderWidth: 1,
+                        padding: 10,
+                        cornerRadius: 12,
+                        boxPadding: 4,
+                        usePointStyle: true,
                         callbacks: {
                             label: function(context) {
                                 const val = context.raw || 0;
@@ -3341,31 +3405,69 @@ function initInventoryChart() {
             centerTotalEl.innerText = Number(totalStokSum).toLocaleString();
         }
 
-        // Render 2-Column Percentage Legend
+        // Render Modern Card-Based Legend with Mini Progress Bars
         const legendContainer = document.getElementById('donutLegendContainer');
         if (legendContainer) {
             if (isEmptyData) {
                 legendContainer.innerHTML = `
-                    <div class="col-span-2 text-center py-2 text-slate-400 dark:text-slate-500 font-medium text-xs">
-                        Belum ada data barang atau kategori di jurusan ini
+                    <div class="text-center py-3.5 px-3 rounded-2xl bg-slate-50/60 dark:bg-[#1a1a1a]/60 border border-slate-100 dark:border-[#262626] text-xs text-slate-400 dark:text-slate-500">
+                        <p class="font-bold text-slate-600 dark:text-slate-300">Belum ada barang</p>
+                        <p class="text-[11px] mt-0.5">Stok inventaris belum tercatat</p>
                     </div>
                 `;
             } else {
-                const total = totalStokSum || 1;
-                legendContainer.innerHTML = displayLabels.map((lbl, idx) => {
-                    const val = displayData[idx] || 0;
-                    const pct = total > 0 ? Math.round((val / total) * 100) : 0;
-                    const col = pieBgColors[idx % pieBgColors.length];
-                    return `
-                        <div class="flex items-center justify-between text-xs py-0.5">
-                            <div class="flex items-center gap-1.5 min-w-0">
-                                <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${col};"></span>
-                                <span class="font-medium text-slate-600 dark:text-slate-300 truncate" title="${lbl}">${lbl}</span>
+                let html = '<div class="space-y-2">';
+
+                // 1. Render Active Items (dengan indikator warna, unit, persentase badge, dan progress bar halus)
+                activeItems.forEach(item => {
+                    const pct = totalStokSum > 0 ? Math.round((item.value / totalStokSum) * 100) : 0;
+                    html += `
+                        <div class="group p-2.5 rounded-2xl bg-slate-50/70 dark:bg-[#181818] border border-slate-100/90 dark:border-[#262626] hover:border-slate-200 dark:hover:border-[#333333] transition-all">
+                            <div class="flex items-center justify-between gap-2 mb-1.5">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <span class="w-2.5 h-2.5 rounded-full shrink-0 shadow-2xs" style="background-color: ${item.color};"></span>
+                                    <span class="font-bold text-xs text-slate-700 dark:text-slate-200 truncate" title="${item.fullName || item.label}">${item.label}</span>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <span class="text-[11px] font-semibold text-slate-400 dark:text-slate-400">${item.value.toLocaleString()} Unit</span>
+                                    <span class="px-2 py-0.5 rounded-lg text-[10px] font-extrabold bg-white dark:bg-[#242424] text-slate-800 dark:text-slate-200 border border-slate-200/80 dark:border-[#333333] shadow-2xs">${pct}%</span>
+                                </div>
                             </div>
-                            <span class="font-bold text-slate-700 dark:text-slate-200 ml-2">${pct}%</span>
+                            <!-- Mini Sleek Progress Bar -->
+                            <div class="w-full bg-slate-200/80 dark:bg-[#262626] h-1.5 rounded-full overflow-hidden">
+                                <div class="h-full rounded-full transition-all duration-700 ease-out" style="width: ${Math.max(pct, 2)}%; background-color: ${item.color};"></div>
+                            </div>
                         </div>
                     `;
-                }).join('');
+                });
+
+                // 2. Render Inactive/Zero Items sebagai dropdown summary yang ringkas & rapi
+                if (zeroItems.length > 0) {
+                    html += `
+                        <div class="pt-1">
+                            <details class="group/zero">
+                                <summary class="flex items-center justify-between text-[11px] font-semibold text-slate-400 dark:text-slate-500 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition-colors list-none py-1.5 px-2 rounded-xl hover:bg-slate-50 dark:hover:bg-[#1c1c1c]">
+                                    <span class="flex items-center gap-1.5">
+                                        <svg class="w-3.5 h-3.5 transition-transform group-open/zero:rotate-90 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                        <span>${zeroItems.length} Jurusan Lainnya</span>
+                                    </span>
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[#222222] text-slate-400 dark:text-slate-500">0 Unit</span>
+                                </summary>
+                                <div class="grid grid-cols-2 gap-1.5 pt-2 pb-1 px-1">
+                                    ${zeroItems.map(z => `
+                                        <div class="flex items-center justify-between text-[11px] py-1 px-2 rounded-lg bg-slate-50/50 dark:bg-[#181818]/50 text-slate-400 dark:text-slate-500 border border-slate-100/50 dark:border-[#222222]/50">
+                                            <span class="truncate" title="${z.fullName || z.label}">${z.label}</span>
+                                            <span class="font-mono text-[10px]">0%</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </details>
+                        </div>
+                    `;
+                }
+
+                html += '</div>';
+                legendContainer.innerHTML = html;
             }
         }
     }
