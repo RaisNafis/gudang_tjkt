@@ -902,83 +902,160 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
 
             <!-- SECTION 2: TAB DATA PENGGUNA (MySQL Live) -->
             <div id="tab-pengguna" class="tab-content hidden space-y-6">
-                <!-- Stat Cards Row for Data Pengguna -->
+                <!-- Stat Cards Row for Data Pengguna (Improved Dashboard Content Style) -->
                 <!-- Stat Cards Row 1: Total User, Total Siswa, Total Guru (3 Kolom) -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm hover:shadow-md transition-shadow">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total User</span>
-                            <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    <!-- TOTAL USER -->
+                    <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div class="w-12 h-12 rounded-2xl bg-orange-50 dark:bg-orange-950/50 text-orange-500 dark:text-orange-400 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">TOTAL USER</span>
+                                <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                    <span id="statTabPenggunaTotal"><?= number_format($totalUsersCount); ?></span>
+                                </h3>
+                                <span class="block text-xs font-medium text-slate-400 mt-0.5">User</span>
                             </div>
                         </div>
-                        <h3 id="statTabPenggunaTotal" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalUsersCount); ?> User</h3>
+                        <div class="shrink-0 ml-2 hidden sm:block">
+                            <svg class="w-14 h-8 text-orange-400/80 dark:text-orange-500/50" viewBox="0 0 64 32" fill="none">
+                                <path d="M2 24 C14 28, 22 10, 34 20 C46 30, 52 8, 62 14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
                     </div>
 
-                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm hover:shadow-md transition-shadow">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Siswa</span>
-                            <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    <!-- TOTAL SISWA -->
+                    <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div class="w-12 h-12 rounded-2xl bg-sky-50 dark:bg-sky-950/50 text-sky-500 dark:text-sky-400 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">TOTAL SISWA</span>
+                                <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                    <span id="statTabPenggunaTotalSiswa"><?= number_format($totalSiswaCount); ?></span>
+                                </h3>
+                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Siswa</span>
                             </div>
                         </div>
-                        <h3 id="statTabPenggunaTotalSiswa" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalSiswaCount); ?> Siswa</h3>
+                        <div class="shrink-0 ml-2 hidden sm:block">
+                            <svg class="w-14 h-8 text-sky-400/80 dark:text-sky-500/50" viewBox="0 0 64 32" fill="none">
+                                <path d="M2 24 C14 28, 22 10, 34 20 C46 30, 52 8, 62 14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
                     </div>
 
-                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm hover:shadow-md transition-shadow">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Guru</span>
-                            <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+                    <!-- TOTAL GURU -->
+                    <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">TOTAL GURU</span>
+                                <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                    <span id="statTabPenggunaTotalGuru"><?= number_format($totalGuruCount); ?></span>
+                                </h3>
+                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Guru</span>
                             </div>
                         </div>
-                        <h3 id="statTabPenggunaTotalGuru" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($totalGuruCount); ?> Guru</h3>
+                        <div class="shrink-0 ml-2 hidden sm:block">
+                            <svg class="w-14 h-8 text-emerald-400/80 dark:text-emerald-500/50" viewBox="0 0 64 32" fill="none">
+                                <path d="M2 22 C12 26, 24 12, 34 18 C44 24, 52 6, 62 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Stat Cards Row 2: Admin Sekolah, Admin Jurusan, Petugas Gudang, Guru Umum -->
+                <!-- Stat Cards Row 2: Admin Sekolah, Admin Jurusan, Petugas Gudang, Guru Umum (Improved Dashboard Content Style) -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 <?= $isSuperAdmin ? 'lg:grid-cols-4' : 'lg:grid-cols-2'; ?> gap-5">
                     <?php if ($isSuperAdmin): ?>
-                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm hover:shadow-md transition-shadow">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Admin Sekolah</span>
-                            <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    <!-- ADMIN SEKOLAH -->
+                    <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-500 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">ADMIN SEKOLAH</span>
+                                <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                    <span id="statPenggunaAdminSekolah"><?= number_format($cntAdminSekolah); ?></span>
+                                </h3>
+                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Admin</span>
                             </div>
                         </div>
-                        <h3 id="statPenggunaAdminSekolah" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($cntAdminSekolah); ?> Admin</h3>
+                        <div class="shrink-0 ml-2 hidden sm:block">
+                            <svg class="w-14 h-8 text-indigo-400/80 dark:text-indigo-500/50" viewBox="0 0 64 32" fill="none">
+                                <path d="M2 20 C14 26, 24 10, 36 18 C46 24, 52 8, 62 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
                     </div>
                     <?php endif; ?>
 
-                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm hover:shadow-md transition-shadow">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Admin Jurusan</span>
-                            <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    <!-- ADMIN JURUSAN -->
+                    <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div class="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-950/50 text-purple-500 dark:text-purple-400 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">ADMIN JURUSAN</span>
+                                <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                    <span id="statPenggunaAdminJurusan"><?= number_format($cntAdminJurusan); ?></span>
+                                </h3>
+                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Admin</span>
                             </div>
                         </div>
-                        <h3 id="statPenggunaAdminJurusan" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($cntAdminJurusan); ?> Admin</h3>
+                        <div class="shrink-0 ml-2 hidden sm:block">
+                            <svg class="w-14 h-8 text-purple-400/80 dark:text-purple-500/50" viewBox="0 0 64 32" fill="none">
+                                <path d="M2 25 C14 27, 24 16, 36 22 C46 26, 52 10, 62 16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
                     </div>
 
-                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm hover:shadow-md transition-shadow">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Petugas Gudang</span>
-                            <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    <!-- PETUGAS GUDANG -->
+                    <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/50 text-teal-500 dark:text-teal-400 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">PETUGAS GUDANG</span>
+                                <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                    <span id="statPenggunaPetugas"><?= number_format($cntPetugas); ?></span>
+                                </h3>
+                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Petugas</span>
                             </div>
                         </div>
-                        <h3 id="statPenggunaPetugas" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($cntPetugas); ?> Petugas</h3>
+                        <div class="shrink-0 ml-2 hidden sm:block">
+                            <svg class="w-14 h-8 text-teal-400/80 dark:text-teal-500/50" viewBox="0 0 64 32" fill="none">
+                                <path d="M2 22 C12 28, 22 14, 34 20 C44 26, 52 8, 62 14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
                     </div>
 
                     <?php if ($isSuperAdmin): ?>
-                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm hover:shadow-md transition-shadow">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Guru Umum</span>
-                            <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    <!-- GURU UMUM -->
+                    <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">GURU UMUM</span>
+                                <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                    <span id="statPenggunaGuruUmum"><?= number_format($cntGuruUmum); ?></span>
+                                </h3>
+                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Guru</span>
                             </div>
                         </div>
-                        <h3 id="statPenggunaGuruUmum" class="text-2xl font-extrabold text-slate-800 dark:text-white"><?= number_format($cntGuruUmum); ?> Guru</h3>
+                        <div class="shrink-0 ml-2 hidden sm:block">
+                            <svg class="w-14 h-8 text-amber-400/80 dark:text-amber-500/50" viewBox="0 0 64 32" fill="none">
+                                <path d="M2 24 C14 28, 24 12, 34 20 C44 26, 52 10, 62 16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
                     </div>
                     <?php endif; ?>
                 </div>
@@ -3909,19 +3986,19 @@ function updateStatCardsData() {
 
     // Tab Data Pengguna Stat Cards
     // Row 1: Total User, Total Siswa, Total Guru
-    setTxt('statTabPenggunaTotal', fmt(totalPengguna) + ' User');
-    setTxt('statTabPenggunaTotalSiswa', fmt(totalSiswa) + ' Siswa');
-    setTxt('statTabPenggunaTotalGuru', fmt(totalGuru) + ' Guru');
+    setTxt('statTabPenggunaTotal', fmt(totalPengguna));
+    setTxt('statTabPenggunaTotalSiswa', fmt(totalSiswa));
+    setTxt('statTabPenggunaTotalGuru', fmt(totalGuru));
 
     // Row 2: Admin Sekolah, Admin Jurusan, Petugas Gudang, Guru Umum
     const cntAdminSekolah = (window.dbPengguna || []).filter(u => u.peran === 'admin_sekolah').length;
     const cntAdminJurusan = (window.dbPengguna || []).filter(u => u.peran === 'admin_jurusan').length;
     const cntPetugas = (window.dbPengguna || []).filter(u => u.peran === 'petugas').length;
     const cntGuruUmum = (window.dbPengguna || []).filter(u => u.peran === 'guru_umum').length;
-    setTxt('statPenggunaAdminSekolah', fmt(cntAdminSekolah) + ' Admin');
-    setTxt('statPenggunaAdminJurusan', fmt(cntAdminJurusan) + ' Admin');
-    setTxt('statPenggunaPetugas', fmt(cntPetugas) + ' Petugas');
-    setTxt('statPenggunaGuruUmum', fmt(cntGuruUmum) + ' Guru');
+    setTxt('statPenggunaAdminSekolah', fmt(cntAdminSekolah));
+    setTxt('statPenggunaAdminJurusan', fmt(cntAdminJurusan));
+    setTxt('statPenggunaPetugas', fmt(cntPetugas));
+    setTxt('statPenggunaGuruUmum', fmt(cntGuruUmum));
 
     // Tab-specific Stat Cards
     setTxt('statTabJurusanTotal', fmt(totalJurusan) + ' Jurusan');
