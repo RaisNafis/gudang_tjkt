@@ -677,7 +677,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         <?= number_format($totalStokTersedia); ?>
                                     </span>
                                     <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mt-1.5">Total Stok</span>
-                                    <span class="text-[10px] font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 px-2.5 py-0.5 rounded-full border border-sky-200/60 dark:border-sky-800/40 mt-1 shadow-2xs">Unit</span>
+                                    <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 mt-1">Unit</span>
                                 </div>
                             </div>
                         </div>
@@ -3310,7 +3310,7 @@ function initInventoryChart() {
         if (legendContainer) {
             if (isEmptyData) {
                 legendContainer.innerHTML = `
-                    <div class="text-center py-3.5 px-3 rounded-2xl bg-slate-50/60 dark:bg-[#1a1a1a]/60 border border-slate-100 dark:border-[#262626] text-xs text-slate-400 dark:text-slate-500">
+                    <div class="text-center py-3 px-2 text-xs text-slate-400 dark:text-slate-500">
                         <p class="font-bold text-slate-600 dark:text-slate-300">Belum ada barang</p>
                         <p class="text-[11px] mt-0.5">Stok inventaris belum tercatat</p>
                     </div>
@@ -3318,46 +3318,46 @@ function initInventoryChart() {
             } else {
                 let html = '<div class="space-y-2">';
 
-                // 1. Render Active Items (dengan indikator warna, unit, persentase badge, dan progress bar halus)
+                // 1. Render Active Items (tanpa card box, tanpa badge persentase, murni teks bersih)
                 activeItems.forEach(item => {
                     const pct = totalStokSum > 0 ? Math.round((item.value / totalStokSum) * 100) : 0;
                     html += `
-                        <div class="group p-2.5 rounded-2xl bg-slate-50/70 dark:bg-[#181818] border border-slate-100/90 dark:border-[#262626] hover:border-slate-200 dark:hover:border-[#333333] transition-all">
+                        <div class="py-1.5 px-0.5">
                             <div class="flex items-center justify-between gap-2 mb-1.5">
                                 <div class="flex items-center gap-2 min-w-0">
                                     <span class="w-2.5 h-2.5 rounded-full shrink-0 shadow-2xs" style="background-color: ${item.color};"></span>
                                     <span class="font-bold text-xs text-slate-700 dark:text-slate-200 truncate" title="${item.fullName || item.label}">${item.label}</span>
                                 </div>
-                                <div class="flex items-center gap-2 shrink-0">
+                                <div class="flex items-center gap-2.5 shrink-0">
                                     <span class="text-[11px] font-semibold text-slate-400 dark:text-slate-400">${item.value.toLocaleString()} Unit</span>
-                                    <span class="px-2 py-0.5 rounded-lg text-[10px] font-extrabold bg-white dark:bg-[#242424] text-slate-800 dark:text-slate-200 border border-slate-200/80 dark:border-[#333333] shadow-2xs">${pct}%</span>
+                                    <span class="text-xs font-bold text-slate-700 dark:text-slate-200">${pct}%</span>
                                 </div>
                             </div>
                             <!-- Mini Sleek Progress Bar -->
-                            <div class="w-full bg-slate-200/80 dark:bg-[#262626] h-1.5 rounded-full overflow-hidden">
+                            <div class="w-full bg-slate-100 dark:bg-[#262626] h-1.5 rounded-full overflow-hidden">
                                 <div class="h-full rounded-full transition-all duration-700 ease-out" style="width: ${Math.max(pct, 2)}%; background-color: ${item.color};"></div>
                             </div>
                         </div>
                     `;
                 });
 
-                // 2. Render Inactive/Zero Items sebagai dropdown summary yang ringkas & rapi
+                // 2. Render Inactive/Zero Items sebagai teks polos tanpa badge & tanpa card
                 if (zeroItems.length > 0) {
                     html += `
                         <div class="pt-1">
                             <details class="group/zero">
-                                <summary class="flex items-center justify-between text-[11px] font-semibold text-slate-400 dark:text-slate-500 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition-colors list-none py-1.5 px-2 rounded-xl hover:bg-slate-50 dark:hover:bg-[#1c1c1c]">
+                                <summary class="flex items-center justify-between text-[11px] font-semibold text-slate-400 dark:text-slate-500 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition-colors list-none py-1.5 px-0.5">
                                     <span class="flex items-center gap-1.5">
                                         <svg class="w-3.5 h-3.5 transition-transform group-open/zero:rotate-90 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                                         <span>${zeroItems.length} Jurusan Lainnya</span>
                                     </span>
-                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[#222222] text-slate-400 dark:text-slate-500">0 Unit</span>
+                                    <span class="text-[11px] font-medium text-slate-400 dark:text-slate-500">0 Unit</span>
                                 </summary>
-                                <div class="grid grid-cols-2 gap-1.5 pt-2 pb-1 px-1">
+                                <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 pt-2 pb-1 px-1">
                                     ${zeroItems.map(z => `
-                                        <div class="flex items-center justify-between text-[11px] py-1 px-2 rounded-lg bg-slate-50/50 dark:bg-[#181818]/50 text-slate-400 dark:text-slate-500 border border-slate-100/50 dark:border-[#222222]/50">
+                                        <div class="flex items-center justify-between text-[11px] py-0.5 text-slate-400 dark:text-slate-500">
                                             <span class="truncate" title="${z.fullName || z.label}">${z.label}</span>
-                                            <span class="font-mono text-[10px]">0%</span>
+                                            <span class="font-mono text-[10px] text-slate-400 dark:text-slate-500">0%</span>
                                         </div>
                                     `).join('')}
                                 </div>
