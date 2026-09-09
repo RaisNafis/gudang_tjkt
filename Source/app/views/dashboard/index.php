@@ -152,21 +152,15 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         </div>
                     </button>
 
-                    <!-- Simple Dropdown Popover (Linear / Gambar 4 Style) -->
-                    <div id="topHeaderProfilePopover" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#262626] rounded-xl shadow-2xl z-50 p-1 text-slate-700 dark:text-slate-200 transition-all origin-top-right text-left">
+                    <!-- Simple Dropdown Popover (Linear / Minimalist) -->
+                    <div id="topHeaderProfilePopover" class="hidden absolute right-0 mt-2 w-44 bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#262626] rounded-xl shadow-2xl z-50 p-1 text-slate-700 dark:text-slate-200 transition-all origin-top-right text-left">
                         <div class="space-y-0.5">
-                            <button type="button" onclick="goToSettingsProfile()" class="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#222222] rounded-lg transition-all text-left cursor-pointer group">
-                                <span>Pengaturan Profil</span>
-                                <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-200 transition-transform group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                            </button>
-                            <button type="button" onclick="toggleTheme()" class="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#222222] rounded-lg transition-all text-left cursor-pointer group">
-                                <span>Beralih Tema</span>
-                                <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-200 transition-transform group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                            <button type="button" onclick="goToSettingsProfile()" class="w-full block px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#222222] rounded-lg transition-all text-left cursor-pointer">
+                                Pengaturan Profil
                             </button>
                             <div class="border-t border-slate-100 dark:border-[#222222] my-0.5"></div>
-                            <a href="logout.php" class="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-all text-left cursor-pointer group">
-                                <span>Keluar (Logout)</span>
-                                <svg class="w-3.5 h-3.5 text-rose-500/70 group-hover:text-rose-400 transition-transform group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                            <a href="logout.php" class="w-full block px-3 py-2 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-all text-left cursor-pointer">
+                                Keluar (Logout)
                             </a>
                         </div>
                     </div>
