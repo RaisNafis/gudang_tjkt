@@ -32,7 +32,7 @@ if ($roleName === 'admin_sekolah') {
 <aside id="mainSidebar" class="w-[265px] bg-white dark:bg-[#121212] text-slate-700 dark:text-slate-200 h-full flex flex-col flex-shrink-0 border-r border-slate-100 dark:border-[#202020] shadow-xl lg:shadow-none z-40 transition-all duration-300 fixed lg:static inset-y-0 left-0 -translate-x-full lg:translate-x-0 overflow-x-hidden">
     
     <!-- Brand Logo Area & Toggle Button -->
-    <div class="px-4 py-3.5 border-b border-slate-100 dark:border-[#202020] flex items-center justify-between gap-2 flex-shrink-0 h-16 overflow-hidden">
+    <div class="sidebar-brand-header px-4 py-3.5 border-b border-slate-100 dark:border-[#202020] flex items-center justify-between gap-2 flex-shrink-0 h-16 overflow-hidden transition-all duration-300">
         <!-- Expanded Logo View -->
         <div class="brand-header-full flex items-center gap-3 overflow-hidden">
             <div class="w-10 h-10 rounded-2xl shrink-0 flex items-center justify-center text-white shadow-sm transition-all duration-300" style="background-color: <?= $activeThemePalette['600'] ?? '#16a34a'; ?>;">
@@ -56,7 +56,7 @@ if ($roleName === 'admin_sekolah') {
         </div>
 
         <!-- Toggle Button for Desktop Mini Mode / Mobile Close -->
-        <button type="button" id="sidebarToggleBtn" class="w-8 h-8 rounded-full bg-slate-100/80 hover:bg-slate-200/80 dark:bg-[#1e1e1e] dark:hover:bg-[#282828] text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center transition-all shrink-0 ml-auto" title="Kecilkan / Perluas Sidebar">
+        <button type="button" id="sidebarToggleBtn" class="w-8 h-8 rounded-xl bg-slate-100/80 hover:bg-slate-200/80 dark:bg-[#1e1e1e] dark:hover:bg-[#282828] text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center transition-all shrink-0 ml-auto cursor-pointer" title="Kecilkan Sidebar">
             <svg class="w-4 h-4 transition-transform duration-300" id="toggleIcon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
             </svg>
@@ -351,12 +351,31 @@ html.dark .nav-tab-btn.active .sidebar-text {
 #mainSidebar.collapsed .sidebar-section-container,
 #mainSidebar.collapsed .brand-header-full,
 #mainSidebar.collapsed .sidebar-actions,
-#mainSidebar.collapsed .sidebar-divider,
-#mainSidebar.collapsed #sidebarToggleBtn {
+#mainSidebar.collapsed .sidebar-divider {
     display: none !important;
+}
+#mainSidebar.collapsed .sidebar-brand-header {
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: 94px !important;
+    padding: 12px 8px !important;
+    gap: 8px !important;
+    justify-content: center !important;
+    align-items: center !important;
 }
 #mainSidebar.collapsed .brand-header-mini {
     display: flex !important;
+    margin: 0 auto !important;
+}
+#mainSidebar.collapsed #sidebarToggleBtn {
+    display: flex !important;
+    margin: 0 auto !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 10px !important;
+}
+#mainSidebar.collapsed #toggleIcon {
+    transform: rotate(180deg) !important;
 }
 #mainSidebar.collapsed .sidebar-user-pill {
     padding: 4px !important;
@@ -372,9 +391,6 @@ html.dark .nav-tab-btn.active .sidebar-text {
     height: 44px !important;
     margin: 2px auto !important;
     border-radius: 12px !important;
-}
-#mainSidebar.collapsed #toggleIcon {
-    transform: rotate(180deg);
 }
 
 /* Hide horizontal scrollbar completely and stylize slim vertical scrollbar */
@@ -442,6 +458,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function toggleSidebarCollapse() {
         if (window.innerWidth >= 1024) {
             sidebar.classList.toggle('collapsed');
+            if (toggleBtn) {
+                if (sidebar.classList.contains('collapsed')) {
+                    toggleBtn.setAttribute('title', 'Perluas Sidebar');
+                } else {
+                    toggleBtn.setAttribute('title', 'Kecilkan Sidebar');
+                }
+            }
         } else {
             closeMobileSidebar();
         }
