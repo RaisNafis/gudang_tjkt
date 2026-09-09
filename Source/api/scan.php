@@ -27,6 +27,28 @@ $barangId = $_GET['barang_id'] ?? $_POST['barang_id'] ?? null;
 $rakId = $_GET['rak_id'] ?? $_POST['rak_id'] ?? null;
 $code = $_GET['code'] ?? $_POST['code'] ?? $_GET['barcode'] ?? $_GET['id'] ?? null;
 
+// Jika parameter berupa URL penuh atau relative query (contoh: http://.../api/scan.php?barang_id=XYZ)
+$checkUrl = $code ?? $barangId ?? $rakId;
+if (!empty($checkUrl) && (strpos($checkUrl, 'http://') === 0 || strpos($checkUrl, 'https://') === 0 || strpos($checkUrl, '?') !== false)) {
+    $parsedUrl = parse_url($checkUrl);
+    if (!empty($parsedUrl['query'])) {
+        parse_str($parsedUrl['query'], $urlParams);
+        if (!empty($urlParams['barang_id'])) {
+            $barangId = $urlParams['barang_id'];
+        }
+        if (!empty($urlParams['rak_id'])) {
+            $rakId = $urlParams['rak_id'];
+        }
+        if (!empty($urlParams['code'])) {
+            $code = $urlParams['code'];
+        } elseif (!empty($urlParams['id'])) {
+            if (empty($barangId)) $barangId = $urlParams['id'];
+        } elseif (!empty($urlParams['barcode'])) {
+            if (empty($code)) $code = $urlParams['barcode'];
+        }
+    }
+}
+
 if (empty($barangId) && empty($rakId) && empty($code)) {
     http_response_code(400);
     echo json_encode([

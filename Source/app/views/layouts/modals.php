@@ -667,23 +667,6 @@
         <form onsubmit="handleFormSubmit(event, 'Peminjaman Alat')" class="p-6 space-y-4 text-xs overflow-y-auto flex-1">
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
             <input type="hidden" id="pinjam_edit_id" value="">
-            <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
-            <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jurusan / Departemen</label>
-                <select id="pinjam_jurusan_id" onchange="filterBarangPinjamOptions(); filterGuruPinjamOptions(); filterSiswaPinjamOptions();" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
-                    <option value="">-- Semua Jurusan --</option>
-                </select>
-            </div>
-            <?php endif; ?>
-            <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Pilih Jenis Barang <span class="text-red-500">*</span></label>
-                <select id="pinjam_jenis" onchange="filterBarangPinjamOptions()" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
-                    <option value="">-- Semua Jenis (Alat & Bahan) --</option>
-                    <option value="alat">Alat</option>
-                    <option value="bahan">Bahan</option>
-                </select>
-            </div>
-
             <!-- Checklist: Apakah ingin meminjam menggunakan scan barcode/QR code data alat & bahannya? -->
             <div class="p-3 bg-sage-50/60 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
                 <label class="flex items-center gap-2.5 cursor-pointer select-none">
@@ -759,7 +742,24 @@
                 <div id="pinjam_scan_feedback" class="hidden p-3 rounded-2xl text-xs transition-all"></div>
             </div>
 
-            <div>
+            <!-- BAGIAN INPUT MANUAL (JURUSAN, JENIS, INVENTARIS) - OTOMATIS DISEMBUNYIKAN SAAT SCAN BARCODE AKTIF -->
+            <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
+            <div id="wrap_pinjam_jurusan">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jurusan / Departemen</label>
+                <select id="pinjam_jurusan_id" onchange="filterBarangPinjamOptions(); filterGuruPinjamOptions(); filterSiswaPinjamOptions();" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
+                    <option value="">-- Semua Jurusan --</option>
+                </select>
+            </div>
+            <?php endif; ?>
+            <div id="wrap_pinjam_jenis">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Pilih Jenis Barang <span class="text-red-500">*</span></label>
+                <select id="pinjam_jenis" onchange="filterBarangPinjamOptions()" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
+                    <option value="">-- Semua Jenis (Alat & Bahan) --</option>
+                    <option value="alat">Alat</option>
+                    <option value="bahan">Bahan</option>
+                </select>
+            </div>
+            <div id="wrap_pinjam_barang">
                 <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1" id="pinjam_barang_label">Pilih Inventaris <span class="text-red-500">*</span></label>
                 <select id="pinjam_barang_id" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
                     <option value="">-- Pilih Inventaris --</option>
@@ -1329,11 +1329,28 @@ let pinjamActiveScanMode = 'kamera';
 function togglePinjamBarcodeScanner(checked) {
     const section = document.getElementById('section_scan_barcode_peminjaman');
     const badge = document.getElementById('pinjam_use_barcode_badge');
+    const wrapJurusan = document.getElementById('wrap_pinjam_jurusan');
+    const wrapJenis = document.getElementById('wrap_pinjam_jenis');
+    const wrapBarang = document.getElementById('wrap_pinjam_barang');
+    const selectBarang = document.getElementById('pinjam_barang_id');
+
     if (badge) {
         badge.innerText = checked ? 'Aktif (Scan)' : 'Tidak (Manual)';
         badge.className = checked 
             ? 'text-xs font-bold text-emerald-600 dark:text-emerald-400' 
             : 'text-xs font-medium text-slate-400 dark:text-slate-400';
+    }
+
+    if (wrapJurusan) wrapJurusan.classList.toggle('hidden', checked);
+    if (wrapJenis) wrapJenis.classList.toggle('hidden', checked);
+    if (wrapBarang) wrapBarang.classList.toggle('hidden', checked);
+
+    if (selectBarang) {
+        if (checked) {
+            selectBarang.removeAttribute('required');
+        } else {
+            selectBarang.setAttribute('required', 'required');
+        }
     }
 
     if (checked) {
@@ -1496,10 +1513,35 @@ async function handlePinjamBarcodeFileUpload(input) {
     }
 }
 
+function extractBarcodeValue(code) {
+    if (!code) return '';
+    let raw = String(code).trim();
+    if (!raw) return '';
+
+    // Jika raw berupa format URL atau query string (contoh: http://.../api/scan.php?barang_id=XYZ)
+    if (raw.startsWith('http://') || raw.startsWith('https://') || raw.includes('?') || raw.includes('&')) {
+        try {
+            const parsed = new URL(raw, window.location.origin);
+            const pId = parsed.searchParams.get('barang_id') ||
+                        parsed.searchParams.get('id') ||
+                        parsed.searchParams.get('code') ||
+                        parsed.searchParams.get('barcode');
+            if (pId) return pId.trim();
+        } catch (e) {
+            const match = raw.match(/[?&](?:barang_id|id|code|barcode)=([^&#\s]+)/i);
+            if (match && match[1]) {
+                return decodeURIComponent(match[1]).trim();
+            }
+        }
+    }
+    return raw;
+}
+
 async function onPinjamBarcodeScanned(code) {
     if (!code) return;
     const cleanCode = String(code).trim();
     if (!cleanCode) return;
+    const extractedCode = extractBarcodeValue(cleanCode);
 
     // Bunyikan nada beep indikator sukses
     try {
@@ -1514,17 +1556,26 @@ async function onPinjamBarcodeScanned(code) {
         setTimeout(() => { osc.stop(); audioCtx.close(); }, 120);
     } catch (e) {}
 
-    // Cari di window.dbBarang
-    let found = (window.dbBarang || []).find(b => 
-        (b.barcode && String(b.barcode).trim().toLowerCase() === cleanCode.toLowerCase()) ||
-        (b.kode_barang && String(b.kode_barang).trim().toLowerCase() === cleanCode.toLowerCase()) ||
-        (b.id && String(b.id).trim().toLowerCase() === cleanCode.toLowerCase())
-    );
+    // Cari di window.dbBarang (cocokkan ID, barcode, maupun kode_barang)
+    let found = (window.dbBarang || []).find(b => {
+        const matchExtracted = (
+            (b.id && String(b.id).trim().toLowerCase() === extractedCode.toLowerCase()) ||
+            (b.barcode && String(b.barcode).trim().toLowerCase() === extractedCode.toLowerCase()) ||
+            (b.kode_barang && String(b.kode_barang).trim().toLowerCase() === extractedCode.toLowerCase())
+        );
+        const matchClean = (
+            (b.id && String(b.id).trim().toLowerCase() === cleanCode.toLowerCase()) ||
+            (b.barcode && String(b.barcode).trim().toLowerCase() === cleanCode.toLowerCase()) ||
+            (b.kode_barang && String(b.kode_barang).trim().toLowerCase() === cleanCode.toLowerCase())
+        );
+        return matchExtracted || matchClean;
+    });
 
     // Jika tidak ditemukan di lokal, cari lewat API scan.php
     if (!found) {
         try {
-            const resp = await fetch('api/scan.php?code=' + encodeURIComponent(cleanCode));
+            const queryParam = encodeURIComponent(extractedCode || cleanCode);
+            const resp = await fetch(`api/scan.php?code=${queryParam}&barang_id=${queryParam}`);
             const json = await resp.json();
             if (json && json.success && json.data) {
                 found = json.data;
@@ -1550,6 +1601,13 @@ async function onPinjamBarcodeScanned(code) {
 
         filterBarangPinjamOptions(found.id);
         if (selectBarang) {
+            let optExists = Array.from(selectBarang.options).some(o => String(o.value) === String(found.id));
+            if (!optExists) {
+                const newOpt = document.createElement('option');
+                newOpt.value = found.id;
+                newOpt.textContent = `${found.nama_barang} (Tersedia: ${found.stok_tersedia ?? 0} ${found.satuan || 'Unit'})`;
+                selectBarang.appendChild(newOpt);
+            }
             selectBarang.value = found.id;
             selectBarang.classList.add('ring-2', 'ring-emerald-500');
             setTimeout(() => selectBarang.classList.remove('ring-2', 'ring-emerald-500'), 2500);
@@ -1558,11 +1616,11 @@ async function onPinjamBarcodeScanned(code) {
         // Hentikan streaming kamera setelah barcode berhasil dideteksi
         await stopPinjamCameraStream();
 
-        showPinjamScanFeedback(true, found, cleanCode);
-        showToast('Barang berhasil disinkronkan: ' + found.nama_barang, 'success');
+        showPinjamScanFeedback(true, found, extractedCode || cleanCode);
+        showToast('Barang berhasil disinkronkan: ' + (found.nama_barang || 'Item'), 'success');
     } else {
-        showPinjamScanFeedback(false, null, 'Barcode "' + cleanCode + '" terdeteksi, namun data barang tidak ditemukan dalam inventaris.');
-        showToast('Barang tidak ditemukan untuk barcode: ' + cleanCode, 'warning');
+        showPinjamScanFeedback(false, null, 'Barcode "' + (extractedCode || cleanCode) + '" terdeteksi, namun data barang tidak ditemukan dalam inventaris.');
+        showToast('Barang tidak ditemukan untuk barcode: ' + (extractedCode || cleanCode), 'warning');
     }
 }
 
@@ -1583,10 +1641,11 @@ function showPinjamScanFeedback(isSuccess, item, messageOrCode) {
                 <button type="button" onclick="startPinjamCameraStream()" class="text-[11px] px-2 py-0.5 bg-sage-600 text-white rounded-lg hover:bg-sage-700 font-semibold shadow-xs">Scan Ulang</button>
             </div>
             <div class="text-slate-700 dark:text-slate-200">
-                <div class="font-extrabold text-sm text-slate-800 dark:text-white">${escapeHtml(item.nama_barang)}</div>
+                <div class="font-extrabold text-sm text-slate-800 dark:text-white">${escapeHtml(item.nama_barang || '')}</div>
                 <div class="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-slate-600 dark:text-slate-400 mt-1">
-                    <span>Jenis: <b>${jenisLabel}</b></span>
-                    <span>Kode / Barcode: <code class="font-mono bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded border border-sage-200 dark:border-slate-700 font-bold text-sage-700 dark:text-sage-300">${escapeHtml(item.barcode || messageOrCode)}</code></span>
+                    <span>Jenis: <b class="capitalize text-sage-700 dark:text-sage-300">${escapeHtml(jenisLabel)}</b></span>
+                    ${item.nama_jurusan ? `<span>Jurusan: <b>${escapeHtml(item.nama_jurusan)}</b></span>` : ''}
+                    <span>Kode / Barcode: <code class="font-mono bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded border border-sage-200 dark:border-slate-700 font-bold text-sage-700 dark:text-sage-300">${escapeHtml(item.barcode || item.kode_barang || messageOrCode)}</code></span>
                     <span>Stok Tersedia: <b class="text-sage-700 dark:text-sage-400">${item.stok_tersedia ?? 0} ${escapeHtml(item.satuan || 'Unit')}</b></span>
                 </div>
             </div>
@@ -2582,7 +2641,18 @@ async function handleFormSubmit(event, actionName) {
         apiAction = 'save_peminjaman';
         formData.append('id', document.getElementById('pinjam_edit_id')?.value || '');
         formData.append('jurusan_id', document.getElementById('pinjam_jurusan_id')?.value || '');
-        formData.append('barang_id', document.getElementById('pinjam_barang_id')?.value || '');
+
+        const barangId = document.getElementById('pinjam_barang_id')?.value || '';
+        if (!barangId) {
+            const isUsingBarcode = document.getElementById('pinjam_use_barcode')?.checked;
+            if (isUsingBarcode) {
+                showNotification('Silakan scan barcode atau QR code barang terlebih dahulu!', 'warning');
+            } else {
+                showNotification('Pilih inventaris barang yang akan dipinjam!', 'warning');
+            }
+            return;
+        }
+        formData.append('barang_id', barangId);
 
         const elGuruSel = document.getElementById('pinjam_guru_peminjam_select');
         const elGuruCust = document.getElementById('pinjam_guru_peminjam_custom');
