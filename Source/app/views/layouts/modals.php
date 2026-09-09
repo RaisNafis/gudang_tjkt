@@ -691,24 +691,20 @@
                 </div>
 
                 <!-- 1. MODE KAMERA LIVE -->
-                <div id="pinjam_scan_camera_pane" class="space-y-2.5">
+                <div id="pinjam_scan_camera_pane" class="space-y-3">
                     <div id="pinjam_camera_select_wrap" class="hidden">
                         <select id="pinjam_camera_select" onchange="changePinjamCamera(this.value)" class="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:border-sage-600">
                             <option value="">Pilih Kamera...</option>
                         </select>
                     </div>
 
-                    <div class="relative w-full max-w-sm mx-auto overflow-hidden rounded-2xl bg-transparent min-h-[220px] flex items-center justify-center border border-slate-200 dark:border-slate-700">
+                    <div id="pinjam_camera_view_wrap" class="hidden relative w-full max-w-sm mx-auto overflow-hidden rounded-2xl bg-transparent min-h-[220px] flex items-center justify-center border border-slate-200 dark:border-slate-700">
                         <div id="pinjam_barcode_reader" class="w-full h-full min-h-[220px] bg-transparent"></div>
-                        <div id="pinjam_camera_placeholder" class="absolute inset-0 flex flex-col items-center justify-center p-4 text-center bg-transparent text-slate-700 dark:text-slate-300">
-                            <svg class="w-12 h-12 text-slate-400 dark:text-slate-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                            <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">Kamera belum aktif</p>
-                            <p class="text-[11px] text-slate-400 dark:text-slate-400 mt-0.5">Klik tombol di bawah untuk menyalakan kamera</p>
-                        </div>
                     </div>
+                    <div id="pinjam_camera_placeholder" class="hidden"></div>
 
-                    <div class="flex items-center justify-center gap-2">
-                        <button type="button" id="btn_toggle_camera" onclick="togglePinjamCameraStream()" class="px-4 py-2 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-md shadow-sage-600/20 transition-all">
+                    <div class="flex items-center justify-center py-2">
+                        <button type="button" id="btn_toggle_camera" onclick="togglePinjamCameraStream()" class="px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-md shadow-sage-600/20 transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             <span>Nyalakan Kamera</span>
                         </button>
@@ -716,16 +712,12 @@
                 </div>
 
                 <!-- 2. MODE PILIH GAMBAR (CHOOSE FILE) -->
-                <div id="pinjam_scan_file_pane" class="hidden space-y-2.5">
+                <div id="pinjam_scan_file_pane" class="hidden space-y-3">
                     <input type="file" id="pinjam_barcode_file_input" accept="image/*" class="hidden" onchange="handlePinjamBarcodeFileUpload(this)">
-                    <div onclick="document.getElementById('pinjam_barcode_file_input').click()" class="cursor-pointer border-2 border-dashed border-sage-500/70 hover:border-sage-600 dark:border-sage-500/70 dark:hover:border-sage-400 bg-transparent p-6 rounded-2xl flex flex-col items-center justify-center text-center transition-colors">
-                        <div class="w-12 h-12 rounded-2xl bg-transparent text-sage-600 dark:text-sage-400 flex items-center justify-center mb-2 border border-sage-500/30">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                        </div>
-                        <p class="font-bold text-xs text-slate-700 dark:text-slate-200">Klik untuk Pilih Gambar / Foto Barcode</p>
-                        <p class="text-[11px] text-slate-400 dark:text-slate-400 mt-1">Mendukung format JPG, PNG, WEBP, atau foto kamera langsung</p>
-                        <button type="button" class="mt-3 px-3.5 py-1.5 bg-sage-600 text-white rounded-xl font-bold text-xs hover:bg-sage-700 transition-colors pointer-events-none">
-                            Pilih Berkas Gambar
+                    <div class="flex items-center justify-center py-3">
+                        <button type="button" onclick="document.getElementById('pinjam_barcode_file_input').click()" class="px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-md shadow-sage-600/20 transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span>Pilih Berkas Gambar</span>
                         </button>
                     </div>
                     <div id="pinjam_file_scan_status" class="hidden text-center py-2">
@@ -1442,6 +1434,8 @@ async function startPinjamCameraStream(preferDeviceId = null) {
         );
 
         pinjamIsCameraRunning = true;
+        const cameraWrap = document.getElementById('pinjam_camera_view_wrap');
+        if (cameraWrap) cameraWrap.classList.remove('hidden');
         if (placeholder) placeholder.classList.add('hidden');
         if (btnToggle) {
             btnToggle.className = 'px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all';
@@ -1464,7 +1458,9 @@ async function stopPinjamCameraStream() {
         pinjamIsCameraRunning = false;
     }
     const placeholder = document.getElementById('pinjam_camera_placeholder');
+    const cameraWrap = document.getElementById('pinjam_camera_view_wrap');
     const btnToggle = document.getElementById('btn_toggle_camera');
+    if (cameraWrap) cameraWrap.classList.add('hidden');
     if (placeholder) placeholder.classList.remove('hidden');
     if (btnToggle) {
         btnToggle.className = 'px-4 py-2 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-md shadow-sage-600/20 transition-all';

@@ -85,6 +85,35 @@ foreach ($dbPeminjaman as $pmItem) {
 }
 $totalLogsCount = $stats['total_logs'] ?? 0;
 
+$myActiveLoansPHP = [];
+foreach ($dbPeminjaman as $pmItem) {
+    if (($pmItem['status'] ?? '') === 'dikembalikan') continue;
+    $isMe = false;
+    $uFullName = strtolower(trim($user['nama_lengkap'] ?? ''));
+    $uName = strtolower(trim($user['nama_pengguna'] ?? ''));
+    $gPem = strtolower(trim($pmItem['guru_peminjam'] ?? ''));
+    $nPem = strtolower(trim($pmItem['nama_peminjam'] ?? ''));
+
+    if ($gPem !== '' || $nPem !== '') {
+        if ($uFullName && ($gPem === $uFullName || $nPem === $uFullName || (strlen($uFullName) > 3 && (str_contains($gPem, $uFullName) || str_contains($nPem, $uFullName))))) {
+            $isMe = true;
+        } elseif ($uName && ($gPem === $uName || $nPem === $uName)) {
+            $isMe = true;
+        }
+        if (!empty($user['nisn']) && !empty($pmItem['nisn']) && trim((string)$user['nisn']) === trim((string)$pmItem['nisn'])) {
+            $isMe = true;
+        }
+    } else {
+        if (!empty($user['id']) && !empty($pmItem['pengguna_id']) && $user['id'] === $pmItem['pengguna_id']) {
+            $isMe = true;
+        }
+    }
+    if ($isMe) {
+        $myActiveLoansPHP[] = $pmItem;
+    }
+}
+$myActiveLoansCount = count($myActiveLoansPHP);
+
 $daysIndo = ['Minggu', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 $monthsIndo = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $monthsIndo[(int)date('n') - 1] . ' ' . date('Y');
@@ -618,6 +647,131 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                     </div>
                 <?php endif; ?>
 
+                <!-- CARD: PEMINJAMAN AKTIF SAYA (BARANG YANG SEDANG DIPINJAM) -->
+                <div id="section_peminjaman_saya" class="bg-white dark:bg-[#161616] p-5 sm:p-6 rounded-3xl border border-slate-100/90 dark:border-[#262626] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] dark:shadow-none transition-all">
+                    <div class="flex items-center justify-between gap-3 mb-4">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0 border border-amber-200/50 dark:border-amber-800/50">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-bold text-slate-800 dark:text-white leading-tight">Barang Sedang Dipinjam</h3>
+                                <p class="text-xs text-slate-400 dark:text-slate-500">Daftar barang inventaris atas nama Anda yang belum dikembalikan atau menunggu verifikasi</p>
+                            </div>
+                        </div>
+                        <span id="myActiveLoansCount" class="<?= $myActiveLoansCount > 0 ? 'text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border border-amber-200/70 dark:border-amber-800/60' : 'text-xs font-semibold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700'; ?> px-3 py-1 rounded-xl shrink-0">
+                            <?= $myActiveLoansCount; ?> Barang
+                        </span>
+                    </div>
+                    <div id="myActiveLoansList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <?php if (empty($myActiveLoansPHP)): ?>
+                            <div class="p-4 rounded-2xl bg-slate-50/70 dark:bg-[#1a1a1a]/60 border border-dashed border-slate-200 dark:border-[#2e2e2e] flex items-center justify-between gap-3 text-slate-500 dark:text-slate-400 col-span-full">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-500 flex items-center justify-center shrink-0">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    </div>
+                                    <span class="text-xs font-medium">Tidak ada barang yang sedang Anda pinjam saat ini. Semua alat dan bahan sudah dikembalikan.</span>
+                                </div>
+                                <span class="text-[11px] font-bold text-slate-400 dark:text-slate-500">Semua Beres</span>
+                            </div>
+                        <?php else: ?>
+                            <?php foreach ($myActiveLoansPHP as $pm): ?>
+                                <div class="group relative bg-slate-50/70 dark:bg-[#1c1c1c] hover:bg-white dark:hover:bg-[#202020] p-4 rounded-2xl border border-slate-200/80 dark:border-[#2a2a2a] hover:border-amber-300/80 dark:hover:border-amber-700/60 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] hover:shadow-md transition-all flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex items-start justify-between gap-2.5 mb-2">
+                                            <div class="min-w-0 flex-1">
+                                                <h4 class="text-sm font-bold text-slate-800 dark:text-white truncate group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors" title="<?= htmlspecialchars($pm['nama_barang'] ?? ''); ?>">
+                                                    <?= htmlspecialchars($pm['nama_barang'] ?? 'Barang Inventaris'); ?>
+                                                </h4>
+                                                <div class="flex items-center gap-1.5 mt-0.5 text-[11px] text-slate-400 dark:text-slate-500">
+                                                    <span><?= htmlspecialchars($pm['nama_jurusan'] ?? 'Inventaris'); ?></span>
+                                                    <?php if (!empty($pm['jenis'])): ?>
+                                                        <span>•</span>
+                                                        <span class="capitalize"><?= htmlspecialchars($pm['jenis']); ?></span>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                            <span class="px-2.5 py-1 rounded-xl text-xs font-extrabold bg-amber-100/70 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 shrink-0">
+                                                <?= intval($pm['jumlah'] ?? 1); ?> <?= htmlspecialchars($pm['satuan'] ?? 'Unit'); ?>
+                                            </span>
+                                        </div>
+
+                                        <div class="space-y-1.5 my-3 pt-2.5 border-t border-slate-100 dark:border-[#262626] text-xs">
+                                            <div class="flex items-center justify-between text-slate-500 dark:text-slate-400">
+                                                <span class="text-[11px] text-slate-400">Tgl Pinjam:</span>
+                                                <span class="font-medium text-slate-700 dark:text-slate-200">
+                                                    <?= !empty($pm['tanggal_pinjam']) ? date('d M Y, H:i', strtotime($pm['tanggal_pinjam'])) : '-'; ?>
+                                                </span>
+                                            </div>
+                                            <?php if (!empty($pm['nama_peminjam'])): ?>
+                                            <div class="flex items-center justify-between text-slate-500 dark:text-slate-400">
+                                                <span class="text-[11px] text-slate-400">Peminjam:</span>
+                                                <span class="font-semibold text-slate-700 dark:text-slate-200 truncate max-w-[150px]" title="<?= htmlspecialchars($pm['nama_peminjam']); ?>">
+                                                    <?= htmlspecialchars($pm['nama_peminjam']); ?>
+                                                </span>
+                                            </div>
+                                            <?php endif; ?>
+                                            <?php if (!empty($pm['tugas']) || !empty($pm['catatan'])): ?>
+                                            <div class="flex items-start justify-between gap-2 text-slate-500 dark:text-slate-400">
+                                                <span class="text-[11px] text-slate-400 shrink-0">Keperluan:</span>
+                                                <span class="font-normal text-slate-600 dark:text-slate-300 text-right truncate max-w-[160px]" title="<?= htmlspecialchars($pm['tugas'] ?: $pm['catatan']); ?>">
+                                                    <?= htmlspecialchars($pm['tugas'] ?: $pm['catatan']); ?>
+                                                </span>
+                                            </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+
+                                    <!-- Status & Action Footer -->
+                                    <div class="pt-3 border-t border-slate-100 dark:border-[#262626] flex items-center justify-between gap-2">
+                                        <div>
+                                            <?php if ($pm['status'] === 'dipinjam'): ?>
+                                                <span class="font-extrabold text-amber-500 dark:text-amber-400 flex items-center gap-1.5 text-xs">
+                                                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>Dipinjam
+                                                </span>
+                                            <?php elseif ($pm['status'] === 'pending'): ?>
+                                                <span class="font-extrabold text-amber-500 dark:text-amber-400 flex items-center gap-1.5 text-xs">
+                                                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>Pending
+                                                </span>
+                                            <?php elseif ($pm['status'] === 'ditolak'): ?>
+                                                <span class="font-extrabold text-red-500 dark:text-red-400 flex items-center gap-1.5 text-xs">
+                                                    <span class="w-2 h-2 rounded-full bg-red-500"></span>Ditolak
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="flex items-center gap-1.5 shrink-0">
+                                            <?php if ($pm['status'] === 'dipinjam'): ?>
+                                                <button type="button" onclick="kembalikanPeminjaman('<?= $pm['id']; ?>')" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 15v-1a4 4 0 00-4-4H4m0 0l3-3m-3 3l3 3m5 4v1a3 3 0 003 3h6a3 3 0 003-3V7a3 3 0 00-3-3h-6a3 3 0 00-3 3v1"/></svg>
+                                                    Kembalikan
+                                                </button>
+                                            <?php elseif ($pm['status'] === 'pending'): ?>
+                                                <?php if (!empty($pm['bukti_foto'])): ?>
+                                                    <button type="button" onclick="showFotoPreview('<?= htmlspecialchars($pm['bukti_foto']); ?>', 'Bukti Foto Pengembalian Alat', 'Peminjam: <?= htmlspecialchars(addslashes($pm['nama_peminjam'] ?? $pm['guru_peminjam'] ?? '')); ?> | Alat: <?= htmlspecialchars(addslashes($pm['nama_barang'] ?? '')); ?>')" class="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-[#252525] hover:bg-slate-200 dark:hover:bg-[#303030] text-slate-700 dark:text-slate-200 font-semibold text-xs border border-slate-200 dark:border-[#333] transition-all flex items-center gap-1" title="Lihat Bukti Foto">
+                                                        <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                        Bukti
+                                                    </button>
+                                                <?php endif; ?>
+                                                <span class="text-[11px] text-slate-400 italic">Menunggu verifikasi</span>
+                                            <?php elseif ($pm['status'] === 'ditolak'): ?>
+                                                <button type="button" onclick="kembalikanPeminjaman('<?= $pm['id']; ?>')" class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1" title="Upload Ulang Bukti Foto">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                                                    Upload Ulang
+                                                </button>
+                                                <?php if (!empty($pm['bukti_foto'])): ?>
+                                                    <button type="button" onclick="showFotoPreview('<?= htmlspecialchars($pm['bukti_foto']); ?>', 'Bukti Foto Pengembalian Alat (Ditolak)', 'Peminjam: <?= htmlspecialchars(addslashes($pm['nama_peminjam'] ?? $pm['guru_peminjam'] ?? '')); ?> | Alat: <?= htmlspecialchars(addslashes($pm['nama_barang'] ?? '')); ?>')" class="p-1.5 rounded-xl bg-slate-100 dark:bg-[#252525] hover:bg-slate-200 dark:hover:bg-[#303030] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#333] transition-all" title="Lihat Bukti Foto Ditolak">
+                                                        <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                    </button>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
                 <!-- Middle Row: 3 Columns Grid (Matches Image 1) -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
                     
@@ -678,7 +832,6 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         <?= number_format($totalStokTersedia); ?>
                                     </span>
                                     <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mt-1.5">Total Stok</span>
-                                    <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 mt-1">Unit</span>
                                 </div>
                             </div>
                         </div>
@@ -809,8 +962,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                                             Dipinjam
                                                         </span>
                                                     <?php elseif ($pm['status'] === 'pending'): ?>
-                                                        <span class="font-extrabold text-sky-500 dark:text-sky-400 inline-flex items-center gap-1">
-                                                            <svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                        <span class="font-extrabold text-amber-500 dark:text-amber-400">
                                                             Pending
                                                         </span>
                                                     <?php elseif ($pm['status'] === 'ditolak'): ?>
@@ -1462,6 +1614,12 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             <!-- Left: Donut Chart (5 cols) -->
                             <div class="sm:col-span-5 relative h-56 w-full flex items-center justify-center">
                                 <canvas id="siswaJurusanChart"></canvas>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center select-none">
+                                    <span id="donutTotalSiswaCenter" class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-none">
+                                        <?= number_format($totalSiswaCount); ?>
+                                    </span>
+                                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mt-1">Total Siswa</span>
+                                </div>
                             </div>
                             <!-- Right: Legend List (7 cols) -->
                             <div class="sm:col-span-7 overflow-y-auto pr-1 space-y-1" style="scrollbar-width: thin; max-height: 224px;" id="siswaJurusanLegendList">
@@ -2341,14 +2499,9 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                             <?php if ($pm['status'] === 'dipinjam'): ?>
                                                 <span class="text-amber-500 font-extrabold">Dipinjam</span>
                                             <?php elseif ($pm['status'] === 'pending'): ?>
-                                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800 border border-amber-300">
-                                                    <svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                    Pending
-                                                </span>
+                                                <span class="font-extrabold text-amber-500 dark:text-amber-400">Pending</span>
                                             <?php elseif ($pm['status'] === 'ditolak'): ?>
-                                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-red-100 text-red-800 border border-red-300">
-                                                    Ditolak
-                                                </span>
+                                                <span class="font-extrabold text-red-500 dark:text-red-400">Ditolak</span>
                                             <?php else: ?>
                                                 <span class="font-extrabold" style="color: <?= $activeThemePalette['600'] ?? '#2e7d32'; ?>;">
                                                     Dikembalikan
@@ -2467,14 +2620,9 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                             <?php if ($logPm['status'] === 'dipinjam'): ?>
                                                 <span class="text-amber-500 font-extrabold">Dipinjam</span>
                                             <?php elseif ($logPm['status'] === 'pending'): ?>
-                                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800 border border-amber-300">
-                                                    <svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                    Pending
-                                                </span>
+                                                <span class="font-extrabold text-amber-500 dark:text-amber-400">Pending</span>
                                             <?php elseif ($logPm['status'] === 'ditolak'): ?>
-                                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-red-100 text-red-800 border border-red-300">
-                                                    Ditolak
-                                                </span>
+                                                <span class="font-extrabold text-red-500 dark:text-red-400">Ditolak</span>
                                             <?php else: ?>
                                                 <span class="font-extrabold" style="color: <?= $activeThemePalette['600'] ?? '#2e7d32'; ?>;">Dikembalikan</span>
                                             <?php endif; ?>
@@ -3551,7 +3699,7 @@ function initInventoryChart() {
                                 const val = context.raw || 0;
                                 const sum = totalStokSum || 1;
                                 const pct = Math.round((val / sum) * 100);
-                                return ` ${context.label}: ${val.toLocaleString()} Unit (${pct}%)`;
+                                return ` ${context.label}: ${val.toLocaleString()} (${pct}%)`;
                             }
                         }
                     }
@@ -3794,9 +3942,9 @@ function initTabAnalytics(tabId) {
                         data: data,
                         backgroundColor: bgColors,
                         hoverBackgroundColor: bgColors,
-                        borderWidth: 2,
-                        borderColor: isDark ? '#0f172a' : '#ffffff',
-                        borderRadius: 8,
+                        borderWidth: 0,
+                        borderColor: 'transparent',
+                        borderRadius: 14,
                         spacing: 3,
                         hoverOffset: 6
                     }]
@@ -4220,6 +4368,11 @@ function initTabAnalytics(tabId) {
                 `}).join('');
             }
 
+            const centerTotalSiswaEl = document.getElementById('donutTotalSiswaCenter');
+            if (centerTotalSiswaEl) {
+                centerTotalSiswaEl.innerText = totalStudents.toLocaleString('en-US');
+            }
+
             tabAnalyticsCharts['siswaJurusan'] = new Chart(ctxSiswaJur, {
                 type: 'doughnut',
                 data: {
@@ -4228,9 +4381,9 @@ function initTabAnalytics(tabId) {
                         data: data,
                         backgroundColor: bgColors,
                         hoverBackgroundColor: bgColors,
-                        borderWidth: 2,
-                        borderColor: isDark ? '#0f172a' : '#ffffff',
-                        borderRadius: 6,
+                        borderWidth: 0,
+                        borderColor: 'transparent',
+                        borderRadius: 8,
                         spacing: 2,
                         hoverOffset: 6
                     }]
@@ -4238,7 +4391,7 @@ function initTabAnalytics(tabId) {
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '68%',
+                    cutout: '72%',
                     transitions: { active: { animation: { duration: 300, easing: 'easeOutCubic' } } },
                     plugins: {
                         legend: { display: false },
@@ -4388,6 +4541,8 @@ function updateStatCardsData() {
     setTxt('statTabSiswaKelasX', fmt(cntSiswaXVal));
     setTxt('statTabSiswaKelasXI', fmt(cntSiswaXIVal));
     setTxt('statTabSiswaKelasXII', fmt(cntSiswaXIIVal));
+    setTxt('donutTotalSiswaCenter', fmt(totalSiswa));
+    if (typeof renderMyActivePeminjaman === 'function') renderMyActivePeminjaman();
 }
 
 let currentPenggunaPage = 1;
@@ -5088,8 +5243,8 @@ function renderTablePeminjaman() {
 
         let statusHtml = '';
         if (pm.status === 'dipinjam') statusHtml = `<span class="text-amber-500 font-extrabold">Dipinjam</span>`;
-        else if (pm.status === 'pending') statusHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800 border border-amber-300"><svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Pending</span>`;
-        else if (pm.status === 'ditolak') statusHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-red-100 text-red-800 border border-red-300">Ditolak</span>`;
+        else if (pm.status === 'pending') statusHtml = `<span class="text-amber-500 dark:text-amber-400 font-extrabold">Pending</span>`;
+        else if (pm.status === 'ditolak') statusHtml = `<span class="text-red-500 dark:text-red-400 font-extrabold">Ditolak</span>`;
         else statusHtml = `<span class="font-extrabold text-sage-600">Dikembalikan</span>`;
 
         let actionBtns = '';
@@ -5159,8 +5314,8 @@ function renderTableLogPeminjaman() {
 
         let statusHtml = '';
         if (logPm.status === 'dipinjam') statusHtml = `<span class="text-amber-500 font-extrabold">Dipinjam</span>`;
-        else if (logPm.status === 'pending') statusHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800 border border-amber-300"><svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Pending</span>`;
-        else if (logPm.status === 'ditolak') statusHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-red-100 text-red-800 border border-red-300">Ditolak</span>`;
+        else if (logPm.status === 'pending') statusHtml = `<span class="text-amber-500 dark:text-amber-400 font-extrabold">Pending</span>`;
+        else if (logPm.status === 'ditolak') statusHtml = `<span class="text-red-500 dark:text-red-400 font-extrabold">Ditolak</span>`;
         else statusHtml = `<span class="font-extrabold text-sage-600">Dikembalikan</span>`;
 
         const fotoBtn = logPm.bukti_foto
@@ -5204,7 +5359,7 @@ function renderDashboardRecentPeminjaman() {
     tbody.innerHTML = window.dbPeminjaman.slice(0, 5).map(pm => {
         let statusHtml = '';
         if (pm.status === 'dipinjam') statusHtml = '<span class="text-amber-500 font-extrabold">Dipinjam</span>';
-        else if (pm.status === 'pending') statusHtml = '<span class="text-sky-500 font-extrabold inline-flex items-center gap-1"><svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Pending</span>';
+        else if (pm.status === 'pending') statusHtml = '<span class="text-amber-500 dark:text-amber-400 font-extrabold">Pending</span>';
         else if (pm.status === 'ditolak') statusHtml = '<span class="font-extrabold text-rose-500 dark:text-rose-400">Ditolak</span>';
         else statusHtml = '<span class="font-extrabold text-emerald-500 dark:text-emerald-400">Dikembalikan</span>';
 
@@ -5230,6 +5385,135 @@ function renderDashboardRecentPeminjaman() {
             <td class="py-3.5 px-4 font-semibold text-slate-800 dark:text-slate-200">${parseInt(pm.jumlah || 1)} ${escapeHtml(satuanDisplay)}</td>
             <td class="py-3.5 px-4">${statusHtml}</td>
         </tr>`;
+    }).join('');
+}
+
+function renderMyActivePeminjaman() {
+    const container = document.getElementById('myActiveLoansList');
+    const countBadge = document.getElementById('myActiveLoansCount');
+    if (!container) return;
+
+    const user = window.currentUser || {};
+    const list = (window.dbPeminjaman || []).filter(pm => {
+        if (pm.status === 'dikembalikan') return false;
+        if (!user) return false;
+
+        const uFullName = (user.nama_lengkap || '').trim().toLowerCase();
+        const uName = (user.nama_pengguna || '').trim().toLowerCase();
+        const gPem = (pm.guru_peminjam || '').trim().toLowerCase();
+        const nPem = (pm.nama_peminjam || '').trim().toLowerCase();
+
+        if (gPem !== '' || nPem !== '') {
+            if (uFullName && (gPem === uFullName || nPem === uFullName || (uFullName.length > 3 && (gPem.includes(uFullName) || nPem.includes(uFullName))))) {
+                return true;
+            }
+            if (uName && (gPem === uName || nPem === uName)) {
+                return true;
+            }
+            if (user.nisn && pm.nisn && String(user.nisn).trim() === String(pm.nisn).trim()) {
+                return true;
+            }
+        } else {
+            const userId = String(user.id || '');
+            const pmUserId = String(pm.pengguna_id || '');
+            if (userId && pmUserId && userId === pmUserId) return true;
+        }
+        return false;
+    });
+
+    if (countBadge) {
+        countBadge.innerText = `${list.length} Barang`;
+        if (list.length > 0) {
+            countBadge.className = 'text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border border-amber-200/70 dark:border-amber-800/60 px-3 py-1 rounded-xl shrink-0';
+        } else {
+            countBadge.className = 'text-xs font-semibold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 px-3 py-1 rounded-xl shrink-0';
+        }
+    }
+
+    if (list.length === 0) {
+        container.innerHTML = `
+            <div class="p-4 rounded-2xl bg-slate-50/70 dark:bg-[#1a1a1a]/60 border border-dashed border-slate-200 dark:border-[#2e2e2e] flex items-center justify-between gap-3 text-slate-500 dark:text-slate-400 col-span-full">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-500 flex items-center justify-center shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <span class="text-xs font-medium">Tidak ada barang yang sedang Anda pinjam saat ini. Semua alat dan bahan sudah dikembalikan.</span>
+                </div>
+                <span class="text-[11px] font-bold text-slate-400 dark:text-slate-500">Semua Beres</span>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = list.map(pm => {
+        const tglPinjam = pm.tanggal_pinjam ? new Date(pm.tanggal_pinjam).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+        
+        let statusHtml = '';
+        let actionBtns = '';
+
+        if (pm.status === 'dipinjam') {
+            statusHtml = `<span class="font-extrabold text-amber-500 dark:text-amber-400 flex items-center gap-1.5 text-xs"><span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>Dipinjam</span>`;
+            actionBtns = `<button type="button" onclick="kembalikanPeminjaman('${pm.id}')" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 15v-1a4 4 0 00-4-4H4m0 0l3-3m-3 3l3 3m5 4v1a3 3 0 003 3h6a3 3 0 003-3V7a3 3 0 00-3-3h-6a3 3 0 00-3 3v1"/></svg>Kembalikan</button>`;
+        } else if (pm.status === 'pending') {
+            statusHtml = `<span class="font-extrabold text-amber-500 dark:text-amber-400 flex items-center gap-1.5 text-xs"><span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>Pending</span>`;
+            if (pm.bukti_foto) {
+                actionBtns += `<button type="button" onclick="showFotoPreview('${pm.bukti_foto}', 'Bukti Foto Pengembalian Alat', 'Peminjam: ${escapeJsStr(pm.nama_peminjam || pm.guru_peminjam)} | Alat: ${escapeJsStr(pm.nama_barang)}')" class="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-[#252525] hover:bg-slate-200 dark:hover:bg-[#303030] text-slate-700 dark:text-slate-200 font-semibold text-xs border border-slate-200 dark:border-[#333] transition-all flex items-center gap-1" title="Lihat Bukti Foto"><svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>Bukti</button>`;
+            }
+            actionBtns += `<span class="text-[11px] text-slate-400 italic">Menunggu verifikasi</span>`;
+        } else if (pm.status === 'ditolak') {
+            statusHtml = `<span class="font-extrabold text-red-500 dark:text-red-400 flex items-center gap-1.5 text-xs"><span class="w-2 h-2 rounded-full bg-red-500"></span>Ditolak</span>`;
+            actionBtns = `<button type="button" onclick="kembalikanPeminjaman('${pm.id}')" class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1" title="Upload Ulang Bukti Foto"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Upload Ulang</button>`;
+            if (pm.bukti_foto) {
+                actionBtns += `<button type="button" onclick="showFotoPreview('${pm.bukti_foto}', 'Bukti Foto Pengembalian Alat (Ditolak)', 'Peminjam: ${escapeJsStr(pm.nama_peminjam || pm.guru_peminjam)} | Alat: ${escapeJsStr(pm.nama_barang)}')" class="p-1.5 rounded-xl bg-slate-100 dark:bg-[#252525] hover:bg-slate-200 dark:hover:bg-[#303030] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#333] transition-all" title="Lihat Bukti Foto Ditolak"><svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>`;
+            }
+        }
+
+        return `
+            <div class="group relative bg-slate-50/70 dark:bg-[#1c1c1c] hover:bg-white dark:hover:bg-[#202020] p-4 rounded-2xl border border-slate-200/80 dark:border-[#2a2a2a] hover:border-amber-300/80 dark:hover:border-amber-700/60 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] hover:shadow-md transition-all flex flex-col justify-between">
+                <div>
+                    <div class="flex items-start justify-between gap-2.5 mb-2">
+                        <div class="min-w-0 flex-1">
+                            <h4 class="text-sm font-bold text-slate-800 dark:text-white truncate group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors" title="${escapeHtml(pm.nama_barang || '')}">
+                                ${escapeHtml(pm.nama_barang || 'Barang Inventaris')}
+                            </h4>
+                            <div class="flex items-center gap-1.5 mt-0.5 text-[11px] text-slate-400 dark:text-slate-500">
+                                <span>${escapeHtml(pm.nama_jurusan || 'Inventaris')}</span>
+                                ${pm.jenis ? `<span>•</span><span class="capitalize">${escapeHtml(pm.jenis)}</span>` : ''}
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-xl text-xs font-extrabold bg-amber-100/70 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 shrink-0">
+                            ${pm.jumlah || 1} ${escapeHtml(pm.satuan || 'Unit')}
+                        </span>
+                    </div>
+
+                    <div class="space-y-1.5 my-3 pt-2.5 border-t border-slate-100 dark:border-[#262626] text-xs">
+                        <div class="flex items-center justify-between text-slate-500 dark:text-slate-400">
+                            <span class="text-[11px] text-slate-400">Tgl Pinjam:</span>
+                            <span class="font-medium text-slate-700 dark:text-slate-200">${tglPinjam}</span>
+                        </div>
+                        ${pm.nama_peminjam ? `
+                        <div class="flex items-center justify-between text-slate-500 dark:text-slate-400">
+                            <span class="text-[11px] text-slate-400">Peminjam:</span>
+                            <span class="font-semibold text-slate-700 dark:text-slate-200 truncate max-w-[150px]" title="${escapeHtml(pm.nama_peminjam)}">${escapeHtml(pm.nama_peminjam)}</span>
+                        </div>` : ''}
+                        ${pm.tugas || pm.catatan ? `
+                        <div class="flex items-start justify-between gap-2 text-slate-500 dark:text-slate-400">
+                            <span class="text-[11px] text-slate-400 shrink-0">Keperluan:</span>
+                            <span class="font-normal text-slate-600 dark:text-slate-300 text-right truncate max-w-[160px]" title="${escapeHtml(pm.tugas || pm.catatan)}">${escapeHtml(pm.tugas || pm.catatan)}</span>
+                        </div>` : ''}
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 dark:border-[#262626] flex items-center justify-between gap-2">
+                    <div>
+                        ${statusHtml}
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        ${actionBtns}
+                    </div>
+                </div>
+            </div>
+        `;
     }).join('');
 }
 
@@ -5493,6 +5777,7 @@ function renderActiveTabTable(tabId) {
         if (typeof renderRecentLogMasukKeluar === 'function') renderRecentLogMasukKeluar();
         if (typeof renderDashboardRecentPeminjaman === 'function') renderDashboardRecentPeminjaman();
         if (typeof renderDashboardRecentActivities === 'function') renderDashboardRecentActivities();
+        if (typeof renderMyActivePeminjaman === 'function') renderMyActivePeminjaman();
     }
 }
 
@@ -5502,6 +5787,7 @@ function renderAllTableBodies() {
     if (typeof renderRecentLogMasukKeluar === 'function') renderRecentLogMasukKeluar();
     if (typeof renderDashboardRecentPeminjaman === 'function') renderDashboardRecentPeminjaman();
     if (typeof renderDashboardRecentActivities === 'function') renderDashboardRecentActivities();
+    if (typeof renderMyActivePeminjaman === 'function') renderMyActivePeminjaman();
 }
 
 let isFetchingFreshData = false;
