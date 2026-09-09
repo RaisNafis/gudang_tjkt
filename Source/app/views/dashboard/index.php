@@ -1493,7 +1493,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
                                     <span id="statTabSiswaKelasX"><?= number_format($cntSiswaKelasX); ?></span>
                                 </h3>
-                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Tingkat 10</span>
+                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Kelas 10</span>
                             </div>
                         </div>
                         <div class="shrink-0 ml-2 hidden sm:block">
@@ -1514,7 +1514,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
                                     <span id="statTabSiswaKelasXI"><?= number_format($cntSiswaKelasXI); ?></span>
                                 </h3>
-                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Tingkat 11</span>
+                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Kelas 11</span>
                             </div>
                         </div>
                         <div class="shrink-0 ml-2 hidden sm:block">
@@ -1535,7 +1535,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
                                     <span id="statTabSiswaKelasXII"><?= number_format($cntSiswaKelasXII); ?></span>
                                 </h3>
-                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Tingkat 12</span>
+                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Kelas 12</span>
                             </div>
                         </div>
                         <div class="shrink-0 ml-2 hidden sm:block">
