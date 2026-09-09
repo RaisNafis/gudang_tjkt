@@ -714,14 +714,14 @@
                 <!-- 2. MODE PILIH GAMBAR (CHOOSE FILE) -->
                 <div id="pinjam_scan_file_pane" class="hidden space-y-3">
                     <input type="file" id="pinjam_barcode_file_input" accept="image/*" class="hidden" onchange="handlePinjamBarcodeFileUpload(this)">
-                    <div class="flex items-center justify-center py-3">
-                        <button type="button" onclick="document.getElementById('pinjam_barcode_file_input').click()" class="px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-md shadow-sage-600/20 transition-all">
+                    <div class="flex items-center justify-start py-2">
+                        <button type="button" onclick="document.getElementById('pinjam_barcode_file_input').click()" class="px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer" style="box-shadow: none !important;">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                             <span>Pilih Berkas Gambar</span>
                         </button>
                     </div>
-                    <div id="pinjam_file_scan_status" class="hidden text-center py-2">
-                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-sage-600 dark:text-sage-400 animate-pulse">
+                    <div id="pinjam_file_scan_status" class="hidden text-left py-1.5">
+                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-sage-600 dark:text-sage-400">
                             <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
                             Menganalisis dan memindai barcode pada gambar...
                         </span>
@@ -1551,19 +1551,6 @@ async function onPinjamBarcodeScanned(code) {
     if (!cleanCode) return;
     const extractedCode = extractBarcodeValue(cleanCode);
 
-    // Bunyikan nada beep indikator sukses
-    try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.frequency.value = 880;
-        gain.gain.value = 0.2;
-        osc.start();
-        setTimeout(() => { osc.stop(); audioCtx.close(); }, 120);
-    } catch (e) {}
-
     // Cari di window.dbBarang (cocokkan ID, barcode, maupun kode_barang)
     let found = (window.dbBarang || []).find(b => {
         const matchExtracted = (
@@ -1594,6 +1581,68 @@ async function onPinjamBarcodeScanned(code) {
     }
 
     if (found) {
+        // =========================================================================
+        // VALIDASI JURUSAN PENGGUNA:
+        // Jika akun login memiliki jurusan tertentu (misal TKJ),
+        // maka hanya barcode alat & bahan milik jurusan tersebut yang dapat dipindai.
+        // Jika scan barang milik jurusan lain -> DITOLAK!
+        // =========================================================================
+        const userJurusanId = (window.currentUser && window.currentUser.jurusan_id) ? String(window.currentUser.jurusan_id).trim() : '';
+        const userPeran = (window.currentUser && window.currentUser.peran) ? String(window.currentUser.peran).toLowerCase().trim() : '';
+        const itemJurusanId = (found.jurusan_id) ? String(found.jurusan_id).trim() : '';
+
+        // Dapatkan nama jurusan barang
+        let itemJurusanName = found.nama_jurusan || '';
+        if (!itemJurusanName && window.dbJurusan && itemJurusanId) {
+            const jMatch = window.dbJurusan.find(j => String(j.id).trim() === itemJurusanId);
+            if (jMatch) itemJurusanName = jMatch.nama_jurusan;
+        }
+        if (!itemJurusanName) itemJurusanName = 'Jurusan Lain';
+
+        // Dapatkan nama jurusan akun pengguna
+        let userJurusanName = (window.currentUser && (window.currentUser.nama_jurusan || window.currentUser.kode_jurusan)) ? (window.currentUser.nama_jurusan || window.currentUser.kode_jurusan) : 'Jurusan Anda';
+
+        // Validasi: Jika bukan admin_sekolah dan memiliki jurusan_id, lalu scan barang jurusan lain:
+        if (userPeran !== 'admin_sekolah' && userJurusanId && itemJurusanId && userJurusanId !== itemJurusanId) {
+            // Hentikan streaming kamera jika aktif
+            await stopPinjamCameraStream();
+
+            // Reset pilihan barang pada form
+            const selectBarang = document.getElementById('pinjam_barang_id');
+            if (selectBarang) selectBarang.value = '';
+
+            // Mainkan nada peringatan/penolakan
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = 'sawtooth';
+                osc.frequency.value = 180;
+                gain.gain.value = 0.35;
+                osc.start();
+                setTimeout(() => { osc.stop(); audioCtx.close(); }, 350);
+            } catch (e) {}
+
+            showPinjamScanFeedback(false, null, `Pemindaian Ditolak! Barang "${found.nama_barang || 'Barang'}" terdaftar pada ${itemJurusanName}. Akun Anda terdaftar di ${userJurusanName}, sehingga hanya dapat memindai alat & bahan milik ${userJurusanName}.`, true);
+            showToast(`Pemindaian Ditolak! Barang ini milik ${itemJurusanName}`, 'error');
+            return;
+        }
+
+        // Bunyikan nada beep indikator sukses HANYA jika valid & diterima
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = 880;
+            gain.gain.value = 0.2;
+            osc.start();
+            setTimeout(() => { osc.stop(); audioCtx.close(); }, 120);
+        } catch (e) {}
+
         // Sinkronisasi otomatis ke form peminjaman!
         const selectJur = document.getElementById('pinjam_jurusan_id');
         const selectJenis = document.getElementById('pinjam_jenis');
@@ -1632,10 +1681,18 @@ async function onPinjamBarcodeScanned(code) {
     }
 }
 
-function showPinjamScanFeedback(isSuccess, item, messageOrCode) {
+function showPinjamScanFeedback(isSuccess, item, messageOrCode, isReject = false) {
     const box = document.getElementById('pinjam_scan_feedback');
     if (!box) return;
     box.classList.remove('hidden');
+
+    const safeEsc = (str) => {
+        if (typeof escapeHtml === 'function') return escapeHtml(str);
+        if (str === null || str === undefined) return '';
+        const d = document.createElement('div');
+        d.textContent = String(str);
+        return d.innerHTML;
+    };
 
     if (isSuccess && item) {
         const jenisLabel = (item.jenis || 'alat').toLowerCase() === 'alat' ? 'Alat' : 'Bahan';
@@ -1648,14 +1705,25 @@ function showPinjamScanFeedback(isSuccess, item, messageOrCode) {
                 </span>
             </div>
             <div class="text-slate-700 dark:text-slate-200">
-                <div class="font-extrabold text-sm text-slate-800 dark:text-white">${escapeHtml(item.nama_barang || '')}</div>
+                <div class="font-extrabold text-sm text-slate-800 dark:text-white">${safeEsc(item.nama_barang || '')}</div>
                 <div class="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-slate-600 dark:text-slate-400 mt-1">
-                    <span>Jenis: <b class="capitalize text-sage-700 dark:text-sage-300">${escapeHtml(jenisLabel)}</b></span>
-                    ${item.nama_jurusan ? `<span>Jurusan: <b>${escapeHtml(item.nama_jurusan)}</b></span>` : ''}
-                    <span>Kode / Barcode: <code class="font-mono bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded border border-sage-200 dark:border-slate-700 font-bold text-sage-700 dark:text-sage-300">${escapeHtml(item.barcode || item.kode_barang || messageOrCode)}</code></span>
-                    <span>Stok Tersedia: <b class="text-sage-700 dark:text-sage-400">${item.stok_tersedia ?? 0} ${escapeHtml(item.satuan || 'Unit')}</b></span>
+                    <span>Jenis: <b class="capitalize text-sage-700 dark:text-sage-300">${safeEsc(jenisLabel)}</b></span>
+                    ${item.nama_jurusan ? `<span>Jurusan: <b>${safeEsc(item.nama_jurusan)}</b></span>` : ''}
+                    <span>Kode / Barcode: <code class="font-mono bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded border border-sage-200 dark:border-slate-700 font-bold text-sage-700 dark:text-sage-300">${safeEsc(item.barcode || item.kode_barang || messageOrCode)}</code></span>
+                    <span>Stok Tersedia: <b class="text-sage-700 dark:text-sage-400">${item.stok_tersedia ?? 0} ${safeEsc(item.satuan || 'Unit')}</b></span>
                 </div>
             </div>
+        `;
+    } else if (isReject) {
+        box.className = 'p-3.5 bg-red-50/90 dark:bg-red-950/40 border border-red-300 dark:border-red-900/60 rounded-2xl text-xs space-y-1.5 animate-fade-in-up';
+        box.innerHTML = `
+            <div class="flex items-center justify-between text-red-700 dark:text-red-400 font-bold">
+                <span class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-red-600 dark:text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                    Pemindaian Ditolak (Bukan Jurusan Anda)
+                </span>
+            </div>
+            <p class="text-slate-700 dark:text-slate-200 text-xs leading-relaxed mt-1">${safeEsc(messageOrCode)}</p>
         `;
     } else {
         box.className = 'p-3.5 bg-amber-50/80 dark:bg-slate-900 border border-amber-300 dark:border-slate-700 rounded-2xl text-xs space-y-1 animate-fade-in-up';
@@ -1667,7 +1735,7 @@ function showPinjamScanFeedback(isSuccess, item, messageOrCode) {
                 </span>
                 <button type="button" onclick="clearPinjamScanFeedback(); startPinjamCameraStream();" class="text-[11px] px-2 py-0.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-semibold shadow-xs">Coba Lagi</button>
             </div>
-            <p class="text-slate-700 dark:text-slate-300">${escapeHtml(messageOrCode)}</p>
+            <p class="text-slate-700 dark:text-slate-300">${safeEsc(messageOrCode)}</p>
         `;
     }
 }

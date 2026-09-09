@@ -150,6 +150,30 @@ try {
             exit;
         }
 
+        // Validasi jurusan pengguna vs jurusan barang
+        $userSession = currentUser();
+        if (!empty($userSession['peran']) && $userSession['peran'] !== 'admin_sekolah' && !empty($userSession['jurusan_id'])) {
+            $dbConn = Database::getInstance()->getConnection();
+            $stmtCheckBrg = $dbConn->prepare("
+                SELECT b.id, b.nama_barang, b.jurusan_id, j.nama_jurusan 
+                FROM barang b 
+                LEFT JOIN jurusan j ON b.jurusan_id = j.id 
+                WHERE b.id = :bid LIMIT 1
+            ");
+            $stmtCheckBrg->execute([':bid' => $barangId]);
+            $brgData = $stmtCheckBrg->fetch(PDO::FETCH_ASSOC);
+            if ($brgData && !empty($brgData['jurusan_id']) && $brgData['jurusan_id'] !== $userSession['jurusan_id']) {
+                $targetJur = $brgData['nama_jurusan'] ?? 'jurusan lain';
+                $myJur = $userSession['nama_jurusan'] ?? 'jurusan Anda';
+                http_response_code(403);
+                echo json_encode([
+                    'success' => false,
+                    'message' => "Peminjaman ditolak! Akun Anda terdaftar pada {$myJur}. Anda hanya dapat meminjam alat & bahan milik jurusan Anda. Barang ini terdaftar pada {$targetJur}."
+                ]);
+                exit;
+            }
+        }
+
         $tahunAjaran = $params['tahun_ajaran'] ?? '2025/2026';
         $res = Peminjaman::create($barangId, $userId, $jumlah, $namaPeminjam, $catatan, $tanggalPinjam, $tanggalKembali, $tugas, $tahunAjaran);
 

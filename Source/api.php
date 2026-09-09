@@ -1162,6 +1162,30 @@ require_once __DIR__ . '/app/models/BarangKeluar.php';
                 echo json_encode(['success' => false, 'message' => 'Pilih alat!']);
                 exit;
             }
+
+            // Validasi jurusan: jika akun memiliki jurusan tertentu (bukan admin_sekolah), pastikan barang milik jurusannya
+            $userSession = currentUser();
+            if (!empty($userSession['peran']) && $userSession['peran'] !== 'admin_sekolah' && !empty($userSession['jurusan_id'])) {
+                $dbConn = Database::getInstance()->getConnection();
+                $stmtCheckBrg = $dbConn->prepare("
+                    SELECT b.id, b.nama_barang, b.jurusan_id, j.nama_jurusan 
+                    FROM barang b 
+                    LEFT JOIN jurusan j ON b.jurusan_id = j.id 
+                    WHERE b.id = :bid LIMIT 1
+                ");
+                $stmtCheckBrg->execute([':bid' => $barang_id]);
+                $brgData = $stmtCheckBrg->fetch(PDO::FETCH_ASSOC);
+                if ($brgData && !empty($brgData['jurusan_id']) && $brgData['jurusan_id'] !== $userSession['jurusan_id']) {
+                    $targetJur = $brgData['nama_jurusan'] ?? 'jurusan lain';
+                    $myJur = $userSession['nama_jurusan'] ?? 'jurusan Anda';
+                    echo json_encode([
+                        'success' => false,
+                        'message' => "Peminjaman ditolak! Akun Anda terdaftar pada {$myJur}. Anda hanya dapat meminjam alat & bahan milik jurusan Anda. Barang ini terdaftar pada {$targetJur}."
+                    ]);
+                    exit;
+                }
+            }
+
             $statusVal = !empty($status) ? $status : 'dipinjam';
             $res = Peminjaman::create($barang_id, $pengguna_id, $jumlah, $peminjam, null, $tanggal_pinjam, $tanggal_kembali, $tugas, $tahun_ajaran, $guru_peminjam, $nisn, $statusVal);
             if ($res['success']) {
