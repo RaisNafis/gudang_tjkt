@@ -51,6 +51,12 @@ $totalKategoriCount = count($dbKategori);
 $totalBarangCount = $stats['total_items'] ?? 0;
 $totalStokTersedia = $stats['total_available'] ?? 0;
 
+$cntGuruUmumData = count(array_filter($dbGuru, fn($g) => ($g['mengajar'] ?? '') === 'umum'));
+$cntGuruJurusanData = count(array_filter($dbGuru, fn($g) => ($g['mengajar'] ?? '') === 'bengkel' || !empty($g['jurusan_id'])));
+$cntSiswaKelasX = count(array_filter($dbSiswa, fn($s) => preg_match('/^(10|X)[^I]/i', trim($s['kelas'] ?? '')) || strtoupper(trim($s['kelas'] ?? '')) === 'X'));
+$cntSiswaKelasXI = count(array_filter($dbSiswa, fn($s) => preg_match('/^(11|XI)[^I]/i', trim($s['kelas'] ?? '')) || strtoupper(trim($s['kelas'] ?? '')) === 'XI'));
+$cntSiswaKelasXII = count(array_filter($dbSiswa, fn($s) => preg_match('/^(12|XII)/i', trim($s['kelas'] ?? '')) || strtoupper(trim($s['kelas'] ?? '')) === 'XII'));
+
 $cntAdminSekolah = 0;
 $cntAdminJurusan = 0;
 $cntPetugas = 0;
@@ -1189,6 +1195,74 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
 
             <!-- SECTION 2.1: TAB DATA GURU -->
             <div id="tab-guru" class="tab-content hidden space-y-6">
+                <!-- Stat Cards Row for Data Guru -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 <?= $isSuperAdmin ? 'lg:grid-cols-3' : 'lg:grid-cols-2' ?> gap-4">
+                    <!-- TOTAL GURU -->
+                    <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div class="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">TOTAL GURU</span>
+                                <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                    <span id="statTabGuruTotal"><?= number_format($totalGuruCount); ?></span>
+                                </h3>
+                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Guru Terdaftar</span>
+                            </div>
+                        </div>
+                        <div class="shrink-0 ml-2 hidden sm:block">
+                            <svg class="w-14 h-8 text-blue-400/80 dark:text-blue-500/50" viewBox="0 0 64 32" fill="none">
+                                <path d="M2 18 C12 10, 22 26, 32 14 C42 4, 52 20, 62 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <?php if ($isSuperAdmin): ?>
+                    <!-- GURU UMUM -->
+                    <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">GURU UMUM</span>
+                                <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                    <span id="statTabGuruUmum"><?= number_format($cntGuruUmumData); ?></span>
+                                </h3>
+                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Mata Pelajaran Umum</span>
+                            </div>
+                        </div>
+                        <div class="shrink-0 ml-2 hidden sm:block">
+                            <svg class="w-14 h-8 text-amber-400/80 dark:text-amber-500/50" viewBox="0 0 64 32" fill="none">
+                                <path d="M2 24 C14 28, 24 12, 34 20 C44 26, 52 10, 62 16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <!-- GURU JURUSAN -->
+                    <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">GURU JURUSAN</span>
+                                <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                    <span id="statTabGuruJurusan"><?= number_format($cntGuruJurusanData); ?></span>
+                                </h3>
+                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Produktif / Kejuruan</span>
+                            </div>
+                        </div>
+                        <div class="shrink-0 ml-2 hidden sm:block">
+                            <svg class="w-14 h-8 text-emerald-400/80 dark:text-emerald-500/50" viewBox="0 0 64 32" fill="none">
+                                <path d="M2 22 C12 28, 22 14, 34 20 C44 26, 52 8, 62 14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="bg-white dark:bg-slate-900 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-5">
                         <div>
@@ -1283,6 +1357,120 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
 
             <!-- SECTION 2.2: TAB DATA SISWA -->
             <div id="tab-siswa" class="tab-content hidden space-y-6">
+                <!-- Stat Cards Row for Data Siswa -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- TOTAL SISWA -->
+                    <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">TOTAL SISWA</span>
+                                <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                    <span id="statTabSiswaTotal"><?= number_format($totalSiswaCount); ?></span>
+                                </h3>
+                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Siswa Terdaftar</span>
+                            </div>
+                        </div>
+                        <div class="shrink-0 ml-2 hidden sm:block">
+                            <svg class="w-14 h-8 text-emerald-400/80 dark:text-emerald-500/50" viewBox="0 0 64 32" fill="none">
+                                <path d="M2 20 C12 28, 22 8, 34 16 C44 24, 52 8, 62 14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- SISWA KELAS X -->
+                    <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">SISWA KELAS X</span>
+                                <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                    <span id="statTabSiswaKelasX"><?= number_format($cntSiswaKelasX); ?></span>
+                                </h3>
+                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Tingkat 10</span>
+                            </div>
+                        </div>
+                        <div class="shrink-0 ml-2 hidden sm:block">
+                            <svg class="w-14 h-8 text-indigo-400/80 dark:text-indigo-500/50" viewBox="0 0 64 32" fill="none">
+                                <path d="M2 24 C14 26, 24 12, 36 18 C46 22, 52 8, 62 14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- SISWA KELAS XI -->
+                    <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div class="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">SISWA KELAS XI</span>
+                                <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                    <span id="statTabSiswaKelasXI"><?= number_format($cntSiswaKelasXI); ?></span>
+                                </h3>
+                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Tingkat 11</span>
+                            </div>
+                        </div>
+                        <div class="shrink-0 ml-2 hidden sm:block">
+                            <svg class="w-14 h-8 text-purple-400/80 dark:text-purple-500/50" viewBox="0 0 64 32" fill="none">
+                                <path d="M2 20 C14 26, 24 10, 36 18 C46 24, 52 8, 62 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- SISWA KELAS XII -->
+                    <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">SISWA KELAS XII</span>
+                                <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
+                                    <span id="statTabSiswaKelasXII"><?= number_format($cntSiswaKelasXII); ?></span>
+                                </h3>
+                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Tingkat 12</span>
+                            </div>
+                        </div>
+                        <div class="shrink-0 ml-2 hidden sm:block">
+                            <svg class="w-14 h-8 text-amber-400/80 dark:text-amber-500/50" viewBox="0 0 64 32" fill="none">
+                                <path d="M2 26 C12 28, 22 14, 34 20 C44 26, 52 8, 62 14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row for Data Siswa -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-6 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800 dark:text-white mb-1">Distribusi Siswa per Tingkat Kelas</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Jumlah siswa aktif di Tingkat 10 (Kelas X), Tingkat 11 (Kelas XI), dan Tingkat 12 (Kelas XII)</p>
+                        </div>
+                        <div class="relative h-64 w-full"><canvas id="siswaTingkatChart"></canvas></div>
+                    </div>
+                    <div class="lg:col-span-6 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800 dark:text-white mb-1"><?= $isSuperAdmin ? 'Sebaran Siswa per Jurusan' : 'Sebaran Siswa per Rombel / Kelas'; ?></h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-3"><?= $isSuperAdmin ? 'Persentase dan jumlah siswa di setiap kompetensi keahlian' : 'Proporsi dan jumlah siswa di setiap rombongan belajar kelas'; ?></p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center flex-1">
+                            <!-- Left: Donut Chart (5 cols) -->
+                            <div class="sm:col-span-5 relative h-56 w-full flex items-center justify-center">
+                                <canvas id="siswaJurusanChart"></canvas>
+                            </div>
+                            <!-- Right: Legend List (7 cols) -->
+                            <div class="sm:col-span-7 overflow-y-auto pr-1 space-y-1" style="scrollbar-width: thin; max-height: 224px;" id="siswaJurusanLegendList">
+                                <!-- Populated dynamically by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="bg-white dark:bg-slate-900 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-5">
                         <div>
@@ -3911,6 +4099,166 @@ function initTabAnalytics(tabId) {
             });
         }
     }
+
+    // 8. SISWA TAB ANALYTICS
+    if (tabId === 'siswa') {
+        const ctxTingkat = document.getElementById('siswaTingkatChart');
+        if (ctxTingkat) {
+            destroyChart('siswaTingkat');
+            const cntX = (window.dbSiswa || []).filter(s => matchTingkatKelas(s.kelas, '10')).length;
+            const cntXI = (window.dbSiswa || []).filter(s => matchTingkatKelas(s.kelas, '11')).length;
+            const cntXII = (window.dbSiswa || []).filter(s => matchTingkatKelas(s.kelas, '12')).length;
+
+            const tingkatLabels = ['Kelas 10 (X)', 'Kelas 11 (XI)', 'Kelas 12 (XII)'];
+            const tingkatData = [cntX, cntXI, cntXII];
+            const tingkatColors = ['#6366f1', '#8b5cf6', '#10b981'];
+
+            tabAnalyticsCharts['siswaTingkat'] = new Chart(ctxTingkat, {
+                type: 'bar',
+                data: {
+                    labels: tingkatLabels,
+                    datasets: [{
+                        label: 'Jumlah Siswa',
+                        data: tingkatData,
+                        backgroundColor: tingkatColors,
+                        borderRadius: 8,
+                        maxBarThickness: 56
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    transitions: { active: { animation: { duration: 300, easing: 'easeOutCubic' } } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const val = Number(context.raw || 0).toLocaleString('en-US');
+                                    const total = tingkatData.reduce((a, b) => a + b, 0);
+                                    const pct = total > 0 ? Math.round(((context.raw || 0) / total) * 100) : 0;
+                                    return ` Siswa: ${val} (${pct}%)`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: labelColor, font: { weight: 600 } } },
+                        y: { grid: { color: gridColor }, ticks: { color: labelColor, precision: 0 } }
+                    }
+                }
+            });
+        }
+
+        const ctxSiswaJur = document.getElementById('siswaJurusanChart');
+        if (ctxSiswaJur) {
+            destroyChart('siswaJurusan');
+            let labels, data, bgColors, legendItems = [];
+
+            if (isSuperAdmin) {
+                const countsPerJur = {};
+                (window.dbSiswa || []).forEach(s => {
+                    const fullName = s.nama_jurusan || 'Tanpa Jurusan (Umum)';
+                    countsPerJur[fullName] = (countsPerJur[fullName] || 0) + 1;
+                });
+
+                const sortedNames = Object.keys(countsPerJur).sort((a, b) => countsPerJur[b] - countsPerJur[a]);
+
+                labels = sortedNames.map(name => {
+                    const match = name.match(/\(([^)]+)\)/);
+                    return match ? match[1] : name;
+                });
+                data = sortedNames.map(name => countsPerJur[name]);
+                bgColors = getColorsForLabels(labels);
+
+                legendItems = sortedNames.map((name, idx) => ({
+                    fullName: name,
+                    shortLabel: labels[idx],
+                    count: countsPerJur[name],
+                    color: bgColors[idx]
+                }));
+            } else {
+                const countsPerKelas = {};
+                (window.dbSiswa || []).forEach(s => {
+                    const kName = s.kelas || 'Tanpa Kelas';
+                    countsPerKelas[kName] = (countsPerKelas[kName] || 0) + 1;
+                });
+
+                const sortedKelas = Object.keys(countsPerKelas).sort((a, b) => countsPerKelas[b] - countsPerKelas[a]);
+                labels = sortedKelas;
+                data = sortedKelas.map(k => countsPerKelas[k]);
+                bgColors = getColorsForLabels(labels);
+
+                legendItems = sortedKelas.map((name, idx) => ({
+                    fullName: name,
+                    shortLabel: name,
+                    count: countsPerKelas[name],
+                    color: bgColors[idx]
+                }));
+            }
+
+            const legendContainer = document.getElementById('siswaJurusanLegendList');
+            if (legendContainer) {
+                const totalStudents = data.reduce((a, b) => a + b, 0);
+                legendContainer.innerHTML = legendItems.map(item => {
+                    const pct = totalStudents > 0 ? Math.round((item.count / totalStudents) * 100) : 0;
+                    return `
+                    <div class="flex items-center justify-between py-1.5 px-2.5 rounded-xl hover:bg-slate-100/70 dark:hover:bg-[#222222] transition-colors text-xs border border-transparent hover:border-slate-200 dark:hover:border-[#333333]">
+                        <div class="flex items-center gap-2 min-w-0 pr-2">
+                            <span class="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm" style="background-color: ${item.color}"></span>
+                            <span class="font-medium text-slate-700 dark:text-slate-200 truncate" title="${escapeHtml(item.fullName)}">
+                                ${escapeHtml(item.fullName)}
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0 ml-1">
+                            <span class="font-semibold text-slate-800 dark:text-slate-200">
+                                ${item.count.toLocaleString('en-US')}
+                            </span>
+                            <span class="text-[10px] text-slate-400 font-medium">(${pct}%)</span>
+                        </div>
+                    </div>
+                `}).join('');
+            }
+
+            tabAnalyticsCharts['siswaJurusan'] = new Chart(ctxSiswaJur, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: bgColors,
+                        hoverBackgroundColor: bgColors,
+                        borderWidth: 2,
+                        borderColor: isDark ? '#0f172a' : '#ffffff',
+                        borderRadius: 6,
+                        spacing: 2,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '68%',
+                    transitions: { active: { animation: { duration: 300, easing: 'easeOutCubic' } } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: function() { return ''; },
+                                label: function(context) {
+                                    const shortLabel = context.label || '';
+                                    const val = Number(context.raw || 0).toLocaleString('en-US');
+                                    const total = data.reduce((a, b) => a + b, 0);
+                                    const pct = total > 0 ? Math.round(((context.raw || 0) / total) * 100) : 0;
+                                    return ` ${shortLabel}: ${val} (${pct}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
 }
 
 function escapeHtml(str) {
@@ -4024,6 +4372,22 @@ function updateStatCardsData() {
     setTxt('statTabPinjamSudahKembali', fmt(dikembalikanCount) + ' Transaksi');
 
     setTxt('statTabLogAktivitasTotal', fmt(totalLogs) + ' Catatan');
+
+    // Tab Data Guru Stat Cards
+    setTxt('statTabGuruTotal', fmt(totalGuru));
+    const cntGuruUmumVal = (window.dbGuru || []).filter(g => g.mengajar === 'umum').length;
+    const cntGuruJurusanVal = (window.dbGuru || []).filter(g => g.mengajar === 'bengkel' || g.jurusan_id).length;
+    setTxt('statTabGuruUmum', fmt(cntGuruUmumVal));
+    setTxt('statTabGuruJurusan', fmt(cntGuruJurusanVal));
+
+    // Tab Data Siswa Stat Cards
+    setTxt('statTabSiswaTotal', fmt(totalSiswa));
+    const cntSiswaXVal = (window.dbSiswa || []).filter(s => matchTingkatKelas(s.kelas, '10')).length;
+    const cntSiswaXIVal = (window.dbSiswa || []).filter(s => matchTingkatKelas(s.kelas, '11')).length;
+    const cntSiswaXIIVal = (window.dbSiswa || []).filter(s => matchTingkatKelas(s.kelas, '12')).length;
+    setTxt('statTabSiswaKelasX', fmt(cntSiswaXVal));
+    setTxt('statTabSiswaKelasXI', fmt(cntSiswaXIVal));
+    setTxt('statTabSiswaKelasXII', fmt(cntSiswaXIIVal));
 }
 
 let currentPenggunaPage = 1;
@@ -5082,6 +5446,7 @@ function renderActiveTabTable(tabId) {
     if (!tabId) tabId = (new URLSearchParams(window.location.search).get('tab') || 'dashboard');
     if (tabId === 'siswa') {
         renderTableSiswa();
+        if (typeof initTabAnalytics === 'function') initTabAnalytics('siswa');
     } else if (tabId === 'guru') {
         renderTableGuru();
     } else if (tabId === 'barang') {
