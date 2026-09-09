@@ -1000,12 +1000,34 @@
 
 <!-- Modal Helper Functions in JavaScript -->
 <script>
+function parseJakartaDate(str) {
+    if (!str) return null;
+    if (str instanceof Date) return str;
+    if (typeof str === 'string') {
+        const trimmed = str.trim();
+        if (/^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}(:\d{2})?$/.test(trimmed)) {
+            return new Date(trimmed.replace(' ', 'T') + (trimmed.length === 16 ? ':00+07:00' : '+07:00'));
+        }
+        return new Date(trimmed);
+    }
+    return new Date(str);
+}
+
 function formatForDateTimeLocal(dateStr) {
     if (!dateStr) return '';
-    const d = new Date(dateStr);
+    const d = parseJakartaDate(dateStr) || new Date();
     if (isNaN(d.getTime())) return '';
-    const pad = n => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Jakarta',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    }).formatToParts(d);
+    const getPart = type => (parts.find(p => p.type === type) || {}).value || '00';
+    return `${getPart('year')}-${getPart('month')}-${getPart('day')}T${getPart('hour')}:${getPart('minute')}`;
 }
 
 // Fungsi render barcode pada HTML5 Canvas

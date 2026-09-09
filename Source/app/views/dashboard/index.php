@@ -3064,6 +3064,31 @@ window.nextCodes = {
 window.jurusanColors = <?= json_encode($jurusanColors ?: []); ?>;
 window.themePrimaryColor = <?= json_encode($activeThemePalette['600'] ?? '#eab308'); ?>;
 
+// Timezone Helpers (Asia/Jakarta / WIB)
+function parseJakartaDate(str) {
+    if (!str) return null;
+    if (str instanceof Date) return str;
+    if (typeof str === 'string') {
+        const trimmed = str.trim();
+        if (/^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}(:\d{2})?$/.test(trimmed)) {
+            return new Date(trimmed.replace(' ', 'T') + (trimmed.length === 16 ? ':00+07:00' : '+07:00'));
+        }
+        return new Date(trimmed);
+    }
+    return new Date(str);
+}
+
+function formatJakartaDate(dateVal, options = {}) {
+    if (!dateVal) return '-';
+    const d = parseJakartaDate(dateVal);
+    if (!d || isNaN(d.getTime())) return '-';
+    const defaultOpts = {
+        timeZone: 'Asia/Jakarta',
+        ...options
+    };
+    return d.toLocaleString('id-ID', defaultOpts);
+}
+
 function setUrlParam(key, val) {
     const url = new URL(window.location.href);
     if (val) {
@@ -3624,8 +3649,10 @@ function initInventoryChart() {
 
             const parseMonth = (dateStr) => {
                 if (!dateStr) return -1;
-                const d = new Date(dateStr);
-                return isNaN(d.getTime()) ? -1 : d.getMonth();
+                const d = parseJakartaDate(dateStr);
+                if (!d || isNaN(d.getTime())) return -1;
+                const mStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Jakarta', month: 'numeric' }).format(d);
+                return parseInt(mStr) - 1;
             };
 
             (window.dbBarangMasuk || []).forEach(bm => {
@@ -5156,7 +5183,7 @@ function renderTableJurusan() {
     tbody.innerHTML = window.dbJurusan.map((j, idx) => {
         let colorVal = j.warna_tema || '#EAB308';
         let hexDisplay = presets[colorVal.toLowerCase()] || ((colorVal.startsWith('#') ? '' : '#') + colorVal.toUpperCase());
-        const dateStr = j.created_at ? new Date(j.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+        const dateStr = j.created_at ? formatJakartaDate(j.created_at, { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
 
         return `<tr class="hover:bg-sage-50/50">
             <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${j.id}" onchange="updateBatchDeleteBar()"></td>
@@ -5311,7 +5338,7 @@ function renderTableBarangMasuk() {
 
     tbody.innerHTML = window.dbBarangMasuk.map((bm, idx) => {
         const jurTd = isSuperAdmin ? `<td class="py-3.5 px-4 font-bold text-sage-700">${escapeHtml(bm.nama_jurusan || '-')}</td>` : '';
-        const dateStr = bm.created_at ? new Date(bm.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+        const dateStr = bm.created_at ? formatJakartaDate(bm.created_at, { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
         return `<tr class="hover:bg-sage-50/50">
             <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${bm.id}" onchange="updateBatchDeleteBar()"></td>
             <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${idx + 1}</td>
@@ -5337,7 +5364,7 @@ function renderTableBarangKeluar() {
 
     tbody.innerHTML = window.dbBarangKeluar.map((bk, idx) => {
         const jurTd = isSuperAdmin ? `<td class="py-3.5 px-4 font-bold text-sage-700">${escapeHtml(bk.nama_jurusan || '-')}</td>` : '';
-        const dateStr = bk.created_at ? new Date(bk.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+        const dateStr = bk.created_at ? formatJakartaDate(bk.created_at, { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
         return `<tr class="hover:bg-sage-50/50">
             <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${bk.id}" onchange="updateBatchDeleteBar()"></td>
             <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${idx + 1}</td>
@@ -5365,8 +5392,8 @@ function renderTablePeminjaman() {
 
     tbody.innerHTML = window.dbPeminjaman.map((pm, idx) => {
         const jurTd = isSuperAdmin ? `<td class="py-3.5 px-4 font-bold text-sage-700">${escapeHtml(pm.nama_jurusan || '-')}</td>` : '';
-        const tglPinjam = pm.tanggal_pinjam ? new Date(pm.tanggal_pinjam).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
-        const tglKembali = (pm.tanggal_kembali && pm.status === 'dikembalikan') ? new Date(pm.tanggal_kembali).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '<span class="text-slate-400 font-normal">-</span>';
+        const tglPinjam = pm.tanggal_pinjam ? formatJakartaDate(pm.tanggal_pinjam, { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+        const tglKembali = (pm.tanggal_kembali && pm.status === 'dikembalikan') ? formatJakartaDate(pm.tanggal_kembali, { day: '2-digit', month: 'short', year: 'numeric' }) : '<span class="text-slate-400 font-normal">-</span>';
         
         const guruHtml = `<td class="py-3.5 px-4 font-bold text-slate-800 dark:text-white">${escapeHtml(pm.guru_peminjam || '-')}</td>`;
         let siswaHtml = '<td class="py-3.5 px-4"><span class="text-slate-400 font-normal">-</span></td>';
@@ -5438,8 +5465,8 @@ function renderTableLogPeminjaman() {
 
     tbody.innerHTML = window.dbPeminjaman.map((logPm, idx) => {
         const jurTd = isSuperAdmin ? `<td class="py-3 px-4 font-bold text-sage-700">${escapeHtml(logPm.nama_jurusan || 'Semua Jurusan')}</td>` : '';
-        const tglPinjam = logPm.tanggal_pinjam ? new Date(logPm.tanggal_pinjam).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
-        const tglKembali = logPm.tanggal_kembali ? new Date(logPm.tanggal_kembali).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+        const tglPinjam = logPm.tanggal_pinjam ? formatJakartaDate(logPm.tanggal_pinjam, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+        const tglKembali = logPm.tanggal_kembali ? formatJakartaDate(logPm.tanggal_kembali, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
 
         const guruHtml = `<td class="py-3 px-4 font-bold text-slate-800 dark:text-white">${escapeHtml(logPm.guru_peminjam || '-')}</td>`;
         let siswaHtml = '<td class="py-3 px-4"><span class="text-slate-400 font-normal">-</span></td>';
@@ -5585,7 +5612,7 @@ function renderMyActivePeminjaman() {
     }
 
     container.innerHTML = list.map(pm => {
-        const tglPinjam = pm.tanggal_pinjam ? new Date(pm.tanggal_pinjam).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+        const tglPinjam = pm.tanggal_pinjam ? formatJakartaDate(pm.tanggal_pinjam, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
         
         let statusHtml = '';
         let actionBtns = '';
@@ -5668,7 +5695,7 @@ function renderTableLogAktivitas() {
         const pengAttr = (log.nama_pengguna || log.nama_lengkap || 'Sistem').toLowerCase();
 
         const jurTd = isSuperAdmin ? `<td class="py-3.5 px-4 font-bold text-sage-700">${escapeHtml(log.nama_jurusan || '-')}</td>` : '';
-        const dateStr = log.created_at ? new Date(log.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+        const dateStr = log.created_at ? formatJakartaDate(log.created_at, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
 
         return `<tr class="hover:bg-sage-50/50" data-date="${dateAttr}" data-tindakan="${escapeHtml(tindakan)}" data-jurusan="${escapeHtml(jurAttr)}" data-pengguna="${escapeHtml(pengAttr)}">
             <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${idx + 1}</td>
@@ -5719,12 +5746,17 @@ function renderRecentLogMasukKeluar() {
 
     container.innerHTML = topLogs.map(log => {
         const isMasuk = log.type === 'masuk';
-        const dateObj = new Date(log.tanggal);
-        const d = String(dateObj.getDate()).padStart(2, '0');
-        const m = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const h = String(dateObj.getHours()).padStart(2, '0');
-        const min = String(dateObj.getMinutes()).padStart(2, '0');
-        const dateFormatted = `${d}/${m}/${h}:${min}`;
+        const dateObj = parseJakartaDate(log.tanggal) || new Date();
+        const parts = new Intl.DateTimeFormat('id-ID', {
+            timeZone: 'Asia/Jakarta',
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        }).formatToParts(dateObj);
+        const getPart = type => (parts.find(p => p.type === type) || {}).value || '00';
+        const dateFormatted = `${getPart('day')}/${getPart('month')}/${getPart('hour')}:${getPart('minute')}`;
 
         const jurColor = (window.jurusanColors && log.jurusan_id && window.jurusanColors[log.jurusan_id])
             ? window.jurusanColors[log.jurusan_id]
@@ -5764,25 +5796,29 @@ function renderDashboardRecentActivities() {
     if (!container || !window.dbLogAktivitas) return;
 
     const list = (window.dbLogAktivitas || []).slice(0, 5);
+
     if (list.length === 0) {
         container.innerHTML = '<div class="py-6 text-center text-xs text-slate-400 dark:text-slate-500 italic">Belum ada aktivitas yang tercatat di sistem</div>';
         return;
     }
 
     const monthsIndo = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
     const actionLabels = {
-        'LOGIN': 'Login',
-        'LOGOUT': 'Logout',
-        'EDIT_PENGGUNA': 'Edit Pengguna',
+        'TAMBAH_BARANG': 'Tambah Barang',
+        'EDIT_BARANG': 'Edit Barang',
+        'HAPUS_BARANG': 'Hapus Barang',
+        'BARANG_MASUK': 'Barang Masuk',
+        'BARANG_KELUAR': 'Barang Keluar',
+        'PEMINJAMAN': 'Peminjaman Baru',
+        'PENGEMBALIAN': 'Pengembalian Barang',
+        'APPROVE_PENGEMBALIAN': 'Setujui Pengembalian',
+        'REJECT_PENGEMBALIAN': 'Tolak Pengembalian',
+        'LOGIN': 'Masuk Sistem',
+        'LOGOUT': 'Keluar Sistem',
+        'EDIT_PENGGUNA': 'Edit Profil/Pengguna',
         'TAMBAH_PENGGUNA': 'Tambah Pengguna',
         'HAPUS_PENGGUNA': 'Hapus Pengguna',
-        'EDIT_BARANG': 'Edit Barang',
-        'TAMBAH_BARANG': 'Tambah Barang',
-        'HAPUS_BARANG': 'Hapus Barang',
-        'TAMBAH_BARANG_MASUK': 'Barang Masuk',
-        'TAMBAH_BARANG_KELUAR': 'Barang Keluar',
-        'PINJAM': 'Peminjaman Alat',
-        'KEMBALI': 'Pengembalian Alat',
         'EDIT_JURUSAN': 'Edit Jurusan',
         'TAMBAH_JURUSAN': 'Tambah Jurusan',
         'HAPUS_JURUSAN': 'Hapus Jurusan',
@@ -5795,9 +5831,9 @@ function renderDashboardRecentActivities() {
     };
 
     container.innerHTML = list.map(act => {
-        const d = act.created_at ? new Date(act.created_at) : new Date();
-        const timeStr = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-        const dateStr = d.getDate() + ' ' + (monthsIndo[d.getMonth()] || '') + ' ' + d.getFullYear();
+        const d = act.created_at ? parseJakartaDate(act.created_at) : new Date();
+        const timeStr = d.toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit' }).replace('.', ':');
+        const dateStr = d.toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta', day: 'numeric', month: 'short', year: 'numeric' });
 
         const rawTindakan = (act.tindakan || 'AKTIVITAS').toUpperCase();
         let actTitle = actionLabels[rawTindakan];

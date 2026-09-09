@@ -1,6 +1,8 @@
 <?php
 // app/config/database.php
 
+date_default_timezone_set('Asia/Jakarta');
+
 class Database {
     private static $instance = null;
     private $pdo;
@@ -12,6 +14,7 @@ class Database {
     private $charset = 'utf8mb4';
 
     private function __construct() {
+        date_default_timezone_set('Asia/Jakarta');
         $options = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -22,9 +25,11 @@ class Database {
         $dsn = "mysql:host={$this->host};dbname={$this->db};charset={$this->charset}";
         try {
             $this->pdo = new PDO($dsn, 'gudang_user', 'GudangPass123!', $options);
+            $this->pdo->exec("SET time_zone = '+07:00'");
         } catch (PDOException $e) {
             try {
                 $this->pdo = new PDO($dsn, $this->user, $this->pass, $options);
+                $this->pdo->exec("SET time_zone = '+07:00'");
             } catch (PDOException $e2) {
                 $this->pdo = null;
             }

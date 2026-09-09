@@ -21,6 +21,7 @@
     }
     </script>
     <?php
+    date_default_timezone_set('Asia/Jakarta');
     if (!function_exists('generateTailwindPaletteFromHex')) {
         function generateTailwindPaletteFromHex($hex) {
             $namedPresets = [

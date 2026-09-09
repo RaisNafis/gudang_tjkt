@@ -1,6 +1,8 @@
 <?php
 // app/helpers/auth.php
 
+date_default_timezone_set('Asia/Jakarta');
+
 // 6. Security Header: Sembunyikan X-Powered-By
 header_remove('X-Powered-By');
 @ini_set('expose_php', '0');
