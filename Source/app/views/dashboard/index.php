@@ -6134,41 +6134,50 @@ function switchTab(tabId) {
     setUrlParam('tab', tabId);
     if (typeof clearBatchSelection === 'function') clearBatchSelection();
 
-    document.querySelectorAll('.tab-content').forEach(section => {
-        section.classList.add('hidden');
-        section.classList.remove('animate-fade-in-up');
+    // 1. INSTANTLY swap active button state with ZERO latency
+    const targetBtn = document.querySelector(`.nav-tab-btn[data-tab="${tabId}"]`);
+    document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+        if (btn === targetBtn) {
+            btn.classList.add('active');
+            btn.classList.remove('text-slate-600', 'hover:text-sage-700', 'hover:bg-sage-50');
+        } else {
+            btn.classList.remove('active');
+            btn.classList.add('text-slate-600', 'hover:text-sage-700', 'hover:bg-sage-50');
+        }
     });
 
-    document.querySelectorAll('.nav-tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-        btn.classList.add('text-slate-600', 'hover:text-sage-700', 'hover:bg-sage-50');
+    const pageTitle = document.getElementById('pageTitle');
+    if (pageTitle && targetBtn) {
+        const titleSpan = targetBtn.querySelector('.sidebar-text') || targetBtn.querySelector('span');
+        const titleText = titleSpan ? titleSpan.innerText.trim() : '';
+        if (titleText) {
+            pageTitle.innerText = titleText === 'Dashboard' ? 'Dashboard Overview' : titleText;
+        }
+    }
+
+    // 2. Switch tab content container immediately
+    document.querySelectorAll('.tab-content').forEach(section => {
+        if (section.id === 'tab-' + tabId) {
+            section.classList.remove('hidden');
+        } else {
+            section.classList.add('hidden');
+            section.classList.remove('animate-fade-in-up');
+        }
     });
 
     const targetSection = document.getElementById('tab-' + tabId);
     if (targetSection) {
-        targetSection.classList.remove('hidden');
-        void targetSection.offsetWidth; // Force reflow
         targetSection.classList.add('animate-fade-in-up');
-    }
-
-    const targetBtn = document.querySelector(`.nav-tab-btn[data-tab="${tabId}"]`);
-    if (targetBtn) {
-        targetBtn.classList.add('active');
-        targetBtn.classList.remove('text-slate-600', 'hover:text-sage-700', 'hover:bg-sage-50');
-    }
-
-    const pageTitle = document.getElementById('pageTitle');
-    if (pageTitle && targetBtn) {
-        const titleText = targetBtn.querySelector('span').innerText;
-        pageTitle.innerText = titleText === 'Dashboard' ? 'Dashboard Overview' : titleText;
     }
 
     if (tabId === 'swagger') {
         setTimeout(initSwaggerUi, 100);
     }
 
-    // Render immediately from in-memory data
-    renderActiveTabTable(tabId);
+    // 3. Render content immediately on next tick so active button paints instantly
+    requestAnimationFrame(() => {
+        renderActiveTabTable(tabId);
+    });
 
     // Debounce background sync so rapid navigation does not block browser
     clearTimeout(freshDataDebounceTimer);

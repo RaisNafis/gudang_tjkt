@@ -419,19 +419,6 @@
             border-color: #262626 !important;
         }
 
-        /* Sidebar Navigation Items */
-        html.dark .nav-tab-btn {
-            color: #a3a3a3 !important;
-        }
-        html.dark .nav-tab-btn:hover {
-            background-color: #171717 !important;
-            color: <?= $activeThemePalette['400'] ?? '#81c784'; ?> !important;
-        }
-        html.dark .nav-tab-btn.active {
-            background-color: <?= $activeThemePalette['600'] ?? '#2e7d32'; ?> !important;
-            color: #ffffff !important;
-        }
-
         /* GPU Hardware Acceleration & Smooth 60fps Rendering */
         html {
             scroll-behavior: smooth;

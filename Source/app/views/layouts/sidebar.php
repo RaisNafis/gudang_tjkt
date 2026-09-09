@@ -47,8 +47,8 @@ if ($roleName === 'admin_sekolah') {
         </div>
 
         <!-- Collapsed Mini Logo View -->
-        <div class="brand-header-mini hidden items-center justify-center mx-auto">
-            <div class="w-9 h-9 rounded-xl shrink-0 flex items-center justify-center text-white shadow-sm" style="background-color: <?= $activeThemePalette['600'] ?? '#16a34a'; ?>;">
+        <div class="brand-header-mini hidden items-center justify-center mx-auto cursor-pointer group" title="Perluas Sidebar">
+            <div class="w-9 h-9 rounded-xl shrink-0 flex items-center justify-center text-white shadow-sm group-hover:scale-105 active:scale-95 transition-transform" style="background-color: <?= $activeThemePalette['600'] ?? '#16a34a'; ?>;">
                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                 </svg>
@@ -58,7 +58,7 @@ if ($roleName === 'admin_sekolah') {
         <!-- Toggle Button for Desktop Mini Mode / Mobile Close -->
         <button type="button" id="sidebarToggleBtn" class="w-8 h-8 rounded-full bg-slate-100/80 hover:bg-slate-200/80 dark:bg-[#1e1e1e] dark:hover:bg-[#282828] text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center transition-all shrink-0 ml-auto" title="Kecilkan / Perluas Sidebar">
             <svg class="w-4 h-4 transition-transform duration-300" id="toggleIcon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M11 17l-5-5 5-5m7 12l-5-5 5-5"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
             </svg>
         </button>
 
@@ -270,11 +270,11 @@ if ($roleName === 'admin_sekolah') {
 /* Sidebar Nav Buttons Styling */
 .nav-tab-btn {
     color: #4b5563;
-    transition: all 0.15s ease-in-out;
+    transition: background-color 0.1s ease, color 0.1s ease;
 }
 .nav-tab-btn svg {
     color: #64748b;
-    transition: all 0.15s ease-in-out;
+    transition: color 0.1s ease;
 }
 .nav-tab-btn:hover {
     background-color: #f8fafc;
@@ -284,27 +284,32 @@ if ($roleName === 'admin_sekolah') {
     color: #0f172a;
 }
 
-/* Active tab button - Light Mode: soft green pill with dark green icon & text */
+/* Active tab button - Light Mode: soft green pill with dark green icon & text (Instant Switch No Delay) */
 .nav-tab-btn.active {
     background-color: <?= $activeThemePalette['50'] ?? '#ecf7ed'; ?> !important;
     color: <?= $activeThemePalette['700'] ?? '#15803d'; ?> !important;
     font-weight: 600 !important;
+    transition: none !important;
 }
 .nav-tab-btn.active svg {
     color: <?= $activeThemePalette['700'] ?? '#15803d'; ?> !important;
     stroke-width: 2 !important;
+    transition: none !important;
 }
 .nav-tab-btn.active .sidebar-text {
     color: <?= $activeThemePalette['700'] ?? '#15803d'; ?> !important;
     font-weight: 600 !important;
+    transition: none !important;
 }
 
 /* Dark Mode Menu Styling */
 html.dark .nav-tab-btn {
     color: #94a3b8 !important;
+    transition: background-color 0.1s ease, color 0.1s ease;
 }
 html.dark .nav-tab-btn svg {
     color: #94a3b8 !important;
+    transition: color 0.1s ease;
 }
 html.dark .nav-tab-btn:hover {
     background-color: #1a1a1a !important;
@@ -314,19 +319,22 @@ html.dark .nav-tab-btn:hover svg {
     color: #f8fafc !important;
 }
 
-/* Dark Mode Active Pill: soft translucent emerald pill */
+/* Dark Mode Active Pill: soft translucent emerald pill (Instant Switch No Delay) */
 html.dark .nav-tab-btn.active {
     background-color: rgba(<?= implode(',', sscanf($activeThemePalette['500'] ?? '#10b981', "#%02x%02x%02x")); ?>, 0.18) !important;
     color: <?= $activeThemePalette['400'] ?? '#34d399'; ?> !important;
     font-weight: 600 !important;
+    transition: none !important;
 }
 html.dark .nav-tab-btn.active svg {
     color: <?= $activeThemePalette['400'] ?? '#34d399'; ?> !important;
     stroke-width: 2 !important;
+    transition: none !important;
 }
 html.dark .nav-tab-btn.active .sidebar-text {
     color: <?= $activeThemePalette['400'] ?? '#34d399'; ?> !important;
     font-weight: 600 !important;
+    transition: none !important;
 }
 
 /* Section labels & dividers */
@@ -343,7 +351,8 @@ html.dark .nav-tab-btn.active .sidebar-text {
 #mainSidebar.collapsed .sidebar-section-container,
 #mainSidebar.collapsed .brand-header-full,
 #mainSidebar.collapsed .sidebar-actions,
-#mainSidebar.collapsed .sidebar-divider {
+#mainSidebar.collapsed .sidebar-divider,
+#mainSidebar.collapsed #sidebarToggleBtn {
     display: none !important;
 }
 #mainSidebar.collapsed .brand-header-mini {
@@ -428,15 +437,21 @@ function toggleMobileSidebar() {
 document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.getElementById('mainSidebar');
     const toggleBtn = document.getElementById('sidebarToggleBtn');
+    const miniLogo = document.querySelector('.brand-header-mini');
+
+    function toggleSidebarCollapse() {
+        if (window.innerWidth >= 1024) {
+            sidebar.classList.toggle('collapsed');
+        } else {
+            closeMobileSidebar();
+        }
+    }
 
     if (sidebar && toggleBtn) {
-        toggleBtn.addEventListener('click', function() {
-            if (window.innerWidth >= 1024) {
-                sidebar.classList.toggle('collapsed');
-            } else {
-                closeMobileSidebar();
-            }
-        });
+        toggleBtn.addEventListener('click', toggleSidebarCollapse);
+    }
+    if (sidebar && miniLogo) {
+        miniLogo.addEventListener('click', toggleSidebarCollapse);
     }
 
     // Auto close mobile menu when tab item clicked
