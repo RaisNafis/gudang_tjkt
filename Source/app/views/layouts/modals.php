@@ -540,33 +540,100 @@
 </div>
 
 <!-- 4. MODAL BARANG MASUK -->
-<div id="modalBarangMasuk" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/40 backdrop-blur-sm animate-fade-in-up">
-    <div class="bg-white rounded-3xl border border-sage-200 shadow-2xl w-full max-w-lg overflow-hidden">
-        <div class="p-6 bg-sage-50/80 border-b border-sage-100 flex items-center justify-between">
+<div id="modalBarangMasuk" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-sage-200 dark:border-slate-800 shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+        <div class="p-6 bg-sage-50/80 dark:bg-slate-800/80 border-b border-sage-100 dark:border-slate-700 flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                 </div>
-                <h3 class="text-base font-bold text-slate-800" id="modalBarangMasukTitle">Catat Transaksi Alat & Bahan Masuk</h3>
+                <h3 class="text-base font-bold text-slate-800 dark:text-white" id="modalBarangMasukTitle">Catat Transaksi Alat & Bahan Masuk</h3>
             </div>
             <button onclick="closeModal('modalBarangMasuk')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
-        <form onsubmit="handleFormSubmit(event, 'Barang Masuk')" class="p-6 space-y-4 text-xs">
+        <form onsubmit="handleFormSubmit(event, 'Barang Masuk')" class="p-6 space-y-4 text-xs overflow-y-auto flex-1">
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
             <input type="hidden" id="masuk_edit_id" value="">
+
+            <!-- Checklist: Apakah ingin mencatat masuk menggunakan scan barcode/QR code data alat & bahannya? -->
+            <div class="p-3 bg-sage-50/60 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
+                <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                    <input type="checkbox" id="masuk_use_barcode" onchange="toggleMasukBarcodeScanner(this.checked)" class="w-4 h-4 rounded accent-sage-600 cursor-pointer">
+                    <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">
+                        Catat Masuk Menggunakan Scan Barcode / QR Code Barang
+                    </span>
+                </label>
+            </div>
+
+            <!-- CONTAINER SCANNER BARCODE (TAMPIL JIKA CHECKBOX DICENTANG) -->
+            <div id="section_scan_barcode_masuk" class="hidden space-y-3 py-1 px-0 bg-transparent rounded-2xl animate-fade-in-up">
+                <!-- Tab Pilihan Metode Scan -->
+                <div class="flex items-center justify-between pb-1">
+                    <span class="font-bold text-slate-700 dark:text-slate-200 text-[11px] uppercase tracking-wider">
+                        Metode Scan Barcode
+                    </span>
+                    <div class="flex items-center bg-slate-100/40 dark:bg-slate-800/40 rounded-xl p-1 border border-slate-200 dark:border-slate-700 text-xs">
+                        <button type="button" id="btn_mode_kamera_masuk" onclick="switchMasukScanMode('kamera')" class="px-3 py-1 rounded-lg font-bold transition-all bg-sage-600 text-white shadow-sm">Kamera</button>
+                        <button type="button" id="btn_mode_file_masuk" onclick="switchMasukScanMode('file')" class="px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-sage-600 dark:hover:text-sage-400 transition-all">Pilih Gambar</button>
+                    </div>
+                </div>
+
+                <!-- 1. MODE KAMERA LIVE -->
+                <div id="masuk_scan_camera_pane" class="space-y-3">
+                    <div id="masuk_camera_select_wrap" class="hidden">
+                        <select id="masuk_camera_select" onchange="changeMasukCamera(this.value)" class="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:border-sage-600">
+                            <option value="">Pilih Kamera...</option>
+                        </select>
+                    </div>
+
+                    <div id="masuk_camera_view_wrap" class="hidden relative w-full max-w-sm mx-auto overflow-hidden rounded-2xl bg-transparent min-h-[220px] flex items-center justify-center border border-slate-200 dark:border-slate-700">
+                        <div id="masuk_barcode_reader" class="w-full h-full min-h-[220px] bg-transparent"></div>
+                    </div>
+                    <div id="masuk_camera_placeholder" class="hidden"></div>
+
+                    <div class="flex items-center justify-start py-2">
+                        <button type="button" id="btn_toggle_camera_masuk" onclick="toggleMasukCameraStream()" class="px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer" style="box-shadow: none !important;">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>Nyalakan Kamera</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. MODE PILIH GAMBAR (CHOOSE FILE) -->
+                <div id="masuk_scan_file_pane" class="hidden space-y-3">
+                    <input type="file" id="masuk_barcode_file_input" accept="image/*" class="hidden" onchange="handleMasukBarcodeFileUpload(this)">
+                    <div class="flex items-center justify-start py-2">
+                        <button type="button" onclick="document.getElementById('masuk_barcode_file_input').click()" class="px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer" style="box-shadow: none !important;">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span>Pilih Berkas Gambar</span>
+                        </button>
+                    </div>
+                    <div id="masuk_file_scan_status" class="hidden text-left py-1.5">
+                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-sage-600 dark:text-sage-400">
+                            <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                            Menganalisis dan memindai barcode pada gambar...
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 3. KOTAK FEEDBACK HASIL SCAN & SINKRONISASI -->
+                <div id="masuk_scan_feedback" class="hidden p-3 rounded-2xl text-xs transition-all"></div>
+            </div>
+
+            <!-- BAGIAN INPUT MANUAL (JURUSAN, JENIS, INVENTARIS) - OTOMATIS DISEMBUNYIKAN SAAT SCAN BARCODE AKTIF -->
             <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
-            <div>
-                <label class="block font-bold text-slate-700 mb-1">Jurusan / Departemen</label>
-                <select id="masuk_jurusan_id" onchange="filterBarangMasukOptions()" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+            <div id="wrap_masuk_jurusan">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jurusan / Departemen</label>
+                <select id="masuk_jurusan_id" onchange="filterBarangMasukOptions()" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
                     <option value="">-- Semua Jurusan --</option>
                 </select>
             </div>
             <?php endif; ?>
-            <div>
-                <label class="block font-bold text-slate-700 mb-1">Pilih Jenis Barang <span class="text-red-500">*</span></label>
-                <select id="masuk_jenis" onchange="filterBarangMasukOptions()" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+            <div id="wrap_masuk_jenis">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Pilih Jenis Barang <span class="text-red-500">*</span></label>
+                <select id="masuk_jenis" onchange="filterBarangMasukOptions()" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
                     <option value="">-- Semua Jenis (Alat dan Bahan) --</option>
                     <option value="alat">Alat</option>
                     <option value="bahan">Bahan</option>
@@ -594,10 +661,10 @@
                 </div>
             </div>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Jumlah Masuk <span class="text-red-500">*</span></label>
-                <input type="number" id="masuk_jumlah" min="1" value="5" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-bold text-sage-700 focus:outline-none focus:border-sage-600">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jumlah Masuk <span class="text-red-500">*</span></label>
+                <input type="number" id="masuk_jumlah" min="1" value="5" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-bold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
             </div>
-            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100">
+            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100 dark:border-slate-700">
                 <button type="button" onclick="closeModal('modalBarangMasuk')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
                 <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Alat & Bahan Masuk</button>
             </div>
@@ -606,26 +673,93 @@
 </div>
 
 <!-- 4.5. MODAL BARANG KELUAR -->
-<div id="modalBarangKeluar" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/40 backdrop-blur-sm animate-fade-in-up">
-    <div class="bg-white rounded-3xl border border-sage-200 shadow-2xl w-full max-w-lg overflow-hidden">
-        <div class="p-6 bg-sage-50/80 border-b border-sage-100 flex items-center justify-between">
+<div id="modalBarangKeluar" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-sage-200 dark:border-slate-800 shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+        <div class="p-6 bg-sage-50/80 dark:bg-slate-800/80 border-b border-sage-100 dark:border-slate-700 flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12"/></svg>
                 </div>
-                <h3 class="text-base font-bold text-slate-800" id="modalBarangKeluarTitle">Catat Transaksi Bahan Keluar</h3>
+                <h3 class="text-base font-bold text-slate-800 dark:text-white" id="modalBarangKeluarTitle">Catat Transaksi Bahan Keluar</h3>
             </div>
             <button onclick="closeModal('modalBarangKeluar')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
-        <form onsubmit="handleFormSubmit(event, 'Barang Keluar')" class="p-6 space-y-4 text-xs">
+        <form onsubmit="handleFormSubmit(event, 'Barang Keluar')" class="p-6 space-y-4 text-xs overflow-y-auto flex-1">
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
             <input type="hidden" id="keluar_edit_id" value="">
+
+            <!-- Checklist: Apakah ingin mencatat keluar menggunakan scan barcode/QR code data bahan? -->
+            <div class="p-3 bg-sage-50/60 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
+                <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                    <input type="checkbox" id="keluar_use_barcode" onchange="toggleKeluarBarcodeScanner(this.checked)" class="w-4 h-4 rounded accent-sage-600 cursor-pointer">
+                    <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">
+                        Catat Keluar Menggunakan Scan Barcode / QR Code Bahan
+                    </span>
+                </label>
+            </div>
+
+            <!-- CONTAINER SCANNER BARCODE (TAMPIL JIKA CHECKBOX DICENTANG) -->
+            <div id="section_scan_barcode_keluar" class="hidden space-y-3 py-1 px-0 bg-transparent rounded-2xl animate-fade-in-up">
+                <!-- Tab Pilihan Metode Scan -->
+                <div class="flex items-center justify-between pb-1">
+                    <span class="font-bold text-slate-700 dark:text-slate-200 text-[11px] uppercase tracking-wider">
+                        Metode Scan Barcode
+                    </span>
+                    <div class="flex items-center bg-slate-100/40 dark:bg-slate-800/40 rounded-xl p-1 border border-slate-200 dark:border-slate-700 text-xs">
+                        <button type="button" id="btn_mode_kamera_keluar" onclick="switchKeluarScanMode('kamera')" class="px-3 py-1 rounded-lg font-bold transition-all bg-sage-600 text-white shadow-sm">Kamera</button>
+                        <button type="button" id="btn_mode_file_keluar" onclick="switchKeluarScanMode('file')" class="px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-sage-600 dark:hover:text-sage-400 transition-all">Pilih Gambar</button>
+                    </div>
+                </div>
+
+                <!-- 1. MODE KAMERA LIVE -->
+                <div id="keluar_scan_camera_pane" class="space-y-3">
+                    <div id="keluar_camera_select_wrap" class="hidden">
+                        <select id="keluar_camera_select" onchange="changeKeluarCamera(this.value)" class="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:border-sage-600">
+                            <option value="">Pilih Kamera...</option>
+                        </select>
+                    </div>
+
+                    <div id="keluar_camera_view_wrap" class="hidden relative w-full max-w-sm mx-auto overflow-hidden rounded-2xl bg-transparent min-h-[220px] flex items-center justify-center border border-slate-200 dark:border-slate-700">
+                        <div id="keluar_barcode_reader" class="w-full h-full min-h-[220px] bg-transparent"></div>
+                    </div>
+                    <div id="keluar_camera_placeholder" class="hidden"></div>
+
+                    <div class="flex items-center justify-start py-2">
+                        <button type="button" id="btn_toggle_camera_keluar" onclick="toggleKeluarCameraStream()" class="px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer" style="box-shadow: none !important;">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>Nyalakan Kamera</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. MODE PILIH GAMBAR (CHOOSE FILE) -->
+                <div id="keluar_scan_file_pane" class="hidden space-y-3">
+                    <input type="file" id="keluar_barcode_file_input" accept="image/*" class="hidden" onchange="handleKeluarBarcodeFileUpload(this)">
+                    <div class="flex items-center justify-start py-2">
+                        <button type="button" onclick="document.getElementById('keluar_barcode_file_input').click()" class="px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer" style="box-shadow: none !important;">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span>Pilih Berkas Gambar</span>
+                        </button>
+                    </div>
+                    <div id="keluar_file_scan_status" class="hidden text-left py-1.5">
+                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-sage-600 dark:text-sage-400">
+                            <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                            Menganalisis dan memindai barcode pada gambar...
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 3. KOTAK FEEDBACK HASIL SCAN & SINKRONISASI -->
+                <div id="keluar_scan_feedback" class="hidden p-3 rounded-2xl text-xs transition-all"></div>
+            </div>
+
+            <!-- BAGIAN INPUT MANUAL (JURUSAN, BAHAN) - OTOMATIS DISEMBUNYIKAN SAAT SCAN BARCODE AKTIF -->
             <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
-            <div>
-                <label class="block font-bold text-slate-700 mb-1">Jurusan / Departemen</label>
-                <select id="keluar_jurusan_id" onchange="filterBarangKeluarOptions()" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+            <div id="wrap_keluar_jurusan">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jurusan / Departemen</label>
+                <select id="keluar_jurusan_id" onchange="filterBarangKeluarOptions()" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
                     <option value="">-- Semua Jurusan --</option>
                 </select>
             </div>
@@ -646,7 +780,7 @@
                     <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     </div>
-                    <input type="text" id="keluar_barang_search" autocomplete="off" placeholder="Ketik untuk mencari bahan keluar..." class="w-full pl-9 pr-16 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-sage-600 focus:ring-1 focus:ring-sage-600 transition-all cursor-pointer">
+                    <input type="text" id="keluar_barang_search" autocomplete="off" placeholder="Ketik untuk mencari Bahan keluar..." class="w-full pl-9 pr-16 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-sage-600 focus:ring-1 focus:ring-sage-600 transition-all cursor-pointer">
                     <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
                         <button type="button" id="keluar_barang_clear" tabindex="-1" class="hidden p-1 text-slate-400 hover:text-red-500 rounded-lg transition-colors" title="Hapus pilihan">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -660,19 +794,19 @@
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Nama Penerima / Peruntukan <span class="text-red-500">*</span></label>
-                    <input type="text" id="keluar_penerima" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: Lab Komputer 2 / Ahmad">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Penerima / Peruntukan <span class="text-red-500">*</span></label>
+                    <input type="text" id="keluar_penerima" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600" placeholder="contoh: Lab Komputer 2 / Ahmad">
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Jumlah Keluar <span class="text-red-500">*</span></label>
-                    <input type="number" id="keluar_jumlah" min="1" value="1" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-bold text-sage-700 focus:outline-none focus:border-sage-600">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jumlah Keluar <span class="text-red-500">*</span></label>
+                    <input type="number" id="keluar_jumlah" min="1" value="1" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-bold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
                 </div>
             </div>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Keterangan / Alasan</label>
-                <textarea id="keluar_keterangan" rows="2" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: Pemakaian bahan praktik jaringan"></textarea>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Keterangan / Alasan</label>
+                <textarea id="keluar_keterangan" rows="2" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600" placeholder="contoh: Pemakaian bahan praktik jaringan"></textarea>
             </div>
-            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100">
+            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100 dark:border-slate-700">
                 <button type="button" onclick="closeModal('modalBarangKeluar')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
                 <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Bahan Keluar</button>
             </div>
@@ -1874,6 +2008,387 @@ function filterBarangMasukOptions(preselectedBarangId = null) {
     }
 }
 
+// --- SCANNER BARCODE & QR CODE UNTUK ALAT & BAHAN MASUK ---
+let masukHtml5QrCode = null;
+let masukIsCameraRunning = false;
+let masukActiveScanMode = 'kamera';
+
+function toggleMasukBarcodeScanner(checked) {
+    const section = document.getElementById('section_scan_barcode_masuk');
+    const wrapJurusan = document.getElementById('wrap_masuk_jurusan');
+    const wrapJenis = document.getElementById('wrap_masuk_jenis');
+    const wrapBarang = document.getElementById('wrap_masuk_barang');
+    const selectBarang = document.getElementById('masuk_barang_id');
+
+    if (wrapJurusan) wrapJurusan.classList.toggle('hidden', checked);
+    if (wrapJenis) wrapJenis.classList.toggle('hidden', checked);
+    if (wrapBarang) wrapBarang.classList.toggle('hidden', checked);
+
+    if (selectBarang) {
+        if (checked) {
+            selectBarang.removeAttribute('required');
+        } else {
+            selectBarang.setAttribute('required', 'required');
+        }
+    }
+
+    if (checked) {
+        if (section) section.classList.remove('hidden');
+        switchMasukScanMode(masukActiveScanMode || 'kamera');
+    } else {
+        if (section) section.classList.add('hidden');
+        stopMasukCameraStream();
+        clearMasukScanFeedback();
+    }
+}
+
+function switchMasukScanMode(mode) {
+    masukActiveScanMode = mode;
+    const btnKamera = document.getElementById('btn_mode_kamera_masuk');
+    const btnFile = document.getElementById('btn_mode_file_masuk');
+    const paneKamera = document.getElementById('masuk_scan_camera_pane');
+    const paneFile = document.getElementById('masuk_scan_file_pane');
+
+    if (mode === 'kamera') {
+        if (btnKamera) {
+            btnKamera.className = 'px-3 py-1 rounded-lg font-bold transition-all bg-sage-600 text-white shadow-sm';
+        }
+        if (btnFile) {
+            btnFile.className = 'px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-sage-600 dark:hover:text-sage-400 transition-all';
+        }
+        if (paneKamera) paneKamera.classList.remove('hidden');
+        if (paneFile) paneFile.classList.add('hidden');
+    } else {
+        if (btnFile) {
+            btnFile.className = 'px-3 py-1 rounded-lg font-bold transition-all bg-sage-600 text-white shadow-sm';
+        }
+        if (btnKamera) {
+            btnKamera.className = 'px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-sage-600 dark:hover:text-sage-400 transition-all';
+        }
+        if (paneFile) paneFile.classList.remove('hidden');
+        if (paneKamera) paneKamera.classList.add('hidden');
+        stopMasukCameraStream();
+    }
+}
+
+async function toggleMasukCameraStream() {
+    if (masukIsCameraRunning) {
+        await stopMasukCameraStream();
+    } else {
+        await startMasukCameraStream();
+    }
+}
+
+async function startMasukCameraStream(preferDeviceId = null) {
+    if (typeof Html5Qrcode === 'undefined') {
+        showToast('Library pemindai barcode sedang disiapkan, silakan coba sesaat lagi.', 'warning');
+        return;
+    }
+
+    try {
+        if (!masukHtml5QrCode) {
+            masukHtml5QrCode = new Html5Qrcode("masuk_barcode_reader");
+        }
+
+        const placeholder = document.getElementById('masuk_camera_placeholder');
+        const btnToggle = document.getElementById('btn_toggle_camera_masuk');
+        const cameraSelectWrap = document.getElementById('masuk_camera_select_wrap');
+        const cameraSelect = document.getElementById('masuk_camera_select');
+
+        // Deteksi daftar kamera yang tersedia
+        try {
+            const cameras = await Html5Qrcode.getCameras();
+            if (cameras && cameras.length > 1 && cameraSelect && cameraSelectWrap) {
+                cameraSelectWrap.classList.remove('hidden');
+                cameraSelect.innerHTML = cameras.map((c, i) => `<option value="${c.id}">${c.label || 'Kamera ' + (i+1)}</option>`).join('');
+                if (preferDeviceId) cameraSelect.value = preferDeviceId;
+            }
+        } catch (e) {
+            console.warn('Gagal membaca daftar kamera:', e);
+        }
+
+        const selectedDeviceId = (cameraSelect && cameraSelect.value) ? cameraSelect.value : preferDeviceId;
+        const cameraConfig = selectedDeviceId ? { exact: selectedDeviceId } : { facingMode: "environment" };
+
+        const config = {
+            fps: 15,
+            qrbox: (w, h) => ({
+                width: Math.min(Math.floor(w * 0.8), 280),
+                height: Math.min(Math.floor(h * 0.8), 280)
+            }),
+            aspectRatio: 1.333
+        };
+
+        await masukHtml5QrCode.start(
+            cameraConfig,
+            config,
+            (decodedText, decodedResult) => {
+                onMasukBarcodeScanned(decodedText);
+            },
+            (errorMessage) => {
+                // scanning frame error ignored
+            }
+        );
+
+        masukIsCameraRunning = true;
+        const cameraWrap = document.getElementById('masuk_camera_view_wrap');
+        if (cameraWrap) cameraWrap.classList.remove('hidden');
+        if (placeholder) placeholder.classList.add('hidden');
+        if (btnToggle) {
+            btnToggle.className = 'px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer';
+            btnToggle.style.boxShadow = 'none';
+            btnToggle.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg><span>Hentikan Kamera</span>`;
+        }
+    } catch (err) {
+        console.error('Camera start error:', err);
+        masukIsCameraRunning = false;
+        showToast('Tidak dapat mengakses kamera: ' + (err.message || err), 'error');
+    }
+}
+
+async function stopMasukCameraStream() {
+    if (masukHtml5QrCode && masukIsCameraRunning) {
+        try {
+            await masukHtml5QrCode.stop();
+        } catch (e) {
+            console.warn('Error saat menghentikan kamera:', e);
+        }
+        masukIsCameraRunning = false;
+    }
+    const placeholder = document.getElementById('masuk_camera_placeholder');
+    const cameraWrap = document.getElementById('masuk_camera_view_wrap');
+    const btnToggle = document.getElementById('btn_toggle_camera_masuk');
+    if (cameraWrap) cameraWrap.classList.add('hidden');
+    if (placeholder) placeholder.classList.remove('hidden');
+    if (btnToggle) {
+        btnToggle.className = 'px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer';
+        btnToggle.style.boxShadow = 'none';
+        btnToggle.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span>Nyalakan Kamera</span>`;
+    }
+}
+
+async function changeMasukCamera(deviceId) {
+    if (masukIsCameraRunning) {
+        await stopMasukCameraStream();
+        await startMasukCameraStream(deviceId);
+    }
+}
+
+async function handleMasukBarcodeFileUpload(input) {
+    if (!input || !input.files || input.files.length === 0) return;
+    const file = input.files[0];
+    const statusEl = document.getElementById('masuk_file_scan_status');
+    if (statusEl) statusEl.classList.remove('hidden');
+
+    try {
+        if (typeof Html5Qrcode === 'undefined') {
+            throw new Error('Library pemindai belum siap.');
+        }
+
+        const fileScanner = new Html5Qrcode("masuk_barcode_reader");
+        const decodedText = await fileScanner.scanFile(file, true);
+        if (statusEl) statusEl.classList.add('hidden');
+        await onMasukBarcodeScanned(decodedText);
+    } catch (err) {
+        if (statusEl) statusEl.classList.add('hidden');
+        console.warn('File scan error:', err);
+        showMasukScanFeedback(false, null, 'Tidak ditemukan barcode atau QR code pada gambar ini. Pastikan gambar jelas, tajam, dan tidak buram.');
+    } finally {
+        input.value = '';
+    }
+}
+
+async function onMasukBarcodeScanned(code) {
+    if (!code) return;
+    const cleanCode = String(code).trim();
+    if (!cleanCode) return;
+    const extractedCode = extractBarcodeValue(cleanCode);
+
+    let found = (window.dbBarang || []).find(b => {
+        const matchExtracted = (
+            (b.id && String(b.id).trim().toLowerCase() === extractedCode.toLowerCase()) ||
+            (b.barcode && String(b.barcode).trim().toLowerCase() === extractedCode.toLowerCase()) ||
+            (b.kode_barang && String(b.kode_barang).trim().toLowerCase() === extractedCode.toLowerCase())
+        );
+        const matchClean = (
+            (b.id && String(b.id).trim().toLowerCase() === cleanCode.toLowerCase()) ||
+            (b.barcode && String(b.barcode).trim().toLowerCase() === cleanCode.toLowerCase()) ||
+            (b.kode_barang && String(b.kode_barang).trim().toLowerCase() === cleanCode.toLowerCase())
+        );
+        return matchExtracted || matchClean;
+    });
+
+    if (!found) {
+        try {
+            const queryParam = encodeURIComponent(extractedCode || cleanCode);
+            const resp = await fetch(`api/scan.php?code=${queryParam}&barang_id=${queryParam}`);
+            const json = await resp.json();
+            if (json && json.success && json.data) {
+                found = json.data;
+            }
+        } catch (e) {
+            console.warn('Gagal memanggil fallback scan API:', e);
+        }
+    }
+
+    if (found) {
+        const userJurusanId = (window.currentUser && window.currentUser.jurusan_id) ? String(window.currentUser.jurusan_id).trim() : '';
+        const userPeran = (window.currentUser && window.currentUser.peran) ? String(window.currentUser.peran).toLowerCase().trim() : '';
+        const itemJurusanId = (found.jurusan_id) ? String(found.jurusan_id).trim() : '';
+
+        let itemJurusanName = found.nama_jurusan || '';
+        if (!itemJurusanName && window.dbJurusan && itemJurusanId) {
+            const jMatch = window.dbJurusan.find(j => String(j.id).trim() === itemJurusanId);
+            if (jMatch) itemJurusanName = jMatch.nama_jurusan;
+        }
+        if (!itemJurusanName) itemJurusanName = 'Jurusan Lain';
+
+        let userJurusanName = (window.currentUser && (window.currentUser.nama_jurusan || window.currentUser.kode_jurusan)) ? (window.currentUser.nama_jurusan || window.currentUser.kode_jurusan) : 'Jurusan Anda';
+
+        if (userPeran !== 'admin_sekolah' && userJurusanId && itemJurusanId && userJurusanId !== itemJurusanId) {
+            await stopMasukCameraStream();
+            const selectBarang = document.getElementById('masuk_barang_id');
+            if (selectBarang) selectBarang.value = '';
+            if (window.masukCombobox) window.masukCombobox.clear(false);
+
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = 'sawtooth';
+                osc.frequency.value = 180;
+                gain.gain.value = 0.35;
+                osc.start();
+                setTimeout(() => { osc.stop(); audioCtx.close(); }, 350);
+            } catch (e) {}
+
+            showMasukScanFeedback(false, null, `Pemindaian Ditolak! Barang "${found.nama_barang || 'Barang'}" terdaftar pada ${itemJurusanName}. Akun Anda terdaftar di ${userJurusanName}, sehingga hanya dapat memindai alat & bahan milik ${userJurusanName}.`, true);
+            showToast(`Pemindaian Ditolak! Barang ini milik ${itemJurusanName}`, 'error');
+            return;
+        }
+
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = 880;
+            gain.gain.value = 0.2;
+            osc.start();
+            setTimeout(() => { osc.stop(); audioCtx.close(); }, 120);
+        } catch (e) {}
+
+        const selectJur = document.getElementById('masuk_jurusan_id');
+        const selectJenis = document.getElementById('masuk_jenis');
+        const selectBarang = document.getElementById('masuk_barang_id');
+
+        if (selectJur && found.jurusan_id) {
+            selectJur.value = found.jurusan_id;
+        }
+
+        if (selectJenis && found.jenis) {
+            selectJenis.value = found.jenis.toLowerCase();
+        }
+
+        filterBarangMasukOptions(found.id);
+        if (selectBarang) {
+            let optExists = Array.from(selectBarang.options).some(o => String(o.value) === String(found.id));
+            if (!optExists) {
+                const newOpt = document.createElement('option');
+                newOpt.value = found.id;
+                newOpt.textContent = `${found.nama_barang} (Tersedia: ${found.stok_tersedia ?? 0} ${found.satuan || 'Unit'})`;
+                selectBarang.appendChild(newOpt);
+            }
+            selectBarang.value = found.id;
+            if (window.masukCombobox) {
+                window.masukCombobox.setValue(found.id);
+            }
+            const searchInp = document.getElementById('masuk_barang_search');
+            if (searchInp) {
+                searchInp.classList.add('ring-2', 'ring-emerald-500');
+                setTimeout(() => searchInp.classList.remove('ring-2', 'ring-emerald-500'), 2500);
+            }
+        }
+
+        await stopMasukCameraStream();
+        showMasukScanFeedback(true, found, extractedCode || cleanCode);
+        showToast('Barang berhasil disinkronkan: ' + (found.nama_barang || 'Item'), 'success');
+    } else {
+        showMasukScanFeedback(false, null, 'Barcode "' + (extractedCode || cleanCode) + '" terdeteksi, namun data barang tidak ditemukan dalam inventaris.');
+        showToast('Barang tidak ditemukan untuk barcode: ' + (extractedCode || cleanCode), 'warning');
+    }
+}
+
+function showMasukScanFeedback(isSuccess, item, messageOrCode, isReject = false) {
+    const box = document.getElementById('masuk_scan_feedback');
+    if (!box) return;
+    box.classList.remove('hidden');
+
+    const safeEsc = (str) => {
+        if (typeof escapeHtml === 'function') return escapeHtml(str);
+        if (str === null || str === undefined) return '';
+        const d = document.createElement('div');
+        d.textContent = String(str);
+        return d.innerHTML;
+    };
+
+    if (isSuccess && item) {
+        const jenisLabel = (item.jenis || 'alat').toLowerCase() === 'alat' ? 'Alat' : 'Bahan';
+        box.className = 'p-3.5 bg-sage-50/80 dark:bg-slate-900 border border-sage-300 dark:border-slate-700 rounded-2xl text-xs space-y-1.5 animate-fade-in-up';
+        box.innerHTML = `
+            <div class="flex items-center justify-between text-sage-800 dark:text-sage-300 font-bold">
+                <span class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-sage-600 dark:text-sage-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Barcode Berhasil Terdeteksi & Tersinkronkan!
+                </span>
+            </div>
+            <div class="text-slate-700 dark:text-slate-200">
+                <div class="font-extrabold text-sm text-slate-800 dark:text-white">${safeEsc(item.nama_barang || '')}</div>
+                <div class="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-slate-600 dark:text-slate-400 mt-1">
+                    <span>Jenis: <b class="capitalize text-sage-700 dark:text-sage-300">${safeEsc(jenisLabel)}</b></span>
+                    ${item.nama_jurusan ? `<span>Jurusan: <b>${safeEsc(item.nama_jurusan)}</b></span>` : ''}
+                    <span>Kode / Barcode: <code class="font-mono bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded border border-sage-200 dark:border-slate-700 font-bold text-sage-700 dark:text-sage-300">${safeEsc(item.barcode || item.kode_barang || messageOrCode)}</code></span>
+                    <span>Stok Saat Ini: <b class="text-sage-700 dark:text-sage-400">${item.stok_tersedia ?? 0} ${safeEsc(item.satuan || 'Unit')}</b></span>
+                </div>
+            </div>
+        `;
+    } else if (isReject) {
+        box.className = 'p-3.5 bg-red-50/90 dark:bg-red-950/40 border border-red-300 dark:border-red-900/60 rounded-2xl text-xs space-y-1.5 animate-fade-in-up';
+        box.innerHTML = `
+            <div class="flex items-center justify-between text-red-700 dark:text-red-400 font-bold">
+                <span class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-red-600 dark:text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                    Pemindaian Ditolak (Bukan Jurusan Anda)
+                </span>
+            </div>
+            <p class="text-slate-700 dark:text-slate-200 text-xs leading-relaxed mt-1">${safeEsc(messageOrCode)}</p>
+        `;
+    } else {
+        box.className = 'p-3.5 bg-amber-50/80 dark:bg-slate-900 border border-amber-300 dark:border-slate-700 rounded-2xl text-xs space-y-1 animate-fade-in-up';
+        box.innerHTML = `
+            <div class="flex items-center justify-between text-amber-800 dark:text-amber-300 font-bold">
+                <span class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    Peringatan Barcode
+                </span>
+                <button type="button" onclick="clearMasukScanFeedback(); startMasukCameraStream();" class="text-[11px] px-2 py-0.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-semibold shadow-xs">Coba Lagi</button>
+            </div>
+            <p class="text-slate-700 dark:text-slate-300">${safeEsc(messageOrCode)}</p>
+        `;
+    }
+}
+
+function clearMasukScanFeedback() {
+    const box = document.getElementById('masuk_scan_feedback');
+    if (box) {
+        box.classList.add('hidden');
+        box.innerHTML = '';
+    }
+}
+
 // --- SCANNER BARCODE & QR CODE UNTUK PEMINJAMAN ---
 let pinjamHtml5QrCode = null;
 let pinjamIsCameraRunning = false;
@@ -2330,6 +2845,405 @@ function filterBarangKeluarOptions(preselectedBarangId = null) {
     }
 }
 
+// --- SCANNER BARCODE & QR CODE UNTUK BAHAN KELUAR ---
+let keluarHtml5QrCode = null;
+let keluarIsCameraRunning = false;
+let keluarActiveScanMode = 'kamera';
+
+function toggleKeluarBarcodeScanner(checked) {
+    const section = document.getElementById('section_scan_barcode_keluar');
+    const wrapJurusan = document.getElementById('wrap_keluar_jurusan');
+    const wrapBarang = document.getElementById('wrap_keluar_barang');
+    const selectBarang = document.getElementById('keluar_barang_id');
+
+    if (wrapJurusan) wrapJurusan.classList.toggle('hidden', checked);
+    if (wrapBarang) wrapBarang.classList.toggle('hidden', checked);
+
+    if (selectBarang) {
+        if (checked) {
+            selectBarang.removeAttribute('required');
+        } else {
+            selectBarang.setAttribute('required', 'required');
+        }
+    }
+
+    if (checked) {
+        if (section) section.classList.remove('hidden');
+        switchKeluarScanMode(keluarActiveScanMode || 'kamera');
+    } else {
+        if (section) section.classList.add('hidden');
+        stopKeluarCameraStream();
+        clearKeluarScanFeedback();
+    }
+}
+
+function switchKeluarScanMode(mode) {
+    keluarActiveScanMode = mode;
+    const btnKamera = document.getElementById('btn_mode_kamera_keluar');
+    const btnFile = document.getElementById('btn_mode_file_keluar');
+    const paneKamera = document.getElementById('keluar_scan_camera_pane');
+    const paneFile = document.getElementById('keluar_scan_file_pane');
+
+    if (mode === 'kamera') {
+        if (btnKamera) {
+            btnKamera.className = 'px-3 py-1 rounded-lg font-bold transition-all bg-sage-600 text-white shadow-sm';
+        }
+        if (btnFile) {
+            btnFile.className = 'px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-sage-600 dark:hover:text-sage-400 transition-all';
+        }
+        if (paneKamera) paneKamera.classList.remove('hidden');
+        if (paneFile) paneFile.classList.add('hidden');
+    } else {
+        if (btnFile) {
+            btnFile.className = 'px-3 py-1 rounded-lg font-bold transition-all bg-sage-600 text-white shadow-sm';
+        }
+        if (btnKamera) {
+            btnKamera.className = 'px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-sage-600 dark:hover:text-sage-400 transition-all';
+        }
+        if (paneFile) paneFile.classList.remove('hidden');
+        if (paneKamera) paneKamera.classList.add('hidden');
+        stopKeluarCameraStream();
+    }
+}
+
+async function toggleKeluarCameraStream() {
+    if (keluarIsCameraRunning) {
+        await stopKeluarCameraStream();
+    } else {
+        await startKeluarCameraStream();
+    }
+}
+
+async function startKeluarCameraStream(preferDeviceId = null) {
+    if (typeof Html5Qrcode === 'undefined') {
+        showToast('Library pemindai barcode sedang disiapkan, silakan coba sesaat lagi.', 'warning');
+        return;
+    }
+
+    try {
+        if (!keluarHtml5QrCode) {
+            keluarHtml5QrCode = new Html5Qrcode("keluar_barcode_reader");
+        }
+
+        const placeholder = document.getElementById('keluar_camera_placeholder');
+        const btnToggle = document.getElementById('btn_toggle_camera_keluar');
+        const cameraSelectWrap = document.getElementById('keluar_camera_select_wrap');
+        const cameraSelect = document.getElementById('keluar_camera_select');
+
+        // Deteksi daftar kamera yang tersedia
+        try {
+            const cameras = await Html5Qrcode.getCameras();
+            if (cameras && cameras.length > 1 && cameraSelect && cameraSelectWrap) {
+                cameraSelectWrap.classList.remove('hidden');
+                cameraSelect.innerHTML = cameras.map((c, i) => `<option value="${c.id}">${c.label || 'Kamera ' + (i+1)}</option>`).join('');
+                if (preferDeviceId) cameraSelect.value = preferDeviceId;
+            }
+        } catch (e) {
+            console.warn('Gagal membaca daftar kamera:', e);
+        }
+
+        const selectedDeviceId = (cameraSelect && cameraSelect.value) ? cameraSelect.value : preferDeviceId;
+        const cameraConfig = selectedDeviceId ? { exact: selectedDeviceId } : { facingMode: "environment" };
+
+        const config = {
+            fps: 15,
+            qrbox: (w, h) => ({
+                width: Math.min(Math.floor(w * 0.8), 280),
+                height: Math.min(Math.floor(h * 0.8), 280)
+            }),
+            aspectRatio: 1.333
+        };
+
+        await keluarHtml5QrCode.start(
+            cameraConfig,
+            config,
+            (decodedText, decodedResult) => {
+                onKeluarBarcodeScanned(decodedText);
+            },
+            (errorMessage) => {
+                // scanning frame error ignored
+            }
+        );
+
+        keluarIsCameraRunning = true;
+        const cameraWrap = document.getElementById('keluar_camera_view_wrap');
+        if (cameraWrap) cameraWrap.classList.remove('hidden');
+        if (placeholder) placeholder.classList.add('hidden');
+        if (btnToggle) {
+            btnToggle.className = 'px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer';
+            btnToggle.style.boxShadow = 'none';
+            btnToggle.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg><span>Hentikan Kamera</span>`;
+        }
+    } catch (err) {
+        console.error('Camera start error:', err);
+        keluarIsCameraRunning = false;
+        showToast('Tidak dapat mengakses kamera: ' + (err.message || err), 'error');
+    }
+}
+
+async function stopKeluarCameraStream() {
+    if (keluarHtml5QrCode && keluarIsCameraRunning) {
+        try {
+            await keluarHtml5QrCode.stop();
+        } catch (e) {
+            console.warn('Error saat menghentikan kamera:', e);
+        }
+        keluarIsCameraRunning = false;
+    }
+    const placeholder = document.getElementById('keluar_camera_placeholder');
+    const cameraWrap = document.getElementById('keluar_camera_view_wrap');
+    const btnToggle = document.getElementById('btn_toggle_camera_keluar');
+    if (cameraWrap) cameraWrap.classList.add('hidden');
+    if (placeholder) placeholder.classList.remove('hidden');
+    if (btnToggle) {
+        btnToggle.className = 'px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer';
+        btnToggle.style.boxShadow = 'none';
+        btnToggle.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span>Nyalakan Kamera</span>`;
+    }
+}
+
+async function changeKeluarCamera(deviceId) {
+    if (keluarIsCameraRunning) {
+        await stopKeluarCameraStream();
+        await startKeluarCameraStream(deviceId);
+    }
+}
+
+async function handleKeluarBarcodeFileUpload(input) {
+    if (!input || !input.files || input.files.length === 0) return;
+    const file = input.files[0];
+    const statusEl = document.getElementById('keluar_file_scan_status');
+    if (statusEl) statusEl.classList.remove('hidden');
+
+    try {
+        if (typeof Html5Qrcode === 'undefined') {
+            throw new Error('Library pemindai belum siap.');
+        }
+
+        const fileScanner = new Html5Qrcode("keluar_barcode_reader");
+        const decodedText = await fileScanner.scanFile(file, true);
+        if (statusEl) statusEl.classList.add('hidden');
+        await onKeluarBarcodeScanned(decodedText);
+    } catch (err) {
+        if (statusEl) statusEl.classList.add('hidden');
+        console.warn('File scan error:', err);
+        showKeluarScanFeedback(false, null, 'Tidak ditemukan barcode atau QR code pada gambar ini. Pastikan gambar jelas, tajam, dan tidak buram.');
+    } finally {
+        input.value = '';
+    }
+}
+
+async function onKeluarBarcodeScanned(code) {
+    if (!code) return;
+    const cleanCode = String(code).trim();
+    if (!cleanCode) return;
+    const extractedCode = extractBarcodeValue(cleanCode);
+
+    let found = (window.dbBarang || []).find(b => {
+        const matchExtracted = (
+            (b.id && String(b.id).trim().toLowerCase() === extractedCode.toLowerCase()) ||
+            (b.barcode && String(b.barcode).trim().toLowerCase() === extractedCode.toLowerCase()) ||
+            (b.kode_barang && String(b.kode_barang).trim().toLowerCase() === extractedCode.toLowerCase())
+        );
+        const matchClean = (
+            (b.id && String(b.id).trim().toLowerCase() === cleanCode.toLowerCase()) ||
+            (b.barcode && String(b.barcode).trim().toLowerCase() === cleanCode.toLowerCase()) ||
+            (b.kode_barang && String(b.kode_barang).trim().toLowerCase() === cleanCode.toLowerCase())
+        );
+        return matchExtracted || matchClean;
+    });
+
+    if (!found) {
+        try {
+            const queryParam = encodeURIComponent(extractedCode || cleanCode);
+            const resp = await fetch(`api/scan.php?code=${queryParam}&barang_id=${queryParam}`);
+            const json = await resp.json();
+            if (json && json.success && json.data) {
+                found = json.data;
+            }
+        } catch (e) {
+            console.warn('Gagal memanggil fallback scan API:', e);
+        }
+    }
+
+    if (found) {
+        const userJurusanId = (window.currentUser && window.currentUser.jurusan_id) ? String(window.currentUser.jurusan_id).trim() : '';
+        const userPeran = (window.currentUser && window.currentUser.peran) ? String(window.currentUser.peran).toLowerCase().trim() : '';
+        const itemJurusanId = (found.jurusan_id) ? String(found.jurusan_id).trim() : '';
+
+        let itemJurusanName = found.nama_jurusan || '';
+        if (!itemJurusanName && window.dbJurusan && itemJurusanId) {
+            const jMatch = window.dbJurusan.find(j => String(j.id).trim() === itemJurusanId);
+            if (jMatch) itemJurusanName = jMatch.nama_jurusan;
+        }
+        if (!itemJurusanName) itemJurusanName = 'Jurusan Lain';
+
+        let userJurusanName = (window.currentUser && (window.currentUser.nama_jurusan || window.currentUser.kode_jurusan)) ? (window.currentUser.nama_jurusan || window.currentUser.kode_jurusan) : 'Jurusan Anda';
+
+        if (userPeran !== 'admin_sekolah' && userJurusanId && itemJurusanId && userJurusanId !== itemJurusanId) {
+            await stopKeluarCameraStream();
+            const selectBarang = document.getElementById('keluar_barang_id');
+            if (selectBarang) selectBarang.value = '';
+            if (window.keluarCombobox) window.keluarCombobox.clear(false);
+
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = 'sawtooth';
+                osc.frequency.value = 180;
+                gain.gain.value = 0.35;
+                osc.start();
+                setTimeout(() => { osc.stop(); audioCtx.close(); }, 350);
+            } catch (e) {}
+
+            showKeluarScanFeedback(false, null, `Pemindaian Ditolak! Barang "${found.nama_barang || 'Barang'}" terdaftar pada ${itemJurusanName}. Akun Anda terdaftar di ${userJurusanName}, sehingga hanya dapat memindai bahan milik ${userJurusanName}.`, true);
+            showToast(`Pemindaian Ditolak! Barang ini milik ${itemJurusanName}`, 'error');
+            return;
+        }
+
+        // VALIDASI KHUSUS BAHAN KELUAR: Jenis barang WAJIB 'bahan'!
+        const itemJenis = String(found.jenis || 'alat').toLowerCase();
+        if (itemJenis !== 'bahan') {
+            await stopKeluarCameraStream();
+            const selectBarang = document.getElementById('keluar_barang_id');
+            if (selectBarang) selectBarang.value = '';
+            if (window.keluarCombobox) window.keluarCombobox.clear(false);
+
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = 'sawtooth';
+                osc.frequency.value = 180;
+                gain.gain.value = 0.35;
+                osc.start();
+                setTimeout(() => { osc.stop(); audioCtx.close(); }, 350);
+            } catch (e) {}
+
+            showKeluarScanFeedback(false, null, `Pemindaian Ditolak! Barang "${found.nama_barang || 'Barang'}" berjenis ALAT. Form ini khusus untuk transaksi pengeluaran BAHAN habis pakai. Jika ingin meminjamkan alat ini, gunakan menu Peminjaman Alat.`, true);
+            showToast(`Pemindaian Ditolak! "${found.nama_barang}" adalah Alat, bukan Bahan habis pakai.`, 'error');
+            return;
+        }
+
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = 880;
+            gain.gain.value = 0.2;
+            osc.start();
+            setTimeout(() => { osc.stop(); audioCtx.close(); }, 120);
+        } catch (e) {}
+
+        const selectJur = document.getElementById('keluar_jurusan_id');
+        const selectBarang = document.getElementById('keluar_barang_id');
+
+        if (selectJur && found.jurusan_id) {
+            selectJur.value = found.jurusan_id;
+        }
+
+        filterBarangKeluarOptions(found.id);
+        if (selectBarang) {
+            let optExists = Array.from(selectBarang.options).some(o => String(o.value) === String(found.id));
+            if (!optExists) {
+                const newOpt = document.createElement('option');
+                newOpt.value = found.id;
+                newOpt.textContent = `${found.nama_barang} (Tersedia: ${found.stok_tersedia ?? 0} ${found.satuan || 'Unit'})`;
+                selectBarang.appendChild(newOpt);
+            }
+            selectBarang.value = found.id;
+            if (window.keluarCombobox) {
+                window.keluarCombobox.setValue(found.id);
+            }
+            const searchInp = document.getElementById('keluar_barang_search');
+            if (searchInp) {
+                searchInp.classList.add('ring-2', 'ring-emerald-500');
+                setTimeout(() => searchInp.classList.remove('ring-2', 'ring-emerald-500'), 2500);
+            }
+        }
+
+        await stopKeluarCameraStream();
+        showKeluarScanFeedback(true, found, extractedCode || cleanCode);
+        showToast('Bahan berhasil disinkronkan: ' + (found.nama_barang || 'Item'), 'success');
+    } else {
+        showKeluarScanFeedback(false, null, 'Barcode "' + (extractedCode || cleanCode) + '" terdeteksi, namun data barang tidak ditemukan dalam inventaris.');
+        showToast('Barang tidak ditemukan untuk barcode: ' + (extractedCode || cleanCode), 'warning');
+    }
+}
+
+function showKeluarScanFeedback(isSuccess, item, messageOrCode, isReject = false) {
+    const box = document.getElementById('keluar_scan_feedback');
+    if (!box) return;
+    box.classList.remove('hidden');
+
+    const safeEsc = (str) => {
+        if (typeof escapeHtml === 'function') return escapeHtml(str);
+        if (str === null || str === undefined) return '';
+        const d = document.createElement('div');
+        d.textContent = String(str);
+        return d.innerHTML;
+    };
+
+    if (isSuccess && item) {
+        box.className = 'p-3.5 bg-sage-50/80 dark:bg-slate-900 border border-sage-300 dark:border-slate-700 rounded-2xl text-xs space-y-1.5 animate-fade-in-up';
+        box.innerHTML = `
+            <div class="flex items-center justify-between text-sage-800 dark:text-sage-300 font-bold">
+                <span class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-sage-600 dark:text-sage-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Barcode Berhasil Terdeteksi & Tersinkronkan!
+                </span>
+            </div>
+            <div class="text-slate-700 dark:text-slate-200">
+                <div class="font-extrabold text-sm text-slate-800 dark:text-white">${safeEsc(item.nama_barang || '')}</div>
+                <div class="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-slate-600 dark:text-slate-400 mt-1">
+                    <span>Jenis: <b class="capitalize text-sage-700 dark:text-sage-300">Bahan</b></span>
+                    ${item.nama_jurusan ? `<span>Jurusan: <b>${safeEsc(item.nama_jurusan)}</b></span>` : ''}
+                    <span>Kode / Barcode: <code class="font-mono bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded border border-sage-200 dark:border-slate-700 font-bold text-sage-700 dark:text-sage-300">${safeEsc(item.barcode || item.kode_barang || messageOrCode)}</code></span>
+                    <span>Stok Tersedia: <b class="text-sage-700 dark:text-sage-400">${item.stok_tersedia ?? 0} ${safeEsc(item.satuan || 'Unit')}</b></span>
+                </div>
+            </div>
+        `;
+    } else if (isReject) {
+        box.className = 'p-3.5 bg-red-50/90 dark:bg-red-950/40 border border-red-300 dark:border-red-900/60 rounded-2xl text-xs space-y-1.5 animate-fade-in-up';
+        box.innerHTML = `
+            <div class="flex items-center justify-between text-red-700 dark:text-red-400 font-bold">
+                <span class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-red-600 dark:text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                    Pemindaian Ditolak
+                </span>
+            </div>
+            <p class="text-slate-700 dark:text-slate-200 text-xs leading-relaxed mt-1">${safeEsc(messageOrCode)}</p>
+        `;
+    } else {
+        box.className = 'p-3.5 bg-amber-50/80 dark:bg-slate-900 border border-amber-300 dark:border-slate-700 rounded-2xl text-xs space-y-1 animate-fade-in-up';
+        box.innerHTML = `
+            <div class="flex items-center justify-between text-amber-800 dark:text-amber-300 font-bold">
+                <span class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    Peringatan Barcode
+                </span>
+                <button type="button" onclick="clearKeluarScanFeedback(); startKeluarCameraStream();" class="text-[11px] px-2 py-0.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-semibold shadow-xs">Coba Lagi</button>
+            </div>
+            <p class="text-slate-700 dark:text-slate-300">${safeEsc(messageOrCode)}</p>
+        `;
+    }
+}
+
+function clearKeluarScanFeedback() {
+    const box = document.getElementById('keluar_scan_feedback');
+    if (box) {
+        box.classList.add('hidden');
+        box.innerHTML = '';
+    }
+}
+
 function filterBarangPinjamOptions(preselectedBarangId = null) {
     initSearchableComboboxes();
     const selectJenis = document.getElementById('pinjam_jenis');
@@ -2564,8 +3478,18 @@ function openModal(modalId, customTitle = null, editData = null) {
     if (!modal) return;
 
     if (modalId === 'modalBarangMasuk') {
+        const chkBarcode = document.getElementById('masuk_use_barcode');
+        if (chkBarcode) {
+            chkBarcode.checked = false;
+            toggleMasukBarcodeScanner(false);
+        }
         filterBarangMasukOptions(editData ? editData.barang_id : null);
     } else if (modalId === 'modalBarangKeluar') {
+        const chkBarcode = document.getElementById('keluar_use_barcode');
+        if (chkBarcode) {
+            chkBarcode.checked = false;
+            toggleKeluarBarcodeScanner(false);
+        }
         filterBarangKeluarOptions(editData ? editData.barang_id : null);
     } else if (modalId === 'modalPeminjaman') {
         const chkBarcode = document.getElementById('pinjam_use_barcode');
@@ -3264,6 +4188,20 @@ function closeModal(modalId) {
                 chkBarcode.checked = false;
                 togglePinjamBarcodeScanner(false);
             }
+        } else if (modalId === 'modalBarangMasuk') {
+            stopMasukCameraStream();
+            const chkBarcode = document.getElementById('masuk_use_barcode');
+            if (chkBarcode) {
+                chkBarcode.checked = false;
+                toggleMasukBarcodeScanner(false);
+            }
+        } else if (modalId === 'modalBarangKeluar') {
+            stopKeluarCameraStream();
+            const chkBarcode = document.getElementById('keluar_use_barcode');
+            if (chkBarcode) {
+                chkBarcode.checked = false;
+                toggleKeluarBarcodeScanner(false);
+            }
         }
     }
 
@@ -3362,7 +4300,12 @@ async function handleFormSubmit(event, actionName) {
         formData.append('jurusan_id', document.getElementById('keluar_jurusan_id')?.value || '');
         const barangId = document.getElementById('keluar_barang_id')?.value || '';
         if (!barangId) {
-            showNotification('Pilih bahan yang akan dicatat keluar terlebih dahulu!', 'warning');
+            const isUsingBarcode = document.getElementById('keluar_use_barcode')?.checked;
+            if (isUsingBarcode) {
+                showNotification('Silakan scan barcode atau QR code bahan terlebih dahulu!', 'warning');
+            } else {
+                showNotification('Pilih bahan yang akan dicatat keluar terlebih dahulu!', 'warning');
+            }
             return;
         }
         formData.append('barang_id', barangId);
@@ -3375,7 +4318,12 @@ async function handleFormSubmit(event, actionName) {
         formData.append('jurusan_id', document.getElementById('masuk_jurusan_id')?.value || '');
         const barangId = document.getElementById('masuk_barang_id')?.value || '';
         if (!barangId) {
-            showNotification('Pilih alat atau bahan yang akan dicatat masuk terlebih dahulu!', 'warning');
+            const isUsingBarcode = document.getElementById('masuk_use_barcode')?.checked;
+            if (isUsingBarcode) {
+                showNotification('Silakan scan barcode atau QR code barang terlebih dahulu!', 'warning');
+            } else {
+                showNotification('Pilih alat atau bahan yang akan dicatat masuk terlebih dahulu!', 'warning');
+            }
             return;
         }
         formData.append('barang_id', barangId);
