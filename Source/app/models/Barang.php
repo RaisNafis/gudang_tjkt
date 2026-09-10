@@ -75,8 +75,8 @@ class Barang {
         $stokAwal = isset($data['stok_awal']) ? (int)$data['stok_awal'] : (int)($data['stok_total'] ?? 0);
         $image = !empty($data['image']) ? $data['image'] : null;
         $stmt = $db->prepare("
-            INSERT INTO barang (id, jurusan_id, kategori_id, rak_id, nama_barang, jenis, merek, barcode, stok_awal, stok_tersedia, satuan, image) 
-            VALUES (:id, :jid, :kat, :rak, :nama, :jenis, :merek, :barcode, :stok_awal, :stok_tersedia, :satuan, :image)
+            INSERT INTO barang (id, jurusan_id, kategori_id, rak_id, nama_barang, jenis, merek, barcode, stok_awal, stok_total, stok_tersedia, satuan, image) 
+            VALUES (:id, :jid, :kat, :rak, :nama, :jenis, :merek, :barcode, :stok_awal, :stok_total, :stok_tersedia, :satuan, :image)
         ");
         return $stmt->execute([
             ':id' => $id,
@@ -88,6 +88,7 @@ class Barang {
             ':merek' => !empty($data['merek']) ? $data['merek'] : null,
             ':barcode' => !empty($data['barcode']) ? $data['barcode'] : null,
             ':stok_awal' => $stokAwal,
+            ':stok_total' => $stokAwal,
             ':stok_tersedia' => $stokAwal,
             ':satuan' => !empty($data['satuan']) ? $data['satuan'] : 'Unit',
             ':image' => $image
@@ -96,7 +97,7 @@ class Barang {
 
     public static function update($id, $data) {
         $db = Database::getInstance()->getConnection();
-        $stmtOld = $db->prepare("SELECT stok_awal, stok_tersedia, image FROM barang WHERE id = :id LIMIT 1");
+        $stmtOld = $db->prepare("SELECT stok_awal, stok_tersedia, barcode, image FROM barang WHERE id = :id LIMIT 1");
         $stmtOld->execute([':id' => $id]);
         $old = $stmtOld->fetch(PDO::FETCH_ASSOC);
 
@@ -106,6 +107,7 @@ class Barang {
         $diff = $newStokAwal - (int)$old['stok_awal'];
         $newStokTersedia = max(0, (int)$old['stok_tersedia'] + $diff);
         $jenis = (!empty($data['jenis']) && strtolower($data['jenis']) === 'bahan') ? 'bahan' : 'alat';
+        $finalBarcode = !empty($data['barcode']) ? $data['barcode'] : ($old['barcode'] ?? null);
 
         // Tentukan gambar baru atau pertahankan gambar lama jika tidak diubah
         $finalImage = $old['image'] ?? null;
@@ -129,7 +131,7 @@ class Barang {
                 merek = :merek, 
                 barcode = :barcode, 
                 stok_awal = :stok_awal, 
-                stok_total = :stok_awal,
+                stok_total = :stok_total,
                 satuan = :satuan, 
                 image = :image,
                 updated_at = CURRENT_TIMESTAMP 
@@ -143,8 +145,9 @@ class Barang {
             ':nama' => $data['nama_barang'],
             ':jenis' => $jenis,
             ':merek' => !empty($data['merek']) ? $data['merek'] : null,
-            ':barcode' => !empty($data['barcode']) ? $data['barcode'] : null,
+            ':barcode' => $finalBarcode,
             ':stok_awal' => $newStokAwal,
+            ':stok_total' => $newStokAwal,
             ':satuan' => !empty($data['satuan']) ? $data['satuan'] : 'Unit',
             ':image' => $finalImage
         ]);
@@ -178,10 +181,14 @@ class Barang {
             LEFT JOIN kategori k ON b.kategori_id = k.id 
             LEFT JOIN jurusan j ON b.jurusan_id = j.id 
             LEFT JOIN rak r ON b.rak_id = r.id 
-            WHERE b.barcode = :code OR b.id = :code OR b.kode_barang = :code
+            WHERE b.barcode = :code_bc OR b.id = :code_id OR b.kode_barang = :code_kb
             LIMIT 1
         ");
-        $stmt->execute([':code' => $barcode]);
+        $stmt->execute([
+            ':code_bc' => $barcode,
+            ':code_id' => $barcode,
+            ':code_kb' => $barcode
+        ]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 

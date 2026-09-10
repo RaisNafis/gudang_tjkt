@@ -1299,12 +1299,13 @@ require_once __DIR__ . '/app/models/BarangKeluar.php';
             $existing = $check->fetch();
 
             if ($existing) {
-                $upd = $db->prepare("UPDATE barang SET nama_barang = :nama, merek = :merek, barcode = :barcode, stok_awal = stok_awal + :stok, stok_tersedia = stok_tersedia + :stok WHERE id = :id");
+                $upd = $db->prepare("UPDATE barang SET nama_barang = :nama, merek = :merek, barcode = :barcode, stok_awal = stok_awal + :stok_awal, stok_tersedia = stok_tersedia + :stok_tersedia WHERE id = :id");
                 $upd->execute([
                     ':nama' => $nama_barang,
                     ':merek' => $merek,
                     ':barcode' => $barcode,
-                    ':stok' => $stok_awal,
+                    ':stok_awal' => $stok_awal,
+                    ':stok_tersedia' => $stok_awal,
                     ':id' => $existing['id']
                 ]);
             } else {
