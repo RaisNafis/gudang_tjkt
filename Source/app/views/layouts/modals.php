@@ -567,21 +567,21 @@
             <div>
                 <label class="block font-bold text-slate-700 mb-1">Pilih Jenis Barang <span class="text-red-500">*</span></label>
                 <select id="masuk_jenis" onchange="filterBarangMasukOptions()" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
-                    <option value="">-- Semua Jenis (Alat & Bahan) --</option>
+                    <option value="">-- Semua Jenis (Alat dan Bahan) --</option>
                     <option value="alat">Alat</option>
                     <option value="bahan">Bahan</option>
                 </select>
             </div>
             <div id="wrap_masuk_barang" class="relative">
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1" id="masuk_barang_label">Pilih Alat / Bahan <span class="text-red-500">*</span></label>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1" id="masuk_barang_label">Pilih Alat dan Bahan <span class="text-red-500">*</span></label>
                 <select id="masuk_barang_id" class="hidden">
-                    <option value="">-- Pilih Alat / Bahan --</option>
+                    <option value="">-- Pilih Alat dan Bahan --</option>
                 </select>
                 <div class="relative">
                     <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     </div>
-                    <input type="text" id="masuk_barang_search" autocomplete="off" placeholder="Ketik untuk mencari alat & bahan masuk..." class="w-full pl-9 pr-16 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-sage-600 focus:ring-1 focus:ring-sage-600 transition-all cursor-pointer">
+                    <input type="text" id="masuk_barang_search" autocomplete="off" placeholder="Ketik untuk mencari Alat dan Bahan masuk..." class="w-full pl-9 pr-16 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-sage-600 focus:ring-1 focus:ring-sage-600 transition-all cursor-pointer">
                     <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
                         <button type="button" id="masuk_barang_clear" tabindex="-1" class="hidden p-1 text-slate-400 hover:text-red-500 rounded-lg transition-colors" title="Hapus pilihan">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -774,21 +774,21 @@
             <div id="wrap_pinjam_jenis">
                 <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Pilih Jenis Barang <span class="text-red-500">*</span></label>
                 <select id="pinjam_jenis" onchange="filterBarangPinjamOptions()" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
-                    <option value="">-- Semua Jenis (Alat & Bahan) --</option>
+                    <option value="">-- Semua Jenis (Alat dan Bahan) --</option>
                     <option value="alat">Alat</option>
                     <option value="bahan">Bahan</option>
                 </select>
             </div>
             <div id="wrap_pinjam_barang" class="relative">
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1" id="pinjam_barang_label">Pilih Inventaris <span class="text-red-500">*</span></label>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1" id="pinjam_barang_label">Pilih Alat dan Bahan <span class="text-red-500">*</span></label>
                 <select id="pinjam_barang_id" class="hidden">
-                    <option value="">-- Pilih Inventaris --</option>
+                    <option value="">-- Pilih Alat dan Bahan --</option>
                 </select>
                 <div class="relative">
                     <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     </div>
-                    <input type="text" id="pinjam_barang_search" autocomplete="off" placeholder="Ketik untuk mencari alat & bahan..." class="w-full pl-9 pr-16 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-sage-600 focus:ring-1 focus:ring-sage-600 transition-all cursor-pointer">
+                    <input type="text" id="pinjam_barang_search" autocomplete="off" placeholder="Ketik untuk mencari Alat dan Bahan..." class="w-full pl-9 pr-16 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-sage-600 focus:ring-1 focus:ring-sage-600 transition-all cursor-pointer">
                     <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
                         <button type="button" id="pinjam_barang_clear" tabindex="-1" class="hidden p-1 text-slate-400 hover:text-red-500 rounded-lg transition-colors" title="Hapus pilihan">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -800,11 +800,26 @@
                     <div id="pinjam_barang_menu" class="hidden absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl shadow-xl divide-y divide-slate-100 dark:divide-slate-700/50 text-xs"></div>
                 </div>
             </div>
-            <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Guru Peminjam</label>
-                <select id="pinjam_guru_peminjam_select" onchange="toggleGuruPeminjamMode(this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
-                    <option value="">-- Pilih Guru Peminjam (Otomatis Guru Login jika kosong) --</option>
+            <div id="wrap_pinjam_guru" class="relative">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1" id="pinjam_guru_label">Guru Peminjam</label>
+                <select id="pinjam_guru_peminjam_select" onchange="toggleGuruPeminjamMode(this.value)" class="hidden">
+                    <option value="">-- Pilih Guru Peminjam --</option>
                 </select>
+                <div class="relative">
+                    <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+                    <input type="text" id="pinjam_guru_search" autocomplete="off" placeholder="Ketik untuk mencari Guru Peminjam..." class="w-full pl-9 pr-16 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-sage-600 focus:ring-1 focus:ring-sage-600 transition-all cursor-pointer">
+                    <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                        <button type="button" id="pinjam_guru_clear" tabindex="-1" class="hidden p-1 text-slate-400 hover:text-red-500 rounded-lg transition-colors" title="Hapus pilihan">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                        <button type="button" id="pinjam_guru_chevron" tabindex="-1" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg transition-transform">
+                            <svg class="w-4 h-4 transform transition-transform duration-200" id="pinjam_guru_chevron_icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                    </div>
+                    <div id="pinjam_guru_menu" class="hidden absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl shadow-xl divide-y divide-slate-100 dark:divide-slate-700/50 text-xs"></div>
+                </div>
                 <input type="text" id="pinjam_guru_peminjam_custom" placeholder="Ketik nama guru peminjam manual..." class="mt-2 hidden w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
             </div>
 
@@ -819,11 +834,26 @@
 
             <!-- Bagian Data Siswa (Hanya tampil jika checklist dicentang) -->
             <div id="section_siswa_peminjam" class="hidden space-y-3">
-                <div>
-                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Siswa Peminjam <span class="text-red-500">*</span></label>
-                    <select id="pinjam_peminjam_select" onchange="onSiswaSelectedInPeminjamanForm(this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
+                <div id="wrap_pinjam_siswa" class="relative">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1" id="pinjam_siswa_label">Siswa Peminjam <span class="text-red-500">*</span></label>
+                    <select id="pinjam_peminjam_select" onchange="onSiswaSelectedInPeminjamanForm(this.value)" class="hidden">
                         <option value="">-- Pilih Siswa Peminjam --</option>
                     </select>
+                    <div class="relative">
+                        <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <input type="text" id="pinjam_siswa_search" autocomplete="off" placeholder="Ketik untuk mencari Siswa Peminjam..." class="w-full pl-9 pr-16 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-sage-600 focus:ring-1 focus:ring-sage-600 transition-all cursor-pointer">
+                        <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                            <button type="button" id="pinjam_siswa_clear" tabindex="-1" class="hidden p-1 text-slate-400 hover:text-red-500 rounded-lg transition-colors" title="Hapus pilihan">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                            <button type="button" id="pinjam_siswa_chevron" tabindex="-1" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg transition-transform">
+                                <svg class="w-4 h-4 transform transition-transform duration-200" id="pinjam_siswa_chevron_icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                        </div>
+                        <div id="pinjam_siswa_menu" class="hidden absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl shadow-xl divide-y divide-slate-100 dark:divide-slate-700/50 text-xs"></div>
+                    </div>
                     <input type="text" id="pinjam_peminjam_custom" placeholder="Ketik nama siswa peminjam..." class="mt-2 hidden w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1454,20 +1484,79 @@ class SearchableSelect {
     }
 
     setItems(items, preselectedValue = null) {
-        this.items = (items || []).map(b => ({
-            id: String(b.id),
-            name: b.nama_barang || '',
-            jenis: (b.jenis || 'alat').toLowerCase(),
-            merek: b.merek || '',
-            barcode: b.barcode || '',
-            stok: Number(b.stok_tersedia ?? b.stok_total ?? 0),
-            satuan: b.satuan || 'Unit'
-        }));
+        this.items = (items || []).map(b => {
+            if (b.name !== undefined && b.id !== undefined && b.details !== undefined) {
+                return {
+                    id: String(b.id),
+                    name: String(b.name),
+                    details: b.details || [],
+                    rightText: b.rightText || '',
+                    isOutOfStock: !!b.isOutOfStock,
+                    searchStr: (b.searchStr || `${b.name} ${(b.details || []).join(' ')}`).toLowerCase()
+                };
+            }
+            if (b.nama_barang) {
+                const isAlat = String(b.jenis || 'alat').toLowerCase() === 'alat';
+                let details = [isAlat ? 'Alat' : 'Bahan'];
+                if (b.merek && b.merek !== '-') details.push(b.merek);
+                if (b.barcode) details.push('#' + b.barcode);
+                const stokVal = Number(b.stok_tersedia ?? b.stok_total ?? 0);
+                return {
+                    id: String(b.id),
+                    name: b.nama_barang,
+                    details: details,
+                    rightText: stokVal > 0 ? `${stokVal.toLocaleString('en-US')} ${b.satuan || 'Unit'}` : 'Habis',
+                    isOutOfStock: stokVal <= 0,
+                    searchStr: `${b.nama_barang} ${b.merek || ''} ${b.barcode || ''} ${b.jenis || ''}`.toLowerCase()
+                };
+            }
+            if (b.nama_guru) {
+                let details = [];
+                if (b.nama_jurusan) details.push(b.nama_jurusan);
+                else if (b.mengajar) details.push(b.mengajar === 'umum' ? 'Guru Umum' : b.mengajar);
+                return {
+                    id: String(b.nama_guru),
+                    name: b.nama_guru,
+                    details: details,
+                    rightText: '',
+                    isOutOfStock: false,
+                    searchStr: `${b.nama_guru} ${b.nama_jurusan || ''} ${b.mengajar || ''}`.toLowerCase()
+                };
+            }
+            if (b.nama_siswa || b.nama_lengkap) {
+                const sName = b.nama_lengkap || b.nama_siswa;
+                let details = [];
+                if (b.nisn) details.push('NISN: ' + b.nisn);
+                if (b.kelas) details.push(b.kelas);
+                if (b.nama_jurusan) details.push(b.nama_jurusan);
+                return {
+                    id: String(sName),
+                    name: sName,
+                    details: details,
+                    rightText: b.kelas || '',
+                    isOutOfStock: false,
+                    searchStr: `${sName} ${b.nisn || ''} ${b.kelas || ''} ${b.nama_jurusan || ''}`.toLowerCase()
+                };
+            }
+            return {
+                id: String(b.id || b.value || ''),
+                name: String(b.name || b.label || b.id || ''),
+                details: b.details || [],
+                rightText: b.rightText || '',
+                isOutOfStock: false,
+                searchStr: String(b.name || b.label || b.id || '').toLowerCase()
+            };
+        });
 
         let target = preselectedValue !== null ? String(preselectedValue) : this.selectedValue;
-        const found = this.items.find(i => i.id === target);
+        const found = this.items.find(i => i.id === target || (target && i.name.toLowerCase() === target.toLowerCase()));
         if (found) {
             this.select(found, false);
+        } else if (target) {
+            this.selectedValue = target;
+            this.selectedText = target;
+            this.inputEl.value = target;
+            if (this.clearBtn) this.clearBtn.classList.remove('hidden');
         } else {
             this.clear(false);
         }
@@ -1479,10 +1568,7 @@ class SearchableSelect {
             this.filteredItems = [...this.items];
         } else {
             this.filteredItems = this.items.filter(item => {
-                return item.name.toLowerCase().includes(q) ||
-                    item.merek.toLowerCase().includes(q) ||
-                    item.barcode.toLowerCase().includes(q) ||
-                    item.jenis.toLowerCase().includes(q);
+                return (item.searchStr || item.name.toLowerCase()).includes(q);
             });
         }
         this.highlightedIndex = -1;
@@ -1503,23 +1589,18 @@ class SearchableSelect {
 
         let html = '';
         this.filteredItems.forEach((item, idx) => {
-            const isSelected = item.id === this.selectedValue;
+            const isSelected = item.id === this.selectedValue || (this.selectedValue && item.name === this.selectedValue);
             const isHighlighted = idx === this.highlightedIndex;
-            const isAlat = item.jenis === 'alat';
-            const jenisBadge = isAlat
-                ? '<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9.5px] font-bold uppercase tracking-wider bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400 border border-blue-200/80 dark:border-blue-800/50">Alat</span>'
-                : '<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9.5px] font-bold uppercase tracking-wider bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400 border border-amber-200/80 dark:border-amber-800/50">Bahan</span>';
 
-            const stokBadge = item.stok > 0
-                ? `<span class="inline-flex items-center px-2 py-0.5 rounded-lg text-[10.5px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/50">${item.stok.toLocaleString('en-US')} ${escapeHtml(item.satuan)}</span>`
-                : `<span class="inline-flex items-center px-2 py-0.5 rounded-lg text-[10.5px] font-semibold bg-rose-50 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400 border border-rose-200/80 dark:border-rose-800/50">Habis</span>`;
-
-            let metaDetails = [];
-            if (item.merek && item.merek !== '-') metaDetails.push(escapeHtml(item.merek));
-            if (item.barcode) metaDetails.push(`<span class="font-mono text-[10px] text-slate-400">#${escapeHtml(item.barcode)}</span>`);
+            let metaDetails = (item.details || []).map(d => {
+                if (typeof d === 'string' && d.startsWith('#')) {
+                    return `<span class="font-mono text-[10.5px] text-slate-400">${escapeHtml(d)}</span>`;
+                }
+                return `<span class="font-medium text-slate-500 dark:text-slate-400">${escapeHtml(d)}</span>`;
+            });
 
             html += `
-                <div data-id="${item.id}" data-idx="${idx}" class="combobox-item px-3.5 py-2 cursor-pointer flex items-center justify-between gap-3 transition-colors ${
+                <div data-id="${escapeHtml(item.id)}" data-idx="${idx}" class="combobox-item px-3.5 py-2 cursor-pointer flex items-center justify-between gap-3 transition-colors ${
                     isSelected ? 'bg-sage-50/90 dark:bg-slate-700/80' : (isHighlighted ? 'bg-slate-100/80 dark:bg-slate-700/40' : 'hover:bg-slate-50 dark:hover:bg-slate-700/40')
                 }">
                     <div class="flex items-center gap-2.5 min-w-0">
@@ -1527,18 +1608,16 @@ class SearchableSelect {
                             ${isSelected ? '<svg class="w-4 h-4 text-sage-600 dark:text-sage-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>' : ''}
                         </div>
                         <div class="min-w-0">
-                            <div class="font-semibold text-slate-800 dark:text-slate-100 truncate ${isSelected ? 'font-bold text-sage-700 dark:text-sage-300' : ''}">
+                            <div class="font-semibold text-xs text-slate-800 dark:text-slate-100 truncate ${isSelected ? 'font-bold text-sage-700 dark:text-sage-300' : ''}">
                                 ${escapeHtml(item.name)}
                             </div>
-                            <div class="flex items-center gap-2 mt-0.5 text-[11px] text-slate-400 dark:text-slate-400 truncate">
-                                ${jenisBadge}
-                                ${metaDetails.length > 0 ? metaDetails.join('<span class="text-slate-300 dark:text-slate-600">•</span>') : ''}
-                            </div>
+                            ${metaDetails.length > 0 ? `<div class="flex items-center gap-1.5 mt-0.5 text-[11px] text-slate-400 dark:text-slate-400 truncate">${metaDetails.join('<span class="text-slate-300 dark:text-slate-600">•</span>')}</div>` : ''}
                         </div>
                     </div>
+                    ${item.rightText ? `
                     <div class="shrink-0 text-right">
-                        ${stokBadge}
-                    </div>
+                        <span class="text-xs ${item.isOutOfStock ? 'text-rose-500 dark:text-rose-400 font-semibold' : 'text-slate-500 dark:text-slate-400 font-medium'}">${escapeHtml(item.rightText)}</span>
+                    </div>` : ''}
                 </div>
             `;
         });
@@ -1549,7 +1628,7 @@ class SearchableSelect {
             el.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const id = el.getAttribute('data-id');
-                const item = this.items.find(i => i.id === id);
+                const item = this.items.find(i => String(i.id) === String(id));
                 if (item) {
                     this.select(item);
                 }
@@ -1597,12 +1676,24 @@ class SearchableSelect {
     }
 
     setValue(id) {
-        const item = this.items.find(i => i.id === String(id));
+        if (!id) {
+            this.clear(false);
+            return;
+        }
+        const item = this.items.find(i => String(i.id) === String(id));
         if (item) {
             this.select(item, false);
         } else {
-            this.clear(false);
+            this.selectedValue = String(id);
+            this.selectedText = String(id);
+            this.inputEl.value = String(id);
+            if (this.clearBtn) this.clearBtn.classList.remove('hidden');
         }
+    }
+
+    syncFromSelect() {
+        if (!this.selectEl) return;
+        this.setValue(this.selectEl.value);
     }
 
     clear(triggerEvent = true) {
@@ -1622,6 +1713,8 @@ class SearchableSelect {
 }
 
 let pinjamCombobox = null;
+let pinjamGuruCombobox = null;
+let pinjamSiswaCombobox = null;
 let masukCombobox = null;
 let keluarCombobox = null;
 
@@ -1635,10 +1728,40 @@ function initSearchableComboboxes() {
             clearBtn: 'pinjam_barang_clear',
             toggleBtn: 'pinjam_barang_chevron',
             chevronIcon: 'pinjam_barang_chevron_icon',
-            emptyText: 'Alat atau bahan tidak ditemukan',
-            placeholder: 'Ketik untuk mencari alat & bahan...'
+            emptyText: 'Alat dan Bahan tidak ditemukan',
+            placeholder: 'Ketik untuk mencari Alat dan Bahan...'
         });
         window.pinjamCombobox = pinjamCombobox;
+    }
+
+    if (!pinjamGuruCombobox && document.getElementById('pinjam_guru_search')) {
+        pinjamGuruCombobox = new SearchableSelect({
+            wrapper: 'wrap_pinjam_guru',
+            select: 'pinjam_guru_peminjam_select',
+            input: 'pinjam_guru_search',
+            menu: 'pinjam_guru_menu',
+            clearBtn: 'pinjam_guru_clear',
+            toggleBtn: 'pinjam_guru_chevron',
+            chevronIcon: 'pinjam_guru_chevron_icon',
+            emptyText: 'Guru tidak ditemukan',
+            placeholder: 'Ketik untuk mencari Guru Peminjam...'
+        });
+        window.pinjamGuruCombobox = pinjamGuruCombobox;
+    }
+
+    if (!pinjamSiswaCombobox && document.getElementById('pinjam_siswa_search')) {
+        pinjamSiswaCombobox = new SearchableSelect({
+            wrapper: 'wrap_pinjam_siswa',
+            select: 'pinjam_peminjam_select',
+            input: 'pinjam_siswa_search',
+            menu: 'pinjam_siswa_menu',
+            clearBtn: 'pinjam_siswa_clear',
+            toggleBtn: 'pinjam_siswa_chevron',
+            chevronIcon: 'pinjam_siswa_chevron_icon',
+            emptyText: 'Siswa tidak ditemukan',
+            placeholder: 'Ketik untuk mencari Siswa Peminjam...'
+        });
+        window.pinjamSiswaCombobox = pinjamSiswaCombobox;
     }
 
     if (!masukCombobox && document.getElementById('masuk_barang_search')) {
@@ -1650,8 +1773,8 @@ function initSearchableComboboxes() {
             clearBtn: 'masuk_barang_clear',
             toggleBtn: 'masuk_barang_chevron',
             chevronIcon: 'masuk_barang_chevron_icon',
-            emptyText: 'Alat atau bahan tidak ditemukan',
-            placeholder: 'Ketik untuk mencari alat & bahan masuk...'
+            emptyText: 'Alat dan Bahan tidak ditemukan',
+            placeholder: 'Ketik untuk mencari Alat dan Bahan masuk...'
         });
         window.masukCombobox = masukCombobox;
     }
@@ -1666,7 +1789,7 @@ function initSearchableComboboxes() {
             toggleBtn: 'keluar_barang_chevron',
             chevronIcon: 'keluar_barang_chevron_icon',
             emptyText: 'Bahan tidak ditemukan',
-            placeholder: 'Ketik untuk mencari bahan keluar...'
+            placeholder: 'Ketik untuk mencari Bahan keluar...'
         });
         window.keluarCombobox = keluarCombobox;
     }
@@ -2254,6 +2377,7 @@ function filterBarangPinjamOptions(preselectedBarangId = null) {
 }
 
 function filterGuruPinjamOptions(preselectedGuru = null) {
+    initSearchableComboboxes();
     const selectGuru = document.getElementById('pinjam_guru_peminjam_select');
     if (!selectGuru || !window.dbGuru) return;
 
@@ -2303,13 +2427,36 @@ function filterGuruPinjamOptions(preselectedGuru = null) {
                 opt.value.trim().toLowerCase().includes(currentTeacherName.trim().toLowerCase()) ||
                 currentTeacherName.trim().toLowerCase().includes(opt.value.trim().toLowerCase()))) {
                 selectGuru.value = opt.value;
+                targetVal = opt.value;
                 break;
             }
         }
     }
+
+    if (window.pinjamGuruCombobox) {
+        const guruItems = filtered.map(g => {
+            let details = [];
+            if (g.nama_jurusan) details.push(g.nama_jurusan);
+            else if (g.mengajar) details.push(g.mengajar === 'umum' ? 'Guru Umum' : g.mengajar);
+            return {
+                id: g.nama_guru,
+                name: g.nama_guru,
+                details: details,
+                rightText: ''
+            };
+        });
+        guruItems.push({
+            id: '__custom__',
+            name: '+ Input Nama Guru Manual',
+            details: ['Ketik nama guru manual jika belum terdaftar'],
+            rightText: ''
+        });
+        window.pinjamGuruCombobox.setItems(guruItems, selectGuru.value || null);
+    }
 }
 
 function filterSiswaPinjamOptions(preselectedSiswa = null) {
+    initSearchableComboboxes();
     const selectSiswa = document.getElementById('pinjam_peminjam_select');
     if (!selectSiswa || !window.dbSiswa) return;
 
@@ -2348,6 +2495,29 @@ function filterSiswaPinjamOptions(preselectedSiswa = null) {
             selectSiswa.value = '__custom__';
             if (customSiswa) { customSiswa.classList.remove('hidden'); customSiswa.required = true; customSiswa.value = targetVal; }
         }
+    }
+
+    if (window.pinjamSiswaCombobox) {
+        const siswaItems = filteredSiswa.map(s => {
+            const displayName = s.nama_lengkap || s.nama_siswa;
+            let details = [];
+            if (s.nisn) details.push('NISN: ' + s.nisn);
+            if (s.kelas) details.push(s.kelas);
+            if (s.nama_jurusan) details.push(s.nama_jurusan);
+            return {
+                id: displayName,
+                name: displayName,
+                details: details,
+                rightText: s.kelas || ''
+            };
+        });
+        siswaItems.push({
+            id: '__custom__',
+            name: '+ Input Nama Siswa Manual',
+            details: ['Ketik nama siswa manual jika belum terdaftar'],
+            rightText: ''
+        });
+        window.pinjamSiswaCombobox.setItems(siswaItems, selectSiswa.value || null);
     }
 }
 
@@ -2722,6 +2892,9 @@ function openModal(modalId, customTitle = null, editData = null) {
                         selectGuru.value = '__custom__';
                         if (customGuru) { customGuru.classList.remove('hidden'); customGuru.value = editData.guru_peminjam; }
                     }
+                    if (window.pinjamGuruCombobox) {
+                        window.pinjamGuruCombobox.setValue(selectGuru.value);
+                    }
                 }
 
                 // 2. Sinkronisasi Apakah Peminjam Siswa
@@ -2768,6 +2941,9 @@ function openModal(modalId, customTitle = null, editData = null) {
                             selectSiswa.value = '__custom__';
                             if (customSiswa) { customSiswa.classList.remove('hidden'); customSiswa.required = true; customSiswa.value = rawPeminjam; }
                         }
+                        if (window.pinjamSiswaCombobox) {
+                            window.pinjamSiswaCombobox.setValue(selectSiswa.value);
+                        }
                     }
 
                     if (elNisn) elNisn.value = rawNisn || (matchedSiswa ? matchedSiswa.nisn : '');
@@ -2777,6 +2953,9 @@ function openModal(modalId, customTitle = null, editData = null) {
                     if (customSiswa) { customSiswa.classList.add('hidden'); customSiswa.required = false; customSiswa.value = ''; }
                     if (elNisn) elNisn.value = '';
                     if (elTahun) elTahun.value = '';
+                    if (window.pinjamSiswaCombobox) {
+                        window.pinjamSiswaCombobox.clear(false);
+                    }
                 }
 
                 // Jika status sudah 'dikembalikan', KUNCI (disable) semua field kecuali Tanggal dan Status!
@@ -2784,7 +2963,13 @@ function openModal(modalId, customTitle = null, editData = null) {
                 const searchPinjam = document.getElementById('pinjam_barang_search');
                 const clearPinjam = document.getElementById('pinjam_barang_clear');
                 const chevronPinjam = document.getElementById('pinjam_barang_chevron');
-                [elJurusan, elJenis, elBarang, selectSiswa, customSiswa, elJumlah, elTugas, elTahun, elCheckSiswa, selectGuru, customGuru, searchPinjam].forEach(el => {
+                const searchGuru = document.getElementById('pinjam_guru_search');
+                const clearGuru = document.getElementById('pinjam_guru_clear');
+                const chevronGuru = document.getElementById('pinjam_guru_chevron');
+                const searchSiswa = document.getElementById('pinjam_siswa_search');
+                const clearSiswa = document.getElementById('pinjam_siswa_clear');
+                const chevronSiswa = document.getElementById('pinjam_siswa_chevron');
+                [elJurusan, elJenis, elBarang, selectSiswa, customSiswa, elJumlah, elTugas, elTahun, elCheckSiswa, selectGuru, customGuru, searchPinjam, searchGuru, searchSiswa].forEach(el => {
                     if (el) {
                         el.disabled = isReturned;
                         if (isReturned) {
@@ -2796,15 +2981,23 @@ function openModal(modalId, customTitle = null, editData = null) {
                 });
                 if (clearPinjam && isReturned) clearPinjam.classList.add('hidden');
                 if (chevronPinjam) chevronPinjam.disabled = isReturned;
+                if (clearGuru && isReturned) clearGuru.classList.add('hidden');
+                if (chevronGuru) chevronGuru.disabled = isReturned;
+                if (clearSiswa && isReturned) clearSiswa.classList.add('hidden');
+                if (chevronSiswa) chevronSiswa.disabled = isReturned;
             }
         } else {
-            const searchPinjam = document.getElementById('pinjam_barang_search');
-            const chevronPinjam = document.getElementById('pinjam_barang_chevron');
-            if (searchPinjam) {
-                searchPinjam.disabled = false;
-                searchPinjam.classList.remove('bg-slate-100/80', 'cursor-not-allowed');
-            }
-            if (chevronPinjam) chevronPinjam.disabled = false;
+            ['pinjam_barang_search', 'pinjam_guru_search', 'pinjam_siswa_search'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.disabled = false;
+                    el.classList.remove('bg-slate-100/80', 'cursor-not-allowed');
+                }
+            });
+            ['pinjam_barang_chevron', 'pinjam_guru_chevron', 'pinjam_siswa_chevron'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.disabled = false;
+            });
             // Reset semua hidden ID dan input saat mode Tambah Data Baru
             ['guru_edit_id', 'siswa_edit_id', 'jurusan_edit_id', 'pengguna_edit_id', 'kategori_edit_id', 'rak_edit_id', 'barang_edit_id', 'masuk_edit_id', 'keluar_edit_id', 'pinjam_edit_id'].forEach(id => {
                 const el = document.getElementById(id);
@@ -2947,7 +3140,9 @@ function openModal(modalId, customTitle = null, editData = null) {
                 const customGuru = document.getElementById('pinjam_guru_peminjam_custom');
 
                 const searchPinjam = document.getElementById('pinjam_barang_search');
-                [elJurusan, elJenis, elBarang, selectSiswa, customSiswa, elJumlah, elTugas, elTglPinjam, elTglKembali, elStatus, checkUntukSiswa, selectGuru, customGuru, inputNisn, inputTA, searchPinjam].forEach(el => {
+                const searchGuru = document.getElementById('pinjam_guru_search');
+                const searchSiswa = document.getElementById('pinjam_siswa_search');
+                [elJurusan, elJenis, elBarang, selectSiswa, customSiswa, elJumlah, elTugas, elTglPinjam, elTglKembali, elStatus, checkUntukSiswa, selectGuru, customGuru, inputNisn, inputTA, searchPinjam, searchGuru, searchSiswa].forEach(el => {
                     if (el) {
                         el.disabled = false;
                         el.classList.remove('bg-slate-100/80', 'cursor-not-allowed');
@@ -2978,6 +3173,10 @@ function openModal(modalId, customTitle = null, editData = null) {
                         if (customGuru) { customGuru.classList.add('hidden'); customGuru.value = ''; }
                     }
                 }
+
+                if (window.pinjamCombobox) window.pinjamCombobox.clear(false);
+                if (window.pinjamSiswaCombobox) window.pinjamSiswaCombobox.clear(false);
+                if (window.pinjamGuruCombobox) window.pinjamGuruCombobox.setValue(selectGuru ? selectGuru.value : '');
 
                 if (elJumlah) elJumlah.value = 1;
                 if (elTugas) elTugas.value = '';
@@ -4229,7 +4428,7 @@ function togglePinjamUntukSiswa(isChecked) {
             badge.textContent = 'Ya (Peminjam Siswa)';
             badge.className = 'text-xs font-bold text-sage-600 dark:text-amber-400';
         }
-        if (selSiswa) selSiswa.required = true;
+        if (selSiswa) selSiswa.required = false;
     } else {
         if (sec) sec.classList.add('hidden');
         if (badge) {
@@ -4239,6 +4438,9 @@ function togglePinjamUntukSiswa(isChecked) {
         if (selSiswa) {
             selSiswa.required = false;
             selSiswa.value = '';
+        }
+        if (window.pinjamSiswaCombobox) {
+            window.pinjamSiswaCombobox.clear(false);
         }
         const custSiswa = document.getElementById('pinjam_peminjam_custom');
         if (custSiswa) {

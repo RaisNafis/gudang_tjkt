@@ -337,7 +337,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                                     </div>
                                     <div class="min-w-0">
-                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">TOTAL ALAT & BAHAN</span>
+                                        <span class="block text-[11px] font-bold text-slate-400">Total Alat dan Bahan</span>
                                         <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
                                             <span id="statSuperTotalBarang"><?= number_format($totalBarangCount); ?></span>
                                         </h3>
@@ -557,7 +557,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                                     </div>
                                     <div class="min-w-0">
-                                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">TOTAL ALAT & BAHAN</span>
+                                        <span class="block text-[11px] font-bold text-slate-400">Total Alat dan Bahan</span>
                                         <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
                                             <span id="statTotalBarang"><?= number_format($totalBarangCount); ?></span>
                                         </h3>
@@ -1936,7 +1936,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                     <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Alat & Bahan</span>
+                            <span class="text-xs font-bold text-slate-500">Total Alat dan Bahan</span>
                             <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                             </div>
@@ -1995,7 +1995,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             </div>
                             <div>
                                 <select id="filter_barang_jenis" onchange="filterTableBarang()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold cursor-pointer">
-                                    <option value="">Semua Jenis (Alat & Bahan)</option>
+                                    <option value="">Semua Jenis (Alat dan Bahan)</option>
                                     <option value="alat">Alat</option>
                                     <option value="bahan">Bahan</option>
                                 </select>
