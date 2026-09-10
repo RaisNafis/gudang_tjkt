@@ -2169,11 +2169,12 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
 
                     <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100">
                         <table id="tableBarang" class="w-full text-left text-xs text-slate-600">
-                            <thead class="bg-sage-50 text-slate-700 font-bold border-b border-sage-200">
+                            <thead class="bg-sage-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold border-b border-sage-200 dark:border-slate-700">
                                 <tr>
                                     <th class="py-3 px-3 w-10 text-center"><input type="checkbox" class="select-all-checkbox rounded accent-sage-600 cursor-pointer" onchange="toggleSelectAll(this)"></th>
                                     <th class="py-3 px-4 w-12 text-center">No</th>
                                     <th class="py-3 px-4">Nama Alat / Bahan</th>
+                                    <th class="py-3 px-4 text-center">Images</th>
                                     <th class="py-3 px-4">Jenis</th>
                                     <th class="py-3 px-4">Kategori</th>
                                     <th class="py-3 px-4">Rak</th>
@@ -2185,7 +2186,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                     <th class="py-3 px-4">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-100">
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                                 <?php $no = 1; foreach ($dbBarang as $b): ?>
                                     <?php 
                                         $jColor = (!empty($b['jurusan_id']) && isset($jurusanColors[$b['jurusan_id']])) ? $jurusanColors[$b['jurusan_id']] : '#2E7D32';
@@ -2198,22 +2199,22 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         data-dipinjam="<?= !empty($b['total_dipinjam']) && intval($b['total_dipinjam']) > 0 ? '1' : '0'; ?>"
                                         data-keluar="<?= !empty($b['total_keluar']) && intval($b['total_keluar']) > 0 ? '1' : '0'; ?>"
                                         data-stok-tersedia="<?= intval($b['stok_tersedia'] ?? 0); ?>"
-                                        class="hover:bg-sage-50/50 transition-all duration-300">
+                                        class="hover:bg-sage-50/50 dark:hover:bg-slate-800/50 transition-all duration-300">
                                         <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="<?= htmlspecialchars($b['id']); ?>" onchange="updateBatchDeleteBar()"></td>
                                         <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell"><?= $no++; ?></td>
                                         <td class="py-3.5 px-4 font-extrabold text-xs nama-barang-cell">
-                                            <div class="flex items-center gap-2.5">
-                                                <?php if (!empty($b['image'])): ?>
-                                                    <img src="<?= htmlspecialchars($b['image']); ?>" alt="<?= htmlspecialchars($b['nama_barang']); ?>" class="w-8 h-8 rounded-lg object-cover border border-slate-200 dark:border-slate-700 shrink-0 shadow-xs cursor-pointer hover:scale-110 transition-transform" onclick="showImageModal('<?= htmlspecialchars($b['image']); ?>', '<?= htmlspecialchars(addslashes($b['nama_barang'])); ?>')">
-                                                <?php else: ?>
-                                                    <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0 text-slate-400 dark:text-slate-500">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                                                    </div>
-                                                <?php endif; ?>
-                                                <span style="color: <?= htmlspecialchars($jColor); ?>;"><?= htmlspecialchars($b['nama_barang']); ?></span>
-                                            </div>
+                                            <span style="color: <?= htmlspecialchars($jColor); ?>;"><?= htmlspecialchars($b['nama_barang']); ?></span>
                                         </td>
-                                        <td class="py-3.5 px-4 font-semibold text-slate-700"><?= ucfirst(htmlspecialchars($b['jenis'] ?? 'alat')); ?></td>
+                                        <td class="py-3.5 px-4 text-center">
+                                            <?php if (!empty($b['image'])): ?>
+                                                <button type="button" onclick="showFotoPreview('<?= htmlspecialchars($b['image']); ?>', '<?= htmlspecialchars(addslashes($b['nama_barang'])); ?>')" class="p-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all inline-flex items-center justify-center group cursor-pointer" title="Lihat Foto <?= htmlspecialchars($b['nama_barang']); ?>">
+                                                    <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                </button>
+                                            <?php else: ?>
+                                                <span class="text-slate-400 font-normal">-</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="py-3.5 px-4 font-semibold text-slate-700 dark:text-slate-300"><?= ucfirst(htmlspecialchars($b['jenis'] ?? 'alat')); ?></td>
                                         <td class="py-3.5 px-4 font-semibold text-slate-700"><?= htmlspecialchars($b['nama_kategori'] ?? '-'); ?></td>
                                         <td class="py-3.5 px-4 font-semibold text-slate-700"><?= htmlspecialchars($b['nama_rak'] ?? '-'); ?></td>
                                         <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><td class="py-3.5 px-4 font-bold text-sage-700"><?= htmlspecialchars($b['nama_jurusan'] ?? 'Semua Jurusan'); ?></td><?php endif; ?>
@@ -5422,9 +5423,9 @@ function renderTableBarang() {
             const stokTersediaVal = parseInt(b.stok_tersedia !== undefined && b.stok_tersedia !== null ? b.stok_tersedia : 0);
             const stokAwalVal = (b.stok_awal !== undefined && b.stok_awal !== null) ? b.stok_awal : (b.stok_total || 0);
 
-            const imageHtml = b.image
-                ? `<img src="${escapeHtml(b.image)}" alt="${escapeHtml(b.nama_barang)}" class="w-8 h-8 rounded-lg object-cover border border-slate-200 dark:border-slate-700 shrink-0 shadow-xs cursor-pointer hover:scale-110 transition-transform" onclick="showImageModal('${escapeHtml(b.image)}', '${escapeJsStr(b.nama_barang)}')">`
-                : `<div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0 text-slate-400 dark:text-slate-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></div>`;
+            const imageBtn = b.image
+                ? `<button type="button" onclick="showFotoPreview('${escapeHtml(b.image)}', '${escapeJsStr(b.nama_barang)}')" class="p-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all inline-flex items-center justify-center group cursor-pointer" title="Lihat Foto ${escapeHtml(b.nama_barang)}"><svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>`
+                : '<span class="text-slate-400 font-normal">-</span>';
 
             return `<tr id="row-barang-${b.id}"
             data-jenis="${escapeHtml(String(b.jenis || 'alat').toLowerCase())}"
@@ -5434,16 +5435,14 @@ function renderTableBarang() {
             data-dipinjam="${totalDipinjam > 0 ? '1' : '0'}"
             data-keluar="${totalKeluar > 0 ? '1' : '0'}"
             data-stok-tersedia="${stokTersediaVal}"
-            class="hover:bg-sage-50/50 transition-all duration-300">
+            class="hover:bg-sage-50/50 dark:hover:bg-slate-800/50 transition-all duration-300">
             <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${b.id}" onchange="updateBatchDeleteBar()"></td>
             <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${idx + 1}</td>
             <td class="py-3.5 px-4 font-extrabold text-xs nama-barang-cell">
-                <div class="flex items-center gap-2.5">
-                    ${imageHtml}
-                    <span class="text-sage-700 dark:text-sage-300">${escapeHtml(b.nama_barang)}</span>
-                </div>
+                <span class="text-sage-700 dark:text-sage-300">${escapeHtml(b.nama_barang)}</span>
             </td>
-            <td class="py-3.5 px-4 font-semibold text-slate-700">${escapeHtml(jenisText)}</td>
+            <td class="py-3.5 px-4 text-center">${imageBtn}</td>
+            <td class="py-3.5 px-4 font-semibold text-slate-700 dark:text-slate-300">${escapeHtml(jenisText)}</td>
             <td class="py-3.5 px-4 font-semibold text-slate-700">${escapeHtml(b.nama_kategori || '-')}</td>
             <td class="py-3.5 px-4 font-semibold text-slate-700">${escapeHtml(b.nama_rak || '-')}</td>
             ${jurTd}

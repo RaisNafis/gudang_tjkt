@@ -1552,14 +1552,18 @@
 <!-- FULL PREVIEW IMAGE ONLY (TANPA MODAL CARD, FLOATING CLOSE & DOWNLOAD ICONS, NO BORDER RADIUS, EXTRA LARGE DISPLAY) -->
 <div id="modalFotoPreview" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto md:p-8 bg-slate-950/90 cursor-pointer" onclick="if(event.target === this) closeModal('modalFotoPreview')">
     <div class="relative flex items-center justify-center cursor-default">
-        <!-- TOMBOL AKSI DISAMPING KANAN ATAS (DOWNLOAD & CLOSE) -->
-        <div class="absolute -top-12 -right-2 md:-top-14 md:-right-14 flex items-center gap-2.5 z-20">
+        <!-- TOMBOL AKSI & NAMA BARANG DISAMPING KANAN ATAS -->
+        <div class="absolute -top-12 -right-2 md:-top-14 md:-right-2 flex items-center gap-2.5 z-20 max-w-[92vw]">
+            <!-- NAMA BARANG / JUDUL (DI UJUNG KIRI DARI DOWNLOAD ICON) -->
+            <div id="previewFotoTitleBox" class="hidden items-center px-4 py-2 rounded-full bg-slate-900/90 text-white border border-slate-700/80 shadow-2xl backdrop-blur-sm max-w-[200px] sm:max-w-[340px] md:max-w-[480px]">
+                <span id="previewFotoTitle" class="text-xs sm:text-sm font-bold truncate block"></span>
+            </div>
             <!-- TOMBOL DOWNLOAD IMAGE -->
-            <button type="button" onclick="downloadFotoPreview()" class="text-slate-300 hover:text-white p-2.5 rounded-full bg-slate-800/90 hover:bg-slate-700 transition-colors shadow-2xl border border-slate-700/80 flex items-center justify-center" title="Unduh / Download Foto Bukti">
+            <button type="button" onclick="downloadFotoPreview()" class="text-slate-300 hover:text-white p-2.5 rounded-full bg-slate-800/90 hover:bg-slate-700 transition-colors shadow-2xl border border-slate-700/80 flex items-center justify-center shrink-0" title="Unduh / Download Foto">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
             </button>
             <!-- TOMBOL CLOSE X -->
-            <button type="button" onclick="closeModal('modalFotoPreview')" class="text-slate-300 hover:text-white p-2.5 rounded-full bg-slate-800/90 hover:bg-slate-700 transition-colors shadow-2xl border border-slate-700/80 flex items-center justify-center" title="Tutup Preview (ESC)">
+            <button type="button" onclick="closeModal('modalFotoPreview')" class="text-slate-300 hover:text-white p-2.5 rounded-full bg-slate-800/90 hover:bg-slate-700 transition-colors shadow-2xl border border-slate-700/80 flex items-center justify-center shrink-0" title="Tutup Preview (ESC)">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
@@ -4663,6 +4667,16 @@ function closeModal(modalId) {
                 btn.disabled = false;
                 btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2m0 0l-4-4m4 4l4-4M3 10l4-4m-4 4l4 4"/></svg> <span>Ya, Rollback Migrasi</span>`;
             }
+        } else if (modalId === 'modalFotoPreview') {
+            const titleBox = document.getElementById('previewFotoTitleBox');
+            if (titleBox) {
+                titleBox.classList.add('hidden');
+                titleBox.classList.remove('flex');
+            }
+            const titleElem = document.getElementById('previewFotoTitle');
+            if (titleElem) titleElem.textContent = '';
+            const imgElem = document.getElementById('previewFotoImg');
+            if (imgElem) imgElem.src = '';
         }
     }
 
@@ -5313,14 +5327,26 @@ async function executeKembalikanPeminjaman(event) {
     }
 }
 
-function showFotoPreview(srcUrl, title = 'Preview Foto', caption = '') {
+function showFotoPreview(srcUrl, title = '', caption = '') {
     const imgElem = document.getElementById('previewFotoImg');
+    const titleBox = document.getElementById('previewFotoTitleBox');
     const titleElem = document.getElementById('previewFotoTitle');
     const captionElem = document.getElementById('previewFotoCaption');
 
     if (imgElem) imgElem.src = srcUrl;
-    if (titleElem) titleElem.innerText = title;
-    if (captionElem) captionElem.innerText = caption;
+    if (titleElem) {
+        titleElem.textContent = title || '';
+        if (titleBox) {
+            if (title && String(title).trim()) {
+                titleBox.classList.remove('hidden');
+                titleBox.classList.add('flex');
+            } else {
+                titleBox.classList.add('hidden');
+                titleBox.classList.remove('flex');
+            }
+        }
+    }
+    if (captionElem) captionElem.textContent = caption;
 
     openModal('modalFotoPreview');
 }
@@ -5328,13 +5354,18 @@ function showFotoPreview(srcUrl, title = 'Preview Foto', caption = '') {
 function downloadFotoPreview() {
     const imgElem = document.getElementById('previewFotoImg');
     if (!imgElem || !imgElem.src) {
-        showToast('Foto bukti belum tersedia untuk diunduh.', 'error');
+        showToast('Foto belum tersedia untuk diunduh.', 'error');
         return;
     }
 
-    const src = imgElem.src;
-    const filename = 'bukti_foto_pengembalian_' + Date.now() + '.png';
+    const titleElem = document.getElementById('previewFotoTitle');
+    let prefix = 'foto';
+    if (titleElem && titleElem.textContent && titleElem.textContent.trim()) {
+        prefix = titleElem.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+    }
+    const filename = prefix + '_' + Date.now() + '.png';
 
+    const src = imgElem.src;
     if (src.startsWith('data:')) {
         const a = document.createElement('a');
         a.href = src;
@@ -5342,7 +5373,7 @@ function downloadFotoPreview() {
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        showToast('Mengunduh foto bukti pengembalian...', 'success');
+        showToast('Mengunduh foto...', 'success');
     } else {
         fetch(src)
             .then(res => res.blob())
@@ -5355,7 +5386,7 @@ function downloadFotoPreview() {
                 a.click();
                 document.body.removeChild(a);
                 window.URL.revokeObjectURL(url);
-                showToast('Mengunduh foto bukti pengembalian...', 'success');
+                showToast('Mengunduh foto...', 'success');
             })
             .catch(err => {
                 console.error(err);
@@ -6104,16 +6135,7 @@ function removeBarangImage() {
 
 function showImageModal(imgSrc, title = 'Foto Barang') {
     if (!imgSrc) return;
-    const modal = document.getElementById('modalPreviewImage');
-    const img = document.getElementById('previewModalImg');
-    const caption = document.getElementById('previewModalCaption');
-    if (!modal || !img) return;
-
-    img.src = imgSrc;
-    if (caption) caption.textContent = title;
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    document.body.classList.add('modal-open');
+    showFotoPreview(imgSrc, title);
 }
 
 // --- MIGRASI KENAIKAN KELAS SISWA HELPERS ---
