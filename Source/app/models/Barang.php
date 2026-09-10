@@ -71,9 +71,10 @@ class Barang {
         $id = generateUuid();
         $jenis = (!empty($data['jenis']) && strtolower($data['jenis']) === 'bahan') ? 'bahan' : 'alat';
         $stokAwal = isset($data['stok_awal']) ? (int)$data['stok_awal'] : (int)($data['stok_total'] ?? 0);
+        $image = !empty($data['image']) ? $data['image'] : null;
         $stmt = $db->prepare("
-            INSERT INTO barang (id, jurusan_id, kategori_id, rak_id, nama_barang, jenis, merek, barcode, stok_awal, stok_tersedia, satuan) 
-            VALUES (:id, :jid, :kat, :rak, :nama, :jenis, :merek, :barcode, :stok_awal, :stok_tersedia, :satuan)
+            INSERT INTO barang (id, jurusan_id, kategori_id, rak_id, nama_barang, jenis, merek, barcode, stok_awal, stok_tersedia, satuan, image) 
+            VALUES (:id, :jid, :kat, :rak, :nama, :jenis, :merek, :barcode, :stok_awal, :stok_tersedia, :satuan, :image)
         ");
         return $stmt->execute([
             ':id' => $id,
@@ -86,13 +87,14 @@ class Barang {
             ':barcode' => !empty($data['barcode']) ? $data['barcode'] : null,
             ':stok_awal' => $stokAwal,
             ':stok_tersedia' => $stokAwal,
-            ':satuan' => !empty($data['satuan']) ? $data['satuan'] : 'Unit'
+            ':satuan' => !empty($data['satuan']) ? $data['satuan'] : 'Unit',
+            ':image' => $image
         ]);
     }
 
     public static function update($id, $data) {
         $db = Database::getInstance()->getConnection();
-        $stmtOld = $db->prepare("SELECT stok_awal, stok_tersedia FROM barang WHERE id = :id LIMIT 1");
+        $stmtOld = $db->prepare("SELECT stok_awal, stok_tersedia, image FROM barang WHERE id = :id LIMIT 1");
         $stmtOld->execute([':id' => $id]);
         $old = $stmtOld->fetch(PDO::FETCH_ASSOC);
 
@@ -102,6 +104,18 @@ class Barang {
         $diff = $newStokAwal - (int)$old['stok_awal'];
         $newStokTersedia = max(0, (int)$old['stok_tersedia'] + $diff);
         $jenis = (!empty($data['jenis']) && strtolower($data['jenis']) === 'bahan') ? 'bahan' : 'alat';
+
+        // Tentukan gambar baru atau pertahankan gambar lama jika tidak diubah
+        $finalImage = $old['image'] ?? null;
+        if (array_key_exists('image', $data)) {
+            $finalImage = !empty($data['image']) ? $data['image'] : null;
+            if ($old['image'] && $old['image'] !== $finalImage) {
+                $oldPath = __DIR__ . '/../../' . $old['image'];
+                if (file_exists($oldPath) && is_file($oldPath)) {
+                    @unlink($oldPath);
+                }
+            }
+        }
 
         $stmt = $db->prepare("
             UPDATE barang 
@@ -115,6 +129,7 @@ class Barang {
                 stok_awal = :stok_awal, 
                 stok_tersedia = :stok_tersedia, 
                 satuan = :satuan, 
+                image = :image,
                 updated_at = CURRENT_TIMESTAMP 
             WHERE id = :id
         ");
@@ -129,12 +144,22 @@ class Barang {
             ':barcode' => !empty($data['barcode']) ? $data['barcode'] : null,
             ':stok_awal' => $newStokAwal,
             ':stok_tersedia' => $newStokTersedia,
-            ':satuan' => !empty($data['satuan']) ? $data['satuan'] : 'Unit'
+            ':satuan' => !empty($data['satuan']) ? $data['satuan'] : 'Unit',
+            ':image' => $finalImage
         ]);
     }
 
     public static function delete($id) {
         $db = Database::getInstance()->getConnection();
+        $stmtOld = $db->prepare("SELECT image FROM barang WHERE id = :id LIMIT 1");
+        $stmtOld->execute([':id' => $id]);
+        $oldImg = $stmtOld->fetchColumn();
+        if ($oldImg) {
+            $oldPath = __DIR__ . '/../../' . $oldImg;
+            if (file_exists($oldPath) && is_file($oldPath)) {
+                @unlink($oldPath);
+            }
+        }
         $stmt = $db->prepare("DELETE FROM barang WHERE id = :id");
         return $stmt->execute([':id' => $id]);
     }

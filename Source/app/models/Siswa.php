@@ -363,4 +363,110 @@ class Siswa {
             return ['success' => false, 'message' => 'Gagal memproses batch import: ' . $e->getMessage()];
         }
     }
+
+    public static function migrateKelas($params = []) {
+        $db = Database::getInstance()->getConnection();
+        if (!$db) return ['success' => false, 'message' => 'Koneksi database gagal'];
+
+        $jurusanId = !empty($params['jurusan_id']) ? $params['jurusan_id'] : null;
+        $tahunAjaran = !empty($params['tahun_ajaran']) ? trim($params['tahun_ajaran']) : null;
+
+        try {
+            $db->beginTransaction();
+
+            $sql = "SELECT id, kelas, jurusan_id, tahun_ajaran FROM siswa WHERE 1=1";
+            $bindParams = [];
+            if (!empty($jurusanId)) {
+                $sql .= " AND jurusan_id = :jid";
+                $bindParams[':jid'] = $jurusanId;
+            }
+
+            $stmt = $db->prepare($sql);
+            $stmt->execute($bindParams);
+            $allSiswa = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $updateStmt = $db->prepare("UPDATE siswa SET kelas = :kelas, tahun_ajaran = :ta, updated_at = NOW() WHERE id = :id");
+
+            $count12 = 0;
+            $count11 = 0;
+            $count10 = 0;
+
+            // 1. TAHAP 1: KELAS 12 -> LULUS
+            foreach ($allSiswa as $idx => $s) {
+                $k = trim($s['kelas'] ?? '');
+                if (preg_match('/^(12|XII)(\s|-|$)/i', $k) || strtoupper($k) === 'XII' || $k === '12') {
+                    $newTa = !empty($tahunAjaran) ? $tahunAjaran : ($s['tahun_ajaran'] ?? '2026/2027');
+                    $updateStmt->execute([
+                        ':kelas' => 'LULUS',
+                        ':ta' => $newTa,
+                        ':id' => $s['id']
+                    ]);
+                    $count12++;
+                    unset($allSiswa[$idx]);
+                }
+            }
+
+            // 2. TAHAP 2: KELAS 11 -> KELAS 12
+            foreach ($allSiswa as $idx => $s) {
+                $k = trim($s['kelas'] ?? '');
+                if (preg_match('/^(11|XI)(\s|-|$)/i', $k) || strtoupper($k) === 'XI' || $k === '11') {
+                    if (str_starts_with($k, '11-')) $newK = '12-' . substr($k, 3);
+                    elseif (str_starts_with($k, '11 ')) $newK = '12 ' . substr($k, 3);
+                    elseif (str_starts_with($k, '11')) $newK = '12' . substr($k, 2);
+                    elseif (stripos($k, 'XI-') === 0) $newK = 'XII-' . substr($k, 3);
+                    elseif (stripos($k, 'XI ') === 0) $newK = 'XII ' . substr($k, 3);
+                    elseif (strcasecmp($k, 'XI') === 0) $newK = 'XII';
+                    else $newK = '12-' . $k;
+
+                    $newTa = !empty($tahunAjaran) ? $tahunAjaran : ($s['tahun_ajaran'] ?? '2026/2027');
+                    $updateStmt->execute([
+                        ':kelas' => $newK,
+                        ':ta' => $newTa,
+                        ':id' => $s['id']
+                    ]);
+                    $count11++;
+                    unset($allSiswa[$idx]);
+                }
+            }
+
+            // 3. TAHAP 3: KELAS 10 -> KELAS 11
+            foreach ($allSiswa as $idx => $s) {
+                $k = trim($s['kelas'] ?? '');
+                if (preg_match('/^(10|X)(\s|-|$)/i', $k) || strtoupper($k) === 'X' || $k === '10') {
+                    if (str_starts_with($k, '10-')) $newK = '11-' . substr($k, 3);
+                    elseif (str_starts_with($k, '10 ')) $newK = '11 ' . substr($k, 3);
+                    elseif (str_starts_with($k, '10')) $newK = '11' . substr($k, 2);
+                    elseif (stripos($k, 'X-') === 0) $newK = 'XI-' . substr($k, 2);
+                    elseif (stripos($k, 'X ') === 0) $newK = 'XI ' . substr($k, 2);
+                    elseif (strcasecmp($k, 'X') === 0) $newK = 'XI';
+                    else $newK = '11-' . $k;
+
+                    $newTa = !empty($tahunAjaran) ? $tahunAjaran : ($s['tahun_ajaran'] ?? '2026/2027');
+                    $updateStmt->execute([
+                        ':kelas' => $newK,
+                        ':ta' => $newTa,
+                        ':id' => $s['id']
+                    ]);
+                    $count10++;
+                    unset($allSiswa[$idx]);
+                }
+            }
+
+            $db->commit();
+
+            return [
+                'success' => true,
+                'count_10' => $count10,
+                'count_11' => $count11,
+                'count_12' => $count12,
+                'total_migrated' => ($count10 + $count11 + $count12),
+                'tahun_ajaran' => $tahunAjaran
+            ];
+        } catch (Exception $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
 }

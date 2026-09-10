@@ -333,6 +333,157 @@
     </div>
 </div>
 
+<!-- 1.5 MODAL MIGRASI KENAIKAN KELAS SISWA -->
+<div id="modalMigrasiSiswa" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-indigo-200 dark:border-indigo-900/50 shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
+        <!-- Header -->
+        <div class="p-5 sm:p-6 bg-indigo-50/80 dark:bg-slate-800/80 border-b border-indigo-100 dark:border-slate-700 flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold shadow-md shadow-indigo-600/20">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-800 dark:text-white">Migrasi Kenaikan Kelas Siswa</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Pembaruan massal tingkatan kelas untuk tahun ajaran baru</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeModal('modalMigrasiSiswa')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <!-- Body Form -->
+        <form id="formMigrasiSiswa" onsubmit="handleMigrasiSiswaSubmit(event)" class="p-5 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
+            <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
+
+            <!-- Notice Box -->
+            <div class="p-3.5 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/60 rounded-2xl text-slate-700 dark:text-slate-300 space-y-1.5">
+                <div class="flex items-center gap-2 text-blue-900 dark:text-blue-300 font-bold text-xs">
+                    <svg class="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Pemberitahuan Migrasi Serentak</span>
+                </div>
+                <p class="text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">
+                    Sistem akan memproses kenaikan kelas seluruh siswa aktif secara serentak dalam satu kali eksekusi tanpa perlu memilih satu per satu:
+                </p>
+            </div>
+
+            <!-- 3 Migration Steps Cards -->
+            <div class="space-y-2.5">
+                <!-- Step 1: Kelas 10 ke 11 -->
+                <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 rounded-2xl flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center font-black text-xs shrink-0">
+                            1
+                        </div>
+                        <div>
+                            <div class="font-bold text-slate-800 dark:text-white text-xs flex items-center gap-1.5">
+                                <span>Kelas 10</span>
+                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                <span class="text-emerald-600 dark:text-emerald-400">Naik ke Kelas 11</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Misal: <code class="text-slate-700 dark:text-slate-300 font-semibold">10-TKJ</code> menjadi <code class="text-emerald-600 dark:text-emerald-400 font-bold">11-TKJ</code></p>
+                        </div>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <span id="migrasiCountKelas10" class="inline-block px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 rounded-lg font-extrabold text-xs">
+                            0 Siswa
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Step 2: Kelas 11 ke 12 -->
+                <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 rounded-2xl flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-400 flex items-center justify-center font-black text-xs shrink-0">
+                            2
+                        </div>
+                        <div>
+                            <div class="font-bold text-slate-800 dark:text-white text-xs flex items-center gap-1.5">
+                                <span>Kelas 11</span>
+                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                <span class="text-purple-600 dark:text-purple-400">Naik ke Kelas 12</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Misal: <code class="text-slate-700 dark:text-slate-300 font-semibold">11-TKJ</code> menjadi <code class="text-purple-600 dark:text-purple-400 font-bold">12-TKJ</code></p>
+                        </div>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <span id="migrasiCountKelas11" class="inline-block px-2.5 py-1 bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-400 rounded-lg font-extrabold text-xs">
+                            0 Siswa
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Step 3: Kelas 12 ke LULUS -->
+                <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 rounded-2xl flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 flex items-center justify-center font-black text-xs shrink-0">
+                            3
+                        </div>
+                        <div>
+                            <div class="font-bold text-slate-800 dark:text-white text-xs flex items-center gap-1.5">
+                                <span>Kelas 12</span>
+                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                <span class="text-amber-600 dark:text-amber-400 font-extrabold">LULUS</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Siswa tingkat akhir dialihkan statusnya menjadi <code class="text-amber-600 dark:text-amber-400 font-bold">LULUS</code></p>
+                        </div>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <span id="migrasiCountKelas12" class="inline-block px-2.5 py-1 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 rounded-lg font-extrabold text-xs">
+                            0 Siswa
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scope & Target Settings -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jurusan / Sasaran Migrasi</label>
+                    <select id="migrasi_jurusan_id" onchange="updateMigrasiCounts()" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 font-semibold focus:outline-none focus:border-indigo-600">
+                        <!-- Populated based on currentUser -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Target Tahun Ajaran Baru</label>
+                    <input type="text" id="migrasi_tahun_ajaran" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 font-semibold focus:outline-none focus:border-indigo-600" placeholder="contoh: 2027/2028">
+                </div>
+            </div>
+
+            <!-- Caution Warning -->
+            <div class="p-3 bg-amber-50/90 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-900/50 rounded-2xl text-[11px] text-amber-800 dark:text-amber-300 leading-relaxed flex items-start gap-2.5">
+                <svg class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <div>
+                    <strong>Konfirmasi:</strong> Pastikan Anda telah melakukan <strong>Export CSV</strong> terlebih dahulu sebagai arsip cadangan sebelum memproses migrasi.
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="pt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+                <span class="text-[11px] text-slate-500 dark:text-slate-400">Total terpengaruh: <strong id="migrasiCountTotal" class="text-indigo-600 dark:text-indigo-400">0</strong> siswa</span>
+                <div class="flex items-center gap-2.5">
+                    <button type="button" onclick="closeModal('modalMigrasiSiswa')" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">Batal</button>
+                    <button type="submit" id="btnSubmitMigrasiSiswa" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md shadow-indigo-600/20 transition-all flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <span>Ya, Jalankan Migrasi</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL PREVIEW IMAGE BESAR -->
+<div id="modalPreviewImage" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/70 backdrop-blur-sm animate-fade-in-up" onclick="closeModal('modalPreviewImage')">
+    <div class="relative max-w-2xl max-h-[85vh] bg-white dark:bg-slate-900 p-2.5 rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-700" onclick="event.stopPropagation()">
+        <button type="button" onclick="closeModal('modalPreviewImage')" class="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-slate-900/70 hover:bg-slate-900 text-white flex items-center justify-center transition-colors shadow-md">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <img id="previewModalImg" src="" alt="Preview" class="w-full max-h-[75vh] object-contain rounded-2xl">
+        <div id="previewModalCaption" class="p-3 text-center text-xs font-bold text-slate-700 dark:text-slate-200"></div>
+    </div>
+</div>
+
 <!-- 2. MODAL KATEGORI BARANG (TAMBAH / EDIT) -->
 <div id="modalKategori" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/40 backdrop-blur-sm animate-fade-in-up">
     <div class="bg-white rounded-3xl border border-sage-200 shadow-2xl w-full max-w-lg overflow-hidden">
@@ -466,72 +617,96 @@
 </div>
 
 <!-- 3. MODAL MASTER BARANG & BARCODE (TAMBAH / EDIT) -->
-<div id="modalBarang" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/40 backdrop-blur-sm animate-fade-in-up">
-    <div class="bg-white rounded-3xl border border-sage-200 shadow-2xl w-full max-w-lg overflow-hidden">
-        <div class="p-6 bg-sage-50/80 border-b border-sage-100 flex items-center justify-between">
+<div id="modalBarang" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-sage-200 dark:border-slate-800 shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+        <div class="p-6 bg-sage-50/80 dark:bg-slate-800/80 border-b border-sage-100 dark:border-slate-700 flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                 </div>
-                <h3 class="text-base font-bold text-slate-800" id="modalBarangTitle">Tambah Alat / Bahan & Barcode</h3>
+                <h3 class="text-base font-bold text-slate-800 dark:text-white" id="modalBarangTitle">Tambah Alat / Bahan & Barcode</h3>
             </div>
             <button onclick="closeModal('modalBarang')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
-        <form onsubmit="handleFormSubmit(event, 'Barang')" class="p-6 space-y-4 text-xs">
+        <form onsubmit="handleFormSubmit(event, 'Barang')" class="p-6 space-y-4 text-xs overflow-y-auto flex-1">
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
             <input type="hidden" id="barang_edit_id" value="">
+            <input type="hidden" id="barang_remove_image" value="0">
             <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Jurusan / Departemen <span class="text-red-500">*</span></label>
-                <select id="barang_jurusan_id" onchange="filterKategoriAndRakByJurusan(this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jurusan / Departemen <span class="text-red-500">*</span></label>
+                <select id="barang_jurusan_id" onchange="filterKategoriAndRakByJurusan(this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
                     <option value="">-- Pilih Jurusan --</option>
                 </select>
             </div>
             <?php endif; ?>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Kode Barcode</label>
-                <input type="text" id="barang_barcode" readonly class="w-full px-3.5 py-2.5 bg-slate-100/70 dark:bg-neutral-900/80 border border-sage-200 rounded-xl font-mono font-bold text-slate-700 dark:text-slate-300 cursor-not-allowed focus:outline-none" placeholder="899100100004">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Kode Barcode</label>
+                <input type="text" id="barang_barcode" readonly class="w-full px-3.5 py-2.5 bg-slate-100/70 dark:bg-slate-800/80 border border-sage-200 dark:border-slate-700 rounded-xl font-mono font-bold text-slate-700 dark:text-slate-300 cursor-not-allowed focus:outline-none" placeholder="899100100004">
             </div>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Nama Alat / Bahan <span class="text-red-500">*</span></label>
-                <input type="text" id="barang_nama" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: Router Mikrotik Hex Gr3 / Kabel UTP">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Alat / Bahan <span class="text-red-500">*</span></label>
+                <input type="text" id="barang_nama" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600" placeholder="contoh: Router Mikrotik Hex Gr3 / Kabel UTP">
             </div>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Jenis Inventaris <span class="text-red-500">*</span></label>
-                <select id="barang_jenis" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jenis Inventaris <span class="text-red-500">*</span></label>
+                <select id="barang_jenis" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
                     <option value="alat">Alat (Dapat dipinjam & dikembalikan)</option>
                     <option value="bahan">Bahan (Material habis pakai)</option>
                 </select>
             </div>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Kategori</label>
-                <select id="barang_kategori_id" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Kategori</label>
+                <select id="barang_kategori_id" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
                     <option value="">-- Pilih Kategori --</option>
                 </select>
             </div>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Rak Penyimpanan</label>
-                <select id="barang_rak_id" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Rak Penyimpanan</label>
+                <select id="barang_rak_id" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
                     <option value="">-- Pilih Rak Penyimpanan --</option>
                 </select>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Merek / Brand</label>
-                    <input type="text" id="barang_merek" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="Mikrotik">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Merek / Brand</label>
+                    <input type="text" id="barang_merek" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600" placeholder="Mikrotik">
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Stok Awal</label>
-                    <input type="number" id="barang_stok" min="0" value="10" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-bold text-slate-800 focus:outline-none focus:border-sage-600">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Stok Awal</label>
+                    <input type="number" id="barang_stok" min="0" value="10" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Satuan <span class="text-red-500">*</span></label>
-                    <input type="text" id="barang_satuan" required value="Unit" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="Unit, Meter, Pcs...">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Satuan <span class="text-red-500">*</span></label>
+                    <input type="text" id="barang_satuan" required value="Unit" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600" placeholder="Unit, Meter, Pcs...">
                 </div>
             </div>
-            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100">
+
+            <!-- FOTO / GAMBAR BARANG -->
+            <div>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Foto / Gambar Barang <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                <div class="flex items-center gap-3.5 p-3 bg-sage-50/40 dark:bg-slate-800/60 border border-sage-200/80 dark:border-slate-700 rounded-2xl">
+                    <div id="barang_image_preview_box" class="w-16 h-16 rounded-2xl bg-white dark:bg-slate-900 border border-sage-200 dark:border-slate-700 flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
+                        <svg id="barang_image_placeholder_icon" class="w-8 h-8 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <img id="barang_image_preview" src="" alt="Preview" class="w-full h-full object-cover hidden">
+                    </div>
+                    <div class="flex-1 space-y-1.5">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <label for="barang_image_input" class="cursor-pointer px-3 py-1.5 bg-sage-600 hover:bg-sage-700 text-white rounded-xl font-bold text-xs inline-flex items-center gap-1.5 transition-colors shadow-xs">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <span>Pilih Gambar</span>
+                            </label>
+                            <input type="file" id="barang_image_input" accept="image/png,image/jpeg,image/webp,image/jpg" class="hidden" onchange="previewBarangImage(this)">
+                            <button type="button" id="btn_remove_barang_image" onclick="removeBarangImage()" class="hidden px-2.5 py-1.5 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl font-bold transition-colors">Hapus Gambar</button>
+                        </div>
+                        <p class="text-[10.5px] text-slate-500 dark:text-slate-400 leading-tight">Mendukung JPG, PNG, atau WEBP. Jika tidak diunggah, gambar akan bernilai null.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100 dark:border-slate-800">
                 <button type="button" onclick="closeModal('modalBarang')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
                 <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Data</button>
             </div>
@@ -3735,6 +3910,31 @@ function openModal(modalId, customTitle = null, editData = null) {
                 if (elMerek) elMerek.value = editData.merek || '';
                 if (elStok) elStok.value = editData.stok_awal !== undefined ? editData.stok_awal : (editData.stok_total || 0);
                 if (elSatuan) elSatuan.value = editData.satuan || 'Unit';
+
+                const imgInput = document.getElementById('barang_image_input');
+                const imgPreview = document.getElementById('barang_image_preview');
+                const imgIcon = document.getElementById('barang_image_placeholder_icon');
+                const btnRemove = document.getElementById('btn_remove_barang_image');
+                const remInp = document.getElementById('barang_remove_image');
+
+                if (imgInput) imgInput.value = '';
+                if (remInp) remInp.value = '0';
+
+                if (editData.image) {
+                    if (imgPreview) {
+                        imgPreview.src = editData.image;
+                        imgPreview.classList.remove('hidden');
+                    }
+                    if (imgIcon) imgIcon.classList.add('hidden');
+                    if (btnRemove) btnRemove.classList.remove('hidden');
+                } else {
+                    if (imgPreview) {
+                        imgPreview.src = '';
+                        imgPreview.classList.add('hidden');
+                    }
+                    if (imgIcon) imgIcon.classList.remove('hidden');
+                    if (btnRemove) btnRemove.classList.add('hidden');
+                }
             }
             else if (modalId === 'modalBarangMasuk') {
                 const elId = document.getElementById('masuk_edit_id');
@@ -4025,6 +4225,20 @@ function openModal(modalId, customTitle = null, editData = null) {
                 if (elRak) elRak.value = '';
                 if (elSatuan) elSatuan.value = 'Unit';
                 if (elBarcode) elBarcode.value = window.nextCodes?.barcode || '';
+
+                const imgInput = document.getElementById('barang_image_input');
+                const imgPreview = document.getElementById('barang_image_preview');
+                const imgIcon = document.getElementById('barang_image_placeholder_icon');
+                const btnRemove = document.getElementById('btn_remove_barang_image');
+                const remInp = document.getElementById('barang_remove_image');
+                if (imgInput) imgInput.value = '';
+                if (remInp) remInp.value = '0';
+                if (imgPreview) {
+                    imgPreview.src = '';
+                    imgPreview.classList.add('hidden');
+                }
+                if (imgIcon) imgIcon.classList.remove('hidden');
+                if (btnRemove) btnRemove.classList.add('hidden');
             } else if (modalId === 'modalBarangMasuk') {
                 const elJenis = document.getElementById('masuk_jenis');
                 if (elJenis) elJenis.value = '';
@@ -4202,6 +4416,26 @@ function closeModal(modalId) {
                 chkBarcode.checked = false;
                 toggleKeluarBarcodeScanner(false);
             }
+        } else if (modalId === 'modalBarang') {
+            const imgInput = document.getElementById('barang_image_input');
+            const imgPreview = document.getElementById('barang_image_preview');
+            const imgIcon = document.getElementById('barang_image_placeholder_icon');
+            const btnRemove = document.getElementById('btn_remove_barang_image');
+            const remInp = document.getElementById('barang_remove_image');
+            if (imgInput) imgInput.value = '';
+            if (remInp) remInp.value = '0';
+            if (imgPreview) {
+                imgPreview.src = '';
+                imgPreview.classList.add('hidden');
+            }
+            if (imgIcon) imgIcon.classList.remove('hidden');
+            if (btnRemove) btnRemove.classList.add('hidden');
+        } else if (modalId === 'modalMigrasiSiswa') {
+            const btn = document.getElementById('btnSubmitMigrasiSiswa');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> <span>Ya, Jalankan Migrasi</span>`;
+            }
         }
     }
 
@@ -4294,6 +4528,11 @@ async function handleFormSubmit(event, actionName) {
         formData.append('stok_awal', document.getElementById('barang_stok')?.value || '0');
         formData.append('stok_total', document.getElementById('barang_stok')?.value || '0');
         formData.append('satuan', document.getElementById('barang_satuan')?.value || 'Unit');
+        const imgInput = document.getElementById('barang_image_input');
+        if (imgInput && imgInput.files && imgInput.files[0]) {
+            formData.append('image', imgInput.files[0]);
+        }
+        formData.append('remove_image', document.getElementById('barang_remove_image')?.value || '0');
     } else if (actionName === 'Barang Keluar') {
         apiAction = 'save_barang_keluar';
         formData.append('id', document.getElementById('keluar_edit_id')?.value || '');
@@ -5584,6 +5823,195 @@ async function handleImportCSVSubmit(e, type) {
     } catch (err) {
         console.error(err);
         showToast('Kesalahan koneksi saat import CSV.', 'error');
+    }
+}
+
+// --- FOTO / GAMBAR ALAT & BAHAN HELPERS ---
+function previewBarangImage(input) {
+    if (!input || !input.files || !input.files[0]) return;
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const imgPreview = document.getElementById('barang_image_preview');
+        const imgIcon = document.getElementById('barang_image_placeholder_icon');
+        const btnRemove = document.getElementById('btn_remove_barang_image');
+        const remInp = document.getElementById('barang_remove_image');
+
+        if (imgPreview) {
+            imgPreview.src = e.target.result;
+            imgPreview.classList.remove('hidden');
+        }
+        if (imgIcon) imgIcon.classList.add('hidden');
+        if (btnRemove) btnRemove.classList.remove('hidden');
+        if (remInp) remInp.value = '0';
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeBarangImage() {
+    const imgInput = document.getElementById('barang_image_input');
+    const imgPreview = document.getElementById('barang_image_preview');
+    const imgIcon = document.getElementById('barang_image_placeholder_icon');
+    const btnRemove = document.getElementById('btn_remove_barang_image');
+    const remInp = document.getElementById('barang_remove_image');
+
+    if (imgInput) imgInput.value = '';
+    if (remInp) remInp.value = '1';
+    if (imgPreview) {
+        imgPreview.src = '';
+        imgPreview.classList.add('hidden');
+    }
+    if (imgIcon) imgIcon.classList.remove('hidden');
+    if (btnRemove) btnRemove.classList.add('hidden');
+}
+
+function showImageModal(imgSrc, title = 'Foto Barang') {
+    if (!imgSrc) return;
+    const modal = document.getElementById('modalPreviewImage');
+    const img = document.getElementById('previewModalImg');
+    const caption = document.getElementById('previewModalCaption');
+    if (!modal || !img) return;
+
+    img.src = imgSrc;
+    if (caption) caption.textContent = title;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.classList.add('modal-open');
+}
+
+// --- MIGRASI KENAIKAN KELAS SISWA HELPERS ---
+function openModalMigrasiSiswa() {
+    const modal = document.getElementById('modalMigrasiSiswa');
+    if (!modal) return;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.classList.add('modal-open');
+
+    const selJurusan = document.getElementById('migrasi_jurusan_id');
+    const isAdminSekolah = window.currentUser && window.currentUser.peran === 'admin_sekolah';
+    const userJurusanId = window.currentUser ? window.currentUser.jurusan_id : null;
+
+    if (selJurusan) {
+        if (isAdminSekolah) {
+            selJurusan.removeAttribute('disabled');
+            selJurusan.innerHTML = '<option value="">-- Semua Jurusan --</option>' +
+                (window.dbJurusan || []).map(j => `<option value="${j.id}">${j.nama_jurusan}</option>`).join('');
+        } else {
+            selJurusan.innerHTML = (window.dbJurusan || [])
+                .filter(j => String(j.id) === String(userJurusanId))
+                .map(j => `<option value="${j.id}" selected>${j.nama_jurusan}</option>`).join('');
+            if (!selJurusan.innerHTML && userJurusanId) {
+                selJurusan.innerHTML = `<option value="${userJurusanId}" selected>Jurusan Saya</option>`;
+            }
+            selJurusan.setAttribute('disabled', 'disabled');
+        }
+    }
+
+    const inpTa = document.getElementById('migrasi_tahun_ajaran');
+    if (inpTa) {
+        const tas = (window.dbSiswa || []).map(s => s.tahun_ajaran).filter(Boolean);
+        let baseTa = tas[0] || '2026/2027';
+        const match = baseTa.match(/(\d{4})\/(\d{4})/);
+        if (match) {
+            const y1 = parseInt(match[1]) + 1;
+            const y2 = parseInt(match[2]) + 1;
+            inpTa.value = `${y1}/${y2}`;
+        } else {
+            inpTa.value = '2027/2028';
+        }
+    }
+
+    updateMigrasiCounts();
+}
+
+function updateMigrasiCounts() {
+    const selJurusan = document.getElementById('migrasi_jurusan_id');
+    const selectedJurusan = selJurusan ? selJurusan.value : '';
+
+    let list = window.dbSiswa || [];
+    if (selectedJurusan) {
+        list = list.filter(s => String(s.jurusan_id) === String(selectedJurusan));
+    }
+
+    let c10 = 0, c11 = 0, c12 = 0;
+    list.forEach(s => {
+        const k = String(s.kelas || '').trim().toUpperCase();
+        if (k.startsWith('12') || k.startsWith('XII-') || k.startsWith('XII ') || k === 'XII') {
+            c12++;
+        } else if (k.startsWith('11') || k.startsWith('XI-') || k.startsWith('XI ') || k === 'XI') {
+            c11++;
+        } else if (k.startsWith('10') || k.startsWith('X-') || k.startsWith('X ') || k === 'X') {
+            c10++;
+        }
+    });
+
+    const el10 = document.getElementById('migrasiCountKelas10');
+    const el11 = document.getElementById('migrasiCountKelas11');
+    const el12 = document.getElementById('migrasiCountKelas12');
+    const elTot = document.getElementById('migrasiCountTotal');
+
+    if (el10) el10.textContent = `${c10.toLocaleString()} Siswa`;
+    if (el11) el11.textContent = `${c11.toLocaleString()} Siswa`;
+    if (el12) el12.textContent = `${c12.toLocaleString()} Siswa`;
+    if (elTot) elTot.textContent = (c10 + c11 + c12).toLocaleString();
+}
+
+async function handleMigrasiSiswaSubmit(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnSubmitMigrasiSiswa');
+    const selJurusan = document.getElementById('migrasi_jurusan_id');
+    const inpTa = document.getElementById('migrasi_tahun_ajaran');
+
+    const ta = inpTa ? inpTa.value.trim() : '';
+    const jId = selJurusan ? selJurusan.value : '';
+
+    const elTot = document.getElementById('migrasiCountTotal');
+    const totalCount = elTot ? elTot.textContent : '0';
+
+    if (parseInt(totalCount.replace(/[^0-9]/g, '')) === 0) {
+        showToast('Tidak ada data siswa yang memenuhi kriteria untuk dimigrasi!', 'warning');
+        return;
+    }
+
+    if (!confirm(`Konfirmasi Migrasi Kenaikan Kelas:\n\nApakah Anda yakin ingin memproses kenaikan kelas untuk ${totalCount} siswa ke Tahun Ajaran ${ta}?\n\n• Kelas 10 naik ke Kelas 11\n• Kelas 11 naik ke Kelas 12\n• Kelas 12 dialihkan ke status LULUS\n\nTindakan ini tidak dapat dibatalkan secara otomatis.`)) {
+        return;
+    }
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<svg class="w-4 h-4 animate-spin shrink-0" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Memproses Migrasi...</span>`;
+    }
+
+    try {
+        const formData = new FormData();
+        formData.append('action', 'migrate_kelas_siswa');
+        formData.append('csrf_token', document.querySelector('#formMigrasiSiswa input[name="csrf_token"]')?.value || '');
+        formData.append('jurusan_id', jId);
+        formData.append('tahun_ajaran', ta);
+
+        const res = await fetch('api.php', { method: 'POST', body: formData });
+        const data = await res.json();
+
+        if (data && data.success) {
+            showToast(data.message, 'success');
+            closeModal('modalMigrasiSiswa');
+            setTimeout(() => {
+                location.reload();
+            }, 1200);
+        } else {
+            showToast(data.message || 'Gagal memproses migrasi kelas siswa.', 'error');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> <span>Ya, Jalankan Migrasi</span>`;
+            }
+        }
+    } catch (err) {
+        console.error(err);
+        showToast('Terjadi kesalahan koneksi saat memproses migrasi.', 'error');
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> <span>Ya, Jalankan Migrasi</span>`;
+        }
     }
 }
 </script>

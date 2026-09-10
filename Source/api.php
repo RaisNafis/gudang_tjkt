@@ -35,7 +35,7 @@ $disallowedSiswaActions = [
     'save_pengguna', 'delete_pengguna', 'bulk_delete_pengguna',
     'save_jurusan', 'delete_jurusan', 'bulk_delete_jurusan',
     'save_guru', 'delete_guru', 'bulk_delete_guru', 'import_guru_csv',
-    'save_siswa', 'delete_siswa', 'bulk_delete_siswa', 'import_siswa_csv',
+    'save_siswa', 'delete_siswa', 'bulk_delete_siswa', 'import_siswa_csv', 'migrate_kelas_siswa',
     'save_barang_masuk', 'delete_barang_masuk', 'bulk_delete_barang_masuk',
     'save_barang_keluar', 'delete_barang_keluar', 'bulk_delete_barang_keluar'
 ];
@@ -310,6 +310,43 @@ try {
             echo json_encode(['success' => true, 'message' => 'Data Siswa berhasil dihapus!']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Gagal menghapus data siswa.']);
+        }
+        exit;
+    }
+
+    if ($action === 'migrate_kelas_siswa') {
+        require_once __DIR__ . '/app/models/Siswa.php';
+        require_once __DIR__ . '/app/models/LogAktivitas.php';
+
+        $isSuperAdmin = ($_SESSION['user']['peran'] ?? '') === 'admin_sekolah';
+        $jurusanId = !empty($_POST['jurusan_id']) ? $_POST['jurusan_id'] : null;
+
+        if (!$isSuperAdmin) {
+            $userJurusanId = $_SESSION['user']['jurusan_id'] ?? null;
+            if (!$userJurusanId) {
+                echo json_encode(['success' => false, 'message' => 'Akun Anda tidak memiliki jurusan yang valid!']);
+                exit;
+            }
+            $jurusanId = $userJurusanId;
+        }
+
+        $tahunAjaran = trim($_POST['tahun_ajaran'] ?? '');
+        $res = Siswa::migrateKelas([
+            'jurusan_id' => $jurusanId,
+            'tahun_ajaran' => $tahunAjaran
+        ]);
+
+        if ($res['success']) {
+            $c10 = $res['count_10'];
+            $c11 = $res['count_11'];
+            $c12 = $res['count_12'];
+            $tot = $res['total_migrated'];
+            $taInfo = !empty($tahunAjaran) ? " ke Tahun Ajaran $tahunAjaran" : "";
+            $msg = "Migrasi kenaikan kelas berhasil diproses{$taInfo}! Total {$tot} siswa: {$c10} naik ke Kelas 11, {$c11} naik ke Kelas 12, dan {$c12} dinyatakan LULUS.";
+            LogAktivitas::log('MIGRASI', $msg);
+            echo json_encode(array_merge(['success' => true, 'message' => $msg], $res));
+        } else {
+            echo json_encode(['success' => false, 'message' => $res['message'] ?? 'Gagal memproses migrasi kelas siswa.']);
         }
         exit;
     }
@@ -897,6 +934,32 @@ try {
         if (empty($data['nama_barang'])) {
             echo json_encode(['success' => false, 'message' => 'Nama barang wajib diisi!']);
             exit;
+        }
+
+        // Handle upload foto / image barang
+        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+            $fileTmp = $_FILES['image']['tmp_name'];
+            $fileName = $_FILES['image']['name'];
+            $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+            $allowedExts = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+
+            if (in_array($fileExt, $allowedExts)) {
+                $uploadDir = __DIR__ . '/uploads/barang/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                $newFileName = 'barang_' . bin2hex(random_bytes(8)) . '.' . $fileExt;
+                $targetFile = $uploadDir . $newFileName;
+                if (move_uploaded_file($fileTmp, $targetFile)) {
+                    $data['image'] = 'uploads/barang/' . $newFileName;
+                }
+            }
+        } elseif (!empty($_POST['remove_image']) && $_POST['remove_image'] === '1') {
+            $data['image'] = null;
+        }
+
+        if (empty($id) && !isset($data['image'])) {
+            $data['image'] = null;
         }
 
         if (!empty($id)) {

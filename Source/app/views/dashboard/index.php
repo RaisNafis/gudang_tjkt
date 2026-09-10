@@ -1586,6 +1586,10 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             <p class="text-xs text-slate-500 dark:text-slate-400">Kelola data siswa</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
+                            <button onclick="openModalMigrasiSiswa()" class="px-3.5 py-2 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 border border-indigo-200 dark:border-indigo-800/60 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Migrasi Kenaikan Kelas Siswa">
+                                <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                                <span>Migrasi Kelas</span>
+                            </button>
                             <button onclick="openModal('modalImportSiswaCSV')" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-[#2a2a2a] rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Import data dari berkas CSV">
                                 <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12"/></svg>
                                 <span>Import CSV</span>
@@ -1610,6 +1614,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 <option value="10">Kelas 10</option>
                                 <option value="11">Kelas 11</option>
                                 <option value="12">Kelas 12</option>
+                                <option value="lulus">Lulus / Alumni</option>
                             </select>
                         </div>
                         <div>
@@ -2080,7 +2085,18 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         class="hover:bg-sage-50/50 transition-all duration-300">
                                         <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="<?= htmlspecialchars($b['id']); ?>" onchange="updateBatchDeleteBar()"></td>
                                         <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell"><?= $no++; ?></td>
-                                        <td class="py-3.5 px-4 font-extrabold text-xs nama-barang-cell" style="color: <?= htmlspecialchars($jColor); ?>;"><?= htmlspecialchars($b['nama_barang']); ?></td>
+                                        <td class="py-3.5 px-4 font-extrabold text-xs nama-barang-cell">
+                                            <div class="flex items-center gap-2.5">
+                                                <?php if (!empty($b['image'])): ?>
+                                                    <img src="<?= htmlspecialchars($b['image']); ?>" alt="<?= htmlspecialchars($b['nama_barang']); ?>" class="w-8 h-8 rounded-lg object-cover border border-slate-200 dark:border-slate-700 shrink-0 shadow-xs cursor-pointer hover:scale-110 transition-transform" onclick="showImageModal('<?= htmlspecialchars($b['image']); ?>', '<?= htmlspecialchars(addslashes($b['nama_barang'])); ?>')">
+                                                <?php else: ?>
+                                                    <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0 text-slate-400 dark:text-slate-500">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                                    </div>
+                                                <?php endif; ?>
+                                                <span style="color: <?= htmlspecialchars($jColor); ?>;"><?= htmlspecialchars($b['nama_barang']); ?></span>
+                                            </div>
+                                        </td>
                                         <td class="py-3.5 px-4 font-semibold text-slate-700"><?= ucfirst(htmlspecialchars($b['jenis'] ?? 'alat')); ?></td>
                                         <td class="py-3.5 px-4 font-semibold text-slate-700"><?= htmlspecialchars($b['nama_kategori'] ?? '-'); ?></td>
                                         <td class="py-3.5 px-4 font-semibold text-slate-700"><?= htmlspecialchars($b['nama_rak'] ?? '-'); ?></td>
@@ -4699,6 +4715,8 @@ function matchTingkatKelas(kelasStr, tingkat) {
         return k.startsWith('11') || k.startsWith('XI-') || k.startsWith('XI ') || k === 'XI';
     } else if (tingkat === '12') {
         return k.startsWith('12') || k.startsWith('XII-') || k.startsWith('XII ') || k === 'XII';
+    } else if (tingkat === 'lulus') {
+        return k.includes('LULUS') || k.includes('ALUMNI');
     }
     return k.includes(tingkat);
 }
@@ -5130,13 +5148,18 @@ function renderTableSiswa() {
             ? `<span class="font-mono font-bold text-slate-700 dark:text-slate-300 tracking-wider">${escapeHtml(s.nisn)}</span>`
             : `<span class="text-slate-400 italic text-[11px]">-</span>`;
 
+        const isLulus = s.kelas && (s.kelas.toUpperCase().includes('LULUS') || s.kelas.toUpperCase().includes('ALUMNI'));
+        const kelasHtml = isLulus
+            ? `<span class="px-2 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-700/50">${escapeHtml(s.kelas)}</span>`
+            : escapeHtml(s.kelas || '-');
+
         return `<tr class="hover:bg-sage-50/50 dark:hover:bg-[#222222]/40">
             <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${s.id}" onchange="updateBatchDeleteBar()"></td>
             <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${rowNo}</td>
             <td class="py-3.5 px-4">${nisnHtml}</td>
             <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-slate-200">${escapeHtml(s.nama_lengkap || s.nama_siswa)}</td>
             <td class="py-3.5 px-4">${tokenHtml}</td>
-            <td class="py-3.5 px-4 font-bold text-slate-700 dark:text-slate-300">${escapeHtml(s.kelas || '-')}</td>
+            <td class="py-3.5 px-4 font-bold text-slate-700 dark:text-slate-300">${kelasHtml}</td>
             <td class="py-3.5 px-4 font-bold text-sage-700 dark:text-sage-400">${escapeHtml(s.nama_jurusan || '-')}</td>
             <td class="py-3.5 px-4 dark:text-slate-400">${escapeHtml(s.tahun_ajaran || '2026/2027')}</td>
             <td class="py-3.5 px-4">
@@ -5279,6 +5302,10 @@ function renderTableBarang() {
             const stokTersediaVal = parseInt(b.stok_tersedia !== undefined && b.stok_tersedia !== null ? b.stok_tersedia : 0);
             const stokAwalVal = (b.stok_awal !== undefined && b.stok_awal !== null) ? b.stok_awal : (b.stok_total || 0);
 
+            const imageHtml = b.image
+                ? `<img src="${escapeHtml(b.image)}" alt="${escapeHtml(b.nama_barang)}" class="w-8 h-8 rounded-lg object-cover border border-slate-200 dark:border-slate-700 shrink-0 shadow-xs cursor-pointer hover:scale-110 transition-transform" onclick="showImageModal('${escapeHtml(b.image)}', '${escapeJsStr(b.nama_barang)}')">`
+                : `<div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0 text-slate-400 dark:text-slate-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></div>`;
+
             return `<tr id="row-barang-${b.id}"
             data-jenis="${escapeHtml(String(b.jenis || 'alat').toLowerCase())}"
             data-kategori-id="${escapeHtml(String(b.kategori_id || ''))}"
@@ -5290,7 +5317,12 @@ function renderTableBarang() {
             class="hover:bg-sage-50/50 transition-all duration-300">
             <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${b.id}" onchange="updateBatchDeleteBar()"></td>
             <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${idx + 1}</td>
-            <td class="py-3.5 px-4 font-extrabold text-xs nama-barang-cell text-sage-700">${escapeHtml(b.nama_barang)}</td>
+            <td class="py-3.5 px-4 font-extrabold text-xs nama-barang-cell">
+                <div class="flex items-center gap-2.5">
+                    ${imageHtml}
+                    <span class="text-sage-700 dark:text-sage-300">${escapeHtml(b.nama_barang)}</span>
+                </div>
+            </td>
             <td class="py-3.5 px-4 font-semibold text-slate-700">${escapeHtml(jenisText)}</td>
             <td class="py-3.5 px-4 font-semibold text-slate-700">${escapeHtml(b.nama_kategori || '-')}</td>
             <td class="py-3.5 px-4 font-semibold text-slate-700">${escapeHtml(b.nama_rak || '-')}</td>
