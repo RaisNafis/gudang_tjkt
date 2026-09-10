@@ -12,11 +12,11 @@ require_once __DIR__ . '/../../models/Peminjaman.php';
 require_once __DIR__ . '/../../models/LogAktivitas.php';
 
 $user = currentUser();
-$title = "Dashboard Overview - Gudang " . ((!empty($user['peran']) && $user['peran'] === 'admin_sekolah') ? "Sekolah" : (!empty($user['nama_jurusan']) ? $user['nama_jurusan'] : "Sekolah"));
+$title = "Dashboard Overview - Gudang " . ((!empty($user['peran']) && $user['peran'] === 'admin_sekolah') ? (!empty($_SESSION['active_jurusan_id']) && !empty($user['nama_jurusan']) ? $user['nama_jurusan'] : "Sekolah") : (!empty($user['nama_jurusan']) ? $user['nama_jurusan'] : "Sekolah"));
 require_once __DIR__ . '/../layouts/header.php';
 
 $flash = getFlash();
-$currentJurusanId = (!empty($user['peran']) && $user['peran'] === 'admin_sekolah') ? null : ($user['jurusan_id'] ?? null);
+$currentJurusanId = (!empty($user['peran']) && $user['peran'] === 'admin_sekolah') ? ($_SESSION['active_jurusan_id'] ?? null) : ($user['jurusan_id'] ?? null);
 
 $dbJurusan = Jurusan::getAll();
 $stats = Barang::getStats($currentJurusanId);
@@ -1715,12 +1715,12 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             <p class="text-xs text-slate-500 dark:text-slate-400">Kelola data siswa</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
-                            <button onclick="openModalMigrasiSiswa()" class="px-3.5 py-2 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 border border-indigo-200 dark:border-indigo-800/60 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Migrasi Kenaikan Kelas Siswa">
-                                <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                            <button onclick="openModalMigrasiSiswa()" class="px-3.5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors shadow-sm" title="Migrasi Kenaikan Kelas Siswa">
+                                <svg class="w-4 h-4 text-white dark:text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
                                 <span>Migrasi Kelas</span>
                             </button>
-                            <button onclick="openModalRollbackMigrasiSiswa()" class="px-3.5 py-2 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50 border border-amber-200 dark:border-amber-800/60 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Rollback / Batalkan Kenaikan Kelas Terakhir">
-                                <svg class="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2m0 0l-4-4m4 4l4-4M3 10l4-4m-4 4l4 4"/></svg>
+                            <button onclick="openModalRollbackMigrasiSiswa()" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Rollback / Batalkan Kenaikan Kelas Terakhir">
+                                <svg class="w-4 h-4 text-slate-800 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2m0 0l-4-4m4 4l4-4M3 10l4-4m-4 4l4 4"/></svg>
                                 <span>Rollback Migrasi</span>
                             </button>
                             <button onclick="openModal('modalImportSiswaCSV')" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-[#2a2a2a] rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Import data dari berkas CSV">

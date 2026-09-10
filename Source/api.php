@@ -414,6 +414,7 @@ try {
 
         if (empty($jurusanId)) {
             unset($_SESSION['active_jurusan_id']);
+            currentUser(true);
             echo json_encode(['success' => true, 'message' => 'Jurusan aktif telah direset ke default.']);
             exit;
         }
@@ -437,6 +438,7 @@ try {
         }
 
         $_SESSION['active_jurusan_id'] = $jurusanId;
+        currentUser(true);
         echo json_encode(['success' => true, 'message' => 'Berhasil beralih ke gudang jurusan terpilih.']);
         exit;
     }

@@ -32,18 +32,18 @@ if ($roleName === 'admin_sekolah') {
 <div id="sidebarBackdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-30 hidden lg:hidden transition-opacity duration-300 opacity-0 pointer-events-none"></div>
 
 <!-- Sidebar Navigation - Collapsible & Responsive Mobile Drawer -->
-<aside id="mainSidebar" class="w-[265px] bg-white dark:bg-[#121212] text-slate-700 dark:text-slate-200 h-full flex flex-col flex-shrink-0 border-r border-slate-100 dark:border-[#202020] shadow-xl lg:shadow-none z-40 transition-all duration-300 fixed lg:static inset-y-0 left-0 -translate-x-full lg:translate-x-0 overflow-x-hidden">
+<aside id="mainSidebar" class="relative w-[265px] bg-white dark:bg-[#121212] text-slate-700 dark:text-slate-200 h-full flex flex-col flex-shrink-0 border-r border-slate-100 dark:border-[#202020] shadow-xl lg:shadow-none z-40 transition-all duration-300 fixed lg:static inset-y-0 left-0 -translate-x-full lg:translate-x-0">
     
     <!-- Brand Logo Area & Toggle Button -->
-    <div class="sidebar-brand-header px-4 py-3.5 border-b border-slate-100 dark:border-[#202020] flex items-center justify-between gap-2 flex-shrink-0 h-16 overflow-hidden transition-all duration-300">
+    <div class="sidebar-brand-header px-4 py-3.5 border-b border-slate-100 dark:border-[#202020] flex items-center justify-between gap-2 flex-shrink-0 h-16 transition-all duration-300">
         <!-- Expanded Logo View -->
-        <div class="brand-header-full flex items-center gap-3 overflow-hidden">
+        <div class="brand-header-full flex items-center gap-3 overflow-hidden min-w-0">
             <div class="w-10 h-10 rounded-2xl shrink-0 flex items-center justify-center text-white shadow-sm transition-all duration-300" style="background-color: <?= $activeThemePalette['600'] ?? '#16a34a'; ?>;">
                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                 </svg>
             </div>
-            <div class="sidebar-text truncate flex flex-col justify-center">
+            <div class="sidebar-text truncate flex flex-col justify-center min-w-0">
                 <h1 class="text-sm font-bold text-slate-900 dark:text-white tracking-tight leading-tight truncate">Gudang <?= htmlspecialchars($brandShort); ?></h1>
                 <p class="text-[11px] font-medium text-slate-400 dark:text-slate-400 leading-tight mt-0.5 truncate">Sistem Inventaris</p>
             </div>
@@ -58,57 +58,75 @@ if ($roleName === 'admin_sekolah') {
             </div>
         </div>
 
-        <!-- Switch Jurusan Dropdown Trigger (Khusus Kabeng / Multi-Jurusan) -->
-        <?php if (!empty($userAccessibleJurusans) && count($userAccessibleJurusans) > 1): ?>
-        <div class="relative shrink-0 ml-auto" id="jurusanSwitcherContainer">
+        <!-- Header Action Buttons -->
+        <div class="flex items-center gap-1.5 shrink-0 ml-auto">
+            <!-- Switch Jurusan Dropdown Trigger (Hanya jika memiliki > 1 Jurusan yang dapat diakses) -->
+            <?php if (!empty($userAccessibleJurusans) && count($userAccessibleJurusans) > 1): ?>
             <button type="button" id="jurusanSwitcherBtn" onclick="toggleJurusanSwitcherPopover(event)" class="w-8 h-8 rounded-xl bg-slate-100/80 hover:bg-slate-200/80 dark:bg-[#1e1e1e] dark:hover:bg-[#282828] text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 flex items-center justify-center transition-all cursor-pointer border border-slate-200/60 dark:border-[#2a2a2a]" title="Ganti Gudang Jurusan Aktif">
-                <svg class="w-4 h-4 text-sage-600 dark:text-sage-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
                 </svg>
             </button>
-            <!-- Dropdown Popover List of Jurusans -->
-            <div id="jurusanSwitcherPopover" class="hidden absolute right-0 top-10 w-64 bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#262626] rounded-2xl shadow-2xl z-50 p-2 text-slate-700 dark:text-slate-200 text-left animate-fade-in-up">
-                <div class="px-3 py-2 border-b border-slate-100 dark:border-[#202020] mb-1.5 flex items-center justify-between">
-                    <div>
-                        <span class="block text-[11px] font-bold text-slate-900 dark:text-white uppercase tracking-wider">Pilih Gudang Jurusan</span>
-                        <span class="text-[10px] text-slate-400 font-medium">Beralih konteks jurusan</span>
-                    </div>
-                    <span class="px-2 py-0.5 rounded-full bg-sage-100 dark:bg-sage-950/60 text-sage-700 dark:text-sage-300 font-bold text-[10px]"><?= count($userAccessibleJurusans); ?> Akses</span>
-                </div>
-                <div class="space-y-1 max-h-60 overflow-y-auto" style="scrollbar-width: thin;">
-                    <?php foreach ($userAccessibleJurusans as $aj): 
-                        $isActive = ($aj['id'] === $activeJurusanId);
-                        $ajColor = resolveJurusanThemeColor($aj['warna_tema'] ?? '#2e7d32');
-                    ?>
-                    <button type="button" onclick="switchActiveJurusan('<?= $aj['id']; ?>')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer <?= $isActive ? 'bg-sage-50 dark:bg-sage-950/50 text-sage-700 dark:text-sage-300 font-bold border border-sage-200/60 dark:border-sage-800/60' : 'hover:bg-slate-50 dark:hover:bg-[#1e1e1e] text-slate-700 dark:text-slate-300' ?>">
-                        <div class="flex items-center gap-2.5 min-w-0 truncate">
-                            <span class="w-3.5 h-3.5 rounded-full shrink-0 shadow-xs border border-white/40" style="background-color: <?= htmlspecialchars($ajColor); ?>;"></span>
-                            <span class="truncate"><?= htmlspecialchars($aj['nama_jurusan']); ?></span>
-                        </div>
-                        <?php if ($isActive): ?>
-                        <span class="px-1.5 py-0.5 rounded bg-sage-200/70 dark:bg-sage-900/80 text-[10px] text-sage-800 dark:text-sage-200 font-extrabold shrink-0 ml-1.5">Aktif</span>
-                        <?php endif; ?>
-                    </button>
-                    <?php endforeach; ?>
-                </div>
-            </div>
+            <?php endif; ?>
+
+            <!-- Toggle Button for Desktop Mini Mode -->
+            <button type="button" id="sidebarToggleBtn" class="w-8 h-8 rounded-xl bg-slate-100/80 hover:bg-slate-200/80 dark:bg-[#1e1e1e] dark:hover:bg-[#282828] text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center transition-all shrink-0 cursor-pointer" title="Kecilkan Sidebar">
+                <svg class="w-4 h-4 transition-transform duration-300" id="toggleIcon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                </svg>
+            </button>
+
+            <!-- Mobile Close Button -->
+            <button type="button" onclick="closeMobileSidebar()" class="lg:hidden w-8 h-8 rounded-full bg-slate-100 hover:bg-red-50 dark:bg-[#1e1e1e] dark:hover:bg-red-950/40 text-slate-400 hover:text-red-500 flex items-center justify-center transition-colors shrink-0" title="Tutup Menu">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
         </div>
-        <?php endif; ?>
-
-        <!-- Toggle Button for Desktop Mini Mode / Mobile Close -->
-        <button type="button" id="sidebarToggleBtn" class="w-8 h-8 rounded-xl bg-slate-100/80 hover:bg-slate-200/80 dark:bg-[#1e1e1e] dark:hover:bg-[#282828] text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center transition-all shrink-0 ml-auto cursor-pointer" title="Kecilkan Sidebar">
-            <svg class="w-4 h-4 transition-transform duration-300" id="toggleIcon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-            </svg>
-        </button>
-
-        <!-- Mobile Close Button -->
-        <button type="button" onclick="closeMobileSidebar()" class="lg:hidden w-8 h-8 rounded-full bg-slate-100 hover:bg-red-50 dark:bg-[#1e1e1e] dark:hover:bg-red-950/40 text-slate-400 hover:text-red-500 flex items-center justify-center transition-colors shrink-0" title="Tutup Menu">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-        </button>
     </div>
+
+    <!-- Dropdown Popover List of Jurusans (Clean design, no badge, no emoji) -->
+    <?php if (!empty($userAccessibleJurusans) && count($userAccessibleJurusans) > 1): ?>
+    <div id="jurusanSwitcherPopover" class="hidden absolute left-3 right-3 top-[68px] bg-white dark:bg-[#181818] border border-slate-200 dark:border-[#282828] rounded-2xl shadow-2xl z-50 p-1.5 text-slate-700 dark:text-slate-200 text-left">
+        <div class="px-2.5 py-1.5 border-b border-slate-100 dark:border-[#242424] mb-1">
+            <span class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Pilih Gudang Jurusan</span>
+        </div>
+        <div class="space-y-0.5 max-h-60 overflow-y-auto" style="scrollbar-width: thin;">
+            <?php if ($roleName === 'admin_sekolah'): 
+                $isAllActive = empty($_SESSION['active_jurusan_id']);
+            ?>
+            <button type="button" onclick="switchActiveJurusan('')" class="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs transition-all cursor-pointer <?= $isAllActive ? 'bg-slate-100 dark:bg-[#252525] font-semibold text-slate-900 dark:text-white' : 'hover:bg-slate-50 dark:hover:bg-[#1e1e1e] text-slate-600 dark:text-slate-300 font-normal' ?>">
+                <div class="flex items-center gap-2.5 min-w-0 truncate">
+                    <span class="w-2.5 h-2.5 rounded-full shrink-0 bg-slate-400 dark:bg-slate-500"></span>
+                    <span class="truncate">Semua Gudang Jurusan</span>
+                </div>
+                <?php if ($isAllActive): ?>
+                <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 ml-1.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+                <?php endif; ?>
+            </button>
+            <?php endif; ?>
+
+            <?php foreach ($userAccessibleJurusans as $aj): 
+                $isActive = ($aj['id'] === $activeJurusanId);
+                $ajColor = resolveJurusanThemeColor($aj['warna_tema'] ?? '#2e7d32');
+            ?>
+            <button type="button" onclick="switchActiveJurusan('<?= $aj['id']; ?>')" class="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs transition-all cursor-pointer <?= $isActive ? 'bg-slate-100 dark:bg-[#252525] font-semibold text-slate-900 dark:text-white' : 'hover:bg-slate-50 dark:hover:bg-[#1e1e1e] text-slate-600 dark:text-slate-300 font-normal' ?>">
+                <div class="flex items-center gap-2.5 min-w-0 truncate">
+                    <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: <?= htmlspecialchars($ajColor); ?>;"></span>
+                    <span class="truncate <?= $isActive ? 'font-semibold' : '' ?>"><?= htmlspecialchars($aj['nama_jurusan']); ?></span>
+                </div>
+                <?php if ($isActive): ?>
+                <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 ml-1.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+                <?php endif; ?>
+            </button>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <!-- Navigation Menu Scrollable -->
     <nav class="flex-1 px-3 py-2 space-y-1 overflow-y-auto overflow-x-hidden text-sm" id="sidebarNav">
@@ -385,7 +403,6 @@ html.dark .nav-tab-btn.active .sidebar-text {
 /* Mini Collapsed Sidebar (76px mode) */
 #mainSidebar.collapsed {
     width: 76px !important;
-    overflow-x: hidden !important;
 }
 #mainSidebar.collapsed .sidebar-text,
 #mainSidebar.collapsed .sidebar-section-container,
@@ -414,14 +431,18 @@ html.dark .nav-tab-btn.active .sidebar-text {
     height: 32px !important;
     border-radius: 10px !important;
 }
-#mainSidebar.collapsed #jurusanSwitcherContainer {
+#mainSidebar.collapsed #jurusanSwitcherBtn {
     display: flex !important;
     margin: 0 auto !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 10px !important;
 }
 #mainSidebar.collapsed #jurusanSwitcherPopover {
     left: 80px !important;
     right: auto !important;
-    top: 10px !important;
+    top: 12px !important;
+    width: 230px !important;
 }
 #mainSidebar.collapsed #toggleIcon {
     transform: rotate(180deg) !important;
@@ -537,7 +558,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function toggleJurusanSwitcherPopover(e) {
-    if (e) e.stopPropagation();
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
     const pop = document.getElementById('jurusanSwitcherPopover');
     if (!pop) return;
     pop.classList.toggle('hidden');
@@ -558,7 +582,7 @@ async function switchActiveJurusan(jurusanId) {
         const res = await fetch(`api.php?action=switch_active_jurusan&jurusan_id=${encodeURIComponent(jurusanId)}`);
         const data = await res.json();
         if (data && data.success) {
-            window.location.reload();
+            window.location.href = 'dashboard.php';
         } else {
             alert(data.message || 'Gagal berpindah ke jurusan terpilih.');
         }
