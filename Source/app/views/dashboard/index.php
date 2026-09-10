@@ -4130,7 +4130,185 @@ function initTabAnalytics(tabId) {
         }
     }
 
-    // CHARTS BELOW ONLY FOR ADMIN SEKOLAH
+    // 3. SISWA TAB ANALYTICS (Admin Sekolah & Admin Jurusan)
+    if (tabId === 'siswa') {
+        const ctxTingkat = document.getElementById('siswaTingkatChart');
+        if (ctxTingkat) {
+            destroyChart('siswaTingkat');
+            const cntX = (window.dbSiswa || []).filter(s => matchTingkatKelas(s.kelas, '10')).length;
+            const cntXI = (window.dbSiswa || []).filter(s => matchTingkatKelas(s.kelas, '11')).length;
+            const cntXII = (window.dbSiswa || []).filter(s => matchTingkatKelas(s.kelas, '12')).length;
+
+            const tingkatLabels = ['Kelas 10 (X)', 'Kelas 11 (XI)', 'Kelas 12 (XII)'];
+            const tingkatData = [cntX, cntXI, cntXII];
+            const tingkatColors = ['#6366f1', '#8b5cf6', '#10b981'];
+
+            tabAnalyticsCharts['siswaTingkat'] = new Chart(ctxTingkat, {
+                type: 'bar',
+                data: {
+                    labels: tingkatLabels,
+                    datasets: [{
+                        label: 'Jumlah Siswa',
+                        data: tingkatData,
+                        backgroundColor: tingkatColors,
+                        borderRadius: 8,
+                        maxBarThickness: 56
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    transitions: { active: { animation: { duration: 300, easing: 'easeOutCubic' } } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const val = Number(context.raw || 0).toLocaleString('en-US');
+                                    const total = tingkatData.reduce((a, b) => a + b, 0);
+                                    const pct = total > 0 ? Math.round(((context.raw || 0) / total) * 100) : 0;
+                                    return ` Siswa: ${val} (${pct}%)`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: labelColor, font: { weight: 600 } } },
+                        y: { grid: { color: gridColor }, ticks: { color: labelColor, precision: 0 } }
+                    }
+                }
+            });
+        }
+
+        const ctxSiswaJur = document.getElementById('siswaJurusanChart');
+        if (ctxSiswaJur) {
+            destroyChart('siswaJurusan');
+            let labels, data, bgColors, legendItems = [];
+
+            if (isSuperAdmin) {
+                const countsPerJur = {};
+                (window.dbSiswa || []).forEach(s => {
+                    const fullName = s.nama_jurusan || 'Tanpa Jurusan (Umum)';
+                    countsPerJur[fullName] = (countsPerJur[fullName] || 0) + 1;
+                });
+
+                const sortedNames = Object.keys(countsPerJur).sort((a, b) => countsPerJur[b] - countsPerJur[a]);
+
+                labels = sortedNames.map(name => {
+                    const match = name.match(/\(([^)]+)\)/);
+                    return match ? match[1] : name;
+                });
+                data = sortedNames.map(name => countsPerJur[name]);
+                bgColors = getColorsForLabels(labels);
+
+                legendItems = sortedNames.map((name, idx) => ({
+                    fullName: name,
+                    shortLabel: labels[idx],
+                    count: countsPerJur[name],
+                    color: bgColors[idx]
+                }));
+            } else {
+                const countsPerKelas = {};
+                (window.dbSiswa || []).forEach(s => {
+                    const kName = s.kelas || 'Tanpa Kelas';
+                    countsPerKelas[kName] = (countsPerKelas[kName] || 0) + 1;
+                });
+
+                const sortedKelas = Object.keys(countsPerKelas).sort((a, b) => countsPerKelas[b] - countsPerKelas[a]);
+                labels = sortedKelas;
+                data = sortedKelas.map(k => countsPerKelas[k]);
+                const rombelPalette = ['#6366f1', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#06b6d4', '#3b82f6', '#14b8a6'];
+                bgColors = sortedKelas.map((_, idx) => rombelPalette[idx % rombelPalette.length]);
+
+                legendItems = sortedKelas.map((name, idx) => ({
+                    fullName: name,
+                    shortLabel: name,
+                    count: countsPerKelas[name],
+                    color: bgColors[idx]
+                }));
+            }
+
+            const totalStudents = (data || []).reduce((a, b) => a + b, 0);
+
+            const legendContainer = document.getElementById('siswaJurusanLegendList');
+            if (legendContainer) {
+                legendContainer.innerHTML = legendItems.map(item => {
+                    const pct = totalStudents > 0 ? Math.round((item.count / totalStudents) * 100) : 0;
+                    return `
+                    <div class="flex items-center justify-between py-1.5 px-2.5 rounded-xl hover:bg-slate-100/70 dark:hover:bg-[#222222] transition-colors text-xs border border-transparent hover:border-slate-200 dark:hover:border-[#333333]">
+                        <div class="flex items-center gap-2 min-w-0 pr-2">
+                            <span class="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm" style="background-color: ${item.color}"></span>
+                            <span class="font-medium text-slate-700 dark:text-slate-200 truncate" title="${escapeHtml(item.fullName)}">
+                                ${escapeHtml(item.fullName)}
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0 ml-1">
+                            <span class="font-semibold text-slate-800 dark:text-slate-200">
+                                ${item.count.toLocaleString('en-US')}
+                            </span>
+                            <span class="text-[10px] text-slate-400 font-medium">(${pct}%)</span>
+                        </div>
+                    </div>
+                `}).join('');
+            }
+
+            const centerTotalSiswaEl = document.getElementById('donutTotalSiswaCenter');
+            if (centerTotalSiswaEl) {
+                centerTotalSiswaEl.innerText = totalStudents.toLocaleString('en-US');
+            }
+
+            const isDataEmpty = !data || data.length === 0;
+            const chartData = isDataEmpty ? [1] : data;
+            const chartLabels = isDataEmpty ? ['Belum Ada Data'] : labels;
+            const chartColors = isDataEmpty ? [isDark ? '#262626' : '#e2e8f0'] : bgColors;
+
+            tabAnalyticsCharts['siswaJurusan'] = new Chart(ctxSiswaJur, {
+                type: 'doughnut',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        data: chartData,
+                        backgroundColor: chartColors,
+                        hoverBackgroundColor: chartColors,
+                        borderWidth: 0,
+                        borderColor: 'transparent',
+                        borderRadius: isDataEmpty ? 0 : 8,
+                        spacing: chartData.length > 1 && !isDataEmpty ? 2 : 0,
+                        hoverOffset: isDataEmpty ? 0 : 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '72%',
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true,
+                        duration: 800,
+                        easing: 'easeOutQuart'
+                    },
+                    transitions: { active: { animation: { duration: 300, easing: 'easeOutCubic' } } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: !isDataEmpty,
+                            callbacks: {
+                                title: function() { return ''; },
+                                label: function(context) {
+                                    const shortLabel = context.label || '';
+                                    const val = Number(context.raw || 0).toLocaleString('en-US');
+                                    const pct = totalStudents > 0 ? Math.round(((context.raw || 0) / totalStudents) * 100) : 0;
+                                    return ` ${shortLabel}: ${val} (${pct}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // CHARTS BELOW ONLY FOR ADMIN SEKOLAH (Per-Jurusan comparisons)
     if (!isSuperAdmin) return;
 
     // 2. KATEGORI TAB ANALYTICS
@@ -4354,183 +4532,6 @@ function initTabAnalytics(tabId) {
                     maintainAspectRatio: false,
                     transitions: { active: { animation: { duration: 300, easing: 'easeOutCubic' } } },
                     plugins: { legend: { position: 'bottom', labels: { color: labelColor } } }
-                }
-            });
-        }
-    }
-
-    // 8. SISWA TAB ANALYTICS
-    if (tabId === 'siswa') {
-        const ctxTingkat = document.getElementById('siswaTingkatChart');
-        if (ctxTingkat) {
-            destroyChart('siswaTingkat');
-            const cntX = (window.dbSiswa || []).filter(s => matchTingkatKelas(s.kelas, '10')).length;
-            const cntXI = (window.dbSiswa || []).filter(s => matchTingkatKelas(s.kelas, '11')).length;
-            const cntXII = (window.dbSiswa || []).filter(s => matchTingkatKelas(s.kelas, '12')).length;
-
-            const tingkatLabels = ['Kelas 10 (X)', 'Kelas 11 (XI)', 'Kelas 12 (XII)'];
-            const tingkatData = [cntX, cntXI, cntXII];
-            const tingkatColors = ['#6366f1', '#8b5cf6', '#10b981'];
-
-            tabAnalyticsCharts['siswaTingkat'] = new Chart(ctxTingkat, {
-                type: 'bar',
-                data: {
-                    labels: tingkatLabels,
-                    datasets: [{
-                        label: 'Jumlah Siswa',
-                        data: tingkatData,
-                        backgroundColor: tingkatColors,
-                        borderRadius: 8,
-                        maxBarThickness: 56
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    transitions: { active: { animation: { duration: 300, easing: 'easeOutCubic' } } },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const val = Number(context.raw || 0).toLocaleString('en-US');
-                                    const total = tingkatData.reduce((a, b) => a + b, 0);
-                                    const pct = total > 0 ? Math.round(((context.raw || 0) / total) * 100) : 0;
-                                    return ` Siswa: ${val} (${pct}%)`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { color: labelColor, font: { weight: 600 } } },
-                        y: { grid: { color: gridColor }, ticks: { color: labelColor, precision: 0 } }
-                    }
-                }
-            });
-        }
-
-        const ctxSiswaJur = document.getElementById('siswaJurusanChart');
-        if (ctxSiswaJur) {
-            destroyChart('siswaJurusan');
-            let labels, data, bgColors, legendItems = [];
-
-            if (isSuperAdmin) {
-                const countsPerJur = {};
-                (window.dbSiswa || []).forEach(s => {
-                    const fullName = s.nama_jurusan || 'Tanpa Jurusan (Umum)';
-                    countsPerJur[fullName] = (countsPerJur[fullName] || 0) + 1;
-                });
-
-                const sortedNames = Object.keys(countsPerJur).sort((a, b) => countsPerJur[b] - countsPerJur[a]);
-
-                labels = sortedNames.map(name => {
-                    const match = name.match(/\(([^)]+)\)/);
-                    return match ? match[1] : name;
-                });
-                data = sortedNames.map(name => countsPerJur[name]);
-                bgColors = getColorsForLabels(labels);
-
-                legendItems = sortedNames.map((name, idx) => ({
-                    fullName: name,
-                    shortLabel: labels[idx],
-                    count: countsPerJur[name],
-                    color: bgColors[idx]
-                }));
-            } else {
-                const countsPerKelas = {};
-                (window.dbSiswa || []).forEach(s => {
-                    const kName = s.kelas || 'Tanpa Kelas';
-                    countsPerKelas[kName] = (countsPerKelas[kName] || 0) + 1;
-                });
-
-                const sortedKelas = Object.keys(countsPerKelas).sort((a, b) => countsPerKelas[b] - countsPerKelas[a]);
-                labels = sortedKelas;
-                data = sortedKelas.map(k => countsPerKelas[k]);
-                bgColors = getColorsForLabels(labels);
-
-                legendItems = sortedKelas.map((name, idx) => ({
-                    fullName: name,
-                    shortLabel: name,
-                    count: countsPerKelas[name],
-                    color: bgColors[idx]
-                }));
-            }
-
-            const totalStudents = (data || []).reduce((a, b) => a + b, 0);
-
-            const legendContainer = document.getElementById('siswaJurusanLegendList');
-            if (legendContainer) {
-                legendContainer.innerHTML = legendItems.map(item => {
-                    const pct = totalStudents > 0 ? Math.round((item.count / totalStudents) * 100) : 0;
-                    return `
-                    <div class="flex items-center justify-between py-1.5 px-2.5 rounded-xl hover:bg-slate-100/70 dark:hover:bg-[#222222] transition-colors text-xs border border-transparent hover:border-slate-200 dark:hover:border-[#333333]">
-                        <div class="flex items-center gap-2 min-w-0 pr-2">
-                            <span class="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm" style="background-color: ${item.color}"></span>
-                            <span class="font-medium text-slate-700 dark:text-slate-200 truncate" title="${escapeHtml(item.fullName)}">
-                                ${escapeHtml(item.fullName)}
-                            </span>
-                        </div>
-                        <div class="flex items-center gap-1.5 shrink-0 ml-1">
-                            <span class="font-semibold text-slate-800 dark:text-slate-200">
-                                ${item.count.toLocaleString('en-US')}
-                            </span>
-                            <span class="text-[10px] text-slate-400 font-medium">(${pct}%)</span>
-                        </div>
-                    </div>
-                `}).join('');
-            }
-
-            const centerTotalSiswaEl = document.getElementById('donutTotalSiswaCenter');
-            if (centerTotalSiswaEl) {
-                centerTotalSiswaEl.innerText = totalStudents.toLocaleString('en-US');
-            }
-
-            const isDataEmpty = !data || data.length === 0;
-            const chartData = isDataEmpty ? [1] : data;
-            const chartLabels = isDataEmpty ? ['Belum Ada Data'] : labels;
-            const chartColors = isDataEmpty ? [isDark ? '#262626' : '#e2e8f0'] : bgColors;
-
-            tabAnalyticsCharts['siswaJurusan'] = new Chart(ctxSiswaJur, {
-                type: 'doughnut',
-                data: {
-                    labels: chartLabels,
-                    datasets: [{
-                        data: chartData,
-                        backgroundColor: chartColors,
-                        hoverBackgroundColor: chartColors,
-                        borderWidth: 0,
-                        borderColor: 'transparent',
-                        borderRadius: isDataEmpty ? 0 : 8,
-                        spacing: chartData.length > 1 && !isDataEmpty ? 2 : 0,
-                        hoverOffset: isDataEmpty ? 0 : 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '72%',
-                    animation: {
-                        animateScale: true,
-                        animateRotate: true,
-                        duration: 800,
-                        easing: 'easeOutQuart'
-                    },
-                    transitions: { active: { animation: { duration: 300, easing: 'easeOutCubic' } } },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            enabled: !isDataEmpty,
-                            callbacks: {
-                                title: function() { return ''; },
-                                label: function(context) {
-                                    const shortLabel = context.label || '';
-                                    const val = Number(context.raw || 0).toLocaleString('en-US');
-                                    const pct = totalStudents > 0 ? Math.round(((context.raw || 0) / totalStudents) * 100) : 0;
-                                    return ` ${shortLabel}: ${val} (${pct}%)`;
-                                }
-                            }
-                        }
-                    }
                 }
             });
         }
