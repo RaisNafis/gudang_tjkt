@@ -29,7 +29,7 @@ class BarangKeluar {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function create($barang_id, $pengguna_id, $nama_penerima, $jumlah, $catatan = null) {
+    public static function create($barang_id, $pengguna_id, $nama_penerima, $jumlah, $catatan = null, $tanggal_keluar = null) {
         $db = Database::getInstance()->getConnection();
         $id = generateUuid();
 
@@ -39,6 +39,12 @@ class BarangKeluar {
             if (!$chkUser->fetch()) {
                 $pengguna_id = null;
             }
+        }
+
+        if (empty($tanggal_keluar)) {
+            $tanggal_keluar = date('Y-m-d H:i:s');
+        } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $tanggal_keluar)) {
+            $tanggal_keluar .= ' ' . date('H:i:s');
         }
         
         $db->beginTransaction();
@@ -55,8 +61,8 @@ class BarangKeluar {
             $jurusan_id = $brg['jurusan_id'] ?? null;
 
             $stmt = $db->prepare("
-                INSERT INTO barang_keluar (id, jurusan_id, barang_id, pengguna_id, nama_penerima, jumlah, catatan)
-                VALUES (:id, :jid, :bid, :pid, :penerima, :jumlah, :catatan)
+                INSERT INTO barang_keluar (id, jurusan_id, barang_id, pengguna_id, nama_penerima, jumlah, catatan, tanggal_keluar)
+                VALUES (:id, :jid, :bid, :pid, :penerima, :jumlah, :catatan, :tanggal_keluar)
             ");
             $stmt->execute([
                 ':id' => $id,
@@ -65,7 +71,8 @@ class BarangKeluar {
                 ':pid' => $pengguna_id,
                 ':penerima' => $nama_penerima,
                 ':jumlah' => $jumlah,
-                ':catatan' => $catatan
+                ':catatan' => $catatan,
+                ':tanggal_keluar' => $tanggal_keluar
             ]);
 
             $upd = $db->prepare("
@@ -83,12 +90,17 @@ class BarangKeluar {
         }
     }
 
-    public static function update($id, $nama_penerima, $jumlah) {
+    public static function update($id, $nama_penerima, $jumlah, $catatan = null, $tanggal_keluar = null) {
         $db = Database::getInstance()->getConnection();
         $stmt = $db->prepare("SELECT * FROM barang_keluar WHERE id = :id LIMIT 1");
         $stmt->execute([':id' => $id]);
         $old = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$old) return ['success' => false, 'message' => 'Data barang keluar tidak ditemukan'];
+
+        if (!empty($tanggal_keluar) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $tanggal_keluar)) {
+            $existingTime = !empty($old['tanggal_keluar']) ? substr($old['tanggal_keluar'], 11) : date('H:i:s');
+            $tanggal_keluar .= ' ' . ($existingTime ?: date('H:i:s'));
+        }
 
         $db->beginTransaction();
         try {
@@ -106,8 +118,13 @@ class BarangKeluar {
             $updStok = $db->prepare("UPDATE barang SET stok_tersedia = GREATEST(0, stok_tersedia - :diff) WHERE id = :bid");
             $updStok->execute([':diff' => $diff, ':bid' => $old['barang_id']]);
 
-            $upd = $db->prepare("UPDATE barang_keluar SET nama_penerima = :penerima, jumlah = :jumlah, updated_at = CURRENT_TIMESTAMP WHERE id = :id");
-            $upd->execute([':penerima' => $nama_penerima, ':jumlah' => $jumlah, ':id' => $id]);
+            if (!empty($tanggal_keluar)) {
+                $upd = $db->prepare("UPDATE barang_keluar SET nama_penerima = :penerima, jumlah = :jumlah, catatan = :catatan, tanggal_keluar = :tanggal_keluar, updated_at = CURRENT_TIMESTAMP WHERE id = :id");
+                $upd->execute([':penerima' => $nama_penerima, ':jumlah' => $jumlah, ':catatan' => $catatan, ':tanggal_keluar' => $tanggal_keluar, ':id' => $id]);
+            } else {
+                $upd = $db->prepare("UPDATE barang_keluar SET nama_penerima = :penerima, jumlah = :jumlah, catatan = :catatan, updated_at = CURRENT_TIMESTAMP WHERE id = :id");
+                $upd->execute([':penerima' => $nama_penerima, ':jumlah' => $jumlah, ':catatan' => $catatan, ':id' => $id]);
+            }
 
             $db->commit();
             return ['success' => true, 'message' => 'Transaksi barang keluar berhasil diperbarui!'];

@@ -29,7 +29,7 @@ class BarangMasuk {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function create($barang_id, $pengguna_id, $jumlah, $catatan = null) {
+    public static function create($barang_id, $pengguna_id, $jumlah, $catatan = null, $tanggal_masuk = null) {
         $db = Database::getInstance()->getConnection();
         $id = generateUuid();
         
@@ -45,11 +45,17 @@ class BarangMasuk {
         $chkBrg->execute([':bid' => $barang_id]);
         $jurusan_id = $chkBrg->fetchColumn() ?: null;
 
+        if (empty($tanggal_masuk)) {
+            $tanggal_masuk = date('Y-m-d H:i:s');
+        } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $tanggal_masuk)) {
+            $tanggal_masuk .= ' ' . date('H:i:s');
+        }
+
         $db->beginTransaction();
         try {
             $stmt = $db->prepare("
-                INSERT INTO barang_masuk (id, jurusan_id, barang_id, pengguna_id, jumlah, catatan)
-                VALUES (:id, :jid, :bid, :pid, :jumlah, :catatan)
+                INSERT INTO barang_masuk (id, jurusan_id, barang_id, pengguna_id, jumlah, catatan, tanggal_masuk)
+                VALUES (:id, :jid, :bid, :pid, :jumlah, :catatan, :tanggal_masuk)
             ");
             $stmt->execute([
                 ':id' => $id,
@@ -57,7 +63,8 @@ class BarangMasuk {
                 ':bid' => $barang_id,
                 ':pid' => $pengguna_id,
                 ':jumlah' => $jumlah,
-                ':catatan' => $catatan
+                ':catatan' => $catatan,
+                ':tanggal_masuk' => $tanggal_masuk
             ]);
 
             // Update stok barang
@@ -76,12 +83,17 @@ class BarangMasuk {
         }
     }
 
-    public static function update($id, $jumlah, $catatan = null) {
+    public static function update($id, $jumlah, $catatan = null, $tanggal_masuk = null) {
         $db = Database::getInstance()->getConnection();
         $stmt = $db->prepare("SELECT * FROM barang_masuk WHERE id = :id LIMIT 1");
         $stmt->execute([':id' => $id]);
         $old = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$old) return ['success' => false, 'message' => 'Data transaksi barang masuk tidak ditemukan'];
+
+        if (!empty($tanggal_masuk) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $tanggal_masuk)) {
+            $existingTime = !empty($old['tanggal_masuk']) ? substr($old['tanggal_masuk'], 11) : date('H:i:s');
+            $tanggal_masuk .= ' ' . ($existingTime ?: date('H:i:s'));
+        }
 
         $db->beginTransaction();
         try {
@@ -99,8 +111,13 @@ class BarangMasuk {
             $updStok = $db->prepare("UPDATE barang SET stok_tersedia = GREATEST(0, stok_tersedia + :diff) WHERE id = :bid");
             $updStok->execute([':diff' => $diff, ':bid' => $old['barang_id']]);
 
-            $upd = $db->prepare("UPDATE barang_masuk SET jumlah = :jumlah, updated_at = CURRENT_TIMESTAMP WHERE id = :id");
-            $upd->execute([':jumlah' => $jumlah, ':id' => $id]);
+            if (!empty($tanggal_masuk)) {
+                $upd = $db->prepare("UPDATE barang_masuk SET jumlah = :jumlah, catatan = :catatan, tanggal_masuk = :tanggal_masuk, updated_at = CURRENT_TIMESTAMP WHERE id = :id");
+                $upd->execute([':jumlah' => $jumlah, ':catatan' => $catatan, ':tanggal_masuk' => $tanggal_masuk, ':id' => $id]);
+            } else {
+                $upd = $db->prepare("UPDATE barang_masuk SET jumlah = :jumlah, catatan = :catatan, updated_at = CURRENT_TIMESTAMP WHERE id = :id");
+                $upd->execute([':jumlah' => $jumlah, ':catatan' => $catatan, ':id' => $id]);
+            }
 
             $db->commit();
             return ['success' => true, 'message' => 'Transaksi barang masuk berhasil diperbarui!'];

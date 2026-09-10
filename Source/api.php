@@ -1164,6 +1164,7 @@ require_once __DIR__ . '/app/models/BarangKeluar.php';
         $nama_penerima = trim($_POST['nama_penerima'] ?? '');
         $jumlah = (int)($_POST['jumlah'] ?? 1);
         $catatan = trim($_POST['catatan'] ?? '');
+        $tanggal = trim($_POST['tanggal'] ?? '');
         $pengguna_id = $_SESSION['user_id'] ?? null;
 
         if (empty($nama_penerima) || $jumlah < 1) {
@@ -1172,7 +1173,7 @@ require_once __DIR__ . '/app/models/BarangKeluar.php';
         }
 
         if (!empty($id)) {
-            $res = BarangKeluar::update($id, $nama_penerima, $jumlah);
+            $res = BarangKeluar::update($id, $nama_penerima, $jumlah, $catatan, $tanggal);
             if ($res['success']) {
                 LogAktivitas::log('EDIT_BARANG_KELUAR', 'Mengubah data barang keluar untuk ' . $nama_penerima);
             }
@@ -1182,7 +1183,7 @@ require_once __DIR__ . '/app/models/BarangKeluar.php';
                 echo json_encode(['success' => false, 'message' => 'Pilih barang!']);
                 exit;
             }
-            $res = BarangKeluar::create($barang_id, $pengguna_id, $nama_penerima, $jumlah, $catatan);
+            $res = BarangKeluar::create($barang_id, $pengguna_id, $nama_penerima, $jumlah, $catatan, $tanggal);
             if ($res['success']) {
                 LogAktivitas::log('BARANG_KELUAR', 'Pengeluaran barang untuk ' . $nama_penerima . ' (Jumlah: ' . $jumlah . ' Unit)');
             }
@@ -1204,6 +1205,7 @@ require_once __DIR__ . '/app/models/BarangKeluar.php';
         $barang_id = $_POST['barang_id'] ?? '';
         $jumlah = (int)($_POST['jumlah'] ?? 1);
         $catatan = trim($_POST['catatan'] ?? '');
+        $tanggal = trim($_POST['tanggal'] ?? '');
         $pengguna_id = $_SESSION['user_id'] ?? null;
 
         if ($jumlah < 1) {
@@ -1212,7 +1214,7 @@ require_once __DIR__ . '/app/models/BarangKeluar.php';
         }
 
         if (!empty($id)) {
-            $res = BarangMasuk::update($id, $jumlah, $catatan);
+            $res = BarangMasuk::update($id, $jumlah, $catatan, $tanggal);
             if (is_array($res)) {
                 if ($res['success']) {
                     LogAktivitas::log('EDIT_BARANG_MASUK', 'Mengubah data transaksi barang masuk ID: ' . $id);
@@ -1226,7 +1228,7 @@ require_once __DIR__ . '/app/models/BarangKeluar.php';
                 echo json_encode(['success' => false, 'message' => 'Pilih barang!']);
                 exit;
             }
-            $ok = BarangMasuk::create($barang_id, $pengguna_id, $jumlah, $catatan);
+            $ok = BarangMasuk::create($barang_id, $pengguna_id, $jumlah, $catatan, $tanggal);
             if ($ok) {
                 LogAktivitas::log('BARANG_MASUK', 'Penerimaan barang masuk (Jumlah: ' . $jumlah . ' Unit)');
                 echo json_encode(['success' => true, 'message' => 'Transaksi barang masuk berhasil disimpan!']);

@@ -989,6 +989,16 @@
                 <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jumlah Masuk <span class="text-red-500">*</span></label>
                 <input type="number" id="masuk_jumlah" min="1" value="5" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-bold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
             </div>
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300">Tanggal Masuk <span class="text-red-500">*</span></label>
+                    <label class="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-400 cursor-pointer select-none">
+                        <input type="checkbox" id="masuk_tgl_auto" checked onchange="toggleAutoDateMasuk(this.checked)" class="w-3.5 h-3.5 rounded accent-sage-600 cursor-pointer">
+                        <span>Sinkron Otomatis (Hari Ini)</span>
+                    </label>
+                </div>
+                <input type="date" id="masuk_tanggal" value="<?= date('Y-m-d'); ?>" required class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800/60 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white focus:outline-none focus:border-sage-600 transition-colors cursor-not-allowed opacity-75 dark:[color-scheme:dark]" disabled>
+            </div>
             <div class="pt-3 flex justify-end gap-3 border-t border-sage-100 dark:border-slate-700">
                 <button type="button" onclick="closeModal('modalBarangMasuk')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
                 <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Alat & Bahan Masuk</button>
@@ -1126,6 +1136,16 @@
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jumlah Keluar <span class="text-red-500">*</span></label>
                     <input type="number" id="keluar_jumlah" min="1" value="1" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-bold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
                 </div>
+            </div>
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300">Tanggal Keluar <span class="text-red-500">*</span></label>
+                    <label class="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-400 cursor-pointer select-none">
+                        <input type="checkbox" id="keluar_tgl_auto" checked onchange="toggleAutoDateKeluar(this.checked)" class="w-3.5 h-3.5 rounded accent-sage-600 cursor-pointer">
+                        <span>Sinkron Otomatis (Hari Ini)</span>
+                    </label>
+                </div>
+                <input type="date" id="keluar_tanggal" value="<?= date('Y-m-d'); ?>" required class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800/60 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white focus:outline-none focus:border-sage-600 transition-colors cursor-not-allowed opacity-75 dark:[color-scheme:dark]" disabled>
             </div>
             <div>
                 <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Keterangan / Alasan</label>
@@ -2334,6 +2354,50 @@ function filterBarangMasukOptions(preselectedBarangId = null) {
 
     if (window.masukCombobox) {
         window.masukCombobox.setItems(filtered, targetVal);
+    }
+}
+
+// --- HELPER SINKRONISASI TANGGAL OTOMATIS & MANUAL ---
+function getLocalDateString(d = new Date()) {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function toggleAutoDateMasuk(isAuto) {
+    const chk = document.getElementById('masuk_tgl_auto');
+    const input = document.getElementById('masuk_tanggal');
+    if (!input) return;
+    if (chk) chk.checked = isAuto;
+    if (isAuto) {
+        input.value = getLocalDateString();
+        input.disabled = true;
+        input.classList.add('bg-slate-100', 'dark:bg-slate-800/60', 'cursor-not-allowed', 'opacity-75');
+        input.classList.remove('bg-sage-50/50', 'dark:bg-slate-800', 'cursor-pointer', 'opacity-100');
+    } else {
+        input.disabled = false;
+        input.classList.remove('bg-slate-100', 'dark:bg-slate-800/60', 'cursor-not-allowed', 'opacity-75');
+        input.classList.add('bg-sage-50/50', 'dark:bg-slate-800', 'cursor-pointer', 'opacity-100');
+        input.focus();
+    }
+}
+
+function toggleAutoDateKeluar(isAuto) {
+    const chk = document.getElementById('keluar_tgl_auto');
+    const input = document.getElementById('keluar_tanggal');
+    if (!input) return;
+    if (chk) chk.checked = isAuto;
+    if (isAuto) {
+        input.value = getLocalDateString();
+        input.disabled = true;
+        input.classList.add('bg-slate-100', 'dark:bg-slate-800/60', 'cursor-not-allowed', 'opacity-75');
+        input.classList.remove('bg-sage-50/50', 'dark:bg-slate-800', 'cursor-pointer', 'opacity-100');
+    } else {
+        input.disabled = false;
+        input.classList.remove('bg-slate-100', 'dark:bg-slate-800/60', 'cursor-not-allowed', 'opacity-75');
+        input.classList.add('bg-sage-50/50', 'dark:bg-slate-800', 'cursor-pointer', 'opacity-100');
+        input.focus();
     }
 }
 
@@ -4119,6 +4183,7 @@ function openModal(modalId, customTitle = null, editData = null) {
                 const elJenis = document.getElementById('masuk_jenis');
                 const elBarang = document.getElementById('masuk_barang_id');
                 const elJumlah = document.getElementById('masuk_jumlah');
+                const elTgl = document.getElementById('masuk_tanggal');
 
                 if (elId) elId.value = editData.id || '';
                 if (elJurusan) elJurusan.value = editData.jurusan_id || '';
@@ -4126,6 +4191,11 @@ function openModal(modalId, customTitle = null, editData = null) {
                 if (elJenis) elJenis.value = foundB ? (foundB.jenis || '') : '';
                 filterBarangMasukOptions(editData.barang_id || '');
                 if (elJumlah) elJumlah.value = editData.jumlah || 1;
+
+                const rawDate = editData.tanggal_masuk || editData.created_at || '';
+                const dateOnly = rawDate ? rawDate.substring(0, 10) : getLocalDateString();
+                if (elTgl) elTgl.value = dateOnly;
+                toggleAutoDateMasuk(dateOnly === getLocalDateString());
             }
             else if (modalId === 'modalBarangKeluar') {
                 const elId = document.getElementById('keluar_edit_id');
@@ -4133,6 +4203,7 @@ function openModal(modalId, customTitle = null, editData = null) {
                 const elPenerima = document.getElementById('keluar_penerima');
                 const elJumlah = document.getElementById('keluar_jumlah');
                 const elKet = document.getElementById('keluar_keterangan');
+                const elTgl = document.getElementById('keluar_tanggal');
 
                 if (elId) elId.value = editData.id || '';
                 if (elJurusan) elJurusan.value = editData.jurusan_id || '';
@@ -4140,6 +4211,11 @@ function openModal(modalId, customTitle = null, editData = null) {
                 if (elPenerima) elPenerima.value = editData.nama_penerima || '';
                 if (elJumlah) elJumlah.value = editData.jumlah || 1;
                 if (elKet) elKet.value = editData.catatan || '';
+
+                const rawDate = editData.tanggal_keluar || editData.created_at || '';
+                const dateOnly = rawDate ? rawDate.substring(0, 10) : getLocalDateString();
+                if (elTgl) elTgl.value = dateOnly;
+                toggleAutoDateKeluar(dateOnly === getLocalDateString());
             }
             else if (modalId === 'modalPeminjaman') {
                 const elId = document.getElementById('pinjam_edit_id');
@@ -4426,6 +4502,7 @@ function openModal(modalId, customTitle = null, editData = null) {
                 filterBarangMasukOptions();
                 const elJumlah = document.getElementById('masuk_jumlah');
                 if (elJumlah) elJumlah.value = 5;
+                toggleAutoDateMasuk(true);
             } else if (modalId === 'modalBarangKeluar') {
                 filterBarangKeluarOptions();
                 const elPenerima = document.getElementById('keluar_penerima');
@@ -4434,6 +4511,7 @@ function openModal(modalId, customTitle = null, editData = null) {
                 if (elPenerima) elPenerima.value = '';
                 if (elJumlah) elJumlah.value = 1;
                 if (elKet) elKet.value = '';
+                toggleAutoDateKeluar(true);
             } else if (modalId === 'modalPeminjaman') {
                 const elJenis = document.getElementById('pinjam_jenis');
                 if (elJenis) elJenis.value = 'alat';
@@ -4590,6 +4668,7 @@ function closeModal(modalId) {
                 chkBarcode.checked = false;
                 toggleMasukBarcodeScanner(false);
             }
+            toggleAutoDateMasuk(true);
         } else if (modalId === 'modalBarangKeluar') {
             stopKeluarCameraStream();
             const chkBarcode = document.getElementById('keluar_use_barcode');
@@ -4597,6 +4676,7 @@ function closeModal(modalId) {
                 chkBarcode.checked = false;
                 toggleKeluarBarcodeScanner(false);
             }
+            toggleAutoDateKeluar(true);
         } else if (modalId === 'modalBarang') {
             const imgInput = document.getElementById('barang_image_input');
             const imgPreview = document.getElementById('barang_image_preview');
@@ -4753,6 +4833,9 @@ async function handleFormSubmit(event, actionName) {
         formData.append('nama_penerima', document.getElementById('keluar_penerima')?.value || '');
         formData.append('jumlah', document.getElementById('keluar_jumlah')?.value || '1');
         formData.append('catatan', document.getElementById('keluar_keterangan')?.value || '');
+        const isAutoKeluar = document.getElementById('keluar_tgl_auto')?.checked;
+        const keluarTgl = isAutoKeluar ? getLocalDateString() : (document.getElementById('keluar_tanggal')?.value || getLocalDateString());
+        formData.append('tanggal', keluarTgl);
     } else if (actionName === 'Barang Masuk') {
         apiAction = 'save_barang_masuk';
         formData.append('id', document.getElementById('masuk_edit_id')?.value || '');
@@ -4769,6 +4852,9 @@ async function handleFormSubmit(event, actionName) {
         }
         formData.append('barang_id', barangId);
         formData.append('jumlah', document.getElementById('masuk_jumlah')?.value || '1');
+        const isAutoMasuk = document.getElementById('masuk_tgl_auto')?.checked;
+        const masukTgl = isAutoMasuk ? getLocalDateString() : (document.getElementById('masuk_tanggal')?.value || getLocalDateString());
+        formData.append('tanggal', masukTgl);
     } else if (actionName === 'Peminjaman Alat' || actionName === 'Peminjaman') {
         apiAction = 'save_peminjaman';
         formData.append('id', document.getElementById('pinjam_edit_id')?.value || '');

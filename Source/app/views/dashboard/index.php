@@ -2387,7 +2387,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><td class="py-3.5 px-4 font-bold text-sage-700"><?= htmlspecialchars($bm['nama_jurusan'] ?? '-'); ?></td><?php endif; ?>
                                         <td class="py-3.5 px-4 font-bold text-emerald-600">+<?= htmlspecialchars($bm['jumlah']); ?> <?= htmlspecialchars($bm['satuan'] ?? 'Unit'); ?></td>
                                         <td class="py-3.5 px-4"><?= htmlspecialchars($bm['nama_petugas'] ?? 'Petugas'); ?></td>
-                                        <td class="py-3.5 px-4"><?= date('d M Y', strtotime($bm['created_at'])); ?></td>
+                                        <td class="py-3.5 px-4"><?= date('d M Y', strtotime($bm['tanggal_masuk'] ?: $bm['created_at'])); ?></td>
                                         <td class="py-3.5 px-4">
                                             <div class="flex items-center gap-1.5">
                                                 <button type="button" onclick="editBarangMasuk('<?= htmlspecialchars($bm['id']); ?>')" class="p-1.5 rounded-lg bg-sage-600 hover:bg-sage-700 text-white shadow-sm transition-all" title="Edit Transaksi Barang Masuk">
@@ -2489,7 +2489,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         <td class="py-3.5 px-4 font-bold text-amber-600">-<?= htmlspecialchars($bk['jumlah']); ?> <?= htmlspecialchars($bk['satuan'] ?? 'Unit'); ?></td>
                                         <td class="py-3.5 px-4"><?= htmlspecialchars($bk['catatan'] ?? '-'); ?></td>
                                         <td class="py-3.5 px-4"><?= htmlspecialchars($bk['nama_petugas'] ?? 'Petugas'); ?></td>
-                                        <td class="py-3.5 px-4"><?= date('d M Y', strtotime($bk['created_at'])); ?></td>
+                                        <td class="py-3.5 px-4"><?= date('d M Y', strtotime($bk['tanggal_keluar'] ?: $bk['created_at'])); ?></td>
                                         <td class="py-3.5 px-4">
                                             <div class="flex items-center gap-1.5">
                                                 <button type="button" onclick="editBarangKeluar('<?= htmlspecialchars($bk['id']); ?>')" class="p-1.5 rounded-lg bg-sage-600 hover:bg-sage-700 text-white shadow-sm transition-all" title="Edit Transaksi Barang Keluar">
@@ -5692,7 +5692,8 @@ function renderTableBarangMasuk() {
 
     tbody.innerHTML = window.dbBarangMasuk.map((bm, idx) => {
         const jurTd = isSuperAdmin ? `<td class="py-3.5 px-4 font-bold text-sage-700">${escapeHtml(bm.nama_jurusan || '-')}</td>` : '';
-        const dateStr = bm.created_at ? formatJakartaDate(bm.created_at, { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+        const dateVal = bm.tanggal_masuk || bm.created_at;
+        const dateStr = dateVal ? formatJakartaDate(dateVal, { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
         return `<tr class="hover:bg-sage-50/50">
             <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${bm.id}" onchange="updateBatchDeleteBar()"></td>
             <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${idx + 1}</td>
@@ -5718,7 +5719,8 @@ function renderTableBarangKeluar() {
 
     tbody.innerHTML = window.dbBarangKeluar.map((bk, idx) => {
         const jurTd = isSuperAdmin ? `<td class="py-3.5 px-4 font-bold text-sage-700">${escapeHtml(bk.nama_jurusan || '-')}</td>` : '';
-        const dateStr = bk.created_at ? formatJakartaDate(bk.created_at, { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+        const dateVal = bk.tanggal_keluar || bk.created_at;
+        const dateStr = dateVal ? formatJakartaDate(dateVal, { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
         return `<tr class="hover:bg-sage-50/50">
             <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${bk.id}" onchange="updateBatchDeleteBar()"></td>
             <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${idx + 1}</td>
