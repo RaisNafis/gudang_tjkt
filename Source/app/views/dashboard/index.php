@@ -1318,7 +1318,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         </div>
                         <div>
-                            <select id="filter_kabeng_multi_jurusan" onchange="filterTableKabengMulti()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
+                            <select id="filter_kabeng_multi_jurusan" onchange="onFilterChangeKabengMulti()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
                                 <option value="">Semua Jurusan Utama</option>
                                 <?php foreach ($dbJurusan as $j): ?>
                                     <option value="<?= htmlspecialchars($j['nama_jurusan']); ?>"><?= htmlspecialchars($j['nama_jurusan']); ?></option>
@@ -1326,7 +1326,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             </select>
                         </div>
                         <div>
-                            <select id="filter_kabeng_multi_status" onchange="filterTableKabengMulti()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
+                            <select id="filter_kabeng_multi_status" onchange="onFilterChangeKabengMulti()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
                                 <option value="">Semua Tipe Akses</option>
                                 <option value="multi">Multi-Jurusan (&gt; 1 Jurusan)</option>
                                 <option value="single">Hanya 1 Jurusan (Homebase)</option>
@@ -1359,7 +1359,6 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                     $kNo = 1;
                                     foreach ($allKabengMulti as $kb):
                                         $primaryJName = $kb['primary_nama_jurusan'] ?? 'Belum Ditentukan';
-                                        $primaryJColor = resolveJurusanThemeColor($kb['primary_warna_tema'] ?? '#2e7d32');
                                 ?>
                                 <tr class="kabeng-multi-row hover:bg-sage-50/50 dark:hover:bg-[#1a1a1a] transition-colors"
                                     data-nama="<?= strtolower(htmlspecialchars(($kb['nama_lengkap'] ?: '') . ' ' . ($kb['nama_pengguna'] ?: ''))); ?>"
@@ -1374,7 +1373,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         </div>
                                     </td>
                                     <td class="py-3.5 px-4">
-                                        <span class="text-xs font-bold" style="color: <?= htmlspecialchars($primaryJColor); ?>;">
+                                        <span class="text-xs font-bold text-slate-800 dark:text-slate-200">
                                             <?= htmlspecialchars($primaryJName); ?>
                                         </span>
                                     </td>
@@ -1383,9 +1382,8 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                             <?php 
                                             if (!empty($kb['jurusans'])):
                                                 foreach ($kb['jurusans'] as $aj):
-                                                    $jCol = resolveJurusanThemeColor($aj['warna_tema'] ?? '#2e7d32');
                                             ?>
-                                                <span class="text-xs font-bold" style="color: <?= htmlspecialchars($jCol); ?>;">
+                                                <span class="text-xs font-medium text-slate-800 dark:text-slate-200">
                                                     <?= htmlspecialchars($aj['nama_jurusan']); ?>
                                                 </span>
                                             <?php 
@@ -1420,6 +1418,26 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 <?php endif; ?>
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Pagination Controls Manajemen Akses Multi-Jurusan -->
+                    <div id="pagination_kabeng_multi" class="mt-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-[#262626] gap-3">
+                        <div class="flex items-center gap-2.5">
+                            <span>Tampilkan</span>
+                            <select id="kabeng_multi_per_page" onchange="changeKabengMultiPerPage(this.value)" class="px-2 py-1 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300 focus:outline-none focus:border-sage-600">
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span>data per halaman</span>
+                        </div>
+                        <div id="kabeng_multi_pagination_info" class="font-medium text-slate-600 dark:text-slate-300 text-center sm:text-left">
+                            Menampilkan 0 data
+                        </div>
+                        <div id="kabeng_multi_pagination_btns" class="flex items-center gap-1 flex-wrap justify-center sm:justify-end">
+                            <!-- Populated dynamically by renderKabengMultiPaginationControls -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -4863,13 +4881,89 @@ function matchTingkatKelas(kelasStr, tingkat) {
     return k.includes(tingkat);
 }
 
-// --- FILTER MANAJEMEN AKSES MULTI-JURUSAN KABENG ---
+// --- FILTER & PAGINATION MANAJEMEN AKSES MULTI-JURUSAN KABENG ---
+let currentKabengMultiPage = 1;
+let currentKabengMultiPerPage = 10;
 let kabengMultiDebounceTimer = null;
+
 function debouncedFilterTableKabengMulti() {
     clearTimeout(kabengMultiDebounceTimer);
     kabengMultiDebounceTimer = setTimeout(() => {
+        currentKabengMultiPage = 1;
         filterTableKabengMulti();
     }, 100);
+}
+
+function onFilterChangeKabengMulti() {
+    currentKabengMultiPage = 1;
+    filterTableKabengMulti();
+}
+
+function changeKabengMultiPerPage(val) {
+    currentKabengMultiPerPage = parseInt(val) || 10;
+    currentKabengMultiPage = 1;
+    filterTableKabengMulti();
+}
+
+function setKabengMultiPage(p) {
+    currentKabengMultiPage = p;
+    filterTableKabengMulti();
+}
+
+function renderKabengMultiPaginationControls(totalItems, totalPages, startIdx, endIdx) {
+    const infoElem = document.getElementById('kabeng_multi_pagination_info');
+    const btnsElem = document.getElementById('kabeng_multi_pagination_btns');
+    if (!infoElem || !btnsElem) return;
+
+    if (totalItems === 0) {
+        infoElem.innerHTML = `Menampilkan <strong class="text-slate-800 dark:text-white">0</strong> data`;
+        btnsElem.innerHTML = '';
+        return;
+    }
+
+    infoElem.innerHTML = `Menampilkan <strong class="text-slate-800 dark:text-white">${startIdx + 1} - ${endIdx}</strong> dari <strong class="text-slate-800 dark:text-white">${totalItems.toLocaleString('id-ID')}</strong> data (Hal <strong class="text-slate-800 dark:text-white">${currentKabengMultiPage}</strong> / ${totalPages})`;
+
+    if (totalPages <= 1) {
+        btnsElem.innerHTML = '';
+        return;
+    }
+
+    let html = '';
+    const prevDisabled = currentKabengMultiPage <= 1;
+    const nextDisabled = currentKabengMultiPage >= totalPages;
+
+    html += `<button type="button" onclick="setKabengMultiPage(1)" ${prevDisabled ? 'disabled' : ''} class="px-2 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] font-bold text-xs ${prevDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200 cursor-pointer'}" title="Halaman Pertama">&laquo;</button>`;
+    html += `<button type="button" onclick="setKabengMultiPage(${currentKabengMultiPage - 1})" ${prevDisabled ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] font-bold text-xs ${prevDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200 cursor-pointer'}" title="Sebelumnya">&lsaquo;</button>`;
+
+    let startPage = Math.max(1, currentKabengMultiPage - 2);
+    let endPage = Math.min(totalPages, currentKabengMultiPage + 2);
+
+    if (startPage > 1) {
+        html += `<button type="button" onclick="setKabengMultiPage(1)" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] text-xs font-semibold hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200 cursor-pointer">1</button>`;
+        if (startPage > 2) {
+            html += `<span class="px-1 text-slate-400">...</span>`;
+        }
+    }
+
+    for (let p = startPage; p <= endPage; p++) {
+        if (p === currentKabengMultiPage) {
+            html += `<button type="button" class="px-2.5 py-1 rounded-lg bg-sage-600 text-white font-bold text-xs shadow-sm">${p}</button>`;
+        } else {
+            html += `<button type="button" onclick="setKabengMultiPage(${p})" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] text-xs font-semibold hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200 cursor-pointer">${p}</button>`;
+        }
+    }
+
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            html += `<span class="px-1 text-slate-400">...</span>`;
+        }
+        html += `<button type="button" onclick="setKabengMultiPage(${totalPages})" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] text-xs font-semibold hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200 cursor-pointer">${totalPages}</button>`;
+    }
+
+    html += `<button type="button" onclick="setKabengMultiPage(${currentKabengMultiPage + 1})" ${nextDisabled ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] font-bold text-xs ${nextDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200 cursor-pointer'}" title="Selanjutnya">&rsaquo;</button>`;
+    html += `<button type="button" onclick="setKabengMultiPage(${totalPages})" ${nextDisabled ? 'disabled' : ''} class="px-2 py-1 rounded-lg border border-slate-200 dark:border-[#2a2a2a] font-bold text-xs ${nextDisabled ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-sage-100 dark:hover:bg-[#222222] text-slate-700 dark:text-slate-200 cursor-pointer'}" title="Halaman Terakhir">&raquo;</button>`;
+
+    btnsElem.innerHTML = html;
 }
 
 function filterTableKabengMulti() {
@@ -4881,7 +4975,7 @@ function filterTableKabengMulti() {
     if (!tbody) return;
 
     const rows = tbody.querySelectorAll('tr.kabeng-multi-row');
-    let visibleCount = 0;
+    const matchedRows = [];
 
     rows.forEach(row => {
         const nama = row.getAttribute('data-nama') || '';
@@ -4904,10 +4998,29 @@ function filterTableKabengMulti() {
         }
 
         if (matchSearch && matchJurusan && matchStatus) {
+            matchedRows.push(row);
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    const totalItems = matchedRows.length;
+    const totalPages = Math.ceil(totalItems / currentKabengMultiPerPage) || 1;
+    if (currentKabengMultiPage > totalPages) {
+        currentKabengMultiPage = totalPages;
+    }
+    if (currentKabengMultiPage < 1) {
+        currentKabengMultiPage = 1;
+    }
+
+    const startIdx = (currentKabengMultiPage - 1) * currentKabengMultiPerPage;
+    const endIdx = Math.min(startIdx + currentKabengMultiPerPage, totalItems);
+
+    matchedRows.forEach((row, idx) => {
+        if (idx >= startIdx && idx < endIdx) {
             row.style.display = '';
-            visibleCount++;
             const noCell = row.querySelector('.kabeng-row-number');
-            if (noCell) noCell.innerText = visibleCount;
+            if (noCell) noCell.innerText = idx + 1;
         } else {
             row.style.display = 'none';
         }
@@ -4915,11 +5028,11 @@ function filterTableKabengMulti() {
 
     const countDisplay = document.getElementById('kabeng_multi_count_display');
     if (countDisplay) {
-        countDisplay.innerText = visibleCount;
+        countDisplay.innerText = totalItems;
     }
 
     let emptyRow = document.getElementById('row_empty_multi_jurusan');
-    if (visibleCount === 0) {
+    if (totalItems === 0) {
         if (!emptyRow) {
             emptyRow = document.createElement('tr');
             emptyRow.id = 'row_empty_multi_jurusan';
@@ -4931,6 +5044,8 @@ function filterTableKabengMulti() {
     } else if (emptyRow) {
         emptyRow.style.display = 'none';
     }
+
+    renderKabengMultiPaginationControls(totalItems, totalPages, startIdx, endIdx);
 }
 
 function resetFilterKabengMulti() {
@@ -4940,6 +5055,7 @@ function resetFilterKabengMulti() {
     if (s) s.value = '';
     if (j) j.value = '';
     if (st) st.value = '';
+    currentKabengMultiPage = 1;
     filterTableKabengMulti();
 }
 
@@ -6161,6 +6277,7 @@ function renderActiveTabTable(tabId) {
         if (p) p.reinit();
     } else if (tabId === 'pengguna') {
         renderTablePengguna();
+        if (typeof filterTableKabengMulti === 'function') filterTableKabengMulti();
         if (typeof initTabAnalytics === 'function') initTabAnalytics('pengguna');
     } else if (tabId === 'jurusan') {
         renderTableJurusan();
@@ -6887,6 +7004,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     filterTableBarang();
     filterTableLogAktivitas();
+    if (typeof filterTableKabengMulti === 'function') filterTableKabengMulti();
 });
 
 let searchBarangDebounceTimer = null;
