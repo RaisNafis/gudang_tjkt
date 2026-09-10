@@ -1298,10 +1298,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                 <div class="bg-white dark:bg-slate-900 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm p-6 mt-6">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-5">
                         <div>
-                            <div class="flex items-center gap-2">
-                                <h3 class="text-base font-bold text-slate-800 dark:text-white">Manajemen Akses Multi-Jurusan Kepala Bengkel</h3>
-                                <span class="px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-400 font-bold text-[10px]">Multi-Gudang</span>
-                            </div>
+                            <h3 class="text-base font-bold text-slate-800 dark:text-white">Manajemen Akses Multi-Jurusan Kepala Bengkel</h3>
                             <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Pengaturan wewenang lintas jurusan bagi guru Kepala Bengkel (Kabeng) untuk mengelola lebih dari satu jurusan/gudang.</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
@@ -1333,36 +1330,31 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                     $kNo = 1;
                                     foreach ($allKabengMulti as $kb):
                                         $primaryJName = $kb['primary_nama_jurusan'] ?? 'Belum Ditentukan';
-                                        $primaryJColor = $kb['primary_warna_tema'] ?? '#2e7d32';
+                                        $primaryJColor = resolveJurusanThemeColor($kb['primary_warna_tema'] ?? '#2e7d32');
                                 ?>
                                 <tr class="hover:bg-sage-50/50 dark:hover:bg-[#1a1a1a] transition-colors">
                                     <td class="py-3.5 px-4 text-center font-bold text-slate-500 dark:text-slate-400"><?= $kNo++; ?></td>
                                     <td class="py-3.5 px-4">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-8 h-8 rounded-xl bg-sage-100 dark:bg-sage-950/60 text-sage-700 dark:text-sage-400 font-bold flex items-center justify-center text-xs shrink-0">
-                                                <?= strtoupper(substr($kb['nama_lengkap'] ?: $kb['nama_pengguna'], 0, 1)); ?>
-                                            </div>
-                                            <div>
-                                                <div class="font-bold text-slate-800 dark:text-slate-200"><?= htmlspecialchars($kb['nama_lengkap'] ?: $kb['nama_pengguna']); ?></div>
-                                                <div class="text-[11px] text-slate-400 font-mono">@<?= htmlspecialchars($kb['nama_pengguna']); ?></div>
-                                            </div>
+                                        <div>
+                                            <div class="font-bold text-slate-800 dark:text-slate-200"><?= htmlspecialchars($kb['nama_lengkap'] ?: $kb['nama_pengguna']); ?></div>
+                                            <div class="text-[11px] text-slate-400 font-mono">@<?= htmlspecialchars($kb['nama_pengguna']); ?></div>
                                         </div>
                                     </td>
                                     <td class="py-3.5 px-4">
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                                        <span class="inline-flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
                                             <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: <?= htmlspecialchars($primaryJColor); ?>;"></span>
                                             <span><?= htmlspecialchars($primaryJName); ?></span>
                                         </span>
                                     </td>
                                     <td class="py-3.5 px-4">
-                                        <div class="flex flex-wrap items-center gap-1.5">
+                                        <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
                                             <?php 
                                             if (!empty($kb['jurusans'])):
                                                 foreach ($kb['jurusans'] as $aj):
-                                                    $jCol = !empty($aj['warna_tema']) ? $aj['warna_tema'] : '#2e7d32';
+                                                    $jCol = resolveJurusanThemeColor($aj['warna_tema'] ?? '#2e7d32');
                                             ?>
-                                                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-bold border" style="border-color: <?= htmlspecialchars($jCol); ?>40; background-color: <?= htmlspecialchars($jCol); ?>15; color: <?= htmlspecialchars($jCol); ?>;">
-                                                    <span class="w-2 h-2 rounded-full" style="background-color: <?= htmlspecialchars($jCol); ?>;"></span>
+                                                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 dark:text-slate-300">
+                                                    <span class="w-2 h-2 rounded-full shrink-0" style="background-color: <?= htmlspecialchars($jCol); ?>;"></span>
                                                     <span><?= htmlspecialchars($aj['nama_jurusan']); ?></span>
                                                 </span>
                                             <?php 
@@ -1373,10 +1365,8 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                             <?php endif; ?>
                                         </div>
                                     </td>
-                                    <td class="py-3.5 px-4 text-center font-bold">
-                                        <span class="px-2 py-0.5 rounded-full text-xs font-extrabold <?= ($kb['total_akses'] > 1) ? 'bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400' ?>">
-                                            <?= $kb['total_akses']; ?> Jurusan
-                                        </span>
+                                    <td class="py-3.5 px-4 text-center font-bold text-xs text-slate-700 dark:text-slate-300">
+                                        <?= $kb['total_akses']; ?> Jurusan
                                     </td>
                                     <td class="py-3.5 px-4 text-center">
                                         <?php if ($isSuperAdmin): ?>

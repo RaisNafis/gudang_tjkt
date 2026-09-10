@@ -235,3 +235,35 @@ function generateUuid() {
         mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
     );
 }
+
+/**
+ * Konversi warna tema jurusan (preset nama atau kode hex) menjadi kode hex CSS valid
+ */
+function resolveJurusanThemeColor($colorVal) {
+    if (empty($colorVal)) return '#2E7D32';
+    $presets = [
+        'kuning' => '#EAB308',
+        'orange' => '#EA580C',
+        'hijau'  => '#2E7D32',
+        'merah'  => '#DC2626',
+        'biru'   => '#2563EB',
+        'ungu'   => '#7C3AED',
+        'pink'   => '#E11D48',
+        'cyan'   => '#0891B2',
+        'violet' => '#8B5CF6',
+        'coklat' => '#78350F',
+        'abu'    => '#64748B'
+    ];
+    $c = strtolower(trim($colorVal));
+    if (isset($presets[$c])) {
+        return $presets[$c];
+    }
+    if (str_starts_with($c, '#')) {
+        return $colorVal;
+    }
+    if (preg_match('/^[0-9a-fA-F]{3,8}$/', $c)) {
+        return '#' . $colorVal;
+    }
+    return $colorVal;
+}
+

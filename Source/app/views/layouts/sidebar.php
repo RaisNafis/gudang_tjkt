@@ -78,7 +78,7 @@ if ($roleName === 'admin_sekolah') {
                 <div class="space-y-1 max-h-60 overflow-y-auto" style="scrollbar-width: thin;">
                     <?php foreach ($userAccessibleJurusans as $aj): 
                         $isActive = ($aj['id'] === $activeJurusanId);
-                        $ajColor = !empty($aj['warna_tema']) ? $aj['warna_tema'] : '#2e7d32';
+                        $ajColor = resolveJurusanThemeColor($aj['warna_tema'] ?? '#2e7d32');
                     ?>
                     <button type="button" onclick="switchActiveJurusan('<?= $aj['id']; ?>')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer <?= $isActive ? 'bg-sage-50 dark:bg-sage-950/50 text-sage-700 dark:text-sage-300 font-bold border border-sage-200/60 dark:border-sage-800/60' : 'hover:bg-slate-50 dark:hover:bg-[#1e1e1e] text-slate-700 dark:text-slate-300' ?>">
                         <div class="flex items-center gap-2.5 min-w-0 truncate">

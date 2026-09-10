@@ -591,18 +591,11 @@
     <div class="relative w-full max-w-xl bg-white dark:bg-[#1e1e1e] p-5 sm:p-6 rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
         <!-- Header -->
         <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100 dark:border-slate-800">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                    </svg>
-                </div>
-                <div>
-                    <h3 class="font-extrabold text-slate-800 dark:text-white text-base">Akses Multi-Jurusan Kepala Bengkel</h3>
-                    <p class="text-xs text-slate-400 dark:text-slate-500">Atur hak akses beberapa jurusan/gudang untuk Kepala Bengkel</p>
-                </div>
+            <div>
+                <h3 class="font-extrabold text-slate-800 dark:text-white text-base">Akses Multi-Jurusan Kepala Bengkel</h3>
+                <p class="text-xs text-slate-400 dark:text-slate-500">Atur hak akses beberapa jurusan/gudang untuk Kepala Bengkel</p>
             </div>
-            <button type="button" onclick="closeModal('modalMultiJurusanKabeng')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
+            <button type="button" onclick="closeModal('modalMultiJurusanKabeng')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors cursor-pointer">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
@@ -619,18 +612,12 @@
                 </select>
             </div>
 
-            <!-- Card Info Kabeng Terpilih -->
-            <div id="multi_kabeng_info_card" class="hidden p-3.5 bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 rounded-2xl">
-                <div class="flex items-center gap-3">
-                    <div id="multi_kabeng_avatar" class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-xs shadow-sm shrink-0">KB</div>
-                    <div class="min-w-0 flex-1">
-                        <h4 id="multi_kabeng_nama" class="font-extrabold text-xs text-slate-800 dark:text-white truncate">-</h4>
-                        <p class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-0.5">
-                            <span>Username: <strong id="multi_kabeng_username" class="font-semibold text-slate-700 dark:text-slate-300">-</strong></span>
-                            <span>•</span>
-                            <span>Jurusan Utama: <strong id="multi_kabeng_jurusan_asal" class="font-semibold text-indigo-600 dark:text-indigo-400">-</strong></span>
-                        </p>
-                    </div>
+            <!-- Info Kabeng Terpilih -->
+            <div id="multi_kabeng_info_card" class="hidden py-1">
+                <h4 id="multi_kabeng_nama" class="font-extrabold text-xs text-slate-800 dark:text-white truncate">-</h4>
+                <div class="text-[11px] text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-x-4 gap-y-0.5 mt-0.5">
+                    <span>Username: <strong id="multi_kabeng_username" class="font-semibold text-slate-700 dark:text-slate-300">-</strong></span>
+                    <span>Jurusan Utama: <strong id="multi_kabeng_jurusan_asal" class="font-semibold text-slate-700 dark:text-slate-300">-</strong></span>
                 </div>
             </div>
 
@@ -6388,6 +6375,28 @@ async function handleRollbackMigrasiSubmit(e) {
     }
 }
 // --- KELOLA AKSES MULTI-JURUSAN KEPALA BENGKEL ---
+function resolveJurusanThemeColor(colorVal) {
+    if (!colorVal) return '#2E7D32';
+    const presets = {
+        'kuning': '#EAB308',
+        'orange': '#EA580C',
+        'hijau': '#2E7D32',
+        'merah': '#DC2626',
+        'biru': '#2563EB',
+        'ungu': '#7C3AED',
+        'pink': '#E11D48',
+        'cyan': '#0891B2',
+        'violet': '#8B5CF6',
+        'coklat': '#78350F',
+        'abu': '#64748B'
+    };
+    const c = String(colorVal).trim().toLowerCase();
+    if (presets[c]) return presets[c];
+    if (c.startsWith('#')) return colorVal;
+    if (/^[0-9a-f]{3,8}$/i.test(c)) return '#' + colorVal;
+    return colorVal;
+}
+
 async function openModalMultiJurusanKabeng(penggunaId = null) {
     const modal = document.getElementById('modalMultiJurusanKabeng');
     if (!modal) return;
@@ -6436,15 +6445,10 @@ async function onKabengSelectedForMulti(penggunaId) {
         const elNama = document.getElementById('multi_kabeng_nama');
         const elUsername = document.getElementById('multi_kabeng_username');
         const elJurusanAsal = document.getElementById('multi_kabeng_jurusan_asal');
-        const elAvatar = document.getElementById('multi_kabeng_avatar');
 
         if (elNama) elNama.innerText = user.nama_lengkap || user.nama_pengguna;
         if (elUsername) elUsername.innerText = user.nama_pengguna;
         if (elJurusanAsal) elJurusanAsal.innerText = user.nama_jurusan || 'Tidak Ada (Semua)';
-        if (elAvatar) {
-            const initial = (user.nama_lengkap || user.nama_pengguna || 'KB').substring(0, 2).toUpperCase();
-            elAvatar.innerText = initial;
-        }
     }
 
     if (container) {
@@ -6465,19 +6469,19 @@ async function onKabengSelectedForMulti(penggunaId) {
                 const jId = String(j.id);
                 const isPrimary = (primaryJurusanId && jId === primaryJurusanId);
                 const isChecked = isPrimary || allowedIds.includes(jId);
-                const themeColor = j.warna_tema || '#4f46e5';
+                const themeColor = resolveJurusanThemeColor(j.warna_tema);
 
                 return `
-                    <label class="flex items-center justify-between p-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors ${isChecked ? 'bg-indigo-50/40 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-900/60' : ''}">
+                    <label class="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
                         <div class="flex items-center gap-3">
-                            <input type="checkbox" name="jurusan_ids[]" value="${j.id}" ${isChecked ? 'checked' : ''} ${isPrimary ? 'onclick="return false;"' : ''} class="w-4 h-4 text-indigo-600 rounded border-slate-300 dark:border-slate-700 focus:ring-indigo-500">
+                            <input type="checkbox" name="jurusan_ids[]" value="${j.id}" ${isChecked ? 'checked' : ''} ${isPrimary ? 'onclick="return false;"' : ''} class="w-4 h-4 text-indigo-600 rounded border-slate-300 dark:border-slate-700 focus:ring-indigo-500 cursor-pointer">
                             ${isPrimary ? `<input type="hidden" name="jurusan_ids[]" value="${j.id}">` : ''}
-                            <span class="w-3.5 h-3.5 rounded-full shrink-0 shadow-xs" style="background-color: ${themeColor}"></span>
+                            <span class="w-3.5 h-3.5 rounded-full shrink-0 shadow-xs" style="background-color: ${themeColor};"></span>
                             <span class="font-bold text-xs text-slate-800 dark:text-slate-200">${j.nama_jurusan}</span>
                         </div>
                         <div>
                             ${isPrimary 
-                                ? `<span class="px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-extrabold text-[10px]">Jurusan Utama (Wajib)</span>` 
+                                ? `<span class="text-[11px] text-slate-400 dark:text-slate-500 font-semibold">(Jurusan Utama)</span>` 
                                 : `<span class="text-[11px] text-slate-400 dark:text-slate-500">${j.kode_jurusan || ''}</span>`
                             }
                         </div>
