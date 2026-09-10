@@ -5186,10 +5186,6 @@ function renderTablePengguna() {
 
     tbody.innerHTML = pageItems.map((p, idx) => {
         const rowNo = startIdx + idx + 1;
-        const initial = (p.nama_lengkap || p.nama_pengguna || 'U').charAt(0).toUpperCase();
-        const avatarHtml = p.foto_url
-            ? `<img src="${p.foto_url}" class="w-7 h-7 rounded-full object-cover border border-sage-200 shrink-0 shadow-sm" alt="Avatar">`
-            : `<div class="w-7 h-7 rounded-full bg-sage-600 text-white font-bold flex items-center justify-center text-[10px] shrink-0 shadow-sm">${initial}</div>`;
         const peranText = p.peran === 'admin_sekolah' ? 'Admin Sekolah' : ((p.peran === 'kabeng' || p.peran === 'admin_jurusan') ? 'Kabeng' : ((p.peran === 'guru_jurusan' || p.peran === 'petugas') ? 'Guru Jurusan' : (p.peran === 'guru_umum' ? 'Guru Umum' : 'Siswa')));
         const jurusanText = p.peran === 'admin_sekolah' ? '<span class="text-slate-400 font-normal">-</span>' : (p.nama_jurusan || '-');
         const isSiswa = p.peran === 'siswa' || p.status_pengguna === 'siswa';
@@ -5203,7 +5199,7 @@ function renderTablePengguna() {
         return `<tr class="hover:bg-sage-50/50 dark:hover:bg-[#222222]/40">
             <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${p.id}" onchange="updateBatchDeleteBar()"></td>
             <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${rowNo}</td>
-            <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2.5">${avatarHtml}<span>${escapeHtml(p.nama_pengguna)}</span></td>
+            <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-slate-200">${escapeHtml(p.nama_pengguna)}</td>
             <td class="py-3.5 px-4 font-semibold text-slate-800 dark:text-slate-200">${escapeHtml(p.nama_lengkap || '')}</td>
             <td class="py-3.5 px-4">${escapeHtml(p.email || '-')}</td>
             <td class="py-3.5 px-4 font-bold text-sage-700">${jurusanText}</td>

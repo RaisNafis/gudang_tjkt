@@ -596,23 +596,24 @@
 
             <!-- Checkbox List Jurusan -->
             <div>
-                <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center justify-between mb-1.5">
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">Daftar Jurusan yang Diberi Akses</label>
                     <span class="text-[11px] text-slate-400">Centang jurusan yang diizinkan</span>
                 </div>
                 
+                <!-- Input Search untuk Jurusan List -->
+                <div class="relative mb-2">
+                    <input type="text" id="multi_jurusan_search_input" oninput="filterMultiJurusanList(this.value)" placeholder="Cari nama atau kode jurusan..." class="w-full pl-8 pr-8 py-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 font-medium transition-colors">
+                    <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <button type="button" id="btn_clear_multi_jurusan_search" onclick="clearMultiJurusanSearch()" class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer" title="Hapus pencarian">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
                 <div id="multi_jurusan_checkbox_container" class="space-y-2 max-h-56 overflow-y-auto pr-1">
                     <div class="p-4 text-center text-xs text-slate-400">Pilih Kepala Bengkel terlebih dahulu...</div>
-                </div>
-            </div>
-
-            <!-- Note / Petunjuk -->
-            <div class="p-3 bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-xl flex items-start gap-2.5">
-                <svg class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <div class="text-[11px] text-amber-800 dark:text-amber-300 leading-relaxed">
-                    Jurusan utama Kepala Bengkel otomatis selalu diizinkan. Kepala Bengkel dapat berpindah antargudang jurusan melalui tombol <strong>Switch Jurusan</strong> di bagian sidebar.
                 </div>
             </div>
 
@@ -6384,6 +6385,11 @@ async function openModalMultiJurusanKabeng(penggunaId = null) {
             }).join('');
     }
 
+    const searchInp = document.getElementById('multi_jurusan_search_input');
+    if (searchInp) searchInp.value = '';
+    const clearBtn = document.getElementById('btn_clear_multi_jurusan_search');
+    if (clearBtn) clearBtn.classList.add('hidden');
+
     if (penggunaId) {
         if (selectKabeng) selectKabeng.value = penggunaId;
         await onKabengSelectedForMulti(penggunaId);
@@ -6401,9 +6407,60 @@ async function openModalMultiJurusanKabeng(penggunaId = null) {
     modal.classList.add('flex');
 }
 
+function filterMultiJurusanList(val) {
+    const q = (val || '').toLowerCase().trim();
+    const clearBtn = document.getElementById('btn_clear_multi_jurusan_search');
+    if (clearBtn) {
+        if (q) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+    }
+    const container = document.getElementById('multi_jurusan_checkbox_container');
+    if (!container) return;
+    const items = container.querySelectorAll('.multi-jurusan-item');
+    let visibleCount = 0;
+    items.forEach(item => {
+        const text = item.getAttribute('data-search') || item.textContent.toLowerCase();
+        if (!q || text.includes(q)) {
+            item.classList.remove('hidden');
+            visibleCount++;
+        } else {
+            item.classList.add('hidden');
+        }
+    });
+
+    let emptyMsg = document.getElementById('multi_jurusan_empty_search');
+    if (items.length > 0 && visibleCount === 0) {
+        if (!emptyMsg) {
+            emptyMsg = document.createElement('div');
+            emptyMsg.id = 'multi_jurusan_empty_search';
+            emptyMsg.className = 'p-4 text-center text-xs text-slate-400';
+            emptyMsg.textContent = 'Tidak ada jurusan yang cocok dengan pencarian.';
+            container.appendChild(emptyMsg);
+        } else {
+            emptyMsg.classList.remove('hidden');
+        }
+    } else if (emptyMsg) {
+        emptyMsg.classList.add('hidden');
+    }
+}
+
+function clearMultiJurusanSearch() {
+    const input = document.getElementById('multi_jurusan_search_input');
+    if (input) {
+        input.value = '';
+        filterMultiJurusanList('');
+        input.focus();
+    }
+}
+
 async function onKabengSelectedForMulti(penggunaId) {
     const card = document.getElementById('multi_kabeng_info_card');
     const container = document.getElementById('multi_jurusan_checkbox_container');
+    const searchInp = document.getElementById('multi_jurusan_search_input');
+    if (searchInp) searchInp.value = '';
+    const clearBtn = document.getElementById('btn_clear_multi_jurusan_search');
+    if (clearBtn) clearBtn.classList.add('hidden');
+
     if (!penggunaId) {
         if (card) card.classList.add('hidden');
         if (container) container.innerHTML = '<div class="p-4 text-center text-xs text-slate-400">Pilih Kepala Bengkel terlebih dahulu...</div>';
@@ -6445,18 +6502,19 @@ async function onKabengSelectedForMulti(penggunaId) {
                 const isPrimary = (primaryJurusanId && jId === primaryJurusanId);
                 const isChecked = isPrimary || allowedIds.includes(jId);
                 const themeColor = resolveJurusanThemeColor(j.warna_tema);
+                const searchKey = `${j.nama_jurusan || ''} ${j.kode_jurusan || ''}`.toLowerCase();
 
                 return `
-                    <label class="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
+                    <label data-search="${escapeHtml(searchKey)}" class="multi-jurusan-item flex items-center justify-between p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
                         <div class="flex items-center gap-3">
                             <input type="checkbox" name="jurusan_ids[]" value="${j.id}" ${isChecked ? 'checked' : ''} ${isPrimary ? 'onclick="return false;"' : ''} class="w-4 h-4 text-indigo-600 rounded border-slate-300 dark:border-slate-700 focus:ring-indigo-500 cursor-pointer">
                             ${isPrimary ? `<input type="hidden" name="jurusan_ids[]" value="${j.id}">` : ''}
-                            <span class="font-bold text-xs" style="color: ${themeColor};">${j.nama_jurusan}</span>
+                            <span class="font-bold text-xs" style="color: ${themeColor};">${escapeHtml(j.nama_jurusan)}</span>
                         </div>
                         <div>
                             ${isPrimary 
                                 ? `<span class="text-[11px] text-slate-400 dark:text-slate-500 font-semibold">(Jurusan Utama)</span>` 
-                                : `<span class="text-[11px] text-slate-400 dark:text-slate-500">${j.kode_jurusan || ''}</span>`
+                                : `<span class="text-[11px] text-slate-400 dark:text-slate-500">${escapeHtml(j.kode_jurusan || '')}</span>`
                             }
                         </div>
                     </label>
