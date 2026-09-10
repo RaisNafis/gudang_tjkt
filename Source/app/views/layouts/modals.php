@@ -572,11 +572,26 @@
                     <option value="bahan">Bahan</option>
                 </select>
             </div>
-            <div>
-                <label class="block font-bold text-slate-700 mb-1" id="masuk_barang_label">Pilih Alat / Bahan <span class="text-red-500">*</span></label>
-                <select id="masuk_barang_id" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+            <div id="wrap_masuk_barang" class="relative">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1" id="masuk_barang_label">Pilih Alat / Bahan <span class="text-red-500">*</span></label>
+                <select id="masuk_barang_id" class="hidden">
                     <option value="">-- Pilih Alat / Bahan --</option>
                 </select>
+                <div class="relative">
+                    <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+                    <input type="text" id="masuk_barang_search" autocomplete="off" placeholder="Ketik untuk mencari alat & bahan masuk..." class="w-full pl-9 pr-16 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-sage-600 focus:ring-1 focus:ring-sage-600 transition-all cursor-pointer">
+                    <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                        <button type="button" id="masuk_barang_clear" tabindex="-1" class="hidden p-1 text-slate-400 hover:text-red-500 rounded-lg transition-colors" title="Hapus pilihan">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                        <button type="button" id="masuk_barang_chevron" tabindex="-1" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg transition-transform">
+                            <svg class="w-4 h-4 transform transition-transform duration-200" id="masuk_barang_chevron_icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                    </div>
+                    <div id="masuk_barang_menu" class="hidden absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl shadow-xl divide-y divide-slate-100 dark:divide-slate-700/50 text-xs"></div>
+                </div>
             </div>
             <div>
                 <label class="block font-bold text-slate-700 mb-1">Jumlah Masuk <span class="text-red-500">*</span></label>
@@ -615,9 +630,9 @@
                 </select>
             </div>
             <?php endif; ?>
-            <div>
-                <label class="block font-bold text-slate-700 mb-1">Pilih Bahan <span class="text-red-500">*</span></label>
-                <select id="keluar_barang_id" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+            <div id="wrap_keluar_barang" class="relative">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1" id="keluar_barang_label">Pilih Bahan <span class="text-red-500">*</span></label>
+                <select id="keluar_barang_id" class="hidden">
                     <option value="">-- Pilih Bahan --</option>
                     <?php if (!empty($dbBarang)): ?>
                         <?php foreach ($dbBarang as $b): ?>
@@ -627,6 +642,21 @@
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </select>
+                <div class="relative">
+                    <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+                    <input type="text" id="keluar_barang_search" autocomplete="off" placeholder="Ketik untuk mencari bahan keluar..." class="w-full pl-9 pr-16 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-sage-600 focus:ring-1 focus:ring-sage-600 transition-all cursor-pointer">
+                    <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                        <button type="button" id="keluar_barang_clear" tabindex="-1" class="hidden p-1 text-slate-400 hover:text-red-500 rounded-lg transition-colors" title="Hapus pilihan">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                        <button type="button" id="keluar_barang_chevron" tabindex="-1" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg transition-transform">
+                            <svg class="w-4 h-4 transform transition-transform duration-200" id="keluar_barang_chevron_icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                    </div>
+                    <div id="keluar_barang_menu" class="hidden absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl shadow-xl divide-y divide-slate-100 dark:divide-slate-700/50 text-xs"></div>
+                </div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
@@ -749,11 +779,26 @@
                     <option value="bahan">Bahan</option>
                 </select>
             </div>
-            <div id="wrap_pinjam_barang">
+            <div id="wrap_pinjam_barang" class="relative">
                 <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1" id="pinjam_barang_label">Pilih Inventaris <span class="text-red-500">*</span></label>
-                <select id="pinjam_barang_id" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
+                <select id="pinjam_barang_id" class="hidden">
                     <option value="">-- Pilih Inventaris --</option>
                 </select>
+                <div class="relative">
+                    <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+                    <input type="text" id="pinjam_barang_search" autocomplete="off" placeholder="Ketik untuk mencari alat & bahan..." class="w-full pl-9 pr-16 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-sage-600 focus:ring-1 focus:ring-sage-600 transition-all cursor-pointer">
+                    <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                        <button type="button" id="pinjam_barang_clear" tabindex="-1" class="hidden p-1 text-slate-400 hover:text-red-500 rounded-lg transition-colors" title="Hapus pilihan">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                        <button type="button" id="pinjam_barang_chevron" tabindex="-1" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg transition-transform">
+                            <svg class="w-4 h-4 transform transition-transform duration-200" id="pinjam_barang_chevron_icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                    </div>
+                    <div id="pinjam_barang_menu" class="hidden absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl shadow-xl divide-y divide-slate-100 dark:divide-slate-700/50 text-xs"></div>
+                </div>
             </div>
             <div>
                 <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Guru Peminjam</label>
@@ -1274,9 +1319,370 @@ function downloadBarcodeImage() {
     link.click();
 }
 
+// Helper notifikasi standar
+function showNotification(message, type = 'warning') {
+    if (typeof showToast === 'function') {
+        showToast(message, type === 'warning' ? 'error' : type);
+    } else {
+        alert(message);
+    }
+}
+
+// --- LIGHTWEIGHT SEARCHABLE COMBOBOX COMPONENT ---
+class SearchableSelect {
+    constructor(config) {
+        this.wrapper = typeof config.wrapper === 'string' ? document.getElementById(config.wrapper) : config.wrapper;
+        this.selectEl = typeof config.select === 'string' ? document.getElementById(config.select) : config.select;
+        this.inputEl = typeof config.input === 'string' ? document.getElementById(config.input) : config.input;
+        this.menuEl = typeof config.menu === 'string' ? document.getElementById(config.menu) : config.menu;
+        this.clearBtn = typeof config.clearBtn === 'string' ? document.getElementById(config.clearBtn) : config.clearBtn;
+        this.toggleBtn = typeof config.toggleBtn === 'string' ? document.getElementById(config.toggleBtn) : config.toggleBtn;
+        this.chevronIcon = typeof config.chevronIcon === 'string' ? document.getElementById(config.chevronIcon) : config.chevronIcon;
+        this.emptyText = config.emptyText || 'Barang tidak ditemukan';
+        this.placeholder = config.placeholder || 'Ketik untuk mencari...';
+        this.onSelect = config.onSelect || null;
+
+        this.items = [];
+        this.filteredItems = [];
+        this.highlightedIndex = -1;
+        this.selectedValue = '';
+        this.selectedText = '';
+
+        this.init();
+    }
+
+    init() {
+        if (!this.inputEl || !this.menuEl) return;
+
+        // Fokus atau klik pada input -> buka dropdown
+        this.inputEl.addEventListener('focus', () => {
+            if (this.selectedValue) {
+                this.inputEl.select();
+            }
+            this.open();
+        });
+
+        this.inputEl.addEventListener('click', () => {
+            this.open();
+        });
+
+        // Ketik pencarian realtime
+        this.inputEl.addEventListener('input', () => {
+            this.open();
+            this.filter(this.inputEl.value);
+        });
+
+        // Navigasi Keyboard (Panah Atas/Bawah, Enter, Escape)
+        this.inputEl.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (!this.isOpen()) {
+                    this.open();
+                } else {
+                    this.moveHighlight(1);
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (this.isOpen()) {
+                    this.moveHighlight(-1);
+                }
+            } else if (e.key === 'Enter') {
+                if (this.isOpen() && this.highlightedIndex >= 0 && this.filteredItems[this.highlightedIndex]) {
+                    e.preventDefault();
+                    this.select(this.filteredItems[this.highlightedIndex]);
+                }
+            } else if (e.key === 'Escape') {
+                this.close();
+            }
+        });
+
+        // Tombol Chevron Toggle
+        if (this.toggleBtn) {
+            this.toggleBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (this.isOpen()) {
+                    this.close();
+                } else {
+                    this.inputEl.focus();
+                    this.open();
+                }
+            });
+        }
+
+        // Tombol Clear (X)
+        if (this.clearBtn) {
+            this.clearBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.clear();
+                this.inputEl.focus();
+                this.open();
+            });
+        }
+
+        // Tutup jika klik di luar
+        document.addEventListener('click', (e) => {
+            if (this.wrapper && !this.wrapper.contains(e.target)) {
+                this.close();
+            }
+        });
+    }
+
+    isOpen() {
+        return this.menuEl && !this.menuEl.classList.contains('hidden');
+    }
+
+    open() {
+        if (!this.menuEl) return;
+        this.menuEl.classList.remove('hidden');
+        if (this.chevronIcon) this.chevronIcon.classList.add('rotate-180');
+        if (this.inputEl.value && this.inputEl.value !== this.selectedText) {
+            this.filter(this.inputEl.value);
+        } else {
+            this.filter('');
+        }
+        this.scrollToSelected();
+    }
+
+    close() {
+        if (!this.menuEl) return;
+        this.menuEl.classList.add('hidden');
+        if (this.chevronIcon) this.chevronIcon.classList.remove('rotate-180');
+        this.highlightedIndex = -1;
+        this.inputEl.value = this.selectedText || '';
+    }
+
+    setItems(items, preselectedValue = null) {
+        this.items = (items || []).map(b => ({
+            id: String(b.id),
+            name: b.nama_barang || '',
+            jenis: (b.jenis || 'alat').toLowerCase(),
+            merek: b.merek || '',
+            barcode: b.barcode || '',
+            stok: Number(b.stok_tersedia ?? b.stok_total ?? 0),
+            satuan: b.satuan || 'Unit'
+        }));
+
+        let target = preselectedValue !== null ? String(preselectedValue) : this.selectedValue;
+        const found = this.items.find(i => i.id === target);
+        if (found) {
+            this.select(found, false);
+        } else {
+            this.clear(false);
+        }
+    }
+
+    filter(query) {
+        const q = (query || '').trim().toLowerCase();
+        if (!q) {
+            this.filteredItems = [...this.items];
+        } else {
+            this.filteredItems = this.items.filter(item => {
+                return item.name.toLowerCase().includes(q) ||
+                    item.merek.toLowerCase().includes(q) ||
+                    item.barcode.toLowerCase().includes(q) ||
+                    item.jenis.toLowerCase().includes(q);
+            });
+        }
+        this.highlightedIndex = -1;
+        this.renderMenu();
+    }
+
+    renderMenu() {
+        if (!this.menuEl) return;
+        if (this.filteredItems.length === 0) {
+            this.menuEl.innerHTML = `
+                <div class="py-5 px-3 text-center text-slate-400 dark:text-slate-500">
+                    <svg class="w-5 h-5 mx-auto mb-1.5 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <p class="font-medium text-xs">${escapeHtml(this.emptyText)}</p>
+                </div>
+            `;
+            return;
+        }
+
+        let html = '';
+        this.filteredItems.forEach((item, idx) => {
+            const isSelected = item.id === this.selectedValue;
+            const isHighlighted = idx === this.highlightedIndex;
+            const isAlat = item.jenis === 'alat';
+            const jenisBadge = isAlat
+                ? '<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9.5px] font-bold uppercase tracking-wider bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400 border border-blue-200/80 dark:border-blue-800/50">Alat</span>'
+                : '<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9.5px] font-bold uppercase tracking-wider bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400 border border-amber-200/80 dark:border-amber-800/50">Bahan</span>';
+
+            const stokBadge = item.stok > 0
+                ? `<span class="inline-flex items-center px-2 py-0.5 rounded-lg text-[10.5px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/50">${item.stok.toLocaleString('en-US')} ${escapeHtml(item.satuan)}</span>`
+                : `<span class="inline-flex items-center px-2 py-0.5 rounded-lg text-[10.5px] font-semibold bg-rose-50 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400 border border-rose-200/80 dark:border-rose-800/50">Habis</span>`;
+
+            let metaDetails = [];
+            if (item.merek && item.merek !== '-') metaDetails.push(escapeHtml(item.merek));
+            if (item.barcode) metaDetails.push(`<span class="font-mono text-[10px] text-slate-400">#${escapeHtml(item.barcode)}</span>`);
+
+            html += `
+                <div data-id="${item.id}" data-idx="${idx}" class="combobox-item px-3.5 py-2 cursor-pointer flex items-center justify-between gap-3 transition-colors ${
+                    isSelected ? 'bg-sage-50/90 dark:bg-slate-700/80' : (isHighlighted ? 'bg-slate-100/80 dark:bg-slate-700/40' : 'hover:bg-slate-50 dark:hover:bg-slate-700/40')
+                }">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <div class="w-4 h-4 shrink-0 flex items-center justify-center">
+                            ${isSelected ? '<svg class="w-4 h-4 text-sage-600 dark:text-sage-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>' : ''}
+                        </div>
+                        <div class="min-w-0">
+                            <div class="font-semibold text-slate-800 dark:text-slate-100 truncate ${isSelected ? 'font-bold text-sage-700 dark:text-sage-300' : ''}">
+                                ${escapeHtml(item.name)}
+                            </div>
+                            <div class="flex items-center gap-2 mt-0.5 text-[11px] text-slate-400 dark:text-slate-400 truncate">
+                                ${jenisBadge}
+                                ${metaDetails.length > 0 ? metaDetails.join('<span class="text-slate-300 dark:text-slate-600">•</span>') : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="shrink-0 text-right">
+                        ${stokBadge}
+                    </div>
+                </div>
+            `;
+        });
+
+        this.menuEl.innerHTML = html;
+
+        this.menuEl.querySelectorAll('.combobox-item').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = el.getAttribute('data-id');
+                const item = this.items.find(i => i.id === id);
+                if (item) {
+                    this.select(item);
+                }
+            });
+        });
+    }
+
+    moveHighlight(direction) {
+        if (this.filteredItems.length === 0) return;
+        this.highlightedIndex += direction;
+        if (this.highlightedIndex < 0) this.highlightedIndex = this.filteredItems.length - 1;
+        if (this.highlightedIndex >= this.filteredItems.length) this.highlightedIndex = 0;
+        this.renderMenu();
+        const highlightedEl = this.menuEl.querySelector(`[data-idx="${this.highlightedIndex}"]`);
+        if (highlightedEl) {
+            highlightedEl.scrollIntoView({ block: 'nearest' });
+        }
+    }
+
+    scrollToSelected() {
+        if (!this.selectedValue) return;
+        const selectedEl = this.menuEl.querySelector(`[data-id="${this.selectedValue}"]`);
+        if (selectedEl) {
+            selectedEl.scrollIntoView({ block: 'nearest' });
+        }
+    }
+
+    select(item, triggerEvent = true) {
+        if (!item) {
+            this.clear(triggerEvent);
+            return;
+        }
+        this.selectedValue = item.id;
+        this.selectedText = item.name;
+        this.inputEl.value = item.name;
+        if (this.selectEl) {
+            this.selectEl.value = item.id;
+            if (triggerEvent) {
+                this.selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }
+        if (this.clearBtn) this.clearBtn.classList.remove('hidden');
+        this.close();
+        if (this.onSelect) this.onSelect(item);
+    }
+
+    setValue(id) {
+        const item = this.items.find(i => i.id === String(id));
+        if (item) {
+            this.select(item, false);
+        } else {
+            this.clear(false);
+        }
+    }
+
+    clear(triggerEvent = true) {
+        this.selectedValue = '';
+        this.selectedText = '';
+        this.inputEl.value = '';
+        if (this.selectEl) {
+            this.selectEl.value = '';
+            if (triggerEvent) {
+                this.selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }
+        if (this.clearBtn) this.clearBtn.classList.add('hidden');
+        this.close();
+        if (this.onSelect) this.onSelect(null);
+    }
+}
+
+let pinjamCombobox = null;
+let masukCombobox = null;
+let keluarCombobox = null;
+
+function initSearchableComboboxes() {
+    if (!pinjamCombobox && document.getElementById('pinjam_barang_search')) {
+        pinjamCombobox = new SearchableSelect({
+            wrapper: 'wrap_pinjam_barang',
+            select: 'pinjam_barang_id',
+            input: 'pinjam_barang_search',
+            menu: 'pinjam_barang_menu',
+            clearBtn: 'pinjam_barang_clear',
+            toggleBtn: 'pinjam_barang_chevron',
+            chevronIcon: 'pinjam_barang_chevron_icon',
+            emptyText: 'Alat atau bahan tidak ditemukan',
+            placeholder: 'Ketik untuk mencari alat & bahan...'
+        });
+        window.pinjamCombobox = pinjamCombobox;
+    }
+
+    if (!masukCombobox && document.getElementById('masuk_barang_search')) {
+        masukCombobox = new SearchableSelect({
+            wrapper: 'wrap_masuk_barang',
+            select: 'masuk_barang_id',
+            input: 'masuk_barang_search',
+            menu: 'masuk_barang_menu',
+            clearBtn: 'masuk_barang_clear',
+            toggleBtn: 'masuk_barang_chevron',
+            chevronIcon: 'masuk_barang_chevron_icon',
+            emptyText: 'Alat atau bahan tidak ditemukan',
+            placeholder: 'Ketik untuk mencari alat & bahan masuk...'
+        });
+        window.masukCombobox = masukCombobox;
+    }
+
+    if (!keluarCombobox && document.getElementById('keluar_barang_search')) {
+        keluarCombobox = new SearchableSelect({
+            wrapper: 'wrap_keluar_barang',
+            select: 'keluar_barang_id',
+            input: 'keluar_barang_search',
+            menu: 'keluar_barang_menu',
+            clearBtn: 'keluar_barang_clear',
+            toggleBtn: 'keluar_barang_chevron',
+            chevronIcon: 'keluar_barang_chevron_icon',
+            emptyText: 'Bahan tidak ditemukan',
+            placeholder: 'Ketik untuk mencari bahan keluar...'
+        });
+        window.keluarCombobox = keluarCombobox;
+    }
+}
+
+// Inisialisasi awal saat dokumen siap
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSearchableComboboxes);
+} else {
+    initSearchableComboboxes();
+}
+
 // Fungsi membuka modal, mendukung pengisian data otomatis untuk mode Edit
 
 function filterBarangSelectByJurusan(targetSelectId, selectedJurusanId) {
+    initSearchableComboboxes();
     const el = document.getElementById(targetSelectId);
     if (!el || !window.dbBarang) return;
     let filtered = window.dbBarang;
@@ -1289,9 +1695,18 @@ function filterBarangSelectByJurusan(targetSelectId, selectedJurusanId) {
     const defaultLabel = (targetSelectId === 'keluar_barang_id') ? '-- Pilih Bahan --' : '-- Pilih Barang --';
     el.innerHTML = `<option value="">${defaultLabel}</option>` +
         filtered.map(b => `<option value="${b.id}">${b.nama_barang} (Tersedia: ${b.stok_tersedia} ${b.satuan || 'Unit'})</option>`).join('');
+
+    if (targetSelectId === 'pinjam_barang_id' && window.pinjamCombobox) {
+        window.pinjamCombobox.setItems(filtered, el.value);
+    } else if (targetSelectId === 'masuk_barang_id' && window.masukCombobox) {
+        window.masukCombobox.setItems(filtered, el.value);
+    } else if (targetSelectId === 'keluar_barang_id' && window.keluarCombobox) {
+        window.keluarCombobox.setItems(filtered, el.value);
+    }
 }
 
 function filterBarangMasukOptions(preselectedBarangId = null) {
+    initSearchableComboboxes();
     const selectBarang = document.getElementById('masuk_barang_id');
     const selectJenis = document.getElementById('masuk_jenis');
     const selectJur = document.getElementById('masuk_jurusan_id');
@@ -1329,6 +1744,10 @@ function filterBarangMasukOptions(preselectedBarangId = null) {
         selectBarang.value = targetVal;
     } else {
         selectBarang.value = '';
+    }
+
+    if (window.masukCombobox) {
+        window.masukCombobox.setItems(filtered, targetVal);
     }
 }
 
@@ -1611,6 +2030,7 @@ async function onPinjamBarcodeScanned(code) {
             // Reset pilihan barang pada form
             const selectBarang = document.getElementById('pinjam_barang_id');
             if (selectBarang) selectBarang.value = '';
+            if (window.pinjamCombobox) window.pinjamCombobox.clear(false);
 
             // Mainkan nada peringatan/penolakan
             try {
@@ -1667,8 +2087,14 @@ async function onPinjamBarcodeScanned(code) {
                 selectBarang.appendChild(newOpt);
             }
             selectBarang.value = found.id;
-            selectBarang.classList.add('ring-2', 'ring-emerald-500');
-            setTimeout(() => selectBarang.classList.remove('ring-2', 'ring-emerald-500'), 2500);
+            if (window.pinjamCombobox) {
+                window.pinjamCombobox.setValue(found.id);
+            }
+            const searchInp = document.getElementById('pinjam_barang_search');
+            if (searchInp) {
+                searchInp.classList.add('ring-2', 'ring-emerald-500');
+                setTimeout(() => searchInp.classList.remove('ring-2', 'ring-emerald-500'), 2500);
+            }
         }
 
         // Hentikan streaming kamera setelah barcode berhasil dideteksi
@@ -1750,6 +2176,7 @@ function clearPinjamScanFeedback() {
 }
 
 function filterBarangKeluarOptions(preselectedBarangId = null) {
+    initSearchableComboboxes();
     const el = document.getElementById('keluar_barang_id');
     const selectJur = document.getElementById('keluar_jurusan_id');
     if (!el || !window.dbBarang) return;
@@ -1774,9 +2201,14 @@ function filterBarangKeluarOptions(preselectedBarangId = null) {
     } else {
         el.value = '';
     }
+
+    if (window.keluarCombobox) {
+        window.keluarCombobox.setItems(filtered, targetVal);
+    }
 }
 
 function filterBarangPinjamOptions(preselectedBarangId = null) {
+    initSearchableComboboxes();
     const selectJenis = document.getElementById('pinjam_jenis');
     const selectBarang = document.getElementById('pinjam_barang_id');
     const selectJur = document.getElementById('pinjam_jurusan_id');
@@ -1814,6 +2246,10 @@ function filterBarangPinjamOptions(preselectedBarangId = null) {
         selectBarang.value = targetVal;
     } else {
         selectBarang.value = '';
+    }
+
+    if (window.pinjamCombobox) {
+        window.pinjamCombobox.setItems(filtered, targetVal);
     }
 }
 
@@ -2345,7 +2781,10 @@ function openModal(modalId, customTitle = null, editData = null) {
 
                 // Jika status sudah 'dikembalikan', KUNCI (disable) semua field kecuali Tanggal dan Status!
                 const isReturned = (editData.status === 'dikembalikan');
-                [elJurusan, elJenis, elBarang, selectSiswa, customSiswa, elJumlah, elTugas, elTahun, elCheckSiswa, selectGuru, customGuru].forEach(el => {
+                const searchPinjam = document.getElementById('pinjam_barang_search');
+                const clearPinjam = document.getElementById('pinjam_barang_clear');
+                const chevronPinjam = document.getElementById('pinjam_barang_chevron');
+                [elJurusan, elJenis, elBarang, selectSiswa, customSiswa, elJumlah, elTugas, elTahun, elCheckSiswa, selectGuru, customGuru, searchPinjam].forEach(el => {
                     if (el) {
                         el.disabled = isReturned;
                         if (isReturned) {
@@ -2355,8 +2794,17 @@ function openModal(modalId, customTitle = null, editData = null) {
                         }
                     }
                 });
+                if (clearPinjam && isReturned) clearPinjam.classList.add('hidden');
+                if (chevronPinjam) chevronPinjam.disabled = isReturned;
             }
         } else {
+            const searchPinjam = document.getElementById('pinjam_barang_search');
+            const chevronPinjam = document.getElementById('pinjam_barang_chevron');
+            if (searchPinjam) {
+                searchPinjam.disabled = false;
+                searchPinjam.classList.remove('bg-slate-100/80', 'cursor-not-allowed');
+            }
+            if (chevronPinjam) chevronPinjam.disabled = false;
             // Reset semua hidden ID dan input saat mode Tambah Data Baru
             ['guru_edit_id', 'siswa_edit_id', 'jurusan_edit_id', 'pengguna_edit_id', 'kategori_edit_id', 'rak_edit_id', 'barang_edit_id', 'masuk_edit_id', 'keluar_edit_id', 'pinjam_edit_id'].forEach(id => {
                 const el = document.getElementById(id);
@@ -2498,7 +2946,8 @@ function openModal(modalId, customTitle = null, editData = null) {
                 const selectGuru = document.getElementById('pinjam_guru_peminjam_select');
                 const customGuru = document.getElementById('pinjam_guru_peminjam_custom');
 
-                [elJurusan, elJenis, elBarang, selectSiswa, customSiswa, elJumlah, elTugas, elTglPinjam, elTglKembali, elStatus, checkUntukSiswa, selectGuru, customGuru, inputNisn, inputTA].forEach(el => {
+                const searchPinjam = document.getElementById('pinjam_barang_search');
+                [elJurusan, elJenis, elBarang, selectSiswa, customSiswa, elJumlah, elTugas, elTglPinjam, elTglKembali, elStatus, checkUntukSiswa, selectGuru, customGuru, inputNisn, inputTA, searchPinjam].forEach(el => {
                     if (el) {
                         el.disabled = false;
                         el.classList.remove('bg-slate-100/80', 'cursor-not-allowed');
@@ -2712,7 +3161,12 @@ async function handleFormSubmit(event, actionName) {
         apiAction = 'save_barang_keluar';
         formData.append('id', document.getElementById('keluar_edit_id')?.value || '');
         formData.append('jurusan_id', document.getElementById('keluar_jurusan_id')?.value || '');
-        formData.append('barang_id', document.getElementById('keluar_barang_id')?.value || '');
+        const barangId = document.getElementById('keluar_barang_id')?.value || '';
+        if (!barangId) {
+            showNotification('Pilih bahan yang akan dicatat keluar terlebih dahulu!', 'warning');
+            return;
+        }
+        formData.append('barang_id', barangId);
         formData.append('nama_penerima', document.getElementById('keluar_penerima')?.value || '');
         formData.append('jumlah', document.getElementById('keluar_jumlah')?.value || '1');
         formData.append('catatan', document.getElementById('keluar_keterangan')?.value || '');
@@ -2720,7 +3174,12 @@ async function handleFormSubmit(event, actionName) {
         apiAction = 'save_barang_masuk';
         formData.append('id', document.getElementById('masuk_edit_id')?.value || '');
         formData.append('jurusan_id', document.getElementById('masuk_jurusan_id')?.value || '');
-        formData.append('barang_id', document.getElementById('masuk_barang_id')?.value || '');
+        const barangId = document.getElementById('masuk_barang_id')?.value || '';
+        if (!barangId) {
+            showNotification('Pilih alat atau bahan yang akan dicatat masuk terlebih dahulu!', 'warning');
+            return;
+        }
+        formData.append('barang_id', barangId);
         formData.append('jumlah', document.getElementById('masuk_jumlah')?.value || '1');
     } else if (actionName === 'Peminjaman Alat' || actionName === 'Peminjaman') {
         apiAction = 'save_peminjaman';
