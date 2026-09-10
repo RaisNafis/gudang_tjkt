@@ -2092,6 +2092,10 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 <span>Export CSV</span>
                             </button>
                             <?php if (!empty($user['peran']) && $user['peran'] !== 'siswa'): ?>
+                            <button type="button" onclick="syncSemuaStokBarang()" id="btnSyncStokBarang" class="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/70 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer" title="Sinkronkan ulang stok tersedia berdasarkan stok awal dan mutasi transaksi">
+                                <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                <span>Sinkronkan Stok</span>
+                            </button>
                             <input type="file" id="directCsvFileInput" accept=".csv" class="hidden" onchange="handleDirectCsvImport(event)">
                             <button onclick="document.getElementById('directCsvFileInput').click()" class="px-3.5 py-2 bg-sage-50 text-sage-700 hover:bg-sage-100 border border-sage-200 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Import data dari file CSV">+ Import CSV</button>
                             <button onclick="openModal('modalBarang', 'Tambah Alat & Bahan Baru')" class="px-4 py-2 bg-sage-600 text-white rounded-xl font-bold text-xs shadow-md shadow-sage-600/20 hover:bg-sage-700 transition-colors">+ Tambah Alat & Bahan Baru</button>
@@ -2232,8 +2236,12 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                             <?php 
                                             $dipinjamCount = !empty($b['total_dipinjam']) ? intval($b['total_dipinjam']) : 0;
                                             $keluarCount = !empty($b['total_keluar']) ? intval($b['total_keluar']) : 0;
-                                            if ($dipinjamCount > 0): 
+                                            $masukCount = !empty($b['total_masuk']) ? intval($b['total_masuk']) : 0;
+                                            if ($masukCount > 0): 
                                             ?>
+                                                <span class="block text-[9.5px] font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5 whitespace-nowrap leading-tight">+<?= $masukCount; ?> <?= htmlspecialchars($b['satuan'] ?? 'Unit'); ?> masuk</span>
+                                            <?php endif; ?>
+                                            <?php if ($dipinjamCount > 0): ?>
                                                 <span class="block text-[9.5px] font-semibold text-amber-500 mt-0.5 whitespace-nowrap leading-tight"><?= $dipinjamCount; ?> <?= htmlspecialchars($b['satuan'] ?? 'Unit'); ?> dipinjam</span>
                                             <?php endif; ?>
                                             <?php if ($keluarCount > 0): ?>
@@ -6806,6 +6814,47 @@ function resetBarangFilters() {
     if (elJur) elJur.value = '';
 
     filterTableBarang();
+}
+
+async function syncSemuaStokBarang(barangId = null) {
+    const btn = document.getElementById('btnSyncStokBarang');
+    let originalHtml = '';
+    if (btn) {
+        originalHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = `<svg class="w-4 h-4 animate-spin shrink-0" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Menyinkronkan...</span>`;
+    }
+
+    try {
+        const formData = new FormData();
+        formData.append('action', 'sync_stok_barang');
+        if (barangId) formData.append('barang_id', barangId);
+        const csrfToken = document.querySelector('input[name="csrf_token"]')?.value || '';
+        if (csrfToken) formData.append('csrf_token', csrfToken);
+
+        const res = await fetch('api.php', { method: 'POST', body: formData });
+        const data = await res.json();
+
+        if (data && data.success) {
+            showToast(data.message, 'success');
+            setTimeout(() => {
+                location.reload();
+            }, 800);
+        } else {
+            showToast(data.message || 'Gagal menyinkronkan stok.', 'error');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+        }
+    } catch (err) {
+        console.error(err);
+        showToast('Terjadi kesalahan koneksi saat menyinkronkan stok.', 'error');
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        }
+    }
 }
 
 function updateBarangStatusFilterCounts() {

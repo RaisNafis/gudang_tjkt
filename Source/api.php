@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !validateCsrfToken($csrfToken)) {
 
 $userRole = $_SESSION['user']['peran'] ?? 'siswa';
 $disallowedSiswaActions = [
-    'save_barang', 'delete_barang', 'bulk_delete_barang', 'import_barang_csv',
+    'save_barang', 'delete_barang', 'bulk_delete_barang', 'import_barang_csv', 'sync_stok_barang',
     'save_kategori', 'delete_kategori', 'bulk_delete_kategori',
     'save_rak', 'delete_rak', 'bulk_delete_rak',
     'save_pengguna', 'delete_pengguna', 'bulk_delete_pengguna', 'save_kabeng_multi_jurusan', 'get_kabeng_multi_jurusan',
@@ -438,6 +438,25 @@ try {
 
         $_SESSION['active_jurusan_id'] = $jurusanId;
         echo json_encode(['success' => true, 'message' => 'Berhasil beralih ke gudang jurusan terpilih.']);
+        exit;
+    }
+
+    if ($action === 'sync_stok_barang') {
+        require_once __DIR__ . '/app/models/Barang.php';
+        require_once __DIR__ . '/app/models/LogAktivitas.php';
+
+        $barangId = !empty($_REQUEST['barang_id']) ? trim($_REQUEST['barang_id']) : null;
+        $ok = Barang::recalculateStok($barangId);
+
+        if ($ok) {
+            LogAktivitas::log('SINKRONISASI_STOK', 'Melakukan sinkronisasi stok barang dengan mutasi transaksi');
+            echo json_encode([
+                'success' => true,
+                'message' => 'Stok barang berhasil disinkronkan dengan seluruh riwayat transaksi (stok awal, mutasi masuk/keluar, dan peminjaman)!'
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal melakukan sinkronisasi stok barang.']);
+        }
         exit;
     }
 

@@ -9,7 +9,8 @@ class Barang {
             $stmt = $db->prepare("
                 SELECT b.*, b.stok_awal as stok_total, k.nama_kategori, j.nama_jurusan, r.nama_rak, r.kategori_rak,
                        (SELECT COALESCE(SUM(pm.jumlah), 0) FROM peminjaman pm WHERE pm.barang_id = b.id AND pm.status != 'dikembalikan') as total_dipinjam,
-                       (SELECT COALESCE(SUM(bk.jumlah), 0) FROM barang_keluar bk WHERE bk.barang_id = b.id) as total_keluar
+                       (SELECT COALESCE(SUM(bk.jumlah), 0) FROM barang_keluar bk WHERE bk.barang_id = b.id) as total_keluar,
+                       (SELECT COALESCE(SUM(bm.jumlah), 0) FROM barang_masuk bm WHERE bm.barang_id = b.id) as total_masuk
                 FROM barang b 
                 LEFT JOIN kategori k ON b.kategori_id = k.id 
                 LEFT JOIN jurusan j ON b.jurusan_id = j.id 
@@ -22,7 +23,8 @@ class Barang {
             $stmt = $db->query("
                 SELECT b.*, b.stok_awal as stok_total, k.nama_kategori, j.nama_jurusan, r.nama_rak, r.kategori_rak,
                        (SELECT COALESCE(SUM(pm.jumlah), 0) FROM peminjaman pm WHERE pm.barang_id = b.id AND pm.status != 'dikembalikan') as total_dipinjam,
-                       (SELECT COALESCE(SUM(bk.jumlah), 0) FROM barang_keluar bk WHERE bk.barang_id = b.id) as total_keluar
+                       (SELECT COALESCE(SUM(bk.jumlah), 0) FROM barang_keluar bk WHERE bk.barang_id = b.id) as total_keluar,
+                       (SELECT COALESCE(SUM(bm.jumlah), 0) FROM barang_masuk bm WHERE bm.barang_id = b.id) as total_masuk
                 FROM barang b 
                 LEFT JOIN kategori k ON b.kategori_id = k.id 
                 LEFT JOIN jurusan j ON b.jurusan_id = j.id 
@@ -127,13 +129,13 @@ class Barang {
                 merek = :merek, 
                 barcode = :barcode, 
                 stok_awal = :stok_awal, 
-                stok_tersedia = :stok_tersedia, 
+                stok_total = :stok_awal,
                 satuan = :satuan, 
                 image = :image,
                 updated_at = CURRENT_TIMESTAMP 
             WHERE id = :id
         ");
-        return $stmt->execute([
+        $ok = $stmt->execute([
             ':id' => $id,
             ':jid' => !empty($data['jurusan_id']) ? $data['jurusan_id'] : null,
             ':kat' => !empty($data['kategori_id']) ? $data['kategori_id'] : null,
@@ -143,10 +145,14 @@ class Barang {
             ':merek' => !empty($data['merek']) ? $data['merek'] : null,
             ':barcode' => !empty($data['barcode']) ? $data['barcode'] : null,
             ':stok_awal' => $newStokAwal,
-            ':stok_tersedia' => $newStokTersedia,
             ':satuan' => !empty($data['satuan']) ? $data['satuan'] : 'Unit',
             ':image' => $finalImage
         ]);
+
+        if ($ok) {
+            self::recalculateStok($id);
+        }
+        return $ok;
     }
 
     public static function delete($id) {
@@ -197,5 +203,32 @@ class Barang {
             return '899' . str_pad($nextNum, 9, '0', STR_PAD_LEFT);
         }
         return '899100100001';
+    }
+
+    /**
+     * Sinkronisasi ulang stok_tersedia berdasarkan stok_awal dan riwayat mutasi transaksi
+     * (Barang Masuk, Barang Keluar, dan Peminjaman Aktif)
+     */
+    public static function recalculateStok($barangId = null) {
+        $db = Database::getInstance()->getConnection();
+        if (!$db) return false;
+
+        $sql = "
+            UPDATE barang b
+            SET b.stok_tersedia = GREATEST(0, 
+                b.stok_awal 
+                + (SELECT COALESCE(SUM(bm.jumlah), 0) FROM barang_masuk bm WHERE bm.barang_id = b.id)
+                - (SELECT COALESCE(SUM(bk.jumlah), 0) FROM barang_keluar bk WHERE bk.barang_id = b.id)
+                - (SELECT COALESCE(SUM(pm.jumlah), 0) FROM peminjaman pm WHERE pm.barang_id = b.id AND pm.status != 'dikembalikan')
+            )
+        ";
+        if (!empty($barangId)) {
+            $sql .= " WHERE b.id = :bid";
+            $stmt = $db->prepare($sql);
+            return $stmt->execute([':bid' => $barangId]);
+        } else {
+            $res = $db->exec($sql);
+            return $res !== false;
+        }
     }
 }
