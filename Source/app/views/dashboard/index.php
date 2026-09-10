@@ -1982,9 +1982,13 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         </div>
                     </div>
 
+                    <?php
+                    $countBarangDipinjam = count(array_filter($dbBarang ?? [], fn($b) => !empty($b['total_dipinjam']) && intval($b['total_dipinjam']) > 0));
+                    $countBarangKeluar = count(array_filter($dbBarang ?? [], fn($b) => !empty($b['total_keluar']) && intval($b['total_keluar']) > 0));
+                    ?>
                     <!-- Filter Controls Alat & Bahan -->
                     <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 mb-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 <?= $isSuperAdmin ? 'xl:grid-cols-5' : ''; ?> gap-3 flex-1">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 <?= $isSuperAdmin ? 'xl:grid-cols-6' : ''; ?> gap-3 flex-1">
                             <div class="relative">
                                 <input type="text" id="filter_barang_search" oninput="debouncedFilterTableBarang()" placeholder="Cari nama, merek, barcode..." class="w-full pl-9 pr-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-medium">
                                 <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -1994,6 +1998,15 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                     <option value="">Semua Jenis (Alat & Bahan)</option>
                                     <option value="alat">Alat</option>
                                     <option value="bahan">Bahan</option>
+                                </select>
+                            </div>
+                            <div>
+                                <select id="filter_barang_status" onchange="filterTableBarang()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold cursor-pointer">
+                                    <option value="">Semua Status Sirkulasi</option>
+                                    <option value="dipinjam">Sedang Dipinjam (<?= $countBarangDipinjam; ?>)</option>
+                                    <option value="keluar">Barang Dikeluarkan (<?= $countBarangKeluar; ?>)</option>
+                                    <option value="sirkulasi">Dipinjam / Dikeluarkan</option>
+                                    <option value="habis">Stok Habis (0)</option>
                                 </select>
                             </div>
                             <div>
@@ -2061,6 +2074,9 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         data-kategori-id="<?= htmlspecialchars(strval($b['kategori_id'] ?? '')); ?>"
                                         data-rak-id="<?= htmlspecialchars(strval($b['rak_id'] ?? '')); ?>"
                                         data-jurusan-id="<?= htmlspecialchars(strval($b['jurusan_id'] ?? '')); ?>"
+                                        data-dipinjam="<?= !empty($b['total_dipinjam']) && intval($b['total_dipinjam']) > 0 ? '1' : '0'; ?>"
+                                        data-keluar="<?= !empty($b['total_keluar']) && intval($b['total_keluar']) > 0 ? '1' : '0'; ?>"
+                                        data-stok-tersedia="<?= intval($b['stok_tersedia'] ?? 0); ?>"
                                         class="hover:bg-sage-50/50 transition-all duration-300">
                                         <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="<?= htmlspecialchars($b['id']); ?>" onchange="updateBatchDeleteBar()"></td>
                                         <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell"><?= $no++; ?></td>
@@ -5268,6 +5284,9 @@ function renderTableBarang() {
             data-kategori-id="${escapeHtml(String(b.kategori_id || ''))}"
             data-rak-id="${escapeHtml(String(b.rak_id || ''))}"
             data-jurusan-id="${escapeHtml(String(b.jurusan_id || ''))}"
+            data-dipinjam="${totalDipinjam > 0 ? '1' : '0'}"
+            data-keluar="${totalKeluar > 0 ? '1' : '0'}"
+            data-stok-tersedia="${stokTersediaVal}"
             class="hover:bg-sage-50/50 transition-all duration-300">
             <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${b.id}" onchange="updateBatchDeleteBar()"></td>
             <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${idx + 1}</td>
@@ -5287,6 +5306,9 @@ function renderTableBarang() {
             <td class="py-3.5 px-4">${actionBtns}</td>
         </tr>`;
     }).join('');
+    if (typeof updateBarangStatusFilterCounts === 'function') {
+        updateBarangStatusFilterCounts();
+    }
 }
 
 function renderTableBarangMasuk() {
@@ -6376,6 +6398,17 @@ class TablePaginationManager {
                 if (rowJenis !== this.customJenisFilter) return false;
             }
 
+            if (this.customStatusFilter) {
+                const isDipinjam = row.getAttribute('data-dipinjam') === '1';
+                const isKeluar = row.getAttribute('data-keluar') === '1';
+                const stokTersedia = parseInt(row.getAttribute('data-stok-tersedia') || '0');
+
+                if (this.customStatusFilter === 'dipinjam' && !isDipinjam) return false;
+                if (this.customStatusFilter === 'keluar' && !isKeluar) return false;
+                if (this.customStatusFilter === 'sirkulasi' && !isDipinjam && !isKeluar) return false;
+                if (this.customStatusFilter === 'habis' && stokTersedia > 0) return false;
+            }
+
             if (this.customKategoriFilter) {
                 const rowKategori = row.getAttribute('data-kategori-id') || '';
                 if (this.customKategoriFilter === '__none__') {
@@ -6603,6 +6636,7 @@ function filterTableBarang() {
     if (!paginator) return;
 
     paginator.customJenisFilter = (document.getElementById('filter_barang_jenis')?.value || '').toLowerCase().trim();
+    paginator.customStatusFilter = (document.getElementById('filter_barang_status')?.value || '').trim();
     paginator.customKategoriFilter = (document.getElementById('filter_barang_kategori')?.value || '').trim();
     paginator.customRakFilter = (document.getElementById('filter_barang_rak')?.value || '').trim();
     paginator.customBarangJurusanFilter = (document.getElementById('filter_barang_jurusan')?.value || '').trim();
@@ -6615,17 +6649,59 @@ function filterTableBarang() {
 function resetBarangFilters() {
     const elSearch = document.getElementById('filter_barang_search');
     const elJenis = document.getElementById('filter_barang_jenis');
+    const elStatus = document.getElementById('filter_barang_status');
     const elKat = document.getElementById('filter_barang_kategori');
     const elRak = document.getElementById('filter_barang_rak');
     const elJur = document.getElementById('filter_barang_jurusan');
 
     if (elSearch) elSearch.value = '';
     if (elJenis) elJenis.value = '';
+    if (elStatus) elStatus.value = '';
     if (elKat) elKat.value = '';
     if (elRak) elRak.value = '';
     if (elJur) elJur.value = '';
 
     filterTableBarang();
+}
+
+function updateBarangStatusFilterCounts() {
+    const selStatus = document.getElementById('filter_barang_status');
+    if (!selStatus || !window.dbBarang) return;
+    const jurVal = document.getElementById('filter_barang_jurusan')?.value || '';
+
+    let items = window.dbBarang;
+    if (jurVal) {
+        items = items.filter(b => String(b.jurusan_id) === String(jurVal));
+    }
+
+    let countDipinjam = 0;
+    let countKeluar = 0;
+    items.forEach(b => {
+        let dipinjam = 0;
+        if (b.total_dipinjam !== undefined) {
+            dipinjam = parseInt(b.total_dipinjam || 0);
+        } else if (window.dbPeminjaman) {
+            dipinjam = window.dbPeminjaman
+                .filter(p => String(p.barang_id) === String(b.id) && p.status !== 'dikembalikan')
+                .reduce((sum, p) => sum + parseInt(p.jumlah || 0), 0);
+        }
+        if (dipinjam > 0) countDipinjam++;
+
+        let keluar = 0;
+        if (b.total_keluar !== undefined) {
+            keluar = parseInt(b.total_keluar || 0);
+        } else if (window.dbBarangKeluar) {
+            keluar = window.dbBarangKeluar
+                .filter(k => String(k.barang_id) === String(b.id))
+                .reduce((sum, k) => sum + parseInt(k.jumlah || 0), 0);
+        }
+        if (keluar > 0) countKeluar++;
+    });
+
+    const optDipinjam = selStatus.querySelector('option[value="dipinjam"]');
+    if (optDipinjam) optDipinjam.textContent = `Sedang Dipinjam (${countDipinjam})`;
+    const optKeluar = selStatus.querySelector('option[value="keluar"]');
+    if (optKeluar) optKeluar.textContent = `Barang Dikeluarkan (${countKeluar})`;
 }
 
 function refreshBarangFilterDropdowns() {
@@ -6667,6 +6743,7 @@ function refreshBarangFilterDropdowns() {
 
 function onBarangJurusanFilterChange() {
     refreshBarangFilterDropdowns();
+    updateBarangStatusFilterCounts();
     const selKat = document.getElementById('filter_barang_kategori');
     const selRak = document.getElementById('filter_barang_rak');
     if (selKat) selKat.value = '';
