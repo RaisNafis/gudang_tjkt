@@ -473,6 +473,119 @@
     </div>
 </div>
 
+<!-- MODAL ROLLBACK MIGRASI KELAS SISWA -->
+<div id="modalRollbackMigrasiSiswa" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-amber-200 dark:border-amber-900/50 shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
+        <!-- Header -->
+        <div class="p-5 sm:p-6 bg-amber-50/80 dark:bg-slate-800/80 border-b border-amber-100 dark:border-slate-700 flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-amber-600 text-white flex items-center justify-center font-bold shadow-md shadow-amber-600/20">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2m0 0l-4-4m4 4l4-4M3 10l4-4m-4 4l4 4"/></svg>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-800 dark:text-white">Rollback Migrasi Kelas Siswa</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Batalkan migrasi dan kembalikan siswa ke kelas & tahun ajaran semula</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeModal('modalRollbackMigrasiSiswa')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <form id="formRollbackMigrasiSiswa" onsubmit="handleRollbackMigrasiSubmit(event)" class="p-5 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
+            <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
+            <input type="hidden" id="rollback_batch_id" name="batch_id" value="">
+
+            <!-- Loading State -->
+            <div id="rollbackLoadingState" class="py-10 text-center space-y-3">
+                <svg class="w-8 h-8 mx-auto animate-spin text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                </svg>
+                <p class="text-slate-500 dark:text-slate-400 font-medium">Memeriksa riwayat migrasi terakhir...</p>
+            </div>
+
+            <!-- Empty State (No migration to rollback) -->
+            <div id="rollbackEmptyState" class="hidden py-8 px-4 text-center space-y-3 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700">
+                <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 mx-auto flex items-center justify-center">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-700 dark:text-slate-200">Tidak Ada Riwayat Migrasi Aktif</h4>
+                    <p class="text-slate-500 dark:text-slate-400 text-[11px] mt-1">Belum ada batch migrasi yang tercatat, atau migrasi terakhir sudah pernah di-rollback sebelumnya.</p>
+                </div>
+            </div>
+
+            <!-- Data Card (When migration exists) -->
+            <div id="rollbackDataCard" class="hidden space-y-4">
+                <div class="p-3.5 bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/60 rounded-2xl text-slate-700 dark:text-slate-300 space-y-1.5">
+                    <div class="flex items-center gap-2 font-bold text-amber-800 dark:text-amber-400">
+                        <svg class="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        <span>Konfirmasi Pembatalan Migrasi</span>
+                    </div>
+                    <p class="text-[11.5px] leading-relaxed text-slate-600 dark:text-slate-300">
+                        Sistem akan mengembalikan seluruh data siswa pada migrasi ini ke tingkatan kelas dan tahun ajaran aslinya.
+                    </p>
+                </div>
+
+                <!-- Info Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
+                        <span class="block text-[10px] text-slate-400 font-bold uppercase">Waktu Migrasi</span>
+                        <span id="rollbackInfoWaktu" class="font-bold text-slate-800 dark:text-slate-200 text-xs mt-0.5 block">-</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
+                        <span class="block text-[10px] text-slate-400 font-bold uppercase">Tahun Ajaran Asal</span>
+                        <span id="rollbackInfoTaAsal" class="font-bold text-emerald-600 dark:text-emerald-400 text-xs mt-0.5 block">-</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
+                        <span class="block text-[10px] text-slate-400 font-bold uppercase">Jurusan / Lingkup</span>
+                        <span id="rollbackInfoJurusan" class="font-bold text-slate-800 dark:text-slate-200 text-xs mt-0.5 block">Semua Jurusan</span>
+                    </div>
+                </div>
+
+                <!-- Detail Alur Rollback Cards -->
+                <div class="space-y-2">
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 font-bold flex items-center justify-center text-xs">1</span>
+                            <span class="font-semibold text-slate-700 dark:text-slate-200">Siswa LULUS ➔ Dikembalikan ke Kelas 12</span>
+                        </div>
+                        <span id="rollbackCount12" class="px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-400 font-bold text-xs">0 Siswa</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 font-bold flex items-center justify-center text-xs">2</span>
+                            <span class="font-semibold text-slate-700 dark:text-slate-200">Kelas 12 ➔ Dikembalikan ke Kelas 11</span>
+                        </div>
+                        <span id="rollbackCount11" class="px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-400 font-bold text-xs">0 Siswa</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 font-bold flex items-center justify-center text-xs">3</span>
+                            <span class="font-semibold text-slate-700 dark:text-slate-200">Kelas 11 ➔ Dikembalikan ke Kelas 10</span>
+                        </div>
+                        <span id="rollbackCount10" class="px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-400 font-bold text-xs">0 Siswa</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="pt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+                <span class="text-[11px] text-slate-500 dark:text-slate-400">Total: <strong id="rollbackCountTotal" class="text-amber-600 dark:text-amber-400">0</strong> siswa</span>
+                <div class="flex items-center gap-2.5">
+                    <button type="button" onclick="closeModal('modalRollbackMigrasiSiswa')" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">Tutup</button>
+                    <button type="submit" id="btnSubmitRollbackMigrasi" class="hidden px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl shadow-md shadow-amber-600/20 transition-all flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2m0 0l-4-4m4 4l4-4M3 10l4-4m-4 4l4 4"/></svg>
+                        <span>Ya, Rollback Migrasi</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- MODAL PREVIEW IMAGE BESAR -->
 <div id="modalPreviewImage" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/70 backdrop-blur-sm animate-fade-in-up" onclick="closeModal('modalPreviewImage')">
     <div class="relative max-w-2xl max-h-[85vh] bg-white dark:bg-slate-900 p-2.5 rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-700" onclick="event.stopPropagation()">
@@ -1082,22 +1195,20 @@
             <?php endif; ?>
             <div id="wrap_pinjam_jenis">
                 <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Pilih Jenis Barang <span class="text-red-500">*</span></label>
-                <select id="pinjam_jenis" onchange="filterBarangPinjamOptions()" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
-                    <option value="">-- Semua Jenis (Alat dan Bahan) --</option>
-                    <option value="alat">Alat</option>
-                    <option value="bahan">Bahan</option>
+                <select id="pinjam_jenis" disabled class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold text-slate-600 dark:text-slate-400 cursor-not-allowed">
+                    <option value="alat" selected>Alat</option>
                 </select>
             </div>
             <div id="wrap_pinjam_barang" class="relative">
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1" id="pinjam_barang_label">Pilih Alat dan Bahan <span class="text-red-500">*</span></label>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1" id="pinjam_barang_label">Pilih Alat <span class="text-red-500">*</span></label>
                 <select id="pinjam_barang_id" class="hidden">
-                    <option value="">-- Pilih Alat dan Bahan --</option>
+                    <option value="">-- Pilih Alat --</option>
                 </select>
                 <div class="relative">
                     <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     </div>
-                    <input type="text" id="pinjam_barang_search" autocomplete="off" placeholder="Ketik untuk mencari Alat dan Bahan..." class="w-full pl-9 pr-16 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-sage-600 focus:ring-1 focus:ring-sage-600 transition-all cursor-pointer">
+                    <input type="text" id="pinjam_barang_search" autocomplete="off" placeholder="Ketik untuk mencari Alat..." class="w-full pl-9 pr-16 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-sage-600 focus:ring-1 focus:ring-sage-600 transition-all cursor-pointer">
                     <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
                         <button type="button" id="pinjam_barang_clear" tabindex="-1" class="hidden p-1 text-slate-400 hover:text-red-500 rounded-lg transition-colors" title="Hapus pilihan">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -2037,8 +2148,8 @@ function initSearchableComboboxes() {
             clearBtn: 'pinjam_barang_clear',
             toggleBtn: 'pinjam_barang_chevron',
             chevronIcon: 'pinjam_barang_chevron_icon',
-            emptyText: 'Alat dan Bahan tidak ditemukan',
-            placeholder: 'Ketik untuk mencari Alat dan Bahan...'
+            emptyText: 'Alat tidak ditemukan',
+            placeholder: 'Ketik untuk mencari Alat...'
         });
         window.pinjamCombobox = pinjamCombobox;
     }
@@ -2123,8 +2234,10 @@ function filterBarangSelectByJurusan(targetSelectId, selectedJurusanId) {
     }
     if (targetSelectId === 'keluar_barang_id') {
         filtered = filtered.filter(b => String(b.jenis || 'alat').toLowerCase() === 'bahan');
+    } else if (targetSelectId === 'pinjam_barang_id') {
+        filtered = filtered.filter(b => String(b.jenis || 'alat').toLowerCase() === 'alat');
     }
-    const defaultLabel = (targetSelectId === 'keluar_barang_id') ? '-- Pilih Bahan --' : '-- Pilih Barang --';
+    const defaultLabel = (targetSelectId === 'keluar_barang_id') ? '-- Pilih Bahan --' : (targetSelectId === 'pinjam_barang_id' ? '-- Pilih Alat --' : '-- Pilih Barang --');
     el.innerHTML = `<option value="">${defaultLabel}</option>` +
         filtered.map(b => `<option value="${b.id}">${b.nama_barang} (Tersedia: ${b.stok_tersedia} ${b.satuan || 'Unit'})</option>`).join('');
 
@@ -2581,11 +2694,7 @@ function togglePinjamBarcodeScanner(checked) {
     if (wrapBarang) wrapBarang.classList.toggle('hidden', checked);
 
     if (selectBarang) {
-        if (checked) {
-            selectBarang.removeAttribute('required');
-        } else {
-            selectBarang.setAttribute('required', 'required');
-        }
+        selectBarang.removeAttribute('required');
     }
 
     if (checked) {
@@ -2864,6 +2973,32 @@ async function onPinjamBarcodeScanned(code) {
             return;
         }
 
+        // Validasi Jenis Barang: Form peminjaman HANYA untuk kategori ALAT (bukan bahan)
+        const itemJenis = String(found.jenis || 'alat').toLowerCase();
+        if (itemJenis === 'bahan') {
+            await stopPinjamCameraStream();
+            const selectBarang = document.getElementById('pinjam_barang_id');
+            if (selectBarang) selectBarang.value = '';
+            if (window.pinjamCombobox) window.pinjamCombobox.clear(false);
+
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = 'sawtooth';
+                osc.frequency.value = 180;
+                gain.gain.value = 0.35;
+                osc.start();
+                setTimeout(() => { osc.stop(); audioCtx.close(); }, 350);
+            } catch (e) {}
+
+            showPinjamScanFeedback(false, null, `Pemindaian Ditolak! Barang "${found.nama_barang || 'Barang'}" berjenis BAHAN. Form peminjaman ini khusus untuk transaksi peminjaman ALAT. Untuk pengeluaran bahan habis pakai, silakan gunakan menu Bahan Keluar.`, true);
+            showToast('Pemindaian Ditolak! Barang ini berjenis BAHAN.', 'error');
+            return;
+        }
+
         // Bunyikan nada beep indikator sukses HANYA jika valid & diterima
         try {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -2886,8 +3021,8 @@ async function onPinjamBarcodeScanned(code) {
             selectJur.value = found.jurusan_id;
         }
 
-        if (selectJenis && found.jenis) {
-            selectJenis.value = found.jenis.toLowerCase();
+        if (selectJenis) {
+            selectJenis.value = 'alat';
         }
 
         filterBarangPinjamOptions(found.id);
@@ -3421,36 +3556,25 @@ function clearKeluarScanFeedback() {
 
 function filterBarangPinjamOptions(preselectedBarangId = null) {
     initSearchableComboboxes();
-    const selectJenis = document.getElementById('pinjam_jenis');
     const selectBarang = document.getElementById('pinjam_barang_id');
     const selectJur = document.getElementById('pinjam_jurusan_id');
     const labelBarang = document.getElementById('pinjam_barang_label');
 
     if (!selectBarang || !window.dbBarang) return;
 
-    const chosenJenis = selectJenis ? selectJenis.value.toLowerCase() : '';
     const isAdminSekolah = window.currentUser && window.currentUser.peran === 'admin_sekolah';
     const chosenJur = (isAdminSekolah && selectJur && selectJur.value) ? selectJur.value : (window.currentUser?.jurusan_id || null);
 
-    let filtered = window.dbBarang;
+    // Peminjaman HANYA diperuntukkan bagi kategori Alat (sinkron otomatis)
+    let filtered = window.dbBarang.filter(b => String(b.jenis || 'alat').toLowerCase() === 'alat');
 
     if (chosenJur) {
         filtered = filtered.filter(b => String(b.jurusan_id) === String(chosenJur));
     }
 
-    if (chosenJenis === 'alat') {
-        filtered = filtered.filter(b => String(b.jenis || 'alat').toLowerCase() === 'alat');
-        if (labelBarang) labelBarang.innerHTML = 'Pilih Alat <span class="text-red-500">*</span>';
-    } else if (chosenJenis === 'bahan') {
-        filtered = filtered.filter(b => String(b.jenis || 'alat').toLowerCase() === 'bahan');
-        if (labelBarang) labelBarang.innerHTML = 'Pilih Bahan <span class="text-red-500">*</span>';
-    } else {
-        if (labelBarang) labelBarang.innerHTML = 'Pilih Inventaris <span class="text-red-500">*</span>';
-    }
+    if (labelBarang) labelBarang.innerHTML = 'Pilih Alat <span class="text-red-500">*</span>';
 
-    const defaultPrompt = chosenJenis === 'alat' ? '-- Pilih Alat --' : (chosenJenis === 'bahan' ? '-- Pilih Bahan --' : '-- Pilih Inventaris --');
-
-    selectBarang.innerHTML = `<option value="">${defaultPrompt}</option>` +
+    selectBarang.innerHTML = `<option value="">-- Pilih Alat --</option>` +
         filtered.map(b => `<option value="${b.id}">${b.nama_barang} (Tersedia: ${b.stok_tersedia} ${b.satuan || 'Unit'})</option>`).join('');
 
     const targetVal = preselectedBarangId !== null ? preselectedBarangId : selectBarang.value;
@@ -3989,8 +4113,7 @@ function openModal(modalId, customTitle = null, editData = null) {
                 filterGuruPinjamOptions(editData.guru_peminjam || null);
                 filterSiswaPinjamOptions(editData.nama_peminjam || null);
 
-                const foundB = (window.dbBarang || []).find(b => String(b.id) === String(editData.barang_id));
-                if (elJenis) elJenis.value = foundB ? (foundB.jenis || '') : '';
+                if (elJenis) elJenis.value = 'alat';
                 filterBarangPinjamOptions(editData.barang_id || '');
                 if (elBarang) elBarang.value = editData.barang_id || '';
 
@@ -4255,7 +4378,7 @@ function openModal(modalId, customTitle = null, editData = null) {
                 if (elKet) elKet.value = '';
             } else if (modalId === 'modalPeminjaman') {
                 const elJenis = document.getElementById('pinjam_jenis');
-                if (elJenis) elJenis.value = '';
+                if (elJenis) elJenis.value = 'alat';
                 filterBarangPinjamOptions();
                 filterGuruPinjamOptions();
                 filterSiswaPinjamOptions();
@@ -4436,6 +4559,12 @@ function closeModal(modalId) {
                 btn.disabled = false;
                 btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> <span>Ya, Jalankan Migrasi</span>`;
             }
+        } else if (modalId === 'modalRollbackMigrasiSiswa') {
+            const btn = document.getElementById('btnSubmitRollbackMigrasi');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2m0 0l-4-4m4 4l4-4M3 10l4-4m-4 4l4 4"/></svg> <span>Ya, Rollback Migrasi</span>`;
+            }
         }
     }
 
@@ -4578,7 +4707,7 @@ async function handleFormSubmit(event, actionName) {
             if (isUsingBarcode) {
                 showNotification('Silakan scan barcode atau QR code barang terlebih dahulu!', 'warning');
             } else {
-                showNotification('Pilih inventaris barang yang akan dipinjam!', 'warning');
+                showNotification('Pilih alat yang akan dipinjam!', 'warning');
             }
             return;
         }
@@ -6011,6 +6140,120 @@ async function handleMigrasiSiswaSubmit(e) {
         if (btn) {
             btn.disabled = false;
             btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> <span>Ya, Jalankan Migrasi</span>`;
+        }
+    }
+}
+
+async function openModalRollbackMigrasiSiswa() {
+    const modal = document.getElementById('modalRollbackMigrasiSiswa');
+    if (!modal) return;
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+
+    const loadingEl = document.getElementById('rollbackLoadingState');
+    const emptyEl = document.getElementById('rollbackEmptyState');
+    const dataCardEl = document.getElementById('rollbackDataCard');
+    const btnSubmit = document.getElementById('btnSubmitRollbackMigrasi');
+    const batchIdInp = document.getElementById('rollback_batch_id');
+
+    if (loadingEl) loadingEl.classList.remove('hidden');
+    if (emptyEl) emptyEl.classList.add('hidden');
+    if (dataCardEl) dataCardEl.classList.add('hidden');
+    if (btnSubmit) btnSubmit.classList.add('hidden');
+    if (batchIdInp) batchIdInp.value = '';
+
+    try {
+        const res = await fetch('api.php?action=get_latest_migrasi_batch');
+        const data = await res.json();
+
+        if (loadingEl) loadingEl.classList.add('hidden');
+
+        if (data && data.success && data.has_batch && data.batch) {
+            const batch = data.batch;
+            if (batchIdInp) batchIdInp.value = batch.id || '';
+            const elWaktu = document.getElementById('rollbackInfoWaktu');
+            const elTaAsal = document.getElementById('rollbackInfoTaAsal');
+            const elJur = document.getElementById('rollbackInfoJurusan');
+            const el12 = document.getElementById('rollbackCount12');
+            const el11 = document.getElementById('rollbackCount11');
+            const el10 = document.getElementById('rollbackCount10');
+            const elTot = document.getElementById('rollbackCountTotal');
+
+            if (elWaktu) elWaktu.textContent = batch.created_at || '-';
+            if (elTaAsal) elTaAsal.textContent = batch.tahun_ajaran_asal || '-';
+            if (elJur) elJur.textContent = batch.nama_jurusan || 'Semua Jurusan';
+
+            if (el12) el12.textContent = `${Number(batch.count_12 || 0).toLocaleString()} Siswa`;
+            if (el11) el11.textContent = `${Number(batch.count_11 || 0).toLocaleString()} Siswa`;
+            if (el10) el10.textContent = `${Number(batch.count_10 || 0).toLocaleString()} Siswa`;
+            if (elTot) elTot.textContent = Number(batch.total_migrated || 0).toLocaleString();
+
+            if (dataCardEl) dataCardEl.classList.remove('hidden');
+            if (btnSubmit) {
+                btnSubmit.classList.remove('hidden');
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2m0 0l-4-4m4 4l4-4M3 10l4-4m-4 4l4 4"/></svg> <span>Ya, Rollback Migrasi</span>`;
+            }
+        } else {
+            if (emptyEl) emptyEl.classList.remove('hidden');
+            if (btnSubmit) btnSubmit.classList.add('hidden');
+        }
+    } catch (err) {
+        console.error(err);
+        if (loadingEl) loadingEl.classList.add('hidden');
+        if (emptyEl) emptyEl.classList.remove('hidden');
+        showToast('Gagal memuat riwayat migrasi kelas.', 'error');
+    }
+}
+
+async function handleRollbackMigrasiSubmit(e) {
+    e.preventDefault();
+    const batchId = document.getElementById('rollback_batch_id')?.value;
+    if (!batchId) {
+        showToast('ID batch migrasi tidak valid!', 'warning');
+        return;
+    }
+
+    const totalStr = document.getElementById('rollbackCountTotal')?.textContent || '0';
+    if (!confirm(`Konfirmasi Rollback Migrasi Kenaikan Kelas:\n\nApakah Anda yakin ingin MEMBATALKAN kenaikan kelas untuk ${totalStr} siswa ini?\n\n• Seluruh siswa yang naik kelas akan dikembalikan ke tingkatan kelas semula\n• Tahun ajaran siswa akan dipulihkan ke tahun ajaran sebelumnya\n\nTindakan ini akan mengembalikan data ke kondisi sebelum migrasi dijalankan.`)) {
+        return;
+    }
+
+    const btn = document.getElementById('btnSubmitRollbackMigrasi');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<svg class="w-4 h-4 animate-spin shrink-0" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Memproses Rollback...</span>`;
+    }
+
+    try {
+        const formData = new FormData();
+        formData.append('action', 'rollback_migrasi_kelas_siswa');
+        formData.append('csrf_token', document.querySelector('#formRollbackMigrasiSiswa input[name="csrf_token"]')?.value || '');
+        formData.append('batch_id', batchId);
+
+        const res = await fetch('api.php', { method: 'POST', body: formData });
+        const data = await res.json();
+
+        if (data && data.success) {
+            showToast(data.message, 'success');
+            closeModal('modalRollbackMigrasiSiswa');
+            setTimeout(() => {
+                location.reload();
+            }, 1200);
+        } else {
+            showToast(data.message || 'Gagal memproses rollback migrasi.', 'error');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2m0 0l-4-4m4 4l4-4M3 10l4-4m-4 4l4 4"/></svg> <span>Ya, Rollback Migrasi</span>`;
+            }
+        }
+    } catch (err) {
+        console.error(err);
+        showToast('Terjadi kesalahan koneksi saat memproses rollback migrasi.', 'error');
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2m0 0l-4-4m4 4l4-4M3 10l4-4m-4 4l4 4"/></svg> <span>Ya, Rollback Migrasi</span>`;
         }
     }
 }

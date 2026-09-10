@@ -35,7 +35,7 @@ $disallowedSiswaActions = [
     'save_pengguna', 'delete_pengguna', 'bulk_delete_pengguna',
     'save_jurusan', 'delete_jurusan', 'bulk_delete_jurusan',
     'save_guru', 'delete_guru', 'bulk_delete_guru', 'import_guru_csv',
-    'save_siswa', 'delete_siswa', 'bulk_delete_siswa', 'import_siswa_csv', 'migrate_kelas_siswa',
+    'save_siswa', 'delete_siswa', 'bulk_delete_siswa', 'import_siswa_csv', 'migrate_kelas_siswa', 'rollback_migrasi_kelas_siswa', 'get_latest_migrasi_batch',
     'save_barang_masuk', 'delete_barang_masuk', 'bulk_delete_barang_masuk',
     'save_barang_keluar', 'delete_barang_keluar', 'bulk_delete_barang_keluar'
 ];
@@ -347,6 +347,58 @@ try {
             echo json_encode(array_merge(['success' => true, 'message' => $msg], $res));
         } else {
             echo json_encode(['success' => false, 'message' => $res['message'] ?? 'Gagal memproses migrasi kelas siswa.']);
+        }
+        exit;
+    }
+
+    if ($action === 'get_latest_migrasi_batch') {
+        require_once __DIR__ . '/app/models/Siswa.php';
+
+        $isSuperAdmin = ($_SESSION['user']['peran'] ?? '') === 'admin_sekolah';
+        $jurusanId = !empty($_REQUEST['jurusan_id']) ? $_REQUEST['jurusan_id'] : null;
+
+        if (!$isSuperAdmin) {
+            $userJurusanId = $_SESSION['user']['jurusan_id'] ?? null;
+            $jurusanId = $userJurusanId;
+        }
+
+        $latestBatch = Siswa::getLatestMigrasiBatch($jurusanId);
+        echo json_encode([
+            'success' => true,
+            'has_batch' => !empty($latestBatch),
+            'batch' => $latestBatch
+        ]);
+        exit;
+    }
+
+    if ($action === 'rollback_migrasi_kelas_siswa') {
+        require_once __DIR__ . '/app/models/Siswa.php';
+        require_once __DIR__ . '/app/models/LogAktivitas.php';
+
+        $isSuperAdmin = ($_SESSION['user']['peran'] ?? '') === 'admin_sekolah';
+        $jurusanId = !empty($_POST['jurusan_id']) ? $_POST['jurusan_id'] : null;
+
+        if (!$isSuperAdmin) {
+            $userJurusanId = $_SESSION['user']['jurusan_id'] ?? null;
+            if (!$userJurusanId) {
+                echo json_encode(['success' => false, 'message' => 'Akun Anda tidak memiliki jurusan yang valid!']);
+                exit;
+            }
+            $jurusanId = $userJurusanId;
+        }
+
+        $batchId = !empty($_POST['batch_id']) ? trim($_POST['batch_id']) : null;
+        $res = Siswa::rollbackMigrasi($batchId, $jurusanId);
+
+        if ($res['success']) {
+            $tot = $res['total_restored'];
+            $taRestored = $res['tahun_ajaran_restored'] ?? '';
+            $taInfo = !empty($taRestored) ? " dan Tahun Ajaran dipulihkan ke {$taRestored}" : "";
+            $msg = "Rollback migrasi kenaikan kelas berhasil! Total {$tot} siswa telah dikembalikan ke tingkatan kelas semula{$taInfo}.";
+            LogAktivitas::log('ROLLBACK_MIGRASI', $msg);
+            echo json_encode(array_merge(['success' => true, 'message' => $msg], $res));
+        } else {
+            echo json_encode(['success' => false, 'message' => $res['message'] ?? 'Gagal melakukan rollback migrasi kelas siswa.']);
         }
         exit;
     }
@@ -1223,6 +1275,19 @@ require_once __DIR__ . '/app/models/BarangKeluar.php';
         } else {
             if (empty($barang_id)) {
                 echo json_encode(['success' => false, 'message' => 'Pilih alat!']);
+                exit;
+            }
+
+            // Validasi jenis: peminjaman HANYA diperuntukkan bagi kategori ALAT
+            $dbConn = Database::getInstance()->getConnection();
+            $stmtCheckJenis = $dbConn->prepare("SELECT jenis, nama_barang FROM barang WHERE id = :bid LIMIT 1");
+            $stmtCheckJenis->execute([':bid' => $barang_id]);
+            $brgJenisRow = $stmtCheckJenis->fetch(PDO::FETCH_ASSOC);
+            if ($brgJenisRow && strtolower($brgJenisRow['jenis'] ?? '') === 'bahan') {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Transaksi peminjaman hanya diperbolehkan untuk kategori ALAT, bukan bahan habis pakai!'
+                ]);
                 exit;
             }
 

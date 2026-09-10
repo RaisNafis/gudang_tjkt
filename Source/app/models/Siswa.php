@@ -370,6 +370,7 @@ class Siswa {
 
         $jurusanId = !empty($params['jurusan_id']) ? $params['jurusan_id'] : null;
         $tahunAjaran = !empty($params['tahun_ajaran']) ? trim($params['tahun_ajaran']) : null;
+        $userId = !empty($params['pengguna_id']) ? $params['pengguna_id'] : ($_SESSION['user_id'] ?? null);
 
         try {
             $db->beginTransaction();
@@ -387,6 +388,10 @@ class Siswa {
 
             $updateStmt = $db->prepare("UPDATE siswa SET kelas = :kelas, tahun_ajaran = :ta, updated_at = NOW() WHERE id = :id");
 
+            $batchId = generateUuid();
+            $migrasiItems = [];
+            $defaultTahunAsal = '2026/2027';
+
             $count12 = 0;
             $count11 = 0;
             $count10 = 0;
@@ -395,12 +400,25 @@ class Siswa {
             foreach ($allSiswa as $idx => $s) {
                 $k = trim($s['kelas'] ?? '');
                 if (preg_match('/^(12|XII)(\s|-|$)/i', $k) || strtoupper($k) === 'XII' || $k === '12') {
-                    $newTa = !empty($tahunAjaran) ? $tahunAjaran : ($s['tahun_ajaran'] ?? '2026/2027');
+                    $oldK = $k;
+                    $oldTa = !empty($s['tahun_ajaran']) ? $s['tahun_ajaran'] : $defaultTahunAsal;
+                    $newTa = !empty($tahunAjaran) ? $tahunAjaran : $oldTa;
+                    $newK = 'LULUS';
+
                     $updateStmt->execute([
-                        ':kelas' => 'LULUS',
+                        ':kelas' => $newK,
                         ':ta' => $newTa,
                         ':id' => $s['id']
                     ]);
+                    $migrasiItems[] = [
+                        'id' => generateUuid(),
+                        'batch_id' => $batchId,
+                        'siswa_id' => $s['id'],
+                        'kelas_asal' => $oldK,
+                        'kelas_tujuan' => $newK,
+                        'tahun_ajaran_asal' => $oldTa,
+                        'tahun_ajaran_tujuan' => $newTa
+                    ];
                     $count12++;
                     unset($allSiswa[$idx]);
                 }
@@ -418,12 +436,24 @@ class Siswa {
                     elseif (strcasecmp($k, 'XI') === 0) $newK = 'XII';
                     else $newK = '12-' . $k;
 
-                    $newTa = !empty($tahunAjaran) ? $tahunAjaran : ($s['tahun_ajaran'] ?? '2026/2027');
+                    $oldK = $k;
+                    $oldTa = !empty($s['tahun_ajaran']) ? $s['tahun_ajaran'] : $defaultTahunAsal;
+                    $newTa = !empty($tahunAjaran) ? $tahunAjaran : $oldTa;
+
                     $updateStmt->execute([
                         ':kelas' => $newK,
                         ':ta' => $newTa,
                         ':id' => $s['id']
                     ]);
+                    $migrasiItems[] = [
+                        'id' => generateUuid(),
+                        'batch_id' => $batchId,
+                        'siswa_id' => $s['id'],
+                        'kelas_asal' => $oldK,
+                        'kelas_tujuan' => $newK,
+                        'tahun_ajaran_asal' => $oldTa,
+                        'tahun_ajaran_tujuan' => $newTa
+                    ];
                     $count11++;
                     unset($allSiswa[$idx]);
                 }
@@ -441,14 +471,72 @@ class Siswa {
                     elseif (strcasecmp($k, 'X') === 0) $newK = 'XI';
                     else $newK = '11-' . $k;
 
-                    $newTa = !empty($tahunAjaran) ? $tahunAjaran : ($s['tahun_ajaran'] ?? '2026/2027');
+                    $oldK = $k;
+                    $oldTa = !empty($s['tahun_ajaran']) ? $s['tahun_ajaran'] : $defaultTahunAsal;
+                    $newTa = !empty($tahunAjaran) ? $tahunAjaran : $oldTa;
+
                     $updateStmt->execute([
                         ':kelas' => $newK,
                         ':ta' => $newTa,
                         ':id' => $s['id']
                     ]);
+                    $migrasiItems[] = [
+                        'id' => generateUuid(),
+                        'batch_id' => $batchId,
+                        'siswa_id' => $s['id'],
+                        'kelas_asal' => $oldK,
+                        'kelas_tujuan' => $newK,
+                        'tahun_ajaran_asal' => $oldTa,
+                        'tahun_ajaran_tujuan' => $newTa
+                    ];
                     $count10++;
                     unset($allSiswa[$idx]);
+                }
+            }
+
+            $totalMigrated = count($migrasiItems);
+
+            if ($totalMigrated > 0) {
+                // Catat batch migrasi
+                $insertBatchStmt = $db->prepare("
+                    INSERT INTO migrasi_kelas_batch (
+                        id, pengguna_id, jurusan_id, tahun_ajaran_asal, tahun_ajaran_tujuan, 
+                        count_10, count_11, count_12, total_migrated, status, created_at
+                    ) VALUES (
+                        :id, :uid, :jid, :ta_asal, :ta_tujuan, 
+                        :c10, :c11, :c12, :total, 'migrated', NOW()
+                    )
+                ");
+                $insertBatchStmt->execute([
+                    ':id' => $batchId,
+                    ':uid' => $userId,
+                    ':jid' => $jurusanId,
+                    ':ta_asal' => $migrasiItems[0]['tahun_ajaran_asal'] ?? $defaultTahunAsal,
+                    ':ta_tujuan' => $tahunAjaran ?? $defaultTahunAsal,
+                    ':c10' => $count10,
+                    ':c11' => $count11,
+                    ':c12' => $count12,
+                    ':total' => $totalMigrated
+                ]);
+
+                // Catat item snapshot
+                $insertItemStmt = $db->prepare("
+                    INSERT INTO migrasi_kelas_item (
+                        id, batch_id, siswa_id, kelas_asal, kelas_tujuan, tahun_ajaran_asal, tahun_ajaran_tujuan
+                    ) VALUES (
+                        :id, :bid, :sid, :ka, :kt, :taa, :tat
+                    )
+                ");
+                foreach ($migrasiItems as $item) {
+                    $insertItemStmt->execute([
+                        ':id' => $item['id'],
+                        ':bid' => $item['batch_id'],
+                        ':sid' => $item['siswa_id'],
+                        ':ka' => $item['kelas_asal'],
+                        ':kt' => $item['kelas_tujuan'],
+                        ':taa' => $item['tahun_ajaran_asal'],
+                        ':tat' => $item['tahun_ajaran_tujuan']
+                    ]);
                 }
             }
 
@@ -456,10 +544,11 @@ class Siswa {
 
             return [
                 'success' => true,
+                'batch_id' => $batchId,
                 'count_10' => $count10,
                 'count_11' => $count11,
                 'count_12' => $count12,
-                'total_migrated' => ($count10 + $count11 + $count12),
+                'total_migrated' => $totalMigrated,
                 'tahun_ajaran' => $tahunAjaran
             ];
         } catch (Exception $e) {
@@ -467,6 +556,94 @@ class Siswa {
                 $db->rollBack();
             }
             return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    public static function getLatestMigrasiBatch($jurusanId = null) {
+        $db = Database::getInstance()->getConnection();
+        if (!$db) return null;
+
+        $sql = "
+            SELECT b.*, p.nama_lengkap as nama_pengguna, j.nama_jurusan
+            FROM migrasi_kelas_batch b
+            LEFT JOIN pengguna p ON b.pengguna_id = p.id
+            LEFT JOIN jurusan j ON b.jurusan_id = j.id
+            WHERE b.status = 'migrated'
+        ";
+        $params = [];
+        if (!empty($jurusanId)) {
+            $sql .= " AND (b.jurusan_id = :jid OR b.jurusan_id IS NULL)";
+            $params[':jid'] = $jurusanId;
+        }
+        $sql .= " ORDER BY b.created_at DESC LIMIT 1";
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
+    public static function rollbackMigrasi($batchId = null, $jurusanId = null) {
+        $db = Database::getInstance()->getConnection();
+        if (!$db) return ['success' => false, 'message' => 'Koneksi database gagal'];
+
+        try {
+            $db->beginTransaction();
+
+            $batch = null;
+            if (!empty($batchId)) {
+                $stmtB = $db->prepare("SELECT * FROM migrasi_kelas_batch WHERE id = :id AND status = 'migrated' LIMIT 1");
+                $stmtB->execute([':id' => $batchId]);
+                $batch = $stmtB->fetch(PDO::FETCH_ASSOC);
+            } else {
+                $batch = self::getLatestMigrasiBatch($jurusanId);
+            }
+
+            if (!$batch) {
+                $db->rollBack();
+                return ['success' => false, 'message' => 'Tidak ditemukan riwayat migrasi aktif yang dapat di-rollback.'];
+            }
+
+            $bid = $batch['id'];
+            $stmtItems = $db->prepare("SELECT siswa_id, kelas_asal, tahun_ajaran_asal FROM migrasi_kelas_item WHERE batch_id = :bid");
+            $stmtItems->execute([':bid' => $bid]);
+            $items = $stmtItems->fetchAll(PDO::FETCH_ASSOC);
+
+            if (empty($items)) {
+                $db->rollBack();
+                return ['success' => false, 'message' => 'Detail data siswa untuk batch migrasi ini tidak ditemukan.'];
+            }
+
+            $updateSiswa = $db->prepare("UPDATE siswa SET kelas = :kelas, tahun_ajaran = :ta, updated_at = NOW() WHERE id = :id");
+            $restoredCount = 0;
+            foreach ($items as $it) {
+                $updateSiswa->execute([
+                    ':kelas' => $it['kelas_asal'],
+                    ':ta' => $it['tahun_ajaran_asal'],
+                    ':id' => $it['siswa_id']
+                ]);
+                $restoredCount++;
+            }
+
+            $stmtUpBatch = $db->prepare("UPDATE migrasi_kelas_batch SET status = 'rolled_back', rolled_back_at = NOW() WHERE id = :bid");
+            $stmtUpBatch->execute([':bid' => $bid]);
+
+            $db->commit();
+
+            return [
+                'success' => true,
+                'batch_id' => $bid,
+                'total_restored' => $restoredCount,
+                'tahun_ajaran_restored' => $batch['tahun_ajaran_asal'],
+                'count_10' => $batch['count_10'],
+                'count_11' => $batch['count_11'],
+                'count_12' => $batch['count_12'],
+                'created_at' => $batch['created_at']
+            ];
+        } catch (Exception $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+            return ['success' => false, 'message' => 'Gagal melakukan rollback migrasi: ' . $e->getMessage()];
         }
     }
 }
