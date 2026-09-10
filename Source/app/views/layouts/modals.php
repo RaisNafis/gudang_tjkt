@@ -334,18 +334,13 @@
 </div>
 
 <!-- 1.5 MODAL MIGRASI KENAIKAN KELAS SISWA -->
-<div id="modalMigrasiSiswa" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
+<div id="modalMigrasiSiswa" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm">
     <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-[#2a2a2a] shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
         <!-- Header -->
         <div class="p-5 sm:p-6 bg-slate-50/80 dark:bg-[#181818] border-b border-slate-200 dark:border-[#262626] flex items-center justify-between shrink-0">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center font-bold shadow-sm">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                </div>
-                <div>
-                    <h3 class="text-base font-bold text-slate-900 dark:text-white">Migrasi Kenaikan Kelas Siswa</h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Pembaruan massal tingkatan kelas untuk tahun ajaran baru</p>
-                </div>
+            <div>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white">Migrasi Kenaikan Kelas Siswa</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Pembaruan massal tingkatan kelas untuk tahun ajaran baru</p>
             </div>
             <button type="button" onclick="closeModal('modalMigrasiSiswa')" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 rounded-lg transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -358,9 +353,8 @@
 
             <!-- Notice Box -->
             <div class="p-3.5 bg-slate-50 dark:bg-[#181818] border border-slate-200 dark:border-[#262626] rounded-2xl text-slate-700 dark:text-slate-300 space-y-1">
-                <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-xs">
-                    <svg class="w-4 h-4 text-slate-700 dark:text-slate-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span>Pemberitahuan Migrasi Serentak</span>
+                <div class="text-slate-900 dark:text-white font-bold text-xs">
+                    Pemberitahuan Migrasi Serentak
                 </div>
                 <p class="text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
                     Sistem akan memproses kenaikan kelas seluruh siswa aktif secara serentak dalam satu kali eksekusi tanpa perlu memilih satu per satu:
@@ -378,7 +372,7 @@
                         <div>
                             <div class="font-bold text-slate-800 dark:text-white text-xs flex items-center gap-1.5">
                                 <span>Kelas 10</span>
-                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                <span class="text-slate-400">&rarr;</span>
                                 <span>Naik ke Kelas 11</span>
                             </div>
                             <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Misal: <code class="text-slate-700 dark:text-slate-300 font-semibold">10-TKJ</code> menjadi <code class="text-slate-900 dark:text-white font-bold">11-TKJ</code></p>
@@ -400,7 +394,7 @@
                         <div>
                             <div class="font-bold text-slate-800 dark:text-white text-xs flex items-center gap-1.5">
                                 <span>Kelas 11</span>
-                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                <span class="text-slate-400">&rarr;</span>
                                 <span>Naik ke Kelas 12</span>
                             </div>
                             <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Misal: <code class="text-slate-700 dark:text-slate-300 font-semibold">11-TKJ</code> menjadi <code class="text-slate-900 dark:text-white font-bold">12-TKJ</code></p>
@@ -422,7 +416,7 @@
                         <div>
                             <div class="font-bold text-slate-800 dark:text-white text-xs flex items-center gap-1.5">
                                 <span>Kelas 12</span>
-                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                <span class="text-slate-400">&rarr;</span>
                                 <span class="font-bold">LULUS</span>
                             </div>
                             <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Siswa tingkat akhir dialihkan statusnya menjadi <code class="text-slate-900 dark:text-white font-bold">LULUS</code></p>
@@ -451,8 +445,7 @@
             </div>
 
             <!-- Caution Warning -->
-            <div class="p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 rounded-xl text-[11px] text-slate-700 dark:text-slate-300 leading-relaxed flex items-start gap-2.5">
-                <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <div class="p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 rounded-xl text-[11px] text-slate-700 dark:text-slate-300 leading-relaxed">
                 <div>
                     <strong>Konfirmasi:</strong> Pastikan Anda telah melakukan <strong>Export CSV</strong> terlebih dahulu sebagai arsip cadangan sebelum memproses migrasi.
                 </div>
@@ -464,7 +457,6 @@
                 <div class="flex items-center gap-2.5">
                     <button type="button" onclick="closeModal('modalMigrasiSiswa')" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700">Batal</button>
                     <button type="submit" id="btnSubmitMigrasiSiswa" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 shadow-sm transition-all flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                         <span>Ya, Jalankan Migrasi</span>
                     </button>
                 </div>
@@ -474,18 +466,13 @@
 </div>
 
 <!-- MODAL ROLLBACK MIGRASI KELAS SISWA -->
-<div id="modalRollbackMigrasiSiswa" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
+<div id="modalRollbackMigrasiSiswa" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm">
     <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-[#2a2a2a] shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
         <!-- Header -->
         <div class="p-5 sm:p-6 bg-slate-50/80 dark:bg-[#181818] border-b border-slate-200 dark:border-[#262626] flex items-center justify-between shrink-0">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center font-bold shadow-sm">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2m0 0l-4-4m4 4l4-4M3 10l4-4m-4 4l4 4"/></svg>
-                </div>
-                <div>
-                    <h3 class="text-base font-bold text-slate-900 dark:text-white">Rollback Migrasi Kelas Siswa</h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Batalkan migrasi dan kembalikan siswa ke kelas & tahun ajaran semula</p>
-                </div>
+            <div>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white">Rollback Migrasi Kelas Siswa</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Batalkan migrasi dan kembalikan siswa ke kelas & tahun ajaran semula</p>
             </div>
             <button type="button" onclick="closeModal('modalRollbackMigrasiSiswa')" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 rounded-lg transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -497,32 +484,17 @@
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
             <input type="hidden" id="rollback_batch_id" name="batch_id" value="">
 
-            <!-- Loading State -->
-            <div id="rollbackLoadingState" class="py-10 text-center space-y-3">
-                <svg class="w-8 h-8 mx-auto animate-spin text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                </svg>
-                <p class="text-slate-500 dark:text-slate-400 font-medium">Memeriksa riwayat migrasi terakhir...</p>
-            </div>
-
             <!-- Empty State (No migration to rollback) -->
-            <div id="rollbackEmptyState" class="hidden py-8 px-4 text-center space-y-3 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700">
-                <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 mx-auto flex items-center justify-center">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                </div>
-                <div>
-                    <h4 class="font-bold text-slate-700 dark:text-slate-200">Tidak Ada Riwayat Migrasi Aktif</h4>
-                    <p class="text-slate-500 dark:text-slate-400 text-[11px] mt-1">Belum ada batch migrasi yang tercatat, atau migrasi terakhir sudah pernah di-rollback sebelumnya.</p>
-                </div>
+            <div id="rollbackEmptyState" class="hidden py-8 px-4 text-center space-y-2 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700">
+                <h4 class="font-bold text-slate-700 dark:text-slate-200">Tidak Ada Riwayat Migrasi Aktif</h4>
+                <p class="text-slate-500 dark:text-slate-400 text-[11px]">Belum ada batch migrasi yang tercatat, atau migrasi terakhir sudah pernah di-rollback sebelumnya.</p>
             </div>
 
             <!-- Data Card (When migration exists) -->
             <div id="rollbackDataCard" class="hidden space-y-4">
                 <div class="p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 space-y-1">
-                    <div class="flex items-center gap-2 font-bold text-slate-900 dark:text-white">
-                        <svg class="w-4 h-4 shrink-0 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                        <span>Konfirmasi Pembatalan Migrasi</span>
+                    <div class="font-bold text-slate-900 dark:text-white">
+                        Konfirmasi Pembatalan Migrasi
                     </div>
                     <p class="text-[11.5px] leading-relaxed text-slate-600 dark:text-slate-400">
                         Sistem akan mengembalikan seluruh data siswa pada migrasi ini ke tingkatan kelas dan tahun ajaran aslinya.
@@ -545,26 +517,26 @@
                     </div>
                 </div>
 
-                <!-- Detail Alur Rollback Cards (Clean, NO badges) -->
+                <!-- Detail Alur Rollback Cards (Clean, NO badges, NO emoji arrows) -->
                 <div class="space-y-2">
                     <div class="p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between">
                         <div class="flex items-center gap-2.5">
                             <span class="w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold flex items-center justify-center text-xs">1</span>
-                            <span class="font-semibold text-slate-700 dark:text-slate-200">Siswa LULUS ➔ Dikembalikan ke Kelas 12</span>
+                            <span class="font-semibold text-slate-700 dark:text-slate-200">Siswa LULUS &rarr; Dikembalikan ke Kelas 12</span>
                         </div>
                         <span id="rollbackCount12" class="font-bold text-xs text-slate-800 dark:text-slate-200">0 Siswa</span>
                     </div>
                     <div class="p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between">
                         <div class="flex items-center gap-2.5">
                             <span class="w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold flex items-center justify-center text-xs">2</span>
-                            <span class="font-semibold text-slate-700 dark:text-slate-200">Kelas 12 ➔ Dikembalikan ke Kelas 11</span>
+                            <span class="font-semibold text-slate-700 dark:text-slate-200">Kelas 12 &rarr; Dikembalikan ke Kelas 11</span>
                         </div>
                         <span id="rollbackCount11" class="font-bold text-xs text-slate-800 dark:text-slate-200">0 Siswa</span>
                     </div>
                     <div class="p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between">
                         <div class="flex items-center gap-2.5">
                             <span class="w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold flex items-center justify-center text-xs">3</span>
-                            <span class="font-semibold text-slate-700 dark:text-slate-200">Kelas 11 ➔ Dikembalikan ke Kelas 10</span>
+                            <span class="font-semibold text-slate-700 dark:text-slate-200">Kelas 11 &rarr; Dikembalikan ke Kelas 10</span>
                         </div>
                         <span id="rollbackCount10" class="font-bold text-xs text-slate-800 dark:text-slate-200">0 Siswa</span>
                     </div>
@@ -577,7 +549,6 @@
                 <div class="flex items-center gap-2.5">
                     <button type="button" onclick="closeModal('modalRollbackMigrasiSiswa')" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700">Tutup</button>
                     <button type="submit" id="btnSubmitRollbackMigrasi" class="hidden px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 shadow-sm transition-all flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2m0 0l-4-4m4 4l4-4M3 10l4-4m-4 4l4 4"/></svg>
                         <span>Ya, Rollback Migrasi</span>
                     </button>
                 </div>
@@ -6248,7 +6219,7 @@ async function handleMigrasiSiswaSubmit(e) {
             showToast(data.message || 'Gagal memproses migrasi kelas siswa.', 'error');
             if (btn) {
                 btn.disabled = false;
-                btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> <span>Ya, Jalankan Migrasi</span>`;
+                btn.innerHTML = `<span>Ya, Jalankan Migrasi</span>`;
             }
         }
     } catch (err) {
@@ -6256,7 +6227,7 @@ async function handleMigrasiSiswaSubmit(e) {
         showToast('Terjadi kesalahan koneksi saat memproses migrasi.', 'error');
         if (btn) {
             btn.disabled = false;
-            btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> <span>Ya, Jalankan Migrasi</span>`;
+            btn.innerHTML = `<span>Ya, Jalankan Migrasi</span>`;
         }
     }
 }
@@ -6268,13 +6239,11 @@ async function openModalRollbackMigrasiSiswa() {
     modal.classList.remove('hidden');
     modal.classList.add('flex');
 
-    const loadingEl = document.getElementById('rollbackLoadingState');
     const emptyEl = document.getElementById('rollbackEmptyState');
     const dataCardEl = document.getElementById('rollbackDataCard');
     const btnSubmit = document.getElementById('btnSubmitRollbackMigrasi');
     const batchIdInp = document.getElementById('rollback_batch_id');
 
-    if (loadingEl) loadingEl.classList.remove('hidden');
     if (emptyEl) emptyEl.classList.add('hidden');
     if (dataCardEl) dataCardEl.classList.add('hidden');
     if (btnSubmit) btnSubmit.classList.add('hidden');
@@ -6283,8 +6252,6 @@ async function openModalRollbackMigrasiSiswa() {
     try {
         const res = await fetch('api.php?action=get_latest_migrasi_batch');
         const data = await res.json();
-
-        if (loadingEl) loadingEl.classList.add('hidden');
 
         if (data && data.success && data.has_batch && data.batch) {
             const batch = data.batch;
@@ -6310,7 +6277,7 @@ async function openModalRollbackMigrasiSiswa() {
             if (btnSubmit) {
                 btnSubmit.classList.remove('hidden');
                 btnSubmit.disabled = false;
-                btnSubmit.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2m0 0l-4-4m4 4l4-4M3 10l4-4m-4 4l4 4"/></svg> <span>Ya, Rollback Migrasi</span>`;
+                btnSubmit.innerHTML = `<span>Ya, Rollback Migrasi</span>`;
             }
         } else {
             if (emptyEl) emptyEl.classList.remove('hidden');
@@ -6318,7 +6285,6 @@ async function openModalRollbackMigrasiSiswa() {
         }
     } catch (err) {
         console.error(err);
-        if (loadingEl) loadingEl.classList.add('hidden');
         if (emptyEl) emptyEl.classList.remove('hidden');
         showToast('Gagal memuat riwayat migrasi kelas.', 'error');
     }
@@ -6340,7 +6306,7 @@ async function handleRollbackMigrasiSubmit(e) {
     const btn = document.getElementById('btnSubmitRollbackMigrasi');
     if (btn) {
         btn.disabled = true;
-        btn.innerHTML = `<svg class="w-4 h-4 animate-spin shrink-0" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Memproses Rollback...</span>`;
+        btn.innerHTML = `<span>Memproses Rollback...</span>`;
     }
 
     try {
@@ -6362,7 +6328,7 @@ async function handleRollbackMigrasiSubmit(e) {
             showToast(data.message || 'Gagal memproses rollback migrasi.', 'error');
             if (btn) {
                 btn.disabled = false;
-                btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2m0 0l-4-4m4 4l4-4M3 10l4-4m-4 4l4 4"/></svg> <span>Ya, Rollback Migrasi</span>`;
+                btn.innerHTML = `<span>Ya, Rollback Migrasi</span>`;
             }
         }
     } catch (err) {
