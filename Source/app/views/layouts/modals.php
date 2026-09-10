@@ -881,22 +881,16 @@
 
             <!-- FOTO / GAMBAR BARANG -->
             <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Foto / Gambar Barang <span class="text-slate-400 font-normal">(Opsional)</span></label>
-                <div class="flex items-center gap-3.5 p-3 bg-sage-50/40 dark:bg-slate-800/60 border border-sage-200/80 dark:border-slate-700 rounded-2xl">
-                    <div id="barang_image_preview_box" class="w-16 h-16 rounded-2xl bg-white dark:bg-slate-900 border border-sage-200 dark:border-slate-700 flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
-                        <svg id="barang_image_placeholder_icon" class="w-8 h-8 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                        <img id="barang_image_preview" src="" alt="Preview" class="w-full h-full object-cover hidden">
-                    </div>
-                    <div class="flex-1 space-y-1.5">
-                        <div class="flex flex-wrap items-center gap-2">
-                            <label for="barang_image_input" class="cursor-pointer px-3 py-1.5 bg-sage-600 hover:bg-sage-700 text-white rounded-xl font-bold text-xs inline-flex items-center gap-1.5 transition-colors shadow-xs">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                <span>Pilih Gambar</span>
-                            </label>
-                            <input type="file" id="barang_image_input" accept="image/png,image/jpeg,image/webp,image/jpg" class="hidden" onchange="previewBarangImage(this)">
-                            <button type="button" id="btn_remove_barang_image" onclick="removeBarangImage()" class="hidden px-2.5 py-1.5 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl font-bold transition-colors">Hapus Gambar</button>
-                        </div>
-                        <p class="text-[10.5px] text-slate-500 dark:text-slate-400 leading-tight">Mendukung JPG, PNG, atau WEBP. Jika tidak diunggah, gambar akan bernilai null.</p>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1.5">Foto / Gambar Barang <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                <div class="flex items-center gap-3">
+                    <label for="barang_image_input" class="cursor-pointer px-4 py-2 bg-sage-600 hover:bg-sage-700 active:bg-sage-800 text-white rounded-xl font-bold text-xs inline-flex items-center gap-2 transition-all shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <span>Pilih Gambar</span>
+                    </label>
+                    <input type="file" id="barang_image_input" accept="image/png,image/jpeg,image/webp,image/jpg" class="hidden" onchange="previewBarangImage(this)">
+                    <div id="barang_image_preview_box" class="hidden items-center gap-2">
+                        <img id="barang_image_preview" src="" alt="Preview" class="w-8 h-8 rounded-lg object-cover border border-sage-200 dark:border-slate-700 shadow-xs cursor-pointer" onclick="if(this.src) showImageModal(this.src)" title="Klik untuk memperbesar">
+                        <button type="button" id="btn_remove_barang_image" onclick="removeBarangImage()" class="px-2.5 py-1 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg font-bold transition-colors">Hapus</button>
                     </div>
                 </div>
             </div>
@@ -4122,6 +4116,7 @@ function openModal(modalId, customTitle = null, editData = null) {
 
                 const imgInput = document.getElementById('barang_image_input');
                 const imgPreview = document.getElementById('barang_image_preview');
+                const previewBox = document.getElementById('barang_image_preview_box');
                 const imgIcon = document.getElementById('barang_image_placeholder_icon');
                 const btnRemove = document.getElementById('btn_remove_barang_image');
                 const remInp = document.getElementById('barang_remove_image');
@@ -4134,12 +4129,20 @@ function openModal(modalId, customTitle = null, editData = null) {
                         imgPreview.src = editData.image;
                         imgPreview.classList.remove('hidden');
                     }
+                    if (previewBox) {
+                        previewBox.classList.remove('hidden');
+                        previewBox.classList.add('flex');
+                    }
                     if (imgIcon) imgIcon.classList.add('hidden');
                     if (btnRemove) btnRemove.classList.remove('hidden');
                 } else {
                     if (imgPreview) {
                         imgPreview.src = '';
                         imgPreview.classList.add('hidden');
+                    }
+                    if (previewBox) {
+                        previewBox.classList.add('hidden');
+                        previewBox.classList.remove('flex');
                     }
                     if (imgIcon) imgIcon.classList.remove('hidden');
                     if (btnRemove) btnRemove.classList.add('hidden');
@@ -4436,6 +4439,7 @@ function openModal(modalId, customTitle = null, editData = null) {
 
                 const imgInput = document.getElementById('barang_image_input');
                 const imgPreview = document.getElementById('barang_image_preview');
+                const previewBox = document.getElementById('barang_image_preview_box');
                 const imgIcon = document.getElementById('barang_image_placeholder_icon');
                 const btnRemove = document.getElementById('btn_remove_barang_image');
                 const remInp = document.getElementById('barang_remove_image');
@@ -4444,6 +4448,10 @@ function openModal(modalId, customTitle = null, editData = null) {
                 if (imgPreview) {
                     imgPreview.src = '';
                     imgPreview.classList.add('hidden');
+                }
+                if (previewBox) {
+                    previewBox.classList.add('hidden');
+                    previewBox.classList.remove('flex');
                 }
                 if (imgIcon) imgIcon.classList.remove('hidden');
                 if (btnRemove) btnRemove.classList.add('hidden');
@@ -4627,6 +4635,7 @@ function closeModal(modalId) {
         } else if (modalId === 'modalBarang') {
             const imgInput = document.getElementById('barang_image_input');
             const imgPreview = document.getElementById('barang_image_preview');
+            const previewBox = document.getElementById('barang_image_preview_box');
             const imgIcon = document.getElementById('barang_image_placeholder_icon');
             const btnRemove = document.getElementById('btn_remove_barang_image');
             const remInp = document.getElementById('barang_remove_image');
@@ -4635,6 +4644,10 @@ function closeModal(modalId) {
             if (imgPreview) {
                 imgPreview.src = '';
                 imgPreview.classList.add('hidden');
+            }
+            if (previewBox) {
+                previewBox.classList.add('hidden');
+                previewBox.classList.remove('flex');
             }
             if (imgIcon) imgIcon.classList.remove('hidden');
             if (btnRemove) btnRemove.classList.add('hidden');
@@ -6047,6 +6060,7 @@ function previewBarangImage(input) {
     const reader = new FileReader();
     reader.onload = function(e) {
         const imgPreview = document.getElementById('barang_image_preview');
+        const previewBox = document.getElementById('barang_image_preview_box');
         const imgIcon = document.getElementById('barang_image_placeholder_icon');
         const btnRemove = document.getElementById('btn_remove_barang_image');
         const remInp = document.getElementById('barang_remove_image');
@@ -6054,6 +6068,10 @@ function previewBarangImage(input) {
         if (imgPreview) {
             imgPreview.src = e.target.result;
             imgPreview.classList.remove('hidden');
+        }
+        if (previewBox) {
+            previewBox.classList.remove('hidden');
+            previewBox.classList.add('flex');
         }
         if (imgIcon) imgIcon.classList.add('hidden');
         if (btnRemove) btnRemove.classList.remove('hidden');
@@ -6065,6 +6083,7 @@ function previewBarangImage(input) {
 function removeBarangImage() {
     const imgInput = document.getElementById('barang_image_input');
     const imgPreview = document.getElementById('barang_image_preview');
+    const previewBox = document.getElementById('barang_image_preview_box');
     const imgIcon = document.getElementById('barang_image_placeholder_icon');
     const btnRemove = document.getElementById('btn_remove_barang_image');
     const remInp = document.getElementById('barang_remove_image');
@@ -6074,6 +6093,10 @@ function removeBarangImage() {
     if (imgPreview) {
         imgPreview.src = '';
         imgPreview.classList.add('hidden');
+    }
+    if (previewBox) {
+        previewBox.classList.add('hidden');
+        previewBox.classList.remove('flex');
     }
     if (imgIcon) imgIcon.classList.remove('hidden');
     if (btnRemove) btnRemove.classList.add('hidden');
