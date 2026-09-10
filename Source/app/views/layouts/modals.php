@@ -333,6 +333,7 @@
     </div>
 </div>
 
+<?php if (!empty($isSuperAdmin)): ?>
 <!-- 1.5 MODAL MIGRASI KENAIKAN KELAS SISWA -->
 <div id="modalMigrasiSiswa" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm">
     <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-[#2a2a2a] shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
@@ -556,6 +557,7 @@
         </form>
     </div>
 </div>
+<?php endif; ?>
 
 <!-- MODAL KELOLA AKSES MULTI-JURUSAN KEPALA BENGKEL -->
 <div id="modalMultiJurusanKabeng" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
@@ -6098,6 +6100,10 @@ function showImageModal(imgSrc, title = 'Foto Barang') {
 
 // --- MIGRASI KENAIKAN KELAS SISWA HELPERS ---
 function openModalMigrasiSiswa() {
+    if (!window.currentUser || window.currentUser.peran !== 'admin_sekolah') {
+        showToast('Hanya Admin Sekolah yang memiliki wewenang migrasi kelas siswa!', 'warning');
+        return;
+    }
     const modal = document.getElementById('modalMigrasiSiswa');
     if (!modal) return;
     modal.classList.remove('hidden');
@@ -6105,23 +6111,10 @@ function openModalMigrasiSiswa() {
     document.body.classList.add('modal-open');
 
     const selJurusan = document.getElementById('migrasi_jurusan_id');
-    const isAdminSekolah = window.currentUser && window.currentUser.peran === 'admin_sekolah';
-    const userJurusanId = window.currentUser ? window.currentUser.jurusan_id : null;
-
     if (selJurusan) {
-        if (isAdminSekolah) {
-            selJurusan.removeAttribute('disabled');
-            selJurusan.innerHTML = '<option value="">-- Semua Jurusan --</option>' +
-                (window.dbJurusan || []).map(j => `<option value="${j.id}">${j.nama_jurusan}</option>`).join('');
-        } else {
-            selJurusan.innerHTML = (window.dbJurusan || [])
-                .filter(j => String(j.id) === String(userJurusanId))
-                .map(j => `<option value="${j.id}" selected>${j.nama_jurusan}</option>`).join('');
-            if (!selJurusan.innerHTML && userJurusanId) {
-                selJurusan.innerHTML = `<option value="${userJurusanId}" selected>Jurusan Saya</option>`;
-            }
-            selJurusan.setAttribute('disabled', 'disabled');
-        }
+        selJurusan.removeAttribute('disabled');
+        selJurusan.innerHTML = '<option value="">-- Semua Jurusan --</option>' +
+            (window.dbJurusan || []).map(j => `<option value="${j.id}">${j.nama_jurusan}</option>`).join('');
     }
 
     const inpTa = document.getElementById('migrasi_tahun_ajaran');
@@ -6175,6 +6168,10 @@ function updateMigrasiCounts() {
 
 async function handleMigrasiSiswaSubmit(e) {
     e.preventDefault();
+    if (!window.currentUser || window.currentUser.peran !== 'admin_sekolah') {
+        showToast('Hanya Admin Sekolah yang memiliki wewenang memproses migrasi kelas!', 'warning');
+        return;
+    }
     const btn = document.getElementById('btnSubmitMigrasiSiswa');
     const selJurusan = document.getElementById('migrasi_jurusan_id');
     const inpTa = document.getElementById('migrasi_tahun_ajaran');
@@ -6233,6 +6230,10 @@ async function handleMigrasiSiswaSubmit(e) {
 }
 
 async function openModalRollbackMigrasiSiswa() {
+    if (!window.currentUser || window.currentUser.peran !== 'admin_sekolah') {
+        showToast('Hanya Admin Sekolah yang memiliki wewenang rollback migrasi kelas!', 'warning');
+        return;
+    }
     const modal = document.getElementById('modalRollbackMigrasiSiswa');
     if (!modal) return;
 
@@ -6292,6 +6293,10 @@ async function openModalRollbackMigrasiSiswa() {
 
 async function handleRollbackMigrasiSubmit(e) {
     e.preventDefault();
+    if (!window.currentUser || window.currentUser.peran !== 'admin_sekolah') {
+        showToast('Hanya Admin Sekolah yang memiliki wewenang rollback migrasi kelas!', 'warning');
+        return;
+    }
     const batchId = document.getElementById('rollback_batch_id')?.value;
     if (!batchId) {
         showToast('ID batch migrasi tidak valid!', 'warning');

@@ -319,17 +319,12 @@ try {
         require_once __DIR__ . '/app/models/LogAktivitas.php';
 
         $isSuperAdmin = ($_SESSION['user']['peran'] ?? '') === 'admin_sekolah';
-        $jurusanId = !empty($_POST['jurusan_id']) ? $_POST['jurusan_id'] : null;
-
         if (!$isSuperAdmin) {
-            $userJurusanId = $_SESSION['user']['jurusan_id'] ?? null;
-            if (!$userJurusanId) {
-                echo json_encode(['success' => false, 'message' => 'Akun Anda tidak memiliki jurusan yang valid!']);
-                exit;
-            }
-            $jurusanId = $userJurusanId;
+            echo json_encode(['success' => false, 'message' => 'Hanya Admin Sekolah yang memiliki wewenang memproses migrasi kenaikan kelas!']);
+            exit;
         }
 
+        $jurusanId = !empty($_POST['jurusan_id']) ? $_POST['jurusan_id'] : null;
         $tahunAjaran = trim($_POST['tahun_ajaran'] ?? '');
         $res = Siswa::migrateKelas([
             'jurusan_id' => $jurusanId,
@@ -355,13 +350,12 @@ try {
         require_once __DIR__ . '/app/models/Siswa.php';
 
         $isSuperAdmin = ($_SESSION['user']['peran'] ?? '') === 'admin_sekolah';
-        $jurusanId = !empty($_REQUEST['jurusan_id']) ? $_REQUEST['jurusan_id'] : null;
-
         if (!$isSuperAdmin) {
-            $userJurusanId = $_SESSION['user']['jurusan_id'] ?? null;
-            $jurusanId = $userJurusanId;
+            echo json_encode(['success' => false, 'message' => 'Akses ditolak!']);
+            exit;
         }
 
+        $jurusanId = !empty($_REQUEST['jurusan_id']) ? $_REQUEST['jurusan_id'] : null;
         $latestBatch = Siswa::getLatestMigrasiBatch($jurusanId);
         echo json_encode([
             'success' => true,
@@ -376,17 +370,12 @@ try {
         require_once __DIR__ . '/app/models/LogAktivitas.php';
 
         $isSuperAdmin = ($_SESSION['user']['peran'] ?? '') === 'admin_sekolah';
-        $jurusanId = !empty($_POST['jurusan_id']) ? $_POST['jurusan_id'] : null;
-
         if (!$isSuperAdmin) {
-            $userJurusanId = $_SESSION['user']['jurusan_id'] ?? null;
-            if (!$userJurusanId) {
-                echo json_encode(['success' => false, 'message' => 'Akun Anda tidak memiliki jurusan yang valid!']);
-                exit;
-            }
-            $jurusanId = $userJurusanId;
+            echo json_encode(['success' => false, 'message' => 'Hanya Admin Sekolah yang memiliki wewenang membatalkan/rollback migrasi kelas!']);
+            exit;
         }
 
+        $jurusanId = !empty($_POST['jurusan_id']) ? $_POST['jurusan_id'] : null;
         $batchId = !empty($_POST['batch_id']) ? trim($_POST['batch_id']) : null;
         $res = Siswa::rollbackMigrasi($batchId, $jurusanId);
 
