@@ -678,9 +678,9 @@
             </div>
 
             <!-- CONTAINER SCANNER BARCODE (TAMPIL JIKA CHECKBOX DICENTANG) -->
-            <div id="section_scan_barcode_peminjaman" class="hidden space-y-3 p-4 bg-transparent border border-sage-200 dark:border-slate-700 rounded-2xl animate-fade-in-up">
+            <div id="section_scan_barcode_peminjaman" class="hidden space-y-3 py-1 px-0 bg-transparent rounded-2xl animate-fade-in-up">
                 <!-- Tab Pilihan Metode Scan -->
-                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2.5">
+                <div class="flex items-center justify-between pb-1">
                     <span class="font-bold text-slate-700 dark:text-slate-200 text-[11px] uppercase tracking-wider">
                         Metode Scan Barcode
                     </span>
@@ -703,8 +703,8 @@
                     </div>
                     <div id="pinjam_camera_placeholder" class="hidden"></div>
 
-                    <div class="flex items-center justify-center py-2">
-                        <button type="button" id="btn_toggle_camera" onclick="togglePinjamCameraStream()" class="px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-md shadow-sage-600/20 transition-all">
+                    <div class="flex items-center justify-start py-2">
+                        <button type="button" id="btn_toggle_camera" onclick="togglePinjamCameraStream()" class="px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer" style="box-shadow: none !important;">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             <span>Nyalakan Kamera</span>
                         </button>
@@ -1459,7 +1459,8 @@ async function startPinjamCameraStream(preferDeviceId = null) {
         if (cameraWrap) cameraWrap.classList.remove('hidden');
         if (placeholder) placeholder.classList.add('hidden');
         if (btnToggle) {
-            btnToggle.className = 'px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all';
+            btnToggle.className = 'px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer';
+            btnToggle.style.boxShadow = 'none';
             btnToggle.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg><span>Hentikan Kamera</span>`;
         }
     } catch (err) {
@@ -1484,7 +1485,8 @@ async function stopPinjamCameraStream() {
     if (cameraWrap) cameraWrap.classList.add('hidden');
     if (placeholder) placeholder.classList.remove('hidden');
     if (btnToggle) {
-        btnToggle.className = 'px-4 py-2 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-md shadow-sage-600/20 transition-all';
+        btnToggle.className = 'px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer';
+        btnToggle.style.boxShadow = 'none';
         btnToggle.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span>Nyalakan Kamera</span>`;
     }
 }
