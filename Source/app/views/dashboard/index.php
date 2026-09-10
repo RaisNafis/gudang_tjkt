@@ -1299,7 +1299,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-5">
                         <div>
                             <h3 class="text-base font-bold text-slate-800 dark:text-white">Manajemen Akses Multi-Jurusan Kepala Bengkel</h3>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Pengaturan wewenang lintas jurusan bagi guru Kepala Bengkel (Kabeng) untuk mengelola lebih dari satu jurusan/gudang.</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Pengaturan wewenang lintas jurusan bagi guru Kepala Bengkel (Kabeng) untuk mengelola lebih dari satu jurusan/gudang. (<span id="kabeng_multi_count_display"><?= !empty($allKabengMulti) ? count($allKabengMulti) : 0; ?></span> Kepala Bengkel)</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
                             <?php if ($isSuperAdmin): ?>
@@ -1308,6 +1308,35 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 <span>+ Atur Akses Kabeng</span>
                             </button>
                             <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <!-- Filter Controls Manajemen Akses Multi-Jurusan -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                        <div class="relative sm:col-span-2 lg:col-span-1">
+                            <input type="text" id="filter_kabeng_multi_search" oninput="debouncedFilterTableKabengMulti()" placeholder="Cari nama atau username..." class="w-full pl-9 pr-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-medium">
+                            <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <div>
+                            <select id="filter_kabeng_multi_jurusan" onchange="filterTableKabengMulti()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
+                                <option value="">Semua Jurusan Utama</option>
+                                <?php foreach ($dbJurusan as $j): ?>
+                                    <option value="<?= htmlspecialchars($j['nama_jurusan']); ?>"><?= htmlspecialchars($j['nama_jurusan']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <select id="filter_kabeng_multi_status" onchange="filterTableKabengMulti()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
+                                <option value="">Semua Tipe Akses</option>
+                                <option value="multi">Multi-Jurusan (&gt; 1 Jurusan)</option>
+                                <option value="single">Hanya 1 Jurusan (Homebase)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <button type="button" onclick="resetFilterKabengMulti()" class="w-full py-2 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer" title="Reset Filter">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                <span>Reset Filter</span>
+                            </button>
                         </div>
                     </div>
 
@@ -1332,8 +1361,12 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         $primaryJName = $kb['primary_nama_jurusan'] ?? 'Belum Ditentukan';
                                         $primaryJColor = resolveJurusanThemeColor($kb['primary_warna_tema'] ?? '#2e7d32');
                                 ?>
-                                <tr class="hover:bg-sage-50/50 dark:hover:bg-[#1a1a1a] transition-colors">
-                                    <td class="py-3.5 px-4 text-center font-bold text-slate-500 dark:text-slate-400"><?= $kNo++; ?></td>
+                                <tr class="kabeng-multi-row hover:bg-sage-50/50 dark:hover:bg-[#1a1a1a] transition-colors"
+                                    data-nama="<?= strtolower(htmlspecialchars(($kb['nama_lengkap'] ?: '') . ' ' . ($kb['nama_pengguna'] ?: ''))); ?>"
+                                    data-jurusan-utama="<?= strtolower(htmlspecialchars($primaryJName)); ?>"
+                                    data-hak-akses="<?= strtolower(htmlspecialchars(implode(' ', array_column($kb['jurusans'] ?? [], 'nama_jurusan')))); ?>"
+                                    data-total-akses="<?= (int)$kb['total_akses']; ?>">
+                                    <td class="py-3.5 px-4 text-center font-bold text-slate-500 dark:text-slate-400 kabeng-row-number"><?= $kNo++; ?></td>
                                     <td class="py-3.5 px-4">
                                         <div>
                                             <div class="font-bold text-slate-800 dark:text-slate-200"><?= htmlspecialchars($kb['nama_lengkap'] ?: $kb['nama_pengguna']); ?></div>
@@ -4828,6 +4861,86 @@ function matchTingkatKelas(kelasStr, tingkat) {
         return k.includes('LULUS') || k.includes('ALUMNI');
     }
     return k.includes(tingkat);
+}
+
+// --- FILTER MANAJEMEN AKSES MULTI-JURUSAN KABENG ---
+let kabengMultiDebounceTimer = null;
+function debouncedFilterTableKabengMulti() {
+    clearTimeout(kabengMultiDebounceTimer);
+    kabengMultiDebounceTimer = setTimeout(() => {
+        filterTableKabengMulti();
+    }, 100);
+}
+
+function filterTableKabengMulti() {
+    const searchVal = (document.getElementById('filter_kabeng_multi_search')?.value || '').trim().toLowerCase();
+    const jurusanVal = (document.getElementById('filter_kabeng_multi_jurusan')?.value || '').trim().toLowerCase();
+    const statusVal = (document.getElementById('filter_kabeng_multi_status')?.value || '').trim().toLowerCase();
+
+    const tbody = document.getElementById('tbodyMultiJurusanKabeng');
+    if (!tbody) return;
+
+    const rows = tbody.querySelectorAll('tr.kabeng-multi-row');
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+        const nama = row.getAttribute('data-nama') || '';
+        const jUtama = row.getAttribute('data-jurusan-utama') || '';
+        const hakAkses = row.getAttribute('data-hak-akses') || '';
+        const totalAkses = parseInt(row.getAttribute('data-total-akses') || '1', 10);
+
+        // Check search filter: matches name, username, homebase, or accessible jurusans
+        const matchSearch = !searchVal || nama.includes(searchVal) || jUtama.includes(searchVal) || hakAkses.includes(searchVal);
+        
+        // Check jurusan utama filter
+        const matchJurusan = !jurusanVal || jUtama === jurusanVal || jUtama.includes(jurusanVal);
+
+        // Check status filter: multi vs single
+        let matchStatus = true;
+        if (statusVal === 'multi') {
+            matchStatus = totalAkses > 1;
+        } else if (statusVal === 'single') {
+            matchStatus = totalAkses <= 1;
+        }
+
+        if (matchSearch && matchJurusan && matchStatus) {
+            row.style.display = '';
+            visibleCount++;
+            const noCell = row.querySelector('.kabeng-row-number');
+            if (noCell) noCell.innerText = visibleCount;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    const countDisplay = document.getElementById('kabeng_multi_count_display');
+    if (countDisplay) {
+        countDisplay.innerText = visibleCount;
+    }
+
+    let emptyRow = document.getElementById('row_empty_multi_jurusan');
+    if (visibleCount === 0) {
+        if (!emptyRow) {
+            emptyRow = document.createElement('tr');
+            emptyRow.id = 'row_empty_multi_jurusan';
+            emptyRow.innerHTML = '<td colspan="6" class="py-8 text-center text-slate-400 dark:text-slate-500">Tidak ada data Kepala Bengkel yang sesuai dengan filter.</td>';
+            tbody.appendChild(emptyRow);
+        } else {
+            emptyRow.style.display = '';
+        }
+    } else if (emptyRow) {
+        emptyRow.style.display = 'none';
+    }
+}
+
+function resetFilterKabengMulti() {
+    const s = document.getElementById('filter_kabeng_multi_search');
+    const j = document.getElementById('filter_kabeng_multi_jurusan');
+    const st = document.getElementById('filter_kabeng_multi_status');
+    if (s) s.value = '';
+    if (j) j.value = '';
+    if (st) st.value = '';
+    filterTableKabengMulti();
 }
 
 function debouncedRenderTablePengguna() {
