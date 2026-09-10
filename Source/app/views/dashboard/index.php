@@ -1341,21 +1341,19 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         </div>
                                     </td>
                                     <td class="py-3.5 px-4">
-                                        <span class="inline-flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                                            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: <?= htmlspecialchars($primaryJColor); ?>;"></span>
-                                            <span><?= htmlspecialchars($primaryJName); ?></span>
+                                        <span class="text-xs font-bold" style="color: <?= htmlspecialchars($primaryJColor); ?>;">
+                                            <?= htmlspecialchars($primaryJName); ?>
                                         </span>
                                     </td>
                                     <td class="py-3.5 px-4">
-                                        <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                                        <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
                                             <?php 
                                             if (!empty($kb['jurusans'])):
                                                 foreach ($kb['jurusans'] as $aj):
                                                     $jCol = resolveJurusanThemeColor($aj['warna_tema'] ?? '#2e7d32');
                                             ?>
-                                                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 dark:text-slate-300">
-                                                    <span class="w-2 h-2 rounded-full shrink-0" style="background-color: <?= htmlspecialchars($jCol); ?>;"></span>
-                                                    <span><?= htmlspecialchars($aj['nama_jurusan']); ?></span>
+                                                <span class="text-xs font-bold" style="color: <?= htmlspecialchars($jCol); ?>;">
+                                                    <?= htmlspecialchars($aj['nama_jurusan']); ?>
                                                 </span>
                                             <?php 
                                                 endforeach;

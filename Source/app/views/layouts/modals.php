@@ -6448,7 +6448,11 @@ async function onKabengSelectedForMulti(penggunaId) {
 
         if (elNama) elNama.innerText = user.nama_lengkap || user.nama_pengguna;
         if (elUsername) elUsername.innerText = user.nama_pengguna;
-        if (elJurusanAsal) elJurusanAsal.innerText = user.nama_jurusan || 'Tidak Ada (Semua)';
+        if (elJurusanAsal) {
+            elJurusanAsal.innerText = user.nama_jurusan || 'Tidak Ada (Semua)';
+            const jObj = (window.dbJurusan || []).find(j => String(j.id) === String(user.jurusan_id));
+            elJurusanAsal.style.color = jObj ? resolveJurusanThemeColor(jObj.warna_tema) : '';
+        }
     }
 
     if (container) {
@@ -6476,8 +6480,7 @@ async function onKabengSelectedForMulti(penggunaId) {
                         <div class="flex items-center gap-3">
                             <input type="checkbox" name="jurusan_ids[]" value="${j.id}" ${isChecked ? 'checked' : ''} ${isPrimary ? 'onclick="return false;"' : ''} class="w-4 h-4 text-indigo-600 rounded border-slate-300 dark:border-slate-700 focus:ring-indigo-500 cursor-pointer">
                             ${isPrimary ? `<input type="hidden" name="jurusan_ids[]" value="${j.id}">` : ''}
-                            <span class="w-3.5 h-3.5 rounded-full shrink-0 shadow-xs" style="background-color: ${themeColor};"></span>
-                            <span class="font-bold text-xs text-slate-800 dark:text-slate-200">${j.nama_jurusan}</span>
+                            <span class="font-bold text-xs" style="color: ${themeColor};">${j.nama_jurusan}</span>
                         </div>
                         <div>
                             ${isPrimary 
