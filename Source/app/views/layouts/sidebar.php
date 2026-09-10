@@ -60,8 +60,8 @@ if ($roleName === 'admin_sekolah') {
 
         <!-- Header Action Buttons -->
         <div class="flex items-center gap-1.5 shrink-0 ml-auto">
-            <!-- Switch Jurusan Dropdown Trigger (Hanya jika memiliki > 1 Jurusan yang dapat diakses) -->
-            <?php if (!empty($userAccessibleJurusans) && count($userAccessibleJurusans) > 1): ?>
+            <!-- Switch Jurusan Dropdown Trigger (Hanya jika bukan admin_sekolah dan memiliki > 1 Jurusan yang dapat diakses) -->
+            <?php if ($roleName !== 'admin_sekolah' && !empty($userAccessibleJurusans) && count($userAccessibleJurusans) > 1): ?>
             <button type="button" id="jurusanSwitcherBtn" onclick="toggleJurusanSwitcherPopover(event)" class="w-8 h-8 rounded-xl bg-slate-100/80 hover:bg-slate-200/80 dark:bg-[#1e1e1e] dark:hover:bg-[#282828] text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 flex items-center justify-center transition-all cursor-pointer border border-slate-200/60 dark:border-[#2a2a2a]" title="Ganti Gudang Jurusan Aktif">
                 <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
@@ -86,7 +86,7 @@ if ($roleName === 'admin_sekolah') {
     </div>
 
     <!-- Dropdown Popover List of Jurusans (Clean design, no badge, no emoji) -->
-    <?php if (!empty($userAccessibleJurusans) && count($userAccessibleJurusans) > 1): ?>
+    <?php if ($roleName !== 'admin_sekolah' && !empty($userAccessibleJurusans) && count($userAccessibleJurusans) > 1): ?>
     <div id="jurusanSwitcherPopover" class="hidden absolute left-3 right-3 top-[68px] bg-white dark:bg-[#181818] border border-slate-200 dark:border-[#282828] rounded-2xl shadow-2xl z-50 p-1.5 text-slate-700 dark:text-slate-200 text-left">
         <div class="px-2.5 py-1.5 border-b border-slate-100 dark:border-[#242424] mb-1">
             <span class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Pilih Gudang Jurusan</span>
