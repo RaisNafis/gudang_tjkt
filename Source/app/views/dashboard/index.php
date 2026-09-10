@@ -5412,6 +5412,17 @@ function renderTableBarang() {
                     .reduce((sum, k) => sum + parseInt(k.jumlah || 0), 0);
             }
 
+            let totalMasuk = Number(b.total_masuk || 0);
+            if (window.dbBarangMasuk && window.dbBarangMasuk.length > 0) {
+                totalMasuk = window.dbBarangMasuk
+                    .filter(m => String(m.barang_id) === String(b.id))
+                    .reduce((sum, m) => sum + parseInt(m.jumlah || 0), 0);
+            }
+
+            const masukInfo = (totalMasuk > 0)
+                ? `<span class="block text-[9.5px] font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5 whitespace-nowrap leading-tight">+${totalMasuk} ${escapeHtml(b.satuan || 'Unit')} masuk</span>`
+                : '';
+
             const dipinjamInfo = (totalDipinjam > 0)
                 ? `<span class="block text-[9.5px] font-semibold text-amber-500 mt-0.5 whitespace-nowrap leading-tight">${totalDipinjam} ${escapeHtml(b.satuan || 'Unit')} dipinjam</span>`
                 : '';
@@ -5451,6 +5462,7 @@ function renderTableBarang() {
             <td class="py-3.5 px-4 font-bold">${escapeHtml(String(stokAwalVal))} ${escapeHtml(b.satuan || 'Unit')}</td>
             <td class="py-3.5 px-4 font-bold text-sage-600 whitespace-nowrap">
                 <div class="whitespace-nowrap">${stokTersediaVal} ${escapeHtml(b.satuan || 'Unit')}</div>
+                ${masukInfo}
                 ${dipinjamInfo}
                 ${keluarInfo}
             </td>
