@@ -120,7 +120,7 @@ class AuthController {
                                 'nama_pengguna' => strtolower(preg_replace('/[^a-z0-9]/', '', $guruByToken['nama_guru'])),
                                 'nama_lengkap' => $guruByToken['nama_guru'],
                                 'email' => '',
-                                'peran' => (($guruByToken['mengajar'] ?? '') === 'bengkel') ? 'admin_jurusan' : 'guru_umum',
+                                'peran' => (($guruByToken['mengajar'] ?? '') === 'bengkel') ? 'kabeng' : 'guru_umum',
                                 'status_pengguna' => 'guru'
                             ];
                             $isValidPass = true;

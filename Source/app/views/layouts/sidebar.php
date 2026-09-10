@@ -1,6 +1,9 @@
 <?php 
+require_once __DIR__ . '/../../models/Pengguna.php';
 $user = currentUser(); 
 $roleName = $user['peran'] ?? 'siswa';
+$userAccessibleJurusans = Pengguna::getAccessibleJurusans($user['id'] ?? '');
+$activeJurusanId = $user['jurusan_id'] ?? '';
 
 $brandShort = 'Sekolah';
 if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah') {
@@ -15,10 +18,10 @@ if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah') {
 
 if ($roleName === 'admin_sekolah') {
     $peranText = 'Admin Sekolah';
-} elseif ($roleName === 'admin_jurusan') {
-    $peranText = 'Admin Jurusan (' . $brandShort . ')';
-} elseif ($roleName === 'petugas') {
-    $peranText = 'Petugas Gudang';
+} elseif ($roleName === 'kabeng' || $roleName === 'admin_jurusan') {
+    $peranText = 'Kabeng (' . $brandShort . ')';
+} elseif ($roleName === 'guru_jurusan' || $roleName === 'petugas') {
+    $peranText = 'Guru Jurusan';
 } elseif ($roleName === 'guru_umum') {
     $peranText = 'Guru Umum';
 } else {
@@ -54,6 +57,43 @@ if ($roleName === 'admin_sekolah') {
                 </svg>
             </div>
         </div>
+
+        <!-- Switch Jurusan Dropdown Trigger (Khusus Kabeng / Multi-Jurusan) -->
+        <?php if (!empty($userAccessibleJurusans) && count($userAccessibleJurusans) > 1): ?>
+        <div class="relative shrink-0 ml-auto" id="jurusanSwitcherContainer">
+            <button type="button" id="jurusanSwitcherBtn" onclick="toggleJurusanSwitcherPopover(event)" class="w-8 h-8 rounded-xl bg-slate-100/80 hover:bg-slate-200/80 dark:bg-[#1e1e1e] dark:hover:bg-[#282828] text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 flex items-center justify-center transition-all cursor-pointer border border-slate-200/60 dark:border-[#2a2a2a]" title="Ganti Gudang Jurusan Aktif">
+                <svg class="w-4 h-4 text-sage-600 dark:text-sage-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                </svg>
+            </button>
+            <!-- Dropdown Popover List of Jurusans -->
+            <div id="jurusanSwitcherPopover" class="hidden absolute right-0 top-10 w-64 bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#262626] rounded-2xl shadow-2xl z-50 p-2 text-slate-700 dark:text-slate-200 text-left animate-fade-in-up">
+                <div class="px-3 py-2 border-b border-slate-100 dark:border-[#202020] mb-1.5 flex items-center justify-between">
+                    <div>
+                        <span class="block text-[11px] font-bold text-slate-900 dark:text-white uppercase tracking-wider">Pilih Gudang Jurusan</span>
+                        <span class="text-[10px] text-slate-400 font-medium">Beralih konteks jurusan</span>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full bg-sage-100 dark:bg-sage-950/60 text-sage-700 dark:text-sage-300 font-bold text-[10px]"><?= count($userAccessibleJurusans); ?> Akses</span>
+                </div>
+                <div class="space-y-1 max-h-60 overflow-y-auto" style="scrollbar-width: thin;">
+                    <?php foreach ($userAccessibleJurusans as $aj): 
+                        $isActive = ($aj['id'] === $activeJurusanId);
+                        $ajColor = !empty($aj['warna_tema']) ? $aj['warna_tema'] : '#2e7d32';
+                    ?>
+                    <button type="button" onclick="switchActiveJurusan('<?= $aj['id']; ?>')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer <?= $isActive ? 'bg-sage-50 dark:bg-sage-950/50 text-sage-700 dark:text-sage-300 font-bold border border-sage-200/60 dark:border-sage-800/60' : 'hover:bg-slate-50 dark:hover:bg-[#1e1e1e] text-slate-700 dark:text-slate-300' ?>">
+                        <div class="flex items-center gap-2.5 min-w-0 truncate">
+                            <span class="w-3.5 h-3.5 rounded-full shrink-0 shadow-xs border border-white/40" style="background-color: <?= htmlspecialchars($ajColor); ?>;"></span>
+                            <span class="truncate"><?= htmlspecialchars($aj['nama_jurusan']); ?></span>
+                        </div>
+                        <?php if ($isActive): ?>
+                        <span class="px-1.5 py-0.5 rounded bg-sage-200/70 dark:bg-sage-900/80 text-[10px] text-sage-800 dark:text-sage-200 font-extrabold shrink-0 ml-1.5">Aktif</span>
+                        <?php endif; ?>
+                    </button>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
 
         <!-- Toggle Button for Desktop Mini Mode / Mobile Close -->
         <button type="button" id="sidebarToggleBtn" class="w-8 h-8 rounded-xl bg-slate-100/80 hover:bg-slate-200/80 dark:bg-[#1e1e1e] dark:hover:bg-[#282828] text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center transition-all shrink-0 ml-auto cursor-pointer" title="Kecilkan Sidebar">
@@ -96,8 +136,8 @@ if ($roleName === 'admin_sekolah') {
         </button>
         <?php endif; ?>
 
-        <!-- Data Pengguna (Admin Sekolah & Admin Jurusan) -->
-        <?php if (in_array($roleName, ['admin_sekolah', 'admin_jurusan'])): ?>
+        <!-- Data Pengguna (Admin Sekolah & Kabeng) -->
+        <?php if (in_array($roleName, ['admin_sekolah', 'kabeng', 'admin_jurusan'])): ?>
         <button type="button" data-tab="pengguna" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Data Pengguna">
             <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
@@ -105,7 +145,7 @@ if ($roleName === 'admin_sekolah') {
             <span class="sidebar-text whitespace-nowrap text-left leading-none">Data Pengguna</span>
         </button>
 
-        <!-- Data Guru (Admin Sekolah & Admin Jurusan) -->
+        <!-- Data Guru (Admin Sekolah & Kabeng) -->
         <button type="button" data-tab="guru" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Data Guru">
             <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/>
@@ -115,7 +155,7 @@ if ($roleName === 'admin_sekolah') {
             <span class="sidebar-text whitespace-nowrap text-left leading-none">Data Guru</span>
         </button>
 
-        <!-- Data Siswa (Admin Sekolah & Admin Jurusan) -->
+        <!-- Data Siswa (Admin Sekolah & Kabeng) -->
         <button type="button" data-tab="siswa" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Data Siswa">
             <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
@@ -124,8 +164,8 @@ if ($roleName === 'admin_sekolah') {
         </button>
         <?php endif; ?>
 
-        <!-- Data Kategori (Admin Sekolah, Admin Jurusan, Petugas) -->
-        <?php if (in_array($roleName, ['admin_sekolah', 'admin_jurusan', 'petugas'])): ?>
+        <!-- Data Kategori (Admin Sekolah, Kabeng, Guru Jurusan) -->
+        <?php if (in_array($roleName, ['admin_sekolah', 'kabeng', 'admin_jurusan', 'guru_jurusan', 'petugas'])): ?>
         <button type="button" data-tab="kategori" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Kategori Barang">
             <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h.01M4 12h.01M4 18h.01M8 6h12M8 12h12M8 18h12"/>
@@ -134,8 +174,8 @@ if ($roleName === 'admin_sekolah') {
         </button>
         <?php endif; ?>
 
-        <!-- Data Rak (Admin Sekolah, Admin Jurusan, Petugas) -->
-        <?php if (in_array($roleName, ['admin_sekolah', 'admin_jurusan', 'petugas'])): ?>
+        <!-- Data Rak (Admin Sekolah, Kabeng, Guru Jurusan) -->
+        <?php if (in_array($roleName, ['admin_sekolah', 'kabeng', 'admin_jurusan', 'guru_jurusan', 'petugas'])): ?>
         <button type="button" data-tab="rak" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Data Rak Penyimpanan">
             <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v1a2 2 0 01-2 2M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
@@ -158,8 +198,8 @@ if ($roleName === 'admin_sekolah') {
             <span class="sidebar-section-label px-0.5 text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">TRANSAKSI & OPERASIONAL</span>
         </div>
 
-        <!-- Barang Masuk (Admin Sekolah, Admin Jurusan, Petugas) -->
-        <?php if (in_array($roleName, ['admin_sekolah', 'admin_jurusan', 'petugas'])): ?>
+        <!-- Barang Masuk (Admin Sekolah, Kabeng, Guru Jurusan) -->
+        <?php if (in_array($roleName, ['admin_sekolah', 'kabeng', 'admin_jurusan', 'guru_jurusan', 'petugas'])): ?>
         <button type="button" data-tab="barang-masuk" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Alat & Bahan Masuk">
             <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -167,7 +207,7 @@ if ($roleName === 'admin_sekolah') {
             <span class="sidebar-text whitespace-nowrap text-left leading-none">Alat & Bahan Masuk</span>
         </button>
 
-        <!-- Barang Keluar (Admin Sekolah, Admin Jurusan, Petugas) -->
+        <!-- Barang Keluar (Admin Sekolah, Kabeng, Guru Jurusan) -->
         <button type="button" data-tab="barang-keluar" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Bahan Keluar">
             <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
@@ -184,8 +224,8 @@ if ($roleName === 'admin_sekolah') {
             <span class="sidebar-text whitespace-nowrap text-left leading-none">Peminjaman Alat</span>
         </button>
 
-        <!-- Log Aktivitas (Admin Sekolah & Admin Jurusan) -->
-        <?php if (in_array($roleName, ['admin_sekolah', 'admin_jurusan'])): ?>
+        <!-- Log Aktivitas (Admin Sekolah & Kabeng) -->
+        <?php if (in_array($roleName, ['admin_sekolah', 'kabeng', 'admin_jurusan'])): ?>
         <button type="button" data-tab="log-aktivitas" class="nav-tab-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[13.5px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50/80 dark:hover:bg-[#1a1a1a] text-left transition-all" title="Log Aktivitas">
             <svg class="w-5 h-5 shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -374,6 +414,15 @@ html.dark .nav-tab-btn.active .sidebar-text {
     height: 32px !important;
     border-radius: 10px !important;
 }
+#mainSidebar.collapsed #jurusanSwitcherContainer {
+    display: flex !important;
+    margin: 0 auto !important;
+}
+#mainSidebar.collapsed #jurusanSwitcherPopover {
+    left: 80px !important;
+    right: auto !important;
+    top: 10px !important;
+}
 #mainSidebar.collapsed #toggleIcon {
     transform: rotate(180deg) !important;
 }
@@ -486,4 +535,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+function toggleJurusanSwitcherPopover(e) {
+    if (e) e.stopPropagation();
+    const pop = document.getElementById('jurusanSwitcherPopover');
+    if (!pop) return;
+    pop.classList.toggle('hidden');
+}
+
+document.addEventListener('click', function(e) {
+    const pop = document.getElementById('jurusanSwitcherPopover');
+    const btn = document.getElementById('jurusanSwitcherBtn');
+    if (pop && !pop.classList.contains('hidden')) {
+        if (!pop.contains(e.target) && !btn?.contains(e.target)) {
+            pop.classList.add('hidden');
+        }
+    }
+});
+
+async function switchActiveJurusan(jurusanId) {
+    try {
+        const res = await fetch(`api.php?action=switch_active_jurusan&jurusan_id=${encodeURIComponent(jurusanId)}`);
+        const data = await res.json();
+        if (data && data.success) {
+            window.location.reload();
+        } else {
+            alert(data.message || 'Gagal berpindah ke jurusan terpilih.');
+        }
+    } catch (err) {
+        console.error(err);
+        alert('Terjadi kesalahan koneksi saat beralih jurusan.');
+    }
+}
 </script>

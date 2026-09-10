@@ -65,8 +65,8 @@ $cntSiswa = 0;
 foreach ($dbPengguna as $pUser) {
     $r = $pUser['peran'] ?? 'siswa';
     if ($r === 'admin_sekolah') $cntAdminSekolah++;
-    elseif ($r === 'admin_jurusan') $cntAdminJurusan++;
-    elseif ($r === 'petugas') $cntPetugas++;
+    elseif ($r === 'kabeng' || $r === 'admin_jurusan') $cntAdminJurusan++;
+    elseif ($r === 'guru_jurusan' || $r === 'petugas') $cntPetugas++;
     elseif ($r === 'guru_umum') $cntGuruUmum++;
     else $cntSiswa++;
 }
@@ -153,12 +153,12 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                 $topRole = $user['peran'] ?? 'siswa';
                 if ($topRole === 'admin_sekolah') {
                     $topRoleText = 'Admin Sekolah';
-                } elseif ($topRole === 'admin_jurusan') {
+                } elseif ($topRole === 'kabeng' || $topRole === 'admin_jurusan') {
                     $jName = !empty($user['nama_jurusan']) ? $user['nama_jurusan'] : '';
                     if (preg_match('/\(([^)]+)\)/', $jName, $m)) $jName = $m[1];
-                    $topRoleText = 'Admin Jurusan' . ($jName ? ' (' . $jName . ')' : '');
-                } elseif ($topRole === 'petugas') {
-                    $topRoleText = 'Petugas Gudang';
+                    $topRoleText = 'Kabeng' . ($jName ? ' (' . $jName . ')' : '');
+                } elseif ($topRole === 'guru_jurusan' || $topRole === 'petugas') {
+                    $topRoleText = 'Guru Jurusan';
                 } elseif ($topRole === 'guru_umum') {
                     $topRoleText = 'Guru Umum';
                 } else {
@@ -1112,11 +1112,11 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                             </div>
                             <div class="min-w-0">
-                                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">ADMIN JURUSAN</span>
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">KEPALA BENGKEL (KABENG)</span>
                                 <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
                                     <span id="statPenggunaAdminJurusan"><?= number_format($cntAdminJurusan); ?></span>
                                 </h3>
-                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Admin</span>
+                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Kabeng</span>
                             </div>
                         </div>
                         <div class="shrink-0 ml-2 hidden sm:block">
@@ -1126,18 +1126,18 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         </div>
                     </div>
 
-                    <!-- PETUGAS GUDANG -->
+                    <!-- GURU JURUSAN -->
                     <div class="bg-white dark:bg-[#161616] p-5 rounded-2xl border border-slate-100/90 dark:border-[#262626] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-md transition-all flex items-center justify-between">
                         <div class="flex items-center gap-3.5 min-w-0">
                             <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/50 text-teal-500 dark:text-teal-400 flex items-center justify-center shrink-0">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                             </div>
                             <div class="min-w-0">
-                                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">PETUGAS GUDANG</span>
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">GURU JURUSAN</span>
                                 <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight mt-0.5">
                                     <span id="statPenggunaPetugas"><?= number_format($cntPetugas); ?></span>
                                 </h3>
-                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Petugas</span>
+                                <span class="block text-xs font-medium text-slate-400 mt-0.5">Kejuruan</span>
                             </div>
                         </div>
                         <div class="shrink-0 ml-2 hidden sm:block">
@@ -1229,8 +1229,8 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             <select id="filter_pengguna_peran" onchange="currentPenggunaPage=1; renderTablePengguna()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold">
                                 <option value="">Semua Peran</option>
                                 <?php if ($isSuperAdmin): ?><option value="admin_sekolah">Admin Sekolah</option><?php endif; ?>
-                                <option value="admin_jurusan">Admin Jurusan</option>
-                                <option value="petugas">Petugas Gudang</option>
+                                <option value="kabeng">Kabeng (Kepala Bengkel)</option>
+                                <option value="guru_jurusan">Guru Jurusan</option>
                                 <option value="guru_umum">Guru Umum</option>
                                 <option value="siswa">Siswa</option>
                             </select>
@@ -1291,6 +1291,114 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         <div id="pengguna_pagination_btns" class="flex items-center gap-1 flex-wrap justify-center sm:justify-end">
                             <!-- Populated dynamically by renderPenggunaPaginationControls -->
                         </div>
+                    </div>
+                </div>
+
+                <!-- MANAGEMENT AKSES MULTI-JURUSAN KEPALA BENGKEL -->
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm p-6 mt-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-5">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-base font-bold text-slate-800 dark:text-white">Manajemen Akses Multi-Jurusan Kepala Bengkel</h3>
+                                <span class="px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-400 font-bold text-[10px]">Multi-Gudang</span>
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Pengaturan wewenang lintas jurusan bagi guru Kepala Bengkel (Kabeng) untuk mengelola lebih dari satu jurusan/gudang.</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
+                            <?php if ($isSuperAdmin): ?>
+                            <button onclick="openModalMultiJurusanKabeng()" class="px-4 py-2 bg-sage-600 text-white rounded-xl font-bold text-xs shadow-md shadow-sage-600/20 hover:bg-sage-700 transition-colors flex items-center gap-1.5 cursor-pointer">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                <span>+ Atur Akses Kabeng</span>
+                            </button>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100 dark:border-[#262626]">
+                        <table id="tableMultiJurusanKabeng" class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+                            <thead class="bg-sage-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 font-bold border-b border-sage-200 dark:border-[#2a2a2a]">
+                                <tr>
+                                    <th class="py-3 px-4 w-12 text-center">No</th>
+                                    <th class="py-3 px-4">Kepala Bengkel (Kabeng)</th>
+                                    <th class="py-3 px-4">Jurusan Utama (Homebase)</th>
+                                    <th class="py-3 px-4">Daftar Hak Akses Jurusan</th>
+                                    <th class="py-3 px-4 text-center">Total Akses</th>
+                                    <th class="py-3 px-4 text-center w-28">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyMultiJurusanKabeng" class="divide-y divide-slate-100 dark:divide-[#202020]">
+                                <?php
+                                $allKabengMulti = Pengguna::getAllKabengMultiJurusan();
+                                if (!empty($allKabengMulti)):
+                                    $kNo = 1;
+                                    foreach ($allKabengMulti as $kb):
+                                        $primaryJName = $kb['primary_nama_jurusan'] ?? 'Belum Ditentukan';
+                                        $primaryJColor = $kb['primary_warna_tema'] ?? '#2e7d32';
+                                ?>
+                                <tr class="hover:bg-sage-50/50 dark:hover:bg-[#1a1a1a] transition-colors">
+                                    <td class="py-3.5 px-4 text-center font-bold text-slate-500 dark:text-slate-400"><?= $kNo++; ?></td>
+                                    <td class="py-3.5 px-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-xl bg-sage-100 dark:bg-sage-950/60 text-sage-700 dark:text-sage-400 font-bold flex items-center justify-center text-xs shrink-0">
+                                                <?= strtoupper(substr($kb['nama_lengkap'] ?: $kb['nama_pengguna'], 0, 1)); ?>
+                                            </div>
+                                            <div>
+                                                <div class="font-bold text-slate-800 dark:text-slate-200"><?= htmlspecialchars($kb['nama_lengkap'] ?: $kb['nama_pengguna']); ?></div>
+                                                <div class="text-[11px] text-slate-400 font-mono">@<?= htmlspecialchars($kb['nama_pengguna']); ?></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                                            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: <?= htmlspecialchars($primaryJColor); ?>;"></span>
+                                            <span><?= htmlspecialchars($primaryJName); ?></span>
+                                        </span>
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <div class="flex flex-wrap items-center gap-1.5">
+                                            <?php 
+                                            if (!empty($kb['jurusans'])):
+                                                foreach ($kb['jurusans'] as $aj):
+                                                    $jCol = !empty($aj['warna_tema']) ? $aj['warna_tema'] : '#2e7d32';
+                                            ?>
+                                                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-bold border" style="border-color: <?= htmlspecialchars($jCol); ?>40; background-color: <?= htmlspecialchars($jCol); ?>15; color: <?= htmlspecialchars($jCol); ?>;">
+                                                    <span class="w-2 h-2 rounded-full" style="background-color: <?= htmlspecialchars($jCol); ?>;"></span>
+                                                    <span><?= htmlspecialchars($aj['nama_jurusan']); ?></span>
+                                                </span>
+                                            <?php 
+                                                endforeach;
+                                            else:
+                                            ?>
+                                                <span class="text-slate-400 text-xs italic">Belum ada jurusan tambahan</span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-center font-bold">
+                                        <span class="px-2 py-0.5 rounded-full text-xs font-extrabold <?= ($kb['total_akses'] > 1) ? 'bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400' ?>">
+                                            <?= $kb['total_akses']; ?> Jurusan
+                                        </span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        <?php if ($isSuperAdmin): ?>
+                                        <button type="button" onclick="openModalMultiJurusanKabeng('<?= $kb['pengguna_id']; ?>')" class="px-3 py-1.5 bg-sage-50 hover:bg-sage-100 dark:bg-sage-950/40 dark:hover:bg-sage-900/50 text-sage-700 dark:text-sage-300 border border-sage-200/60 dark:border-sage-800/60 rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-1 mx-auto cursor-pointer" title="Kelola Hak Akses Multi-Jurusan">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                            <span>Kelola</span>
+                                        </button>
+                                        <?php else: ?>
+                                        <span class="text-slate-400 text-xs">-</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                <?php 
+                                    endforeach;
+                                else:
+                                ?>
+                                <tr>
+                                    <td colspan="6" class="py-8 text-center text-slate-400 dark:text-slate-500">Tidak ada data Kepala Bengkel yang terdaftar.</td>
+                                </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -3975,20 +4083,20 @@ function initTabAnalytics(tabId) {
     // 1. PENGGUNA TAB ANALYTICS
     if (tabId === 'pengguna') {
         const roleLabels = isSuperAdmin 
-            ? ['Admin Sekolah', 'Admin Jurusan', 'Petugas Gudang', 'Guru Umum', 'Siswa'] 
-            : ['Admin Jurusan', 'Petugas Gudang', 'Siswa'];
+            ? ['Admin Sekolah', 'Kabeng', 'Guru Jurusan', 'Guru Umum', 'Siswa'] 
+            : ['Kabeng', 'Guru Jurusan', 'Siswa'];
 
         const roleData = isSuperAdmin
             ? [
                 (window.dbPengguna || []).filter(u => u.peran === 'admin_sekolah').length,
-                (window.dbPengguna || []).filter(u => u.peran === 'admin_jurusan').length,
-                (window.dbPengguna || []).filter(u => u.peran === 'petugas').length,
+                (window.dbPengguna || []).filter(u => u.peran === 'kabeng' || u.peran === 'admin_jurusan').length,
+                (window.dbPengguna || []).filter(u => u.peran === 'guru_jurusan' || u.peran === 'petugas').length,
                 (window.dbPengguna || []).filter(u => u.peran === 'guru_umum').length,
                 (window.dbPengguna || []).filter(u => u.peran === 'siswa').length
               ]
             : [
-                (window.dbPengguna || []).filter(u => u.peran === 'admin_jurusan').length,
-                (window.dbPengguna || []).filter(u => u.peran === 'petugas').length,
+                (window.dbPengguna || []).filter(u => u.peran === 'kabeng' || u.peran === 'admin_jurusan').length,
+                (window.dbPengguna || []).filter(u => u.peran === 'guru_jurusan' || u.peran === 'petugas').length,
                 (window.dbPengguna || []).filter(u => u.peran === 'siswa').length
               ];
 
@@ -4048,10 +4156,10 @@ function initTabAnalytics(tabId) {
                     color: bgColors[idx]
                 }));
             } else {
-                labels = ['Admin Jurusan', 'Petugas Gudang', 'Siswa'];
+                labels = ['Kabeng', 'Guru Jurusan', 'Siswa'];
                 data = [
-                    (window.dbPengguna || []).filter(u => u.peran === 'admin_jurusan').length,
-                    (window.dbPengguna || []).filter(u => u.peran === 'petugas').length,
+                    (window.dbPengguna || []).filter(u => u.peran === 'kabeng' || u.peran === 'admin_jurusan').length,
+                    (window.dbPengguna || []).filter(u => u.peran === 'guru_jurusan' || u.peran === 'petugas').length,
                     (window.dbPengguna || []).filter(u => u.peran === 'siswa').length
                 ];
                 bgColors = ['#d97706', '#059669', '#7c3aed'];
@@ -4654,10 +4762,10 @@ function updateStatCardsData() {
     setTxt('statTabPenggunaTotalSiswa', fmt(totalSiswa));
     setTxt('statTabPenggunaTotalGuru', fmt(totalGuru));
 
-    // Row 2: Admin Sekolah, Admin Jurusan, Petugas Gudang, Guru Umum
+    // Row 2: Admin Sekolah, Kabeng, Guru Jurusan, Guru Umum
     const cntAdminSekolah = (window.dbPengguna || []).filter(u => u.peran === 'admin_sekolah').length;
-    const cntAdminJurusan = (window.dbPengguna || []).filter(u => u.peran === 'admin_jurusan').length;
-    const cntPetugas = (window.dbPengguna || []).filter(u => u.peran === 'petugas').length;
+    const cntAdminJurusan = (window.dbPengguna || []).filter(u => u.peran === 'kabeng' || u.peran === 'admin_jurusan').length;
+    const cntPetugas = (window.dbPengguna || []).filter(u => u.peran === 'guru_jurusan' || u.peran === 'petugas').length;
     const cntGuruUmum = (window.dbPengguna || []).filter(u => u.peran === 'guru_umum').length;
     setTxt('statPenggunaAdminSekolah', fmt(cntAdminSekolah));
     setTxt('statPenggunaAdminJurusan', fmt(cntAdminJurusan));
@@ -4822,7 +4930,7 @@ function renderTablePengguna() {
 
         const matchKelas = matchTingkatKelas(p.kelas, kelasVal);
 
-        const matchPeran = !peranVal || p.peran === peranVal;
+        const matchPeran = !peranVal || (peranVal === 'kabeng' ? (p.peran === 'kabeng' || p.peran === 'admin_jurusan') : (peranVal === 'guru_jurusan' ? (p.peran === 'guru_jurusan' || p.peran === 'petugas') : p.peran === peranVal));
 
         let matchJurusan = true;
         if (jurusanVal === 'none') {
@@ -4858,7 +4966,7 @@ function renderTablePengguna() {
         const avatarHtml = p.foto_url
             ? `<img src="${p.foto_url}" class="w-7 h-7 rounded-full object-cover border border-sage-200 shrink-0 shadow-sm" alt="Avatar">`
             : `<div class="w-7 h-7 rounded-full bg-sage-600 text-white font-bold flex items-center justify-center text-[10px] shrink-0 shadow-sm">${initial}</div>`;
-        const peranText = p.peran === 'admin_sekolah' ? 'Admin Sekolah' : (p.peran === 'admin_jurusan' ? 'Admin Jurusan' : (p.peran === 'petugas' ? 'Petugas Gudang' : (p.peran === 'guru_umum' ? 'Guru Umum' : 'Siswa')));
+        const peranText = p.peran === 'admin_sekolah' ? 'Admin Sekolah' : ((p.peran === 'kabeng' || p.peran === 'admin_jurusan') ? 'Kabeng' : ((p.peran === 'guru_jurusan' || p.peran === 'petugas') ? 'Guru Jurusan' : (p.peran === 'guru_umum' ? 'Guru Umum' : 'Siswa')));
         const jurusanText = p.peran === 'admin_sekolah' ? '<span class="text-slate-400 font-normal">-</span>' : (p.nama_jurusan || '-');
         const isSiswa = p.peran === 'siswa' || p.status_pengguna === 'siswa';
         const loginBtnHtml = (isSuperAdmin && p.id !== currentUserId && !isSiswa)

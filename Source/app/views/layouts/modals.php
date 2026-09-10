@@ -127,8 +127,8 @@
                     <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
                         <option value="guru_umum">Guru Umum</option>
                     <?php endif; ?>
-                    <option value="petugas">Petugas Gudang</option>
-                    <option value="admin_jurusan">Admin Jurusan</option>
+                    <option value="guru_jurusan">Guru Jurusan</option>
+                    <option value="kabeng">Kabeng (Kepala Bengkel)</option>
                     <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
                         <option value="admin_sekolah">Admin Sekolah</option>
                     <?php endif; ?>
@@ -581,6 +581,88 @@
                         <span>Ya, Rollback Migrasi</span>
                     </button>
                 </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL KELOLA AKSES MULTI-JURUSAN KEPALA BENGKEL -->
+<div id="modalMultiJurusanKabeng" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
+    <div class="relative w-full max-w-xl bg-white dark:bg-[#1e1e1e] p-5 sm:p-6 rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
+        <!-- Header -->
+        <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100 dark:border-slate-800">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-extrabold text-slate-800 dark:text-white text-base">Akses Multi-Jurusan Kepala Bengkel</h3>
+                    <p class="text-xs text-slate-400 dark:text-slate-500">Atur hak akses beberapa jurusan/gudang untuk Kepala Bengkel</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeModal('modalMultiJurusanKabeng')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <!-- Form -->
+        <form id="formMultiJurusanKabeng" onsubmit="handleMultiJurusanSubmit(event)" class="space-y-4">
+            <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
+            
+            <!-- Pilih Pengguna (Kabeng) -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Pilih Kepala Bengkel <span class="text-red-500">*</span></label>
+                <select id="multi_kabeng_pengguna_id" name="pengguna_id" required onchange="onKabengSelectedForMulti(this.value)" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500">
+                    <option value="">-- Pilih Kepala Bengkel --</option>
+                </select>
+            </div>
+
+            <!-- Card Info Kabeng Terpilih -->
+            <div id="multi_kabeng_info_card" class="hidden p-3.5 bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 rounded-2xl">
+                <div class="flex items-center gap-3">
+                    <div id="multi_kabeng_avatar" class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-xs shadow-sm shrink-0">KB</div>
+                    <div class="min-w-0 flex-1">
+                        <h4 id="multi_kabeng_nama" class="font-extrabold text-xs text-slate-800 dark:text-white truncate">-</h4>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-0.5">
+                            <span>Username: <strong id="multi_kabeng_username" class="font-semibold text-slate-700 dark:text-slate-300">-</strong></span>
+                            <span>•</span>
+                            <span>Jurusan Utama: <strong id="multi_kabeng_jurusan_asal" class="font-semibold text-indigo-600 dark:text-indigo-400">-</strong></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Checkbox List Jurusan -->
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">Daftar Jurusan yang Diberi Akses</label>
+                    <span class="text-[11px] text-slate-400">Centang jurusan yang diizinkan</span>
+                </div>
+                
+                <div id="multi_jurusan_checkbox_container" class="space-y-2 max-h-56 overflow-y-auto pr-1">
+                    <div class="p-4 text-center text-xs text-slate-400">Pilih Kepala Bengkel terlebih dahulu...</div>
+                </div>
+            </div>
+
+            <!-- Note / Petunjuk -->
+            <div class="p-3 bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-xl flex items-start gap-2.5">
+                <svg class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <div class="text-[11px] text-amber-800 dark:text-amber-300 leading-relaxed">
+                    Jurusan utama Kepala Bengkel otomatis selalu diizinkan. Kepala Bengkel dapat berpindah antargudang jurusan melalui tombol <strong>Switch Jurusan</strong> di bagian sidebar.
+                </div>
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="pt-3 flex items-center justify-end gap-2.5 border-t border-slate-100 dark:border-slate-800">
+                <button type="button" onclick="closeModal('modalMultiJurusanKabeng')" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors text-xs">Batal</button>
+                <button type="submit" id="btnSubmitMultiJurusan" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md shadow-indigo-600/20 transition-all flex items-center gap-2 text-xs">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span>Simpan Akses Multi-Jurusan</span>
+                </button>
             </div>
         </form>
     </div>
@@ -3981,7 +4063,10 @@ function openModal(modalId, customTitle = null, editData = null) {
                     if (elDomain) elDomain.value = 'smk2pangkalpinang.sch.id';
                 }
 
-                if (elPeran) elPeran.value = editData.peran || 'siswa';
+                let pVal = editData.peran || 'siswa';
+                if (pVal === 'admin_jurusan') pVal = 'kabeng';
+                if (pVal === 'petugas') pVal = 'guru_jurusan';
+                if (elPeran) elPeran.value = pVal;
                 if (elPass) elPass.value = '';
                 if (elTel) elTel.value = editData.nomor_telepon || '';
                 if (elFoto) elFoto.value = '';
@@ -5677,10 +5762,10 @@ function onGuruSelectedInUserForm(guruId) {
         if (elToken) elToken.value = guru.token || '';
 
         // Aturan Peran & Jurusan Guru:
-        // Guru Bengkel -> Peran: Admin Jurusan ('admin_jurusan'), Jurusan: jurusan_id guru
+        // Guru Bengkel -> Peran: Kabeng (Kepala Bengkel) ('kabeng'), Jurusan: jurusan_id guru
         // Guru Umum -> Peran: Guru Umum ('guru_umum'), Jurusan: "" (Tidak Ada)
         if (guru.mengajar === 'bengkel') {
-            if (elPeran) elPeran.value = 'admin_jurusan';
+            if (elPeran) elPeran.value = 'kabeng';
             if (elJurusan && guru.jurusan_id) elJurusan.value = guru.jurusan_id;
         } else {
             if (elPeran) elPeran.value = 'guru_umum';
@@ -6254,6 +6339,157 @@ async function handleRollbackMigrasiSubmit(e) {
         if (btn) {
             btn.disabled = false;
             btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2m0 0l-4-4m4 4l4-4M3 10l4-4m-4 4l4 4"/></svg> <span>Ya, Rollback Migrasi</span>`;
+        }
+    }
+}
+// --- KELOLA AKSES MULTI-JURUSAN KEPALA BENGKEL ---
+async function openModalMultiJurusanKabeng(penggunaId = null) {
+    const modal = document.getElementById('modalMultiJurusanKabeng');
+    if (!modal) return;
+
+    const selectKabeng = document.getElementById('multi_kabeng_pengguna_id');
+    if (selectKabeng) {
+        // Filter pengguna yang merupakan kabeng atau admin_jurusan
+        const kabengList = (window.dbPengguna || []).filter(u => u.peran === 'kabeng' || u.peran === 'admin_jurusan');
+        selectKabeng.innerHTML = '<option value="">-- Pilih Kepala Bengkel --</option>' +
+            kabengList.map(u => {
+                const labelName = u.nama_lengkap || u.nama_pengguna;
+                const labelJurusan = u.nama_jurusan ? ` (${u.nama_jurusan})` : '';
+                return `<option value="${u.id}">${labelName}${labelJurusan}</option>`;
+            }).join('');
+    }
+
+    if (penggunaId) {
+        if (selectKabeng) selectKabeng.value = penggunaId;
+        await onKabengSelectedForMulti(penggunaId);
+    } else {
+        if (selectKabeng) selectKabeng.value = '';
+        const card = document.getElementById('multi_kabeng_info_card');
+        if (card) card.classList.add('hidden');
+        const container = document.getElementById('multi_jurusan_checkbox_container');
+        if (container) {
+            container.innerHTML = '<div class="p-4 text-center text-xs text-slate-400">Pilih Kepala Bengkel terlebih dahulu...</div>';
+        }
+    }
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+async function onKabengSelectedForMulti(penggunaId) {
+    const card = document.getElementById('multi_kabeng_info_card');
+    const container = document.getElementById('multi_jurusan_checkbox_container');
+    if (!penggunaId) {
+        if (card) card.classList.add('hidden');
+        if (container) container.innerHTML = '<div class="p-4 text-center text-xs text-slate-400">Pilih Kepala Bengkel terlebih dahulu...</div>';
+        return;
+    }
+
+    const user = (window.dbPengguna || []).find(u => String(u.id) === String(penggunaId));
+    if (card && user) {
+        card.classList.remove('hidden');
+        const elNama = document.getElementById('multi_kabeng_nama');
+        const elUsername = document.getElementById('multi_kabeng_username');
+        const elJurusanAsal = document.getElementById('multi_kabeng_jurusan_asal');
+        const elAvatar = document.getElementById('multi_kabeng_avatar');
+
+        if (elNama) elNama.innerText = user.nama_lengkap || user.nama_pengguna;
+        if (elUsername) elUsername.innerText = user.nama_pengguna;
+        if (elJurusanAsal) elJurusanAsal.innerText = user.nama_jurusan || 'Tidak Ada (Semua)';
+        if (elAvatar) {
+            const initial = (user.nama_lengkap || user.nama_pengguna || 'KB').substring(0, 2).toUpperCase();
+            elAvatar.innerText = initial;
+        }
+    }
+
+    if (container) {
+        container.innerHTML = `<div class="p-4 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
+            <svg class="w-4 h-4 animate-spin text-indigo-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <span>Memuat hak akses jurusan...</span>
+        </div>`;
+    }
+
+    try {
+        const res = await fetch(`api.php?action=get_kabeng_multi_jurusan&pengguna_id=${encodeURIComponent(penggunaId)}`);
+        const data = await res.json();
+        const allowedIds = (data && data.success && Array.isArray(data.jurusan_ids)) ? data.jurusan_ids.map(String) : [];
+
+        if (container && window.dbJurusan) {
+            const primaryJurusanId = user ? String(user.jurusan_id || '') : '';
+            container.innerHTML = window.dbJurusan.map(j => {
+                const jId = String(j.id);
+                const isPrimary = (primaryJurusanId && jId === primaryJurusanId);
+                const isChecked = isPrimary || allowedIds.includes(jId);
+                const themeColor = j.warna_tema || '#4f46e5';
+
+                return `
+                    <label class="flex items-center justify-between p-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors ${isChecked ? 'bg-indigo-50/40 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-900/60' : ''}">
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" name="jurusan_ids[]" value="${j.id}" ${isChecked ? 'checked' : ''} ${isPrimary ? 'onclick="return false;"' : ''} class="w-4 h-4 text-indigo-600 rounded border-slate-300 dark:border-slate-700 focus:ring-indigo-500">
+                            ${isPrimary ? `<input type="hidden" name="jurusan_ids[]" value="${j.id}">` : ''}
+                            <span class="w-3.5 h-3.5 rounded-full shrink-0 shadow-xs" style="background-color: ${themeColor}"></span>
+                            <span class="font-bold text-xs text-slate-800 dark:text-slate-200">${j.nama_jurusan}</span>
+                        </div>
+                        <div>
+                            ${isPrimary 
+                                ? `<span class="px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-extrabold text-[10px]">Jurusan Utama (Wajib)</span>` 
+                                : `<span class="text-[11px] text-slate-400 dark:text-slate-500">${j.kode_jurusan || ''}</span>`
+                            }
+                        </div>
+                    </label>
+                `;
+            }).join('');
+        }
+    } catch (err) {
+        console.error(err);
+        if (container) {
+            container.innerHTML = '<div class="p-4 text-center text-xs text-red-500">Gagal memuat data akses jurusan.</div>';
+        }
+    }
+}
+
+async function handleMultiJurusanSubmit(event) {
+    event.preventDefault();
+    const form = event.target;
+    const btn = document.getElementById('btnSubmitMultiJurusan');
+
+    const penggunaId = document.getElementById('multi_kabeng_pengguna_id')?.value;
+    if (!penggunaId) {
+        showToast('Pilih Kepala Bengkel terlebih dahulu!', 'warning');
+        return;
+    }
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<svg class="w-4 h-4 animate-spin shrink-0" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Menyimpan...</span>`;
+    }
+
+    try {
+        const formData = new FormData(form);
+        formData.append('action', 'save_kabeng_multi_jurusan');
+
+        const res = await fetch('api.php', { method: 'POST', body: formData });
+        const data = await res.json();
+
+        if (data && data.success) {
+            showToast(data.message, 'success');
+            closeModal('modalMultiJurusanKabeng');
+            setTimeout(() => {
+                location.reload();
+            }, 800);
+        } else {
+            showToast(data.message || 'Gagal menyimpan akses multi-jurusan.', 'error');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> <span>Simpan Akses Multi-Jurusan</span>`;
+            }
+        }
+    } catch (err) {
+        console.error(err);
+        showToast('Terjadi kesalahan koneksi saat menyimpan akses.', 'error');
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> <span>Simpan Akses Multi-Jurusan</span>`;
         }
     }
 }

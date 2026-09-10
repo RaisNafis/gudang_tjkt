@@ -220,10 +220,10 @@ class Pengguna {
         $token = trim($guru['token'] ?? '');
 
         // Aturan Peran & Jurusan:
-        // Guru Bengkel -> Peran: 'admin_jurusan', Jurusan: jurusan_id guru
+        // Guru Bengkel -> Peran: 'kabeng' (Kepala Bengkel), Jurusan: jurusan_id guru
         // Guru Umum -> Peran: 'guru_umum', Jurusan: null (tidak ada)
         if ($mengajar === 'bengkel') {
-            $peran = 'admin_jurusan';
+            $peran = 'kabeng';
             $jurusanId = !empty($guru['jurusan_id']) ? $guru['jurusan_id'] : null;
         } else {
             $peran = 'guru_umum';
@@ -240,8 +240,8 @@ class Pengguna {
         $tokenPassHash = password_hash(!empty($token) ? $token : 'guru123', PASSWORD_BCRYPT);
 
         if ($existing) {
-            // Jika akun pengguna ini sudah diatur peran khusus (misal admin_sekolah atau petugas), pertahankan peran tersebut
-            if (!empty($existing['peran']) && in_array($existing['peran'], ['admin_sekolah', 'petugas'])) {
+            // Jika akun pengguna ini sudah diatur peran khusus (misal admin_sekolah atau guru_jurusan), pertahankan peran tersebut
+            if (!empty($existing['peran']) && in_array($existing['peran'], ['admin_sekolah', 'guru_jurusan', 'petugas'])) {
                 $peran = $existing['peran'];
                 if ($peran === 'admin_sekolah') {
                     $jurusanId = null;
@@ -416,5 +416,147 @@ class Pengguna {
         foreach ($siswas as $sid) {
             self::syncFromSiswa($sid);
         }
+    }
+
+    /**
+     * Dapatkan daftar seluruh jurusan yang dapat diakses oleh seorang pengguna (Kabeng / Admin)
+     */
+    public static function getAccessibleJurusans($userId) {
+        $db = Database::getInstance()->getConnection();
+        if (!$db || empty($userId)) return [];
+
+        $stmtU = $db->prepare("SELECT id, peran, jurusan_id FROM pengguna WHERE id = :id LIMIT 1");
+        $stmtU->execute([':id' => $userId]);
+        $user = $stmtU->fetch(PDO::FETCH_ASSOC);
+        if (!$user) return [];
+
+        // Admin Sekolah memiliki akses ke SEMUA jurusan
+        if ($user['peran'] === 'admin_sekolah') {
+            $stmtAll = $db->query("SELECT id, nama_jurusan, deskripsi, warna_tema FROM jurusan ORDER BY nama_jurusan ASC");
+            return $stmtAll->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        // Ambil jurusan dari relasi pengguna_multi_jurusan digabung dengan primary jurusan_id
+        $stmt = $db->prepare("
+            SELECT DISTINCT j.id, j.nama_jurusan, j.deskripsi, j.warna_tema
+            FROM jurusan j
+            LEFT JOIN pengguna_multi_jurusan pmj ON j.id = pmj.jurusan_id AND pmj.pengguna_id = :uid
+            WHERE pmj.pengguna_id = :uid2 OR j.id = :primary_jid
+            ORDER BY j.nama_jurusan ASC
+        ");
+        $stmt->execute([
+            ':uid' => $userId,
+            ':uid2' => $userId,
+            ':primary_jid' => $user['jurusan_id'] ?? ''
+        ]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Simpan / Perbarui hak akses multi-jurusan untuk Kepala Bengkel (Kabeng)
+     */
+    public static function setMultiJurusanAccess($userId, array $jurusanIds) {
+        $db = Database::getInstance()->getConnection();
+        if (!$db || empty($userId)) return false;
+
+        try {
+            $db->beginTransaction();
+
+            // Ambil data user
+            $stmtU = $db->prepare("SELECT id, jurusan_id FROM pengguna WHERE id = :id LIMIT 1");
+            $stmtU->execute([':id' => $userId]);
+            $user = $stmtU->fetch(PDO::FETCH_ASSOC);
+
+            // Bersihkan akses lama
+            $delStmt = $db->prepare("DELETE FROM pengguna_multi_jurusan WHERE pengguna_id = :uid");
+            $delStmt->execute([':uid' => $userId]);
+
+            // Selalu sertakan primary jurusan_id jika ada
+            $allJids = array_unique(array_filter(array_map('trim', $jurusanIds)));
+            if (!empty($user['jurusan_id']) && !in_array($user['jurusan_id'], $allJids)) {
+                $allJids[] = $user['jurusan_id'];
+            }
+
+            if (!empty($allJids)) {
+                $insStmt = $db->prepare("
+                    INSERT INTO pengguna_multi_jurusan (id, pengguna_id, jurusan_id, created_at)
+                    VALUES (:id, :uid, :jid, NOW())
+                ");
+                foreach ($allJids as $jid) {
+                    $insStmt->execute([
+                        ':id' => generateUuid(),
+                        ':uid' => $userId,
+                        ':jid' => $jid
+                    ]);
+                }
+            }
+
+            $db->commit();
+            return true;
+        } catch (Exception $e) {
+            if ($db->inTransaction()) $db->rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * Dapatkan daftar seluruh Kepala Bengkel beserta relasi multi-jurusannya
+     */
+    public static function getAllKabengMultiJurusan() {
+        $db = Database::getInstance()->getConnection();
+        if (!$db) return [];
+
+        $stmt = $db->query("
+            SELECT 
+                p.id as pengguna_id, p.nama_pengguna, p.nama_lengkap, p.foto_url, p.nomor_telepon, p.peran,
+                p.jurusan_id as primary_jurusan_id,
+                pj.nama_jurusan as primary_nama_jurusan,
+                pj.warna_tema as primary_warna_tema
+            FROM pengguna p
+            LEFT JOIN jurusan pj ON p.jurusan_id = pj.id
+            WHERE p.peran IN ('kabeng', 'admin_jurusan')
+            ORDER BY p.nama_lengkap ASC
+        ");
+        $kabengList = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (empty($kabengList)) return [];
+
+        $stmtAkses = $db->query("
+            SELECT pmj.pengguna_id, j.id as jurusan_id, j.nama_jurusan, j.warna_tema
+            FROM pengguna_multi_jurusan pmj
+            JOIN jurusan j ON pmj.jurusan_id = j.id
+            ORDER BY j.nama_jurusan ASC
+        ");
+        $aksesRows = $stmtAkses->fetchAll(PDO::FETCH_ASSOC);
+
+        $aksesMap = [];
+        foreach ($aksesRows as $row) {
+            $aksesMap[$row['pengguna_id']][] = [
+                'id' => $row['jurusan_id'],
+                'nama_jurusan' => $row['nama_jurusan'],
+                'warna_tema' => $row['warna_tema']
+            ];
+        }
+
+        foreach ($kabengList as &$k) {
+            $assigned = $aksesMap[$k['pengguna_id']] ?? [];
+            if (!empty($k['primary_jurusan_id'])) {
+                $found = false;
+                foreach ($assigned as $a) {
+                    if ($a['id'] === $k['primary_jurusan_id']) { $found = true; break; }
+                }
+                if (!$found && !empty($k['primary_nama_jurusan'])) {
+                    array_unshift($assigned, [
+                        'id' => $k['primary_jurusan_id'],
+                        'nama_jurusan' => $k['primary_nama_jurusan'],
+                        'warna_tema' => $k['primary_warna_tema']
+                    ]);
+                }
+            }
+            $k['jurusans'] = $assigned;
+            $k['total_akses'] = count($assigned);
+        }
+
+        return $kabengList;
     }
 }

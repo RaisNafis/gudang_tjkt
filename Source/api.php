@@ -32,7 +32,7 @@ $disallowedSiswaActions = [
     'save_barang', 'delete_barang', 'bulk_delete_barang', 'import_barang_csv',
     'save_kategori', 'delete_kategori', 'bulk_delete_kategori',
     'save_rak', 'delete_rak', 'bulk_delete_rak',
-    'save_pengguna', 'delete_pengguna', 'bulk_delete_pengguna',
+    'save_pengguna', 'delete_pengguna', 'bulk_delete_pengguna', 'save_kabeng_multi_jurusan', 'get_kabeng_multi_jurusan',
     'save_jurusan', 'delete_jurusan', 'bulk_delete_jurusan',
     'save_guru', 'delete_guru', 'bulk_delete_guru', 'import_guru_csv',
     'save_siswa', 'delete_siswa', 'bulk_delete_siswa', 'import_siswa_csv', 'migrate_kelas_siswa', 'rollback_migrasi_kelas_siswa', 'get_latest_migrasi_batch',
@@ -403,6 +403,92 @@ try {
         exit;
     }
 
+    if ($action === 'switch_active_jurusan') {
+        require_once __DIR__ . '/app/models/Pengguna.php';
+        $jurusanId = trim($_REQUEST['jurusan_id'] ?? '');
+        $u = currentUser();
+        if (!$u) {
+            echo json_encode(['success' => false, 'message' => 'Silakan login terlebih dahulu.']);
+            exit;
+        }
+
+        if (empty($jurusanId)) {
+            unset($_SESSION['active_jurusan_id']);
+            echo json_encode(['success' => true, 'message' => 'Jurusan aktif telah direset ke default.']);
+            exit;
+        }
+
+        $hasAccess = false;
+        if (($u['peran'] ?? '') === 'admin_sekolah') {
+            $hasAccess = true;
+        } else {
+            $allowed = Pengguna::getAccessibleJurusans($u['id']);
+            foreach ($allowed as $aj) {
+                if ($aj['id'] === $jurusanId) {
+                    $hasAccess = true;
+                    break;
+                }
+            }
+        }
+
+        if (!$hasAccess) {
+            echo json_encode(['success' => false, 'message' => 'Anda tidak memiliki hak akses ke jurusan ini!']);
+            exit;
+        }
+
+        $_SESSION['active_jurusan_id'] = $jurusanId;
+        echo json_encode(['success' => true, 'message' => 'Berhasil beralih ke gudang jurusan terpilih.']);
+        exit;
+    }
+
+    if ($action === 'get_kabeng_multi_jurusan') {
+        require_once __DIR__ . '/app/models/Pengguna.php';
+        $penggunaId = trim($_REQUEST['pengguna_id'] ?? '');
+        if (empty($penggunaId)) {
+            echo json_encode(['success' => false, 'message' => 'ID pengguna tidak valid.']);
+            exit;
+        }
+
+        $allowed = Pengguna::getAccessibleJurusans($penggunaId);
+        $allowedIds = array_column($allowed, 'id');
+
+        echo json_encode([
+            'success' => true,
+            'pengguna_id' => $penggunaId,
+            'jurusan_ids' => $allowedIds,
+            'jurusans' => $allowed
+        ]);
+        exit;
+    }
+
+    if ($action === 'save_kabeng_multi_jurusan') {
+        require_once __DIR__ . '/app/models/Pengguna.php';
+        require_once __DIR__ . '/app/models/LogAktivitas.php';
+
+        $currentUser = currentUser();
+        if (($currentUser['peran'] ?? '') !== 'admin_sekolah') {
+            echo json_encode(['success' => false, 'message' => 'Hanya Admin Sekolah yang memiliki wewenang untuk mengatur hak akses multi-jurusan.']);
+            exit;
+        }
+
+        $penggunaId = trim($_POST['pengguna_id'] ?? '');
+        if (empty($penggunaId)) {
+            echo json_encode(['success' => false, 'message' => 'Pilih Kepala Bengkel terlebih dahulu!']);
+            exit;
+        }
+
+        $jurusanIds = isset($_POST['jurusan_ids']) ? (array) $_POST['jurusan_ids'] : [];
+
+        $saved = Pengguna::setMultiJurusanAccess($penggunaId, $jurusanIds);
+        if ($saved) {
+            LogAktivitas::log('ATUR_MULTI_JURUSAN', "Memperbarui hak akses multi-jurusan Kepala Bengkel (ID: {$penggunaId})");
+            echo json_encode(['success' => true, 'message' => 'Hak akses multi-jurusan Kepala Bengkel berhasil disimpan!']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal menyimpan hak akses multi-jurusan.']);
+        }
+        exit;
+    }
+
     if ($action === 'import_guru_csv') {
         require_once __DIR__ . '/app/models/Guru.php';
         if (!isset($_FILES['file_csv']) || $_FILES['file_csv']['error'] !== UPLOAD_ERR_OK) {
@@ -677,10 +763,10 @@ try {
                     // Hanya gunakan default peran dari guru jika peran tidak dikirim
                     if (empty($_POST['peran'])) {
                         if (($guru['mengajar'] ?? '') === 'bengkel') {
-                            $peranVal = 'admin_jurusan';
+                            $peranVal = 'kabeng';
                             if ($isSuperAdmin) $jurusanId = !empty($guru['jurusan_id']) ? $guru['jurusan_id'] : null;
                         } else {
-                            $peranVal = $isSuperAdmin ? 'guru_umum' : 'admin_jurusan';
+                            $peranVal = $isSuperAdmin ? 'guru_umum' : 'kabeng';
                             if ($isSuperAdmin) $jurusanId = null;
                         }
                     } else {
@@ -689,6 +775,8 @@ try {
                             $jurusanId = $guru['jurusan_id'];
                         }
                     }
+                    if ($peranVal === 'admin_jurusan') $peranVal = 'kabeng';
+                    if ($peranVal === 'petugas') $peranVal = 'guru_jurusan';
                     if (empty($_POST['token']) && !empty($guru['token'])) {
                         $generatedToken = $guru['token'];
                     }

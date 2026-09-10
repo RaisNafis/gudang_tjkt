@@ -66,9 +66,9 @@ function isLoggedIn() {
 /**
  * Dapatkan data pengguna yang sedang login
  */
-function currentUser() {
+function currentUser($refresh = false) {
     static $cachedUser = null;
-    if ($cachedUser !== null) {
+    if (!$refresh && $cachedUser !== null) {
         return $cachedUser;
     }
     if (!empty($_SESSION['user_id'])) {
@@ -85,6 +85,38 @@ function currentUser() {
             $stmt->execute([':id' => $_SESSION['user_id']]);
             $u = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($u) {
+                // Normalisasi peran backward-compatibility
+                if ($u['peran'] === 'admin_jurusan') $u['peran'] = 'kabeng';
+                if ($u['peran'] === 'petugas') $u['peran'] = 'guru_jurusan';
+
+                // Cek apakah ada switch jurusan aktif di sesi
+                if (!empty($_SESSION['active_jurusan_id'])) {
+                    $targetJurusanId = $_SESSION['active_jurusan_id'];
+                    $hasAccess = false;
+                    if ($u['peran'] === 'admin_sekolah') {
+                        $hasAccess = true;
+                    } elseif ($u['jurusan_id'] === $targetJurusanId) {
+                        $hasAccess = true;
+                    } else {
+                        $stmtCheck = $db->prepare("SELECT 1 FROM pengguna_multi_jurusan WHERE pengguna_id = :uid AND jurusan_id = :jid LIMIT 1");
+                        $stmtCheck->execute([':uid' => $u['id'], ':jid' => $targetJurusanId]);
+                        $hasAccess = (bool) $stmtCheck->fetchColumn();
+                    }
+
+                    if ($hasAccess) {
+                        $stmtJ = $db->prepare("SELECT id, nama_jurusan, deskripsi, warna_tema FROM jurusan WHERE id = :jid LIMIT 1");
+                        $stmtJ->execute([':jid' => $targetJurusanId]);
+                        $activeJ = $stmtJ->fetch(PDO::FETCH_ASSOC);
+                        if ($activeJ) {
+                            $u['jurusan_id'] = $activeJ['id'];
+                            $u['nama_jurusan'] = $activeJ['nama_jurusan'];
+                            $u['warna_tema'] = $activeJ['warna_tema'];
+                        }
+                    } else {
+                        unset($_SESSION['active_jurusan_id']);
+                    }
+                }
+
                 $_SESSION['user'] = $u;
                 $cachedUser = $u;
                 return $cachedUser;
