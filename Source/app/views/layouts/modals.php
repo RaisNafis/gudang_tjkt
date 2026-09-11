@@ -335,21 +335,23 @@
 
 <?php if (!empty($isSuperAdmin)): ?>
 <!-- 1.5 MODAL MIGRASI KENAIKAN KELAS SISWA -->
-<div id="modalMigrasiSiswa" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-[#2a2a2a] shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
-        <!-- Header -->
-        <div class="p-5 sm:p-6 bg-slate-50/80 dark:bg-[#181818] border-b border-slate-200 dark:border-[#262626] flex items-center justify-between shrink-0">
-            <div>
-                <h3 class="text-base font-bold text-slate-900 dark:text-white">Migrasi Kenaikan Kelas Siswa</h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Pembaruan massal tingkatan kelas untuk tahun ajaran baru</p>
-            </div>
-            <button type="button" onclick="closeModal('modalMigrasiSiswa')" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 rounded-lg transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+<div id="modalMigrasiSiswa" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-[#1a1a1a] rounded-3xl border border-slate-200 dark:border-[#262626] shadow-2xl w-full max-w-xl p-6 relative transition-all">
+        <!-- Close Button (X) -->
+        <button type="button" onclick="closeModal('modalMigrasiSiswa')" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#252525] transition-colors" title="Tutup">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <!-- Title & Subtitle (Langsung di Konten Tanpa Header Terpisah) -->
+        <div class="mb-4 pr-8">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Migrasi Kenaikan Kelas Siswa</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                Pembaruan massal tingkatan kelas untuk tahun ajaran baru
+            </p>
         </div>
 
         <!-- Body Form -->
-        <form id="formMigrasiSiswa" onsubmit="handleMigrasiSiswaSubmit(event)" class="p-5 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
+        <form id="formMigrasiSiswa" onsubmit="handleMigrasiSiswaSubmit(event)" class="space-y-4 text-xs">
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
 
             <!-- Penjelasan Teks Bersih (Tanpa Card Box & Badge) -->
