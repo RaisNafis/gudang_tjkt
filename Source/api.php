@@ -1070,27 +1070,30 @@ try {
         $id = $_POST['id'] ?? '';
         $isSuperAdmin = ($_SESSION['user']['peran'] ?? '') === 'admin_sekolah';
         $jurusan_id = $isSuperAdmin ? (!empty($_POST['jurusan_id']) ? $_POST['jurusan_id'] : null) : ($_SESSION['user']['jurusan_id'] ?? null);
+        $jenis = (!empty($_POST['jenis']) && strtolower($_POST['jenis']) === 'lemari') ? 'lemari' : 'rak';
+        $labelJenis = $jenis === 'lemari' ? 'Lemari' : 'Rak';
         $data = [
             'jurusan_id' => $jurusan_id,
             'nama_rak' => trim($_POST['nama_rak'] ?? ''),
+            'jenis' => $jenis,
             'barcode' => trim($_POST['barcode'] ?? ''),
             'kategori_rak' => trim($_POST['kategori_rak'] ?? ''),
             'keterangan' => trim($_POST['keterangan'] ?? '')
         ];
 
         if (empty($data['nama_rak'])) {
-            echo json_encode(['success' => false, 'message' => 'Nama rak penyimpanan wajib diisi!']);
+            echo json_encode(['success' => false, 'message' => "Nama {$labelJenis} penyimpanan wajib diisi!"]);
             exit;
         }
 
         if (!empty($id)) {
             $ok = Rak::update($id, $data);
-            LogAktivitas::log('EDIT_RAK', 'Mengubah data rak ' . $data['nama_rak']);
-            echo json_encode(['success' => (bool)$ok, 'message' => 'Data rak berhasil diperbarui!']);
+            LogAktivitas::log('EDIT_RAK', "Mengubah data {$labelJenis} " . $data['nama_rak']);
+            echo json_encode(['success' => (bool)$ok, 'message' => "Data {$labelJenis} berhasil diperbarui!"]);
         } else {
             $ok = Rak::create($data);
-            LogAktivitas::log('TAMBAH_RAK', 'Menambah rak penyimpanan baru ' . $data['nama_rak']);
-            echo json_encode(['success' => (bool)$ok, 'message' => 'Rak penyimpanan baru berhasil ditambahkan!']);
+            LogAktivitas::log('TAMBAH_RAK', "Menambah {$labelJenis} penyimpanan baru " . $data['nama_rak']);
+            echo json_encode(['success' => (bool)$ok, 'message' => "{$labelJenis} penyimpanan baru berhasil ditambahkan!"]);
         }
         exit;
     }
@@ -1127,6 +1130,7 @@ try {
             'jurusan_id' => $jurusan_id,
             'kategori_id' => $_POST['kategori_id'] ?? null,
             'rak_id' => $_POST['rak_id'] ?? null,
+            'jenis_rak' => !empty($_POST['jenis_rak']) ? strtolower($_POST['jenis_rak']) : null,
             'nama_barang' => trim($_POST['nama_barang'] ?? ''),
             'jenis' => (!empty($_POST['jenis']) && strtolower($_POST['jenis']) === 'bahan') ? 'bahan' : 'alat',
             'merek' => trim($_POST['merek'] ?? ''),

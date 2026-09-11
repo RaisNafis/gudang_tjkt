@@ -7,7 +7,7 @@ class Barang {
         $db = Database::getInstance()->getConnection();
         if (!empty($jurusan_id)) {
             $stmt = $db->prepare("
-                SELECT b.*, k.nama_kategori, j.nama_jurusan, r.nama_rak, r.kategori_rak,
+                SELECT b.*, k.nama_kategori, j.nama_jurusan, r.nama_rak, r.kategori_rak, COALESCE(b.jenis_rak, r.jenis, 'rak') as jenis_rak,
                        (SELECT COALESCE(SUM(pm.jumlah), 0) FROM peminjaman pm WHERE pm.barang_id = b.id AND pm.status != 'dikembalikan') as total_dipinjam,
                        (SELECT COALESCE(SUM(bk.jumlah), 0) FROM barang_keluar bk WHERE bk.barang_id = b.id) as total_keluar,
                        (SELECT COALESCE(SUM(bm.jumlah), 0) FROM barang_masuk bm WHERE bm.barang_id = b.id) as total_masuk
@@ -21,7 +21,7 @@ class Barang {
             $stmt->execute([':jid' => $jurusan_id]);
         } else {
             $stmt = $db->query("
-                SELECT b.*, k.nama_kategori, j.nama_jurusan, r.nama_rak, r.kategori_rak,
+                SELECT b.*, k.nama_kategori, j.nama_jurusan, r.nama_rak, r.kategori_rak, COALESCE(b.jenis_rak, r.jenis, 'rak') as jenis_rak,
                        (SELECT COALESCE(SUM(pm.jumlah), 0) FROM peminjaman pm WHERE pm.barang_id = b.id AND pm.status != 'dikembalikan') as total_dipinjam,
                        (SELECT COALESCE(SUM(bk.jumlah), 0) FROM barang_keluar bk WHERE bk.barang_id = b.id) as total_keluar,
                        (SELECT COALESCE(SUM(bm.jumlah), 0) FROM barang_masuk bm WHERE bm.barang_id = b.id) as total_masuk
@@ -74,15 +74,23 @@ class Barang {
         $jenis = (!empty($data['jenis']) && strtolower($data['jenis']) === 'bahan') ? 'bahan' : 'alat';
         $stokAwal = isset($data['stok_awal']) ? (int)$data['stok_awal'] : (int)($data['stok_total'] ?? 0);
         $image = !empty($data['image']) ? $data['image'] : null;
+        $jenisRak = !empty($data['jenis_rak']) ? strtolower($data['jenis_rak']) : null;
+        if (empty($jenisRak) && !empty($data['rak_id'])) {
+            $rStmt = $db->prepare("SELECT jenis FROM rak WHERE id = :rid LIMIT 1");
+            $rStmt->execute([':rid' => $data['rak_id']]);
+            $jenisRak = $rStmt->fetchColumn() ?: 'rak';
+        }
+
         $stmt = $db->prepare("
-            INSERT INTO barang (id, jurusan_id, kategori_id, rak_id, nama_barang, jenis, merek, barcode, stok_awal, stok_total, stok_tersedia, satuan, image) 
-            VALUES (:id, :jid, :kat, :rak, :nama, :jenis, :merek, :barcode, :stok_awal, :stok_total, :stok_tersedia, :satuan, :image)
+            INSERT INTO barang (id, jurusan_id, kategori_id, rak_id, jenis_rak, nama_barang, jenis, merek, barcode, stok_awal, stok_total, stok_tersedia, satuan, image) 
+            VALUES (:id, :jid, :kat, :rak, :jenis_rak, :nama, :jenis, :merek, :barcode, :stok_awal, :stok_total, :stok_tersedia, :satuan, :image)
         ");
         return $stmt->execute([
             ':id' => $id,
             ':jid' => !empty($data['jurusan_id']) ? $data['jurusan_id'] : null,
             ':kat' => !empty($data['kategori_id']) ? $data['kategori_id'] : null,
             ':rak' => !empty($data['rak_id']) ? $data['rak_id'] : null,
+            ':jenis_rak' => $jenisRak,
             ':nama' => $data['nama_barang'],
             ':jenis' => $jenis,
             ':merek' => !empty($data['merek']) ? $data['merek'] : null,
@@ -121,11 +129,19 @@ class Barang {
             }
         }
 
+        $jenisRak = !empty($data['jenis_rak']) ? strtolower($data['jenis_rak']) : null;
+        if (empty($jenisRak) && !empty($data['rak_id'])) {
+            $rStmt = $db->prepare("SELECT jenis FROM rak WHERE id = :rid LIMIT 1");
+            $rStmt->execute([':rid' => $data['rak_id']]);
+            $jenisRak = $rStmt->fetchColumn() ?: 'rak';
+        }
+
         $stmt = $db->prepare("
             UPDATE barang 
             SET jurusan_id = :jid, 
                 kategori_id = :kat, 
                 rak_id = :rak, 
+                jenis_rak = :jenis_rak,
                 nama_barang = :nama, 
                 jenis = :jenis,
                 merek = :merek, 
@@ -142,6 +158,7 @@ class Barang {
             ':jid' => !empty($data['jurusan_id']) ? $data['jurusan_id'] : null,
             ':kat' => !empty($data['kategori_id']) ? $data['kategori_id'] : null,
             ':rak' => !empty($data['rak_id']) ? $data['rak_id'] : null,
+            ':jenis_rak' => $jenisRak,
             ':nama' => $data['nama_barang'],
             ':jenis' => $jenis,
             ':merek' => !empty($data['merek']) ? $data['merek'] : null,

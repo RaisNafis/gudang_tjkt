@@ -45,7 +45,7 @@ class Rak {
     public static function getItemsInRak($rak_id) {
         $db = Database::getInstance()->getConnection();
         $stmt = $db->prepare("
-            SELECT b.*, k.nama_kategori, j.nama_jurusan, r.nama_rak 
+            SELECT b.*, k.nama_kategori, j.nama_jurusan, r.nama_rak, r.jenis as jenis_rak 
             FROM barang b 
             LEFT JOIN kategori k ON b.kategori_id = k.id 
             LEFT JOIN jurusan j ON b.jurusan_id = j.id 
@@ -75,14 +75,16 @@ class Rak {
         $db = Database::getInstance()->getConnection();
         $id = generateUuid();
         $barcode = !empty($data['barcode']) ? $data['barcode'] : self::generateNextBarcode();
+        $jenis = (!empty($data['jenis']) && strtolower($data['jenis']) === 'lemari') ? 'lemari' : 'rak';
         $stmt = $db->prepare("
-            INSERT INTO rak (id, jurusan_id, nama_rak, barcode, kategori_rak, keterangan) 
-            VALUES (:id, :jid, :nama, :barcode, :kat, :ket)
+            INSERT INTO rak (id, jurusan_id, nama_rak, jenis, barcode, kategori_rak, keterangan) 
+            VALUES (:id, :jid, :nama, :jenis, :barcode, :kat, :ket)
         ");
         return $stmt->execute([
             ':id' => $id,
             ':jid' => !empty($data['jurusan_id']) ? $data['jurusan_id'] : null,
             ':nama' => $data['nama_rak'],
+            ':jenis' => $jenis,
             ':barcode' => $barcode,
             ':kat' => !empty($data['kategori_rak']) ? $data['kategori_rak'] : null,
             ':ket' => !empty($data['keterangan']) ? $data['keterangan'] : null
@@ -91,10 +93,12 @@ class Rak {
 
     public static function update($id, $data) {
         $db = Database::getInstance()->getConnection();
+        $jenis = (!empty($data['jenis']) && strtolower($data['jenis']) === 'lemari') ? 'lemari' : 'rak';
         $stmt = $db->prepare("
             UPDATE rak 
             SET jurusan_id = :jid, 
                 nama_rak = :nama, 
+                jenis = :jenis,
                 barcode = :barcode, 
                 kategori_rak = :kat, 
                 keterangan = :ket, 
@@ -105,6 +109,7 @@ class Rak {
             ':id' => $id,
             ':jid' => !empty($data['jurusan_id']) ? $data['jurusan_id'] : null,
             ':nama' => $data['nama_rak'],
+            ':jenis' => $jenis,
             ':barcode' => !empty($data['barcode']) ? $data['barcode'] : self::generateNextBarcode(),
             ':kat' => !empty($data['kategori_rak']) ? $data['kategori_rak'] : null,
             ':ket' => !empty($data['keterangan']) ? $data['keterangan'] : null

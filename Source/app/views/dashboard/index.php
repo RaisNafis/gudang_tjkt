@@ -2005,32 +2005,32 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                 </div>
             </div>
 
-            <!-- SECTION 3.5: TAB DATA RAK PENYIMPANAN (MySQL Live) -->
+            <!-- SECTION 3.5: TAB DATA RAK & LEMARI PENYIMPANAN (MySQL Live) -->
             <div id="tab-rak" class="tab-content hidden space-y-6">
-                <!-- Stat Card Row for Rak -->
+                <!-- Stat Card Row for Rak & Lemari -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                     <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Rak Penyimpanan</span>
+                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Rak & Lemari</span>
                             <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
                             </div>
                         </div>
-                        <h3 id="statTabRakTotal" class="text-2xl font-extrabold text-slate-800"><?= number_format(count($dbRak)); ?> Rak</h3>
+                        <h3 id="statTabRakTotal" class="text-2xl font-extrabold text-slate-800"><?= number_format(count($dbRak)); ?> Rak & Lemari</h3>
                     </div>
                 </div>
                 <div class="bg-white rounded-2xl border border-sage-200/80 shadow-sm p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-5">
                         <div>
-                            <h3 class="text-base font-bold text-slate-800">Master Data Rak Penyimpanan</h3>
-                            <p class="text-xs text-slate-500">Kelola tata letak fisik rak dan barang di dalamnya</p>
+                            <h3 class="text-base font-bold text-slate-800">Master Data Rak & Lemari</h3>
+                            <p class="text-xs text-slate-500">Kelola tata letak fisik rak atau lemari dan barang di dalamnya</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
-                            <button onclick="exportTableToCSV('tableRak', 'data_rak_penyimpanan.csv')" class="px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Download data sebagai CSV">
+                            <button onclick="exportTableToCSV('tableRak', 'data_rak_lemari.csv')" class="px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Download data sebagai CSV">
                                 <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                 <span>Export CSV</span>
                             </button>
-                            <button onclick="openModal('modalRak', 'Tambah Rak Penyimpanan Baru')" class="px-4 py-2 bg-sage-600 text-white rounded-xl font-bold text-xs shadow-md shadow-sage-600/20 hover:bg-sage-700 transition-colors">+ Tambah Rak</button>
+                            <button onclick="openModal('modalRak', 'Tambah Rak / Lemari Baru')" class="px-4 py-2 bg-sage-600 text-white rounded-xl font-bold text-xs shadow-md shadow-sage-600/20 hover:bg-sage-700 transition-colors">+ Tambah Rak / Lemari</button>
                         </div>
                     </div>
                     <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100">
@@ -2039,9 +2039,10 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 <tr>
                                     <th class="py-3 px-3 w-10 text-center"><input type="checkbox" class="select-all-checkbox rounded accent-sage-600 cursor-pointer" onchange="toggleSelectAll(this)"></th>
                                     <th class="py-3 px-4 w-12 text-center">No</th>
-                                    <th class="py-3 px-4">Nama Rak</th>
-                                    <th class="py-3 px-4">Barcode Rak</th>
-                                    <th class="py-3 px-4">Kategori Rak</th>
+                                    <th class="py-3 px-4">Nama Rak / Lemari</th>
+                                    <th class="py-3 px-4">Barcode</th>
+                                    <th class="py-3 px-4 text-center">Jenis</th>
+                                    <th class="py-3 px-4">Kategori</th>
                                     <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><th class="py-3 px-4">Jurusan</th><?php endif; ?>
                                     <th class="py-3 px-4">Keterangan / Lokasi</th>
                                     <th class="py-3 px-4 text-center">Jumlah Jenis Barang</th>
@@ -2050,16 +2051,25 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
-                                <?php $no = 1; foreach ($dbRak as $rk): ?>
-                                    <tr class="hover:bg-sage-50/50">
+                                <?php $no = 1; foreach ($dbRak as $rk): 
+                                    $isLemariRk = (!empty($rk['jenis']) && strtolower($rk['jenis']) === 'lemari') || (stripos($rk['nama_rak'] ?? '', 'lemari') !== false);
+                                ?>
+                                    <tr class="hover:bg-sage-50/50" data-jenis="<?= $isLemariRk ? 'lemari' : 'rak'; ?>">
                                         <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="<?= htmlspecialchars($rk['id']); ?>" onchange="updateBatchDeleteBar()"></td>
                                         <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell"><?= $no++; ?></td>
                                         <td class="py-3.5 px-4 font-bold text-slate-800"><?= htmlspecialchars($rk['nama_rak']); ?></td>
                                         <td class="py-3.5 px-4 font-mono text-sage-700">
-                                            <button type="button" onclick="showRakBarcodeModal('<?= htmlspecialchars($rk['barcode'] ?? ''); ?>', '<?= htmlspecialchars(addslashes($rk['nama_rak'])); ?>', '<?= htmlspecialchars($rk['id']); ?>')" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sage-50 hover:bg-sage-100 text-sage-800 border border-sage-200 font-bold transition-all group" title="Klik untuk preview / scan QR Code Rak">
+                                            <button type="button" onclick="showRakBarcodeModal('<?= htmlspecialchars($rk['barcode'] ?? ''); ?>', '<?= htmlspecialchars(addslashes($rk['nama_rak'])); ?>', '<?= htmlspecialchars($rk['id']); ?>')" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sage-50 hover:bg-sage-100 text-sage-800 border border-sage-200 font-bold transition-all group" title="Klik untuk preview / scan QR Code">
                                                 <svg class="w-3.5 h-3.5 text-sage-600 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
                                                 <span><?= htmlspecialchars($rk['barcode'] ?? '-'); ?></span>
                                             </button>
+                                        </td>
+                                        <td class="py-3.5 px-4 text-center">
+                                            <?php if ($isLemariRk): ?>
+                                                <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">Lemari</span>
+                                            <?php else: ?>
+                                                <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">Rak</span>
+                                            <?php endif; ?>
                                         </td>
                                         <td class="py-3.5 px-4 font-semibold text-slate-700"><?= htmlspecialchars($rk['kategori_rak'] ?? '-'); ?></td>
                                         <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><td class="py-3.5 px-4 font-bold text-sage-700"><?= htmlspecialchars($rk['nama_jurusan'] ?? 'Semua Jurusan'); ?></td><?php endif; ?>
@@ -2068,14 +2078,14 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         <td class="py-3.5 px-4 text-center font-extrabold text-sage-600"><?= intval($rk['total_stok_tersedia'] ?? 0); ?> Unit</td>
                                         <td class="py-3.5 px-4">
                                             <div class="flex items-center gap-1.5">
-                                                <button type="button" onclick="showBarangInRakModal('<?= htmlspecialchars($rk['id']); ?>', '<?= htmlspecialchars(addslashes($rk['nama_rak'])); ?>')" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-sm transition-all flex items-center gap-1" title="Lihat Daftar Barang di Rak">
+                                                <button type="button" onclick="showBarangInRakModal('<?= htmlspecialchars($rk['id']); ?>', '<?= htmlspecialchars(addslashes($rk['nama_rak'])); ?>')" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-sm transition-all flex items-center gap-1" title="Lihat Daftar Barang">
                                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                     <span>Lihat Barang</span>
                                                 </button>
-                                                <button type="button" onclick="editRak('<?= htmlspecialchars($rk['id']); ?>')" class="p-1.5 rounded-lg bg-sage-600 hover:bg-sage-700 text-white shadow-sm transition-all" title="Edit Data Rak">
+                                                <button type="button" onclick="editRak('<?= htmlspecialchars($rk['id']); ?>')" class="p-1.5 rounded-lg bg-sage-600 hover:bg-sage-700 text-white shadow-sm transition-all" title="Edit Data">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 01-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                                 </button>
-                                                <button type="button" onclick="deleteRak('<?= htmlspecialchars($rk['id']); ?>', '<?= htmlspecialchars(addslashes($rk['nama_rak'])); ?>')" class="p-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm transition-all" title="Hapus Data Rak">
+                                                <button type="button" onclick="deleteRak('<?= htmlspecialchars($rk['id']); ?>', '<?= htmlspecialchars(addslashes($rk['nama_rak'])); ?>')" class="p-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm transition-all" title="Hapus Data">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                                 </button>
                                             </div>
@@ -2182,11 +2192,26 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             </div>
                             <div>
                                 <select id="filter_barang_rak" onchange="filterTableBarang()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold cursor-pointer">
-                                    <option value="">Semua Rak</option>
-                                    <?php foreach ($dbRak as $rk): ?>
-                                        <option value="<?= htmlspecialchars(strval($rk['id'])); ?>"><?= htmlspecialchars($rk['nama_rak'] . (!empty($rk['kategori_rak']) ? ' (' . $rk['kategori_rak'] . ')' : '')); ?></option>
-                                    <?php endforeach; ?>
-                                    <option value="__none__">Tanpa Rak</option>
+                                    <option value="">Semua Rak & Lemari</option>
+                                    <?php 
+                                        $phpRaks = array_filter($dbRak, fn($r) => ($r['jenis'] ?? 'rak') === 'rak');
+                                        $phpLemaris = array_filter($dbRak, fn($r) => ($r['jenis'] ?? 'rak') === 'lemari');
+                                    ?>
+                                    <?php if (!empty($phpRaks)): ?>
+                                        <optgroup label="Rak">
+                                            <?php foreach ($phpRaks as $rk): ?>
+                                                <option value="<?= htmlspecialchars(strval($rk['id'])); ?>">[Rak] <?= htmlspecialchars($rk['nama_rak'] . (!empty($rk['kategori_rak']) ? ' (' . $rk['kategori_rak'] . ')' : '')); ?></option>
+                                            <?php endforeach; ?>
+                                        </optgroup>
+                                    <?php endif; ?>
+                                    <?php if (!empty($phpLemaris)): ?>
+                                        <optgroup label="Lemari">
+                                            <?php foreach ($phpLemaris as $rk): ?>
+                                                <option value="<?= htmlspecialchars(strval($rk['id'])); ?>">[Lemari] <?= htmlspecialchars($rk['nama_rak'] . (!empty($rk['kategori_rak']) ? ' (' . $rk['kategori_rak'] . ')' : '')); ?></option>
+                                            <?php endforeach; ?>
+                                        </optgroup>
+                                    <?php endif; ?>
+                                    <option value="__none__">Tanpa Lokasi</option>
                                 </select>
                             </div>
                             <?php if ($isSuperAdmin): ?>
@@ -2218,7 +2243,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                     <th class="py-3 px-4 text-center">Images</th>
                                     <th class="py-3 px-4">Jenis</th>
                                     <th class="py-3 px-4">Kategori</th>
-                                    <th class="py-3 px-4">Rak</th>
+                                    <th class="py-3 px-4">Rak / Lemari</th>
                                     <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><th class="py-3 px-4">Jurusan</th><?php endif; ?>
                                     <th class="py-3 px-4">Merek</th>
                                     <th class="py-3 px-4">Barcode</th>
@@ -2231,11 +2256,13 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 <?php $no = 1; foreach ($dbBarang as $b): ?>
                                     <?php 
                                         $jColor = (!empty($b['jurusan_id']) && isset($jurusanColors[$b['jurusan_id']])) ? $jurusanColors[$b['jurusan_id']] : '#2E7D32';
+                                        $isLemariBarang = (!empty($b['jenis_rak']) && strtolower($b['jenis_rak']) === 'lemari') || (!empty($b['nama_rak']) && stripos($b['nama_rak'], 'lemari') !== false);
                                     ?>
                                     <tr id="row-barang-<?= htmlspecialchars($b['id']); ?>" 
                                         data-jenis="<?= htmlspecialchars(strtolower($b['jenis'] ?? 'alat')); ?>"
                                         data-kategori-id="<?= htmlspecialchars(strval($b['kategori_id'] ?? '')); ?>"
                                         data-rak-id="<?= htmlspecialchars(strval($b['rak_id'] ?? '')); ?>"
+                                        data-jenis-rak="<?= $isLemariBarang ? 'lemari' : 'rak'; ?>"
                                         data-jurusan-id="<?= htmlspecialchars(strval($b['jurusan_id'] ?? '')); ?>"
                                         data-dipinjam="<?= !empty($b['total_dipinjam']) && intval($b['total_dipinjam']) > 0 ? '1' : '0'; ?>"
                                         data-keluar="<?= !empty($b['total_keluar']) && intval($b['total_keluar']) > 0 ? '1' : '0'; ?>"
@@ -2257,7 +2284,18 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         </td>
                                         <td class="py-3.5 px-4 font-semibold text-slate-700 dark:text-slate-300"><?= ucfirst(htmlspecialchars($b['jenis'] ?? 'alat')); ?></td>
                                         <td class="py-3.5 px-4 font-semibold text-slate-700"><?= htmlspecialchars($b['nama_kategori'] ?? '-'); ?></td>
-                                        <td class="py-3.5 px-4 font-semibold text-slate-700"><?= htmlspecialchars($b['nama_rak'] ?? '-'); ?></td>
+                                        <td class="py-3.5 px-4 font-semibold text-slate-700">
+                                            <?php if (!empty($b['nama_rak'])): ?>
+                                                <span class="inline-flex items-center gap-1">
+                                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-extrabold uppercase <?= $isLemariBarang ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300' : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'; ?>">
+                                                        <?= $isLemariBarang ? 'Lemari' : 'Rak'; ?>
+                                                    </span>
+                                                    <span><?= htmlspecialchars($b['nama_rak']); ?></span>
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="text-slate-400 font-normal">-</span>
+                                            <?php endif; ?>
+                                        </td>
                                         <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><td class="py-3.5 px-4 font-bold text-sage-700"><?= htmlspecialchars($b['nama_jurusan'] ?? 'Semua Jurusan'); ?></td><?php endif; ?>
                                         <td class="py-3.5 px-4"><?= htmlspecialchars($b['merek'] ?? '-'); ?></td>
                                         <td class="py-3.5 px-4 font-mono text-sage-700">
@@ -4959,7 +4997,7 @@ function updateStatCardsData() {
     // Tab-specific Stat Cards
     setTxt('statTabJurusanTotal', fmt(totalJurusan) + ' Jurusan');
     setTxt('statTabKategoriTotal', fmt(totalKategori) + ' Kategori');
-    setTxt('statTabRakTotal', fmt(totalRak) + ' Rak');
+    setTxt('statTabRakTotal', fmt(totalRak) + ' Rak & Lemari');
 
     setTxt('statTabBarangTotalItem', fmt(totalBarangItems) + ' Item');
     setTxt('statTabBarangTotalStok', fmt(totalStokTersedia) + ' Unit');
@@ -5707,16 +5745,22 @@ function renderTableRak() {
 
     tbody.innerHTML = window.dbRak.map((rk, idx) => {
         const jurTd = isSuperAdmin ? `<td class="py-3.5 px-4 font-bold text-sage-700">${escapeHtml(rk.nama_jurusan || 'Semua Jurusan')}</td>` : '';
-        return `<tr class="hover:bg-sage-50/50">
+        const isLemari = String(rk.jenis || 'rak').toLowerCase() === 'lemari' || (rk.nama_rak && rk.nama_rak.toLowerCase().includes('lemari'));
+        const jenisBadge = isLemari
+            ? `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">Lemari</span>`
+            : `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">Rak</span>`;
+
+        return `<tr class="hover:bg-sage-50/50" data-jenis="${isLemari ? 'lemari' : 'rak'}">
             <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${rk.id}" onchange="updateBatchDeleteBar()"></td>
             <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${idx + 1}</td>
             <td class="py-3.5 px-4 font-bold text-slate-800">${escapeHtml(rk.nama_rak)}</td>
             <td class="py-3.5 px-4 font-mono text-sage-700">
-                <button type="button" onclick="showRakBarcodeModal('${escapeHtml(rk.barcode || '')}', '${escapeJsStr(rk.nama_rak)}', '${rk.id}')" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sage-50 hover:bg-sage-100 text-sage-800 border border-sage-200 font-bold transition-all group" title="Klik untuk preview / scan QR Code Rak">
+                <button type="button" onclick="showRakBarcodeModal('${escapeHtml(rk.barcode || '')}', '${escapeJsStr(rk.nama_rak)}', '${rk.id}')" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sage-50 hover:bg-sage-100 text-sage-800 border border-sage-200 font-bold transition-all group" title="Klik untuk preview / scan QR Code">
                     <svg class="w-3.5 h-3.5 text-sage-600 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
                     <span>${escapeHtml(rk.barcode || '-')}</span>
                 </button>
             </td>
+            <td class="py-3.5 px-4 text-center">${jenisBadge}</td>
             <td class="py-3.5 px-4 font-semibold text-slate-700">${escapeHtml(rk.kategori_rak || '-')}</td>
             ${jurTd}
             <td class="py-3.5 px-4">${escapeHtml(rk.keterangan || '-')}</td>
@@ -5724,9 +5768,9 @@ function renderTableRak() {
             <td class="py-3.5 px-4 text-center font-extrabold text-sage-600">${parseInt(rk.total_stok_tersedia || 0)} Unit</td>
             <td class="py-3.5 px-4">
                 <div class="flex items-center gap-1.5">
-                    <button type="button" onclick="showBarangInRakModal('${rk.id}', '${escapeJsStr(rk.nama_rak)}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-sm transition-all flex items-center gap-1" title="Lihat Daftar Barang di Rak"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg><span>Lihat Barang</span></button>
-                    <button type="button" onclick="editRak('${rk.id}')" class="p-1.5 rounded-lg bg-sage-600 hover:bg-sage-700 text-white shadow-sm transition-all" title="Edit Data Rak"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 01-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
-                    <button type="button" onclick="deleteRak('${rk.id}', '${escapeJsStr(rk.nama_rak)}')" class="p-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm transition-all" title="Hapus Data Rak"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                    <button type="button" onclick="showBarangInRakModal('${rk.id}', '${escapeJsStr(rk.nama_rak)}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-sm transition-all flex items-center gap-1" title="Lihat Daftar Barang"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg><span>Lihat Barang</span></button>
+                    <button type="button" onclick="editRak('${rk.id}')" class="p-1.5 rounded-lg bg-sage-600 hover:bg-sage-700 text-white shadow-sm transition-all" title="Edit Data"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 01-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+                    <button type="button" onclick="deleteRak('${rk.id}', '${escapeJsStr(rk.nama_rak)}')" class="p-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm transition-all" title="Hapus Data"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
                 </div>
             </td>
         </tr>`;
@@ -5790,10 +5834,16 @@ function renderTableBarang() {
                 ? `<button type="button" onclick="showFotoPreview('${escapeHtml(b.image)}', '${escapeJsStr(b.nama_barang)}')" class="p-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all inline-flex items-center justify-center group cursor-pointer" title="Lihat Foto ${escapeHtml(b.nama_barang)}"><svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>`
                 : '<span class="text-slate-400 font-normal">-</span>';
 
+            const isLemariBarang = (b.jenis_rak && String(b.jenis_rak).toLowerCase() === 'lemari') || (b.nama_rak && b.nama_rak.toLowerCase().includes('lemari'));
+            const rakDisplay = b.nama_rak
+                ? `<span class="inline-flex items-center gap-1"><span class="px-1.5 py-0.5 rounded text-[10px] font-extrabold uppercase ${isLemariBarang ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300' : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'}">${isLemariBarang ? 'Lemari' : 'Rak'}</span> <span class="font-semibold text-slate-700 dark:text-slate-200">${escapeHtml(b.nama_rak)}</span></span>`
+                : '<span class="text-slate-400 font-normal">-</span>';
+
             return `<tr id="row-barang-${b.id}"
             data-jenis="${escapeHtml(String(b.jenis || 'alat').toLowerCase())}"
             data-kategori-id="${escapeHtml(String(b.kategori_id || ''))}"
             data-rak-id="${escapeHtml(String(b.rak_id || ''))}"
+            data-jenis-rak="${isLemariBarang ? 'lemari' : 'rak'}"
             data-jurusan-id="${escapeHtml(String(b.jurusan_id || ''))}"
             data-dipinjam="${totalDipinjam > 0 ? '1' : '0'}"
             data-keluar="${totalKeluar > 0 ? '1' : '0'}"
@@ -5807,7 +5857,7 @@ function renderTableBarang() {
             <td class="py-3.5 px-4 text-center">${imageBtn}</td>
             <td class="py-3.5 px-4 font-semibold text-slate-700 dark:text-slate-300">${escapeHtml(jenisText)}</td>
             <td class="py-3.5 px-4 font-semibold text-slate-700">${escapeHtml(b.nama_kategori || '-')}</td>
-            <td class="py-3.5 px-4 font-semibold text-slate-700">${escapeHtml(b.nama_rak || '-')}</td>
+            <td class="py-3.5 px-4 font-semibold text-slate-700">${rakDisplay}</td>
             ${jurTd}
             <td class="py-3.5 px-4">${escapeHtml(b.merek || '-')}</td>
             <td class="py-3.5 px-4 font-mono text-sage-700">${barcodeHtml}</td>
@@ -6882,6 +6932,17 @@ class TablePaginationManager {
                 const searchDiv = document.createElement('div');
                 searchDiv.className = 'relative flex items-center gap-2 shrink-0 flex-wrap';
 
+                let rakJenisFilterHtml = '';
+                if (this.table.id === 'tableRak') {
+                    rakJenisFilterHtml = `
+                        <select class="rak-jenis-filter-select px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-[#2a2a2a] rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-sage-600 transition-all cursor-pointer">
+                            <option value="">Semua Jenis (Rak & Lemari)</option>
+                            <option value="rak">Rak</option>
+                            <option value="lemari">Lemari</option>
+                        </select>
+                    `;
+                }
+
                 let jurusanFilterHtml = '';
                 const isSuperAdmin = window.currentUser && window.currentUser.peran === 'admin_sekolah';
                 if (isSuperAdmin && jurusanColIndex !== -1 && window.dbJurusan && window.dbJurusan.length > 0) {
@@ -6894,12 +6955,22 @@ class TablePaginationManager {
                 }
 
                 searchDiv.innerHTML = `
+                    ${rakJenisFilterHtml}
                     ${jurusanFilterHtml}
                     <div class="relative flex items-center shrink-0">
                         <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <input type="text" placeholder="Cari data..." class="table-search-input pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-[#2a2a2a] rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-sage-600 focus:bg-white dark:focus:bg-slate-700 transition-all w-44 focus:w-56">
                     </div>
                 `;
+
+                const rakJenisSelect = searchDiv.querySelector('.rak-jenis-filter-select');
+                if (rakJenisSelect) {
+                    rakJenisSelect.addEventListener('change', (e) => {
+                        this.selectedRakJenisFilter = e.target.value;
+                        this.currentPage = 1;
+                        this.update();
+                    });
+                }
 
                 const filterSelect = searchDiv.querySelector('.jurusan-filter-select');
                 if (filterSelect) {
@@ -6968,6 +7039,13 @@ class TablePaginationManager {
         const jurusanColIndex = thList.findIndex(th => th.innerText.trim().toLowerCase() === 'jurusan');
 
         this.filteredRows = this.allRows.filter(row => {
+            if (this.selectedRakJenisFilter) {
+                const rowJenis = (row.getAttribute('data-jenis') || '').toLowerCase();
+                if (rowJenis !== this.selectedRakJenisFilter.toLowerCase()) {
+                    return false;
+                }
+            }
+
             if (this.selectedJurusanFilter && jurusanColIndex !== -1) {
                 const cell = row.cells[jurusanColIndex];
                 if (cell) {
@@ -7392,12 +7470,27 @@ function refreshBarangFilterDropdowns() {
         if (jurVal) {
             filteredRak = filteredRak.filter(r => String(r.jurusan_id) === String(jurVal));
         }
-        let rakHtml = '<option value="">Semua Rak</option>';
-        filteredRak.forEach(r => {
-            const extra = r.kategori_rak ? ` (${r.kategori_rak})` : '';
-            rakHtml += `<option value="${r.id}">${escapeHtml(r.nama_rak + extra)}</option>`;
-        });
-        rakHtml += '<option value="__none__">Tanpa Rak</option>';
+        let rakHtml = '<option value="">Semua Rak & Lemari</option>';
+        const rakItems = filteredRak.filter(r => (r.jenis || 'rak').toLowerCase() !== 'lemari');
+        const lemariItems = filteredRak.filter(r => (r.jenis || 'rak').toLowerCase() === 'lemari');
+
+        if (rakItems.length > 0) {
+            rakHtml += '<optgroup label="Rak">';
+            rakItems.forEach(r => {
+                const extra = r.kategori_rak ? ` (${r.kategori_rak})` : '';
+                rakHtml += `<option value="${r.id}">[Rak] ${escapeHtml(r.nama_rak + extra)}</option>`;
+            });
+            rakHtml += '</optgroup>';
+        }
+        if (lemariItems.length > 0) {
+            rakHtml += '<optgroup label="Lemari">';
+            lemariItems.forEach(r => {
+                const extra = r.kategori_rak ? ` (${r.kategori_rak})` : '';
+                rakHtml += `<option value="${r.id}">[Lemari] ${escapeHtml(r.nama_rak + extra)}</option>`;
+            });
+            rakHtml += '</optgroup>';
+        }
+        rakHtml += '<option value="__none__">Tanpa Lokasi</option>';
         selRak.innerHTML = rakHtml;
         selRak.value = curVal || '';
     }

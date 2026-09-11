@@ -662,7 +662,7 @@
                 <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
                 </div>
-                <h3 class="text-base font-bold text-slate-800" id="modalRakTitle">Tambah Rak Penyimpanan</h3>
+                <h3 class="text-base font-bold text-slate-800" id="modalRakTitle">Tambah Rak / Lemari</h3>
             </div>
             <button onclick="closeModal('modalRak')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -679,25 +679,34 @@
                 </select>
             </div>
             <?php endif; ?>
-            <div>
-                <label class="block font-bold text-slate-700 mb-1">Kode Barcode Rak</label>
-                <input type="text" id="rak_barcode" readonly class="w-full px-3.5 py-2.5 bg-slate-100/70 dark:bg-neutral-900/80 border border-sage-200 rounded-xl font-mono font-bold text-slate-700 dark:text-slate-300 cursor-not-allowed focus:outline-none" placeholder="899300100001">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Jenis Penyimpanan <span class="text-red-500">*</span></label>
+                    <select id="rak_jenis" required onchange="onRakJenisModalChange(this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+                        <option value="rak">Rak</option>
+                        <option value="lemari">Lemari</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Kode Barcode</label>
+                    <input type="text" id="rak_barcode" readonly class="w-full px-3.5 py-2.5 bg-slate-100/70 dark:bg-neutral-900/80 border border-sage-200 rounded-xl font-mono font-bold text-slate-700 dark:text-slate-300 cursor-not-allowed focus:outline-none" placeholder="899300100001">
+                </div>
             </div>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Nama Rak Penyimpanan <span class="text-red-500">*</span></label>
-                <input type="text" id="rak_nama" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: Rak A1 - Jaringan & Alat Utilitas">
+                <label class="block font-bold text-slate-700 mb-1" id="rak_nama_label">Nama Rak / Lemari <span class="text-red-500">*</span></label>
+                <input type="text" id="rak_nama" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: Rak A1 - Jaringan atau Lemari Besi B2">
             </div>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Kategori / Peruntukan Rak</label>
+                <label class="block font-bold text-slate-700 mb-1">Kategori / Peruntukan</label>
                 <input type="text" id="rak_kategori" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: Toolset, Kabel & Connector, Komponen PC...">
             </div>
             <div>
                 <label class="block font-bold text-slate-700 mb-1">Keterangan / Deskripsi Lokasi</label>
-                <textarea id="rak_keterangan" rows="2" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-medium text-slate-800 focus:outline-none focus:border-sage-600" placeholder="Keterangan letak fisik rak di dalam lab gudang..."></textarea>
+                <textarea id="rak_keterangan" rows="2" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-medium text-slate-800 focus:outline-none focus:border-sage-600" placeholder="Keterangan letak fisik rak / lemari di dalam lab gudang..."></textarea>
             </div>
             <div class="pt-3 flex justify-end gap-3 border-t border-sage-100">
                 <button type="button" onclick="closeModal('modalRak')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
-                <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Data Rak</button>
+                <button type="submit" id="btnSubmitRak" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Data</button>
             </div>
         </form>
     </div>
@@ -792,11 +801,21 @@
                     <option value="">-- Pilih Kategori --</option>
                 </select>
             </div>
-            <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Rak Penyimpanan</label>
-                <select id="barang_rak_id" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
-                    <option value="">-- Pilih Rak Penyimpanan --</option>
-                </select>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jenis Rak / Lemari</label>
+                    <select id="barang_filter_jenis_rak" onchange="filterBarangRakOptions()" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
+                        <option value="">Semua (Rak & Lemari)</option>
+                        <option value="rak">Rak</option>
+                        <option value="lemari">Lemari</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Lokasi Rak / Lemari</label>
+                    <select id="barang_rak_id" onchange="syncBarangJenisRakWithSelectedRak()" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
+                        <option value="">-- Pilih Rak / Lemari --</option>
+                    </select>
+                </div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
@@ -3909,14 +3928,38 @@ function filterSiswaPinjamOptions(preselectedSiswa = null) {
     }
 }
 
-function filterKategoriAndRakByJurusan(selectedJurusanId, selectedKategoriId = null, selectedRakId = null) {
+function onRakJenisModalChange(jenis) {
+    const titleEl = document.getElementById('modalRakTitle');
+    const labelNamaEl = document.getElementById('rak_nama_label');
+    const inputNamaEl = document.getElementById('rak_nama');
+    const btnSubmitEl = document.getElementById('btnSubmitRak');
+    const editId = document.getElementById('rak_edit_id')?.value;
+
+    const isLemari = (String(jenis).toLowerCase() === 'lemari');
+    const typeLabel = isLemari ? 'Lemari' : 'Rak';
+
+    if (titleEl) {
+        titleEl.innerText = editId ? `Edit ${typeLabel} Penyimpanan` : `Tambah ${typeLabel} Penyimpanan Baru`;
+    }
+    if (labelNamaEl) {
+        labelNamaEl.innerHTML = `Nama ${typeLabel} Penyimpanan <span class="text-red-500">*</span>`;
+    }
+    if (inputNamaEl) {
+        inputNamaEl.placeholder = isLemari ? 'contoh: Lemari Besi B1 - Alat Jaringan' : 'contoh: Rak A1 - Jaringan & Alat Utilitas';
+    }
+    if (btnSubmitEl) {
+        btnSubmitEl.innerText = `Simpan Data ${typeLabel}`;
+    }
+}
+
+function filterKategoriAndRakByJurusan(selectedJurusanId, selectedKategoriId = null, selectedRakId = null, selectedJenisRak = null) {
     let jurId = selectedJurusanId;
     if (!jurId && window.currentUser && window.currentUser.jurusan_id) {
         jurId = window.currentUser.jurusan_id;
     }
 
     const selectKat = document.getElementById('barang_kategori_id');
-    const selectRak = document.getElementById('barang_rak_id');
+    const selectFilterJenis = document.getElementById('barang_filter_jenis_rak');
 
     if (selectKat) {
         let filteredKategori = window.dbKategori || [];
@@ -3924,7 +3967,7 @@ function filterKategoriAndRakByJurusan(selectedJurusanId, selectedKategoriId = n
             filteredKategori = filteredKategori.filter(k => String(k.jurusan_id) === String(jurId));
         }
         selectKat.innerHTML = '<option value="">-- Pilih Kategori --</option>' +
-            filteredKategori.map(k => `<option value="${k.id}">${k.nama_kategori}</option>`).join('');
+            filteredKategori.map(k => `<option value="${k.id}">${escapeHtml(k.nama_kategori)}</option>`).join('');
         if (selectedKategoriId) {
             selectKat.value = selectedKategoriId;
         } else {
@@ -3932,18 +3975,85 @@ function filterKategoriAndRakByJurusan(selectedJurusanId, selectedKategoriId = n
         }
     }
 
-    if (selectRak) {
-        let filteredRak = window.dbRak || [];
-        if (jurId) {
-            filteredRak = filteredRak.filter(r => String(r.jurusan_id) === String(jurId));
+    // Determine initial jenis_rak if selectedRakId is provided
+    let currentJenis = selectedJenisRak || (selectFilterJenis ? selectFilterJenis.value : '');
+    if (!currentJenis && selectedRakId && window.dbRak) {
+        const found = window.dbRak.find(r => String(r.id) === String(selectedRakId));
+        if (found && found.jenis) {
+            currentJenis = found.jenis;
         }
-        selectRak.innerHTML = '<option value="">-- Pilih Rak Penyimpanan --</option>' +
-            filteredRak.map(r => `<option value="${r.id}">${r.nama_rak}${r.kategori_rak ? ' (' + r.kategori_rak + ')' : ''}</option>`).join('');
-        if (selectedRakId) {
-            selectRak.value = selectedRakId;
-        } else {
-            selectRak.value = '';
+    }
+    if (selectFilterJenis) {
+        selectFilterJenis.value = currentJenis || '';
+    }
+
+    renderBarangRakSelectOptions(jurId, selectedRakId, currentJenis);
+}
+
+function filterBarangRakOptions() {
+    const jurSelect = document.getElementById('barang_jurusan_id');
+    let jurId = jurSelect ? jurSelect.value : (window.currentUser ? window.currentUser.jurusan_id : '');
+    const selectFilterJenis = document.getElementById('barang_filter_jenis_rak');
+    const selectRak = document.getElementById('barang_rak_id');
+    const currentVal = selectRak ? selectRak.value : '';
+    const jenis = selectFilterJenis ? selectFilterJenis.value : '';
+
+    renderBarangRakSelectOptions(jurId, currentVal, jenis);
+}
+
+function syncBarangJenisRakWithSelectedRak() {
+    const selectRak = document.getElementById('barang_rak_id');
+    const selectFilterJenis = document.getElementById('barang_filter_jenis_rak');
+    if (!selectRak || !selectFilterJenis) return;
+
+    const chosenId = selectRak.value;
+    if (!chosenId) return;
+
+    const rk = (window.dbRak || []).find(r => String(r.id) === String(chosenId));
+    if (rk && rk.jenis) {
+        selectFilterJenis.value = rk.jenis;
+    }
+}
+
+function renderBarangRakSelectOptions(jurId, selectedRakId = '', jenisFilter = '') {
+    const selectRak = document.getElementById('barang_rak_id');
+    if (!selectRak) return;
+
+    let filteredRak = window.dbRak || [];
+    if (jurId) {
+        filteredRak = filteredRak.filter(r => String(r.jurusan_id) === String(jurId) || !r.jurusan_id);
+    }
+
+    if (jenisFilter) {
+        filteredRak = filteredRak.filter(r => String(r.jenis || 'rak').toLowerCase() === String(jenisFilter).toLowerCase());
+    }
+
+    let html = '<option value="">-- Pilih Rak / Lemari --</option>';
+
+    if (!jenisFilter) {
+        const raks = filteredRak.filter(r => (r.jenis || 'rak') === 'rak');
+        const lemaris = filteredRak.filter(r => (r.jenis || 'rak') === 'lemari');
+
+        if (raks.length > 0) {
+            html += '<optgroup label="Rak">';
+            html += raks.map(r => `<option value="${r.id}">[Rak] ${escapeHtml(r.nama_rak)}${r.kategori_rak ? ' (' + escapeHtml(r.kategori_rak) + ')' : ''}</option>`).join('');
+            html += '</optgroup>';
         }
+        if (lemaris.length > 0) {
+            html += '<optgroup label="Lemari">';
+            html += lemaris.map(r => `<option value="${r.id}">[Lemari] ${escapeHtml(r.nama_rak)}${r.kategori_rak ? ' (' + escapeHtml(r.kategori_rak) + ')' : ''}</option>`).join('');
+            html += '</optgroup>';
+        }
+    } else {
+        const prefix = jenisFilter === 'lemari' ? '[Lemari] ' : '[Rak] ';
+        html += filteredRak.map(r => `<option value="${r.id}">${prefix}${escapeHtml(r.nama_rak)}${r.kategori_rak ? ' (' + escapeHtml(r.kategori_rak) + ')' : ''}</option>`).join('');
+    }
+
+    selectRak.innerHTML = html;
+    if (selectedRakId) {
+        selectRak.value = selectedRakId;
+    } else {
+        selectRak.value = '';
     }
 }
 
@@ -4179,6 +4289,7 @@ function openModal(modalId, customTitle = null, editData = null) {
             else if (modalId === 'modalRak') {
                 const elId = document.getElementById('rak_edit_id');
                 const elJurusan = document.getElementById('rak_jurusan_id');
+                const elJenis = document.getElementById('rak_jenis');
                 const elBarcode = document.getElementById('rak_barcode');
                 const elNama = document.getElementById('rak_nama');
                 const elKat = document.getElementById('rak_kategori');
@@ -4186,10 +4297,12 @@ function openModal(modalId, customTitle = null, editData = null) {
 
                 if (elId) elId.value = editData.id || '';
                 if (elJurusan) elJurusan.value = editData.jurusan_id || '';
+                if (elJenis) elJenis.value = editData.jenis || 'rak';
                 if (elBarcode) elBarcode.value = editData.barcode || '';
                 if (elNama) elNama.value = editData.nama_rak || '';
                 if (elKat) elKat.value = editData.kategori_rak || '';
                 if (elKet) elKet.value = editData.keterangan || '';
+                onRakJenisModalChange(editData.jenis || 'rak');
             }
             else if (modalId === 'modalBarang') {
                 const elId = document.getElementById('barang_edit_id');
@@ -4198,6 +4311,7 @@ function openModal(modalId, customTitle = null, editData = null) {
                 const elNama = document.getElementById('barang_nama');
                 const elJenis = document.getElementById('barang_jenis');
                 const elKategori = document.getElementById('barang_kategori_id');
+                const elFilterJenisRak = document.getElementById('barang_filter_jenis_rak');
                 const elRak = document.getElementById('barang_rak_id');
                 const elMerek = document.getElementById('barang_merek');
                 const elStok = document.getElementById('barang_stok');
@@ -4208,7 +4322,8 @@ function openModal(modalId, customTitle = null, editData = null) {
                 if (elBarcode) elBarcode.value = editData.barcode || '';
                 if (elNama) elNama.value = editData.nama_barang || '';
                 if (elJenis) elJenis.value = editData.jenis || 'alat';
-                filterKategoriAndRakByJurusan(editData.jurusan_id || '', editData.kategori_id || '', editData.rak_id || '');
+                if (elFilterJenisRak) elFilterJenisRak.value = editData.jenis_rak || '';
+                filterKategoriAndRakByJurusan(editData.jurusan_id || '', editData.kategori_id || '', editData.rak_id || '', editData.jenis_rak || '');
                 if (elMerek) elMerek.value = editData.merek || '';
                 if (elStok) elStok.value = editData.stok_awal !== undefined ? editData.stok_awal : (editData.stok_total || 0);
                 if (elSatuan) elSatuan.value = editData.satuan || 'Unit';
@@ -4493,10 +4608,13 @@ function openModal(modalId, customTitle = null, editData = null) {
                 if (elWarna) elWarna.value = '#EAB308';
                 if (elPicker) elPicker.value = '#EAB308';
             } else if (modalId === 'modalRak') {
+                const elJenis = document.getElementById('rak_jenis');
                 const elBarcode = document.getElementById('rak_barcode');
                 const elNama = document.getElementById('rak_nama');
                 const elKat = document.getElementById('rak_kategori');
                 const elKet = document.getElementById('rak_keterangan');
+                if (elJenis) elJenis.value = 'rak';
+                onRakJenisModalChange('rak');
                 if (elBarcode) elBarcode.value = (window.nextCodes && window.nextCodes.rakBarcode) ? window.nextCodes.rakBarcode : '';
                 if (elNama) elNama.value = '';
                 if (elKat) elKat.value = '';
@@ -4534,12 +4652,14 @@ function openModal(modalId, customTitle = null, editData = null) {
             } else if (modalId === 'modalBarang') {
                 const elBarcode = document.getElementById('barang_barcode');
                 const elKategori = document.getElementById('barang_kategori_id');
+                const elFilterJenisRak = document.getElementById('barang_filter_jenis_rak');
                 const elRak = document.getElementById('barang_rak_id');
                 const elSatuan = document.getElementById('barang_satuan');
                 const elJurusan = document.getElementById('barang_jurusan_id');
 
                 const initialJurId = elJurusan ? elJurusan.value : null;
-                filterKategoriAndRakByJurusan(initialJurId);
+                if (elFilterJenisRak) elFilterJenisRak.value = '';
+                filterKategoriAndRakByJurusan(initialJurId, null, null, '');
 
                 const elJenis = document.getElementById('barang_jenis');
                 if (elJenis) elJenis.value = 'alat';
@@ -4871,6 +4991,7 @@ async function handleFormSubmit(event, actionName) {
         apiAction = 'save_rak';
         formData.append('id', document.getElementById('rak_edit_id')?.value || '');
         formData.append('jurusan_id', document.getElementById('rak_jurusan_id')?.value || '');
+        formData.append('jenis', document.getElementById('rak_jenis')?.value || 'rak');
         formData.append('nama_rak', document.getElementById('rak_nama')?.value || '');
         formData.append('barcode', document.getElementById('rak_barcode')?.value || '');
         formData.append('kategori_rak', document.getElementById('rak_kategori')?.value || '');
@@ -4883,6 +5004,7 @@ async function handleFormSubmit(event, actionName) {
         formData.append('jenis', document.getElementById('barang_jenis')?.value || 'alat');
         formData.append('kategori_id', document.getElementById('barang_kategori_id')?.value || '');
         formData.append('rak_id', document.getElementById('barang_rak_id')?.value || '');
+        formData.append('jenis_rak', document.getElementById('barang_filter_jenis_rak')?.value || '');
         formData.append('merek', document.getElementById('barang_merek')?.value || '');
         formData.append('barcode', document.getElementById('barang_barcode')?.value || '');
         formData.append('stok_awal', document.getElementById('barang_stok')?.value || '0');
