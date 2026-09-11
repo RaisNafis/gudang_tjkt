@@ -346,6 +346,10 @@
         /* Date & DateTime Picker Indicator Styling */
         input[type="date"], input[type="datetime-local"] {
             cursor: pointer !important;
+            color-scheme: light;
+        }
+        html.dark input[type="date"], html.dark input[type="datetime-local"] {
+            color-scheme: dark !important;
         }
         ::-webkit-calendar-picker-indicator {
             cursor: pointer !important;
@@ -539,6 +543,19 @@
         showToast(<?= json_encode($globalFlashMsg['message']); ?>, <?= json_encode($globalFlashMsg['type']); ?>);
     });
     <?php endif; ?>
+    // Global auto-trigger showPicker() on click for date & datetime inputs
+    document.addEventListener('click', function(e) {
+        const target = e.target;
+        if (target && target.tagName === 'INPUT' && (target.type === 'date' || target.type === 'datetime-local')) {
+            if (!target.disabled && !target.readOnly && typeof target.showPicker === 'function') {
+                try {
+                    target.showPicker();
+                } catch (err) {
+                    // Ignore if showPicker fails or is already open
+                }
+            }
+        }
+    });
     </script>
 </head>
 <body class="bg-sage-50/60 font-sans h-full overflow-hidden">

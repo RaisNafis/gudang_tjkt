@@ -997,7 +997,12 @@
                         <span>Sinkron Otomatis (Hari Ini)</span>
                     </label>
                 </div>
-                <input type="date" id="masuk_tanggal" value="<?= date('Y-m-d'); ?>" required class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800/60 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white focus:outline-none focus:border-sage-600 transition-colors cursor-not-allowed opacity-75 dark:[color-scheme:dark]" disabled>
+                <div class="relative flex items-center">
+                    <input type="date" id="masuk_tanggal" value="<?= date('Y-m-d'); ?>" required onclick="openNativeDatePicker(this)" class="w-full pl-3.5 pr-10 py-2.5 bg-slate-100 dark:bg-slate-800/60 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white focus:outline-none focus:border-sage-600 transition-colors cursor-not-allowed opacity-75 dark:[color-scheme:dark]" disabled>
+                    <button type="button" id="masuk_tgl_picker_btn" onclick="triggerDatePick('masuk_tanggal')" class="absolute right-2.5 p-1.5 text-slate-400 hover:text-sage-600 dark:hover:text-white rounded-lg transition-colors cursor-pointer" title="Pilih Tanggal dari Kalender">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </button>
+                </div>
             </div>
             <div class="pt-3 flex justify-end gap-3 border-t border-sage-100 dark:border-slate-700">
                 <button type="button" onclick="closeModal('modalBarangMasuk')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
@@ -1145,7 +1150,12 @@
                         <span>Sinkron Otomatis (Hari Ini)</span>
                     </label>
                 </div>
-                <input type="date" id="keluar_tanggal" value="<?= date('Y-m-d'); ?>" required class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800/60 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white focus:outline-none focus:border-sage-600 transition-colors cursor-not-allowed opacity-75 dark:[color-scheme:dark]" disabled>
+                <div class="relative flex items-center">
+                    <input type="date" id="keluar_tanggal" value="<?= date('Y-m-d'); ?>" required onclick="openNativeDatePicker(this)" class="w-full pl-3.5 pr-10 py-2.5 bg-slate-100 dark:bg-slate-800/60 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white focus:outline-none focus:border-sage-600 transition-colors cursor-not-allowed opacity-75 dark:[color-scheme:dark]" disabled>
+                    <button type="button" id="keluar_tgl_picker_btn" onclick="triggerDatePick('keluar_tanggal')" class="absolute right-2.5 p-1.5 text-slate-400 hover:text-sage-600 dark:hover:text-white rounded-lg transition-colors cursor-pointer" title="Pilih Tanggal dari Kalender">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </button>
+                </div>
             </div>
             <div>
                 <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Keterangan / Alasan</label>
@@ -2365,6 +2375,33 @@ function getLocalDateString(d = new Date()) {
     return `${year}-${month}-${day}`;
 }
 
+function openNativeDatePicker(el) {
+    if (typeof el === 'string') el = document.getElementById(el);
+    if (!el || el.disabled) return;
+    if (typeof el.showPicker === 'function') {
+        try {
+            el.showPicker();
+            return;
+        } catch (e) {
+            console.warn('showPicker error:', e);
+        }
+    }
+    el.focus();
+}
+
+function triggerDatePick(inputId) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const isMasuk = inputId.includes('masuk');
+    const autoChk = document.getElementById(isMasuk ? 'masuk_tgl_auto' : 'keluar_tgl_auto');
+    if (autoChk && autoChk.checked) {
+        if (isMasuk) toggleAutoDateMasuk(false);
+        else toggleAutoDateKeluar(false);
+    } else {
+        openNativeDatePicker(input);
+    }
+}
+
 function toggleAutoDateMasuk(isAuto) {
     const chk = document.getElementById('masuk_tgl_auto');
     const input = document.getElementById('masuk_tanggal');
@@ -2379,7 +2416,9 @@ function toggleAutoDateMasuk(isAuto) {
         input.disabled = false;
         input.classList.remove('bg-slate-100', 'dark:bg-slate-800/60', 'cursor-not-allowed', 'opacity-75');
         input.classList.add('bg-sage-50/50', 'dark:bg-slate-800', 'cursor-pointer', 'opacity-100');
-        input.focus();
+        setTimeout(() => {
+            openNativeDatePicker(input);
+        }, 50);
     }
 }
 
@@ -2397,7 +2436,9 @@ function toggleAutoDateKeluar(isAuto) {
         input.disabled = false;
         input.classList.remove('bg-slate-100', 'dark:bg-slate-800/60', 'cursor-not-allowed', 'opacity-75');
         input.classList.add('bg-sage-50/50', 'dark:bg-slate-800', 'cursor-pointer', 'opacity-100');
-        input.focus();
+        setTimeout(() => {
+            openNativeDatePicker(input);
+        }, 50);
     }
 }
 
