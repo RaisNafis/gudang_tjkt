@@ -470,6 +470,10 @@
         if (typeof initInventoryChart === 'function') {
             setTimeout(initInventoryChart, 100);
         }
+        if (typeof initTabAnalytics === 'function') {
+            const currentTab = (new URLSearchParams(window.location.search).get('tab') || 'dashboard');
+            setTimeout(() => initTabAnalytics(currentTab), 100);
+        }
     }
 
     function updateThemeToggleIcons(isDark) {

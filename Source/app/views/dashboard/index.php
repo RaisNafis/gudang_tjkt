@@ -2106,15 +2106,15 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                 <?php if ($isSuperAdmin): ?>
                 <!-- Charts Row for Barang -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <div class="lg:col-span-7 bg-white p-6 rounded-2xl border border-sage-200/80 shadow-sm">
-                        <h3 class="text-base font-bold text-slate-800 mb-1">Total Stok Alat & Bahan per Jurusan</h3>
-                        <p class="text-xs text-slate-500 mb-4">Total stok seluruh alat & bahan inventaris di masing-masing jurusan</p>
+                    <div class="lg:col-span-7 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm">
+                        <h3 class="text-base font-bold text-slate-800 dark:text-white mb-1">Total Stok Alat & Bahan per Jurusan</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Total stok seluruh alat & bahan inventaris di masing-masing jurusan</p>
                         <div class="relative h-64 w-full"><canvas id="barangColumnChart"></canvas></div>
                     </div>
-                    <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-sage-200/80 shadow-sm flex flex-col justify-between">
+                    <div class="lg:col-span-5 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm flex flex-col justify-between">
                         <div>
-                            <h3 class="text-base font-bold text-slate-800 mb-1">Persentase Stok Alat & Bahan per Jurusan</h3>
-                            <p class="text-xs text-slate-500 mb-4">Proporsi stok alat & bahan di seluruh jurusan</p>
+                            <h3 class="text-base font-bold text-slate-800 dark:text-white mb-1">Persentase Stok Alat & Bahan per Jurusan</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Proporsi stok alat & bahan di seluruh jurusan</p>
                         </div>
                         <div class="relative h-56 w-full flex items-center justify-center"><canvas id="barangPieChart"></canvas></div>
                     </div>
@@ -4214,15 +4214,22 @@ function initInventoryChart() {
     }
 }
 
-let tabAnalyticsCharts = {};
+let tabAnalyticsCharts = window.tabAnalyticsCharts || {};
+window.tabAnalyticsCharts = tabAnalyticsCharts;
 
 function initTabAnalytics(tabId) {
     const isSuperAdmin = window.currentUser && window.currentUser.peran === 'admin_sekolah';
 
-    const destroyChart = (key) => {
+    const destroyChart = (key, ctx = null) => {
         if (tabAnalyticsCharts[key]) {
-            tabAnalyticsCharts[key].destroy();
+            try { tabAnalyticsCharts[key].destroy(); } catch (e) {}
             tabAnalyticsCharts[key] = null;
+        }
+        if (ctx && typeof Chart !== 'undefined' && Chart.getChart) {
+            try {
+                const existing = Chart.getChart(ctx);
+                if (existing) existing.destroy();
+            } catch (e) {}
         }
     };
 
@@ -4680,14 +4687,15 @@ function initTabAnalytics(tabId) {
             const rawName = b.nama_jurusan || 'Semua Jurusan';
             const match = rawName.match(/\(([^)]+)\)/);
             const jName = match ? match[1] : rawName;
-            jCounts[jName] = (jCounts[jName] || 0) + (parseInt(b.stok_total || 0));
+            const stokVal = parseInt(b.stok_total ?? b.stok_awal ?? b.stok_tersedia ?? b.stok ?? 0) || 0;
+            jCounts[jName] = (jCounts[jName] || 0) + stokVal;
         });
         const labels = Object.keys(jCounts).length > 0 ? Object.keys(jCounts) : ['Belum Ada Data'];
         const data = Object.values(jCounts).length > 0 ? Object.values(jCounts) : [0];
         const bgColors = getColorsForLabels(labels);
 
         if (ctxCol) {
-            destroyChart('brgCol');
+            destroyChart('brgCol', ctxCol);
             tabAnalyticsCharts['brgCol'] = new Chart(ctxCol, {
                 type: 'bar',
                 data: { labels: labels, datasets: [{ label: 'Total Stok', data: data, backgroundColor: bgColors, borderRadius: 8, maxBarThickness: 48 }] },
@@ -4695,7 +4703,7 @@ function initTabAnalytics(tabId) {
             });
         }
         if (ctxPie) {
-            destroyChart('brgPie');
+            destroyChart('brgPie', ctxPie);
             tabAnalyticsCharts['brgPie'] = new Chart(ctxPie, {
                 type: 'pie',
                 data: {
@@ -6458,6 +6466,7 @@ function renderActiveTabTable(tabId) {
         refreshBarangFilterDropdowns();
         const p = window.tablePaginators && window.tablePaginators['tableBarang'];
         if (p) p.reinit();
+        if (typeof initTabAnalytics === 'function') initTabAnalytics('barang');
     } else if (tabId === 'peminjaman') {
         renderTablePeminjaman();
         renderTableLogPeminjaman();
@@ -6465,6 +6474,7 @@ function renderActiveTabTable(tabId) {
         if (p1) p1.reinit();
         const p2 = window.tablePaginators && window.tablePaginators['tableLogPeminjaman'];
         if (p2) p2.reinit();
+        if (typeof initTabAnalytics === 'function') initTabAnalytics('peminjaman');
     } else if (tabId === 'barang-masuk') {
         renderTableBarangMasuk();
         renderTableLogBarangMasuk();
@@ -6472,6 +6482,7 @@ function renderActiveTabTable(tabId) {
         if (p1) p1.reinit();
         const p2 = window.tablePaginators && window.tablePaginators['tableLogBarangMasuk'];
         if (p2) p2.reinit();
+        if (typeof initTabAnalytics === 'function') initTabAnalytics('barang-masuk');
     } else if (tabId === 'barang-keluar') {
         renderTableBarangKeluar();
         renderTableLogBarangKeluar();
@@ -6479,6 +6490,7 @@ function renderActiveTabTable(tabId) {
         if (p1) p1.reinit();
         const p2 = window.tablePaginators && window.tablePaginators['tableLogBarangKeluar'];
         if (p2) p2.reinit();
+        if (typeof initTabAnalytics === 'function') initTabAnalytics('barang-keluar');
     } else if (tabId === 'pengguna') {
         renderTablePengguna();
         if (typeof filterTableKabengMulti === 'function') filterTableKabengMulti();
@@ -6491,6 +6503,7 @@ function renderActiveTabTable(tabId) {
         renderTableKategori();
         const p = window.tablePaginators && window.tablePaginators['tableKategori'];
         if (p) p.reinit();
+        if (typeof initTabAnalytics === 'function') initTabAnalytics('kategori');
     } else if (tabId === 'rak') {
         renderTableRak();
         const p = window.tablePaginators && window.tablePaginators['tableRak'];
@@ -6499,6 +6512,7 @@ function renderActiveTabTable(tabId) {
         renderTableLogAktivitas();
         const p = window.tablePaginators && window.tablePaginators['tableLogAktivitas'];
         if (p) p.reinit();
+        if (typeof initTabAnalytics === 'function') initTabAnalytics('log-aktivitas');
     } else if (tabId === 'dashboard') {
         if (typeof initInventoryChart === 'function') initInventoryChart();
         if (typeof renderRecentLogMasukKeluar === 'function') renderRecentLogMasukKeluar();
