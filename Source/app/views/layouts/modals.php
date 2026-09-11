@@ -409,79 +409,67 @@
 </div>
 
 <!-- MODAL ROLLBACK MIGRASI KELAS SISWA -->
-<div id="modalRollbackMigrasiSiswa" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-[#2a2a2a] shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
-        <!-- Header -->
-        <div class="p-5 sm:p-6 bg-slate-50/80 dark:bg-[#181818] border-b border-slate-200 dark:border-[#262626] flex items-center justify-between shrink-0">
-            <div>
-                <h3 class="text-base font-bold text-slate-900 dark:text-white">Rollback Migrasi Kelas Siswa</h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Batalkan migrasi dan kembalikan siswa ke kelas & tahun ajaran semula</p>
-            </div>
-            <button type="button" onclick="closeModal('modalRollbackMigrasiSiswa')" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 rounded-lg transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+<div id="modalRollbackMigrasiSiswa" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-[#1a1a1a] rounded-3xl border border-slate-200 dark:border-[#262626] shadow-2xl w-full max-w-xl p-6 relative transition-all">
+        <!-- Close Button (X) -->
+        <button type="button" onclick="closeModal('modalRollbackMigrasiSiswa')" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#252525] transition-colors" title="Tutup">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <!-- Title & Subtitle (Langsung di Konten Tanpa Header Terpisah) -->
+        <div class="mb-4 pr-8">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Rollback Migrasi Kelas Siswa</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                Batalkan migrasi dan kembalikan siswa ke kelas & tahun ajaran semula
+            </p>
         </div>
 
         <!-- Body -->
-        <form id="formRollbackMigrasiSiswa" onsubmit="handleRollbackMigrasiSubmit(event)" class="p-5 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
+        <form id="formRollbackMigrasiSiswa" onsubmit="handleRollbackMigrasiSubmit(event)" class="space-y-4 text-xs">
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
             <input type="hidden" id="rollback_batch_id" name="batch_id" value="">
 
-            <!-- Empty State (No migration to rollback) -->
-            <div id="rollbackEmptyState" class="hidden py-8 px-4 text-center space-y-2 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700">
-                <h4 class="font-bold text-slate-700 dark:text-slate-200">Tidak Ada Riwayat Migrasi Aktif</h4>
-                <p class="text-slate-500 dark:text-slate-400 text-[11px]">Belum ada batch migrasi yang tercatat, atau migrasi terakhir sudah pernah di-rollback sebelumnya.</p>
+            <!-- Empty State (No migration to rollback - Tanpa Card Box) -->
+            <div id="rollbackEmptyState" class="hidden py-8 text-center space-y-2">
+                <h4 class="font-bold text-slate-700 dark:text-slate-200 text-sm">Tidak Ada Riwayat Migrasi Aktif</h4>
+                <p class="text-slate-500 dark:text-slate-400 text-xs leading-relaxed">Belum ada batch migrasi yang tercatat, atau migrasi terakhir sudah pernah di-rollback sebelumnya.</p>
             </div>
 
-            <!-- Data Card (When migration exists) -->
+            <!-- Data Card (When migration exists - Hanya Teks Tanpa Card Box) -->
             <div id="rollbackDataCard" class="hidden space-y-4">
-                <div class="p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 space-y-1">
-                    <div class="font-bold text-slate-900 dark:text-white">
-                        Konfirmasi Pembatalan Migrasi
-                    </div>
-                    <p class="text-[11.5px] leading-relaxed text-slate-600 dark:text-slate-400">
-                        Sistem akan mengembalikan seluruh data siswa pada migrasi ini ke tingkatan kelas dan tahun ajaran aslinya.
-                    </p>
-                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Sistem akan mengembalikan seluruh data siswa pada migrasi ini ke tingkatan kelas dan tahun ajaran aslinya.
+                </p>
 
-                <!-- Info Grid -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                    <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
+                <!-- Info Grid (Clean Text) -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 py-1 text-xs">
+                    <div class="py-1 border-b border-slate-100 dark:border-slate-800/60">
                         <span class="block text-[10px] text-slate-400 font-bold uppercase">Waktu Migrasi</span>
                         <span id="rollbackInfoWaktu" class="font-bold text-slate-800 dark:text-slate-200 text-xs mt-0.5 block">-</span>
                     </div>
-                    <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
+                    <div class="py-1 border-b border-slate-100 dark:border-slate-800/60">
                         <span class="block text-[10px] text-slate-400 font-bold uppercase">Tahun Ajaran Asal</span>
                         <span id="rollbackInfoTaAsal" class="font-bold text-slate-900 dark:text-white text-xs mt-0.5 block">-</span>
                     </div>
-                    <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
+                    <div class="py-1 border-b border-slate-100 dark:border-slate-800/60">
                         <span class="block text-[10px] text-slate-400 font-bold uppercase">Jurusan / Lingkup</span>
                         <span id="rollbackInfoJurusan" class="font-bold text-slate-800 dark:text-slate-200 text-xs mt-0.5 block">Semua Jurusan</span>
                     </div>
                 </div>
 
-                <!-- Detail Alur Rollback Cards (Clean, NO badges, NO emoji arrows) -->
-                <div class="space-y-2">
-                    <div class="p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between">
-                        <div class="flex items-center gap-2.5">
-                            <span class="w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold flex items-center justify-center text-xs">1</span>
-                            <span class="font-semibold text-slate-700 dark:text-slate-200">Siswa LULUS &rarr; Dikembalikan ke Kelas 12</span>
-                        </div>
-                        <span id="rollbackCount12" class="font-bold text-xs text-slate-800 dark:text-slate-200">0 Siswa</span>
+                <!-- Detail Alur Rollback (Hanya Teks, Tanpa Badges & Box) -->
+                <div class="space-y-2 py-0.5 text-xs text-slate-700 dark:text-slate-300">
+                    <div class="flex items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800/60">
+                        <span>Siswa LULUS &rarr; Dikembalikan ke Kelas 12</span>
+                        <span id="rollbackCount12" class="font-bold text-slate-800 dark:text-slate-200">0 Siswa</span>
                     </div>
-                    <div class="p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between">
-                        <div class="flex items-center gap-2.5">
-                            <span class="w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold flex items-center justify-center text-xs">2</span>
-                            <span class="font-semibold text-slate-700 dark:text-slate-200">Kelas 12 &rarr; Dikembalikan ke Kelas 11</span>
-                        </div>
-                        <span id="rollbackCount11" class="font-bold text-xs text-slate-800 dark:text-slate-200">0 Siswa</span>
+                    <div class="flex items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800/60">
+                        <span>Kelas 12 &rarr; Dikembalikan ke Kelas 11</span>
+                        <span id="rollbackCount11" class="font-bold text-slate-800 dark:text-slate-200">0 Siswa</span>
                     </div>
-                    <div class="p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between">
-                        <div class="flex items-center gap-2.5">
-                            <span class="w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold flex items-center justify-center text-xs">3</span>
-                            <span class="font-semibold text-slate-700 dark:text-slate-200">Kelas 11 &rarr; Dikembalikan ke Kelas 10</span>
-                        </div>
-                        <span id="rollbackCount10" class="font-bold text-xs text-slate-800 dark:text-slate-200">0 Siswa</span>
+                    <div class="flex items-center justify-between py-1.5">
+                        <span>Kelas 11 &rarr; Dikembalikan ke Kelas 10</span>
+                        <span id="rollbackCount10" class="font-bold text-slate-800 dark:text-slate-200">0 Siswa</span>
                     </div>
                 </div>
             </div>
