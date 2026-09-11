@@ -7226,7 +7226,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Cek jika akun masih menggunakan token default sebagai kata sandi
     if (window.currentUser && window.currentUser.is_password_token) {
-        if (!sessionStorage.getItem('dismissed_token_pwd_modal')) {
+        const uid = window.currentUser.id || 'current';
+        const key = 'dismissed_token_pwd_modal_' + uid;
+        const isDismissed = (localStorage.getItem(key) === '1') || 
+                            (sessionStorage.getItem('dismissed_token_pwd_modal') === '1') || 
+                            document.cookie.includes(key + '=1');
+        if (!isDismissed) {
             setTimeout(() => {
                 openModal('modalUbahPasswordToken');
             }, 350);

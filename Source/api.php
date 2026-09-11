@@ -936,11 +936,26 @@ try {
 
         if ($ok) {
             $_SESSION['password_is_token'] = false;
+            $userId = $currentUser['id'];
+            $_SESSION['dismissed_token_pwd_modal_' . $userId] = true;
+            $isHttps = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+            setcookie('dismissed_token_pwd_modal_' . $userId, '1', time() + (365 * 86400), '/', '', $isHttps, false);
             LogAktivitas::log('GANTI_PASSWORD', 'Pengguna ' . $currentUser['nama_pengguna'] . ' berhasil mengubah kata sandi dari token default', $currentUser['jurusan_id'] ?? null);
             echo json_encode(['success' => true, 'message' => 'Kata sandi berhasil diperbarui! Silakan gunakan kata sandi baru Anda untuk login berikutnya.']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Gagal mengubah kata sandi. Silakan coba lagi.']);
         }
+        exit;
+    }
+
+    if ($action === 'dismiss_token_password_modal') {
+        $userId = $_SESSION['user_id'] ?? '';
+        if ($userId) {
+            $_SESSION['dismissed_token_pwd_modal_' . $userId] = true;
+            $isHttps = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+            setcookie('dismissed_token_pwd_modal_' . $userId, '1', time() + (365 * 86400), '/', '', $isHttps, false);
+        }
+        echo json_encode(['success' => true]);
         exit;
     }
 

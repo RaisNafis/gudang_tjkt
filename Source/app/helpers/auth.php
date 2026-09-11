@@ -91,6 +91,10 @@ function currentUser($refresh = false) {
                 if (!empty($u['token']) && !empty($u['kata_sandi_hash'])) {
                     $isPasswordToken = password_verify($u['token'], $u['kata_sandi_hash']) || password_verify(strtoupper($u['token']), $u['kata_sandi_hash']);
                 }
+                // Jika sudah pernah klik Nanti Saja, jangan munculkan modal lagi
+                if (!empty($_SESSION['dismissed_token_pwd_modal_' . $u['id']]) || !empty($_COOKIE['dismissed_token_pwd_modal_' . $u['id']])) {
+                    $isPasswordToken = false;
+                }
                 $u['is_password_token'] = $isPasswordToken;
                 unset($u['kata_sandi_hash']);
 

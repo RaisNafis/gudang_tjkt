@@ -1,7 +1,7 @@
 /**
  * Service Worker for Gudang Sekolah PWA Offline Performance
  */
-const CACHE_NAME = 'gudang-sekolah-v3';
+const CACHE_NAME = 'gudang-sekolah-v4';
 const ASSETS_TO_CACHE = [
   'assets/js/tailwind.min.js',
   'assets/js/chart.min.js',
@@ -29,12 +29,22 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // 1. Ignore non-http(s) requests (e.g. chrome-extension://)
+  // 1. Only handle GET requests. Never intercept POST, PUT, DELETE, etc.
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // 2. Ignore non-http(s) requests (e.g. chrome-extension://)
   if (!event.request.url.startsWith('http://') && !event.request.url.startsWith('https://')) {
     return;
   }
 
-  // 2. Handle Favicon.ico cleanly if not found
+  // 3. Never intercept API calls - always let them go directly to network
+  if (event.request.url.includes('api.php') || event.request.url.includes('/api/')) {
+    return;
+  }
+
+  // 4. Handle Favicon.ico cleanly if not found
   if (event.request.url.includes('/favicon.ico')) {
     event.respondWith(
       caches.match('assets/img/belmoti.png').then((cached) => {
@@ -44,8 +54,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 3. Network first strategy for HTML navigation & PHP / API endpoints
-  if (event.request.mode === 'navigate' || event.request.url.includes('/api/') || event.request.url.includes('.php')) {
+  // 5. Network first strategy for HTML page navigation only
+  if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request).catch(async () => {
         const cached = await caches.match(event.request);

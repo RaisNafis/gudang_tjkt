@@ -1571,26 +1571,12 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
 
-        <!-- Header with Icon -->
-        <div class="flex items-start gap-3.5 mb-4">
-            <div class="w-11 h-11 rounded-xl bg-sage-100 dark:bg-sage-900/30 text-sage-600 dark:text-sage-400 flex items-center justify-center shrink-0">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                </svg>
-            </div>
-            <div>
-                <h3 class="text-base font-bold text-slate-800 dark:text-white">Ubah Password Akun</h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Perbarui kata sandi default Anda untuk keamanan akun</p>
-            </div>
-        </div>
-
-        <!-- Information Notice Box -->
-        <div class="bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/40 rounded-xl p-3.5 mb-5 text-xs text-amber-900 dark:text-amber-200 leading-relaxed">
-            <p class="mb-2">Saat ini akun Anda masih menggunakan <strong>Token Bawaan</strong> sebagai kata sandi login. Silakan ubah ke kata sandi baru pribadi Anda yang aman dan mudah diingat.</p>
-            <div class="flex items-center gap-2 pt-2 border-t border-amber-200/60 dark:border-amber-800/40 text-[11px] text-amber-700 dark:text-amber-300">
-                <span>Token Bawaan Anda:</span>
-                <span id="labelUserTokenDisplay" class="font-mono font-bold text-amber-950 dark:text-amber-100 bg-white/80 dark:bg-[#181818] px-2 py-0.5 rounded border border-amber-300 dark:border-amber-700 select-all"><?= htmlspecialchars($user['token'] ?? '-'); ?></span>
-            </div>
+        <!-- Title & Text (Hanya Teks Saja, Tanpa Emoji & Tanpa Badge Card) -->
+        <div class="mb-5 pr-6">
+            <h3 class="text-base font-bold text-slate-800 dark:text-white">Ubah Password Akun</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+                Saat ini akun Anda masih menggunakan token bawaan sebagai kata sandi login. Silakan ubah ke kata sandi baru pribadi Anda yang aman dan mudah diingat.
+            </p>
         </div>
 
         <!-- Form -->
@@ -1625,9 +1611,8 @@
                 <button type="button" onclick="closeModalUbahPasswordToken(true)" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#252525] rounded-xl transition-colors">
                     Nanti Saja
                 </button>
-                <button type="submit" id="btnSubmitUbahPasswordToken" class="px-5 py-2 bg-sage-600 hover:bg-sage-700 text-white font-bold text-xs rounded-xl shadow-md shadow-sage-600/20 transition-all flex items-center gap-1.5">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                    <span>Save Changes</span>
+                <button type="submit" id="btnSubmitUbahPasswordToken" class="px-5 py-2 bg-sage-600 hover:bg-sage-700 text-white font-bold text-xs rounded-xl shadow-md shadow-sage-600/20 transition-all">
+                    Save Changes
                 </button>
             </div>
         </form>
@@ -6778,10 +6763,15 @@ async function handleMultiJurusanSubmit(event) {
     }
 }
 
-function closeModalUbahPasswordToken(rememberDismiss = false) {
+function closeModalUbahPasswordToken(rememberDismiss = true) {
     closeModal('modalUbahPasswordToken');
     if (rememberDismiss) {
-        sessionStorage.setItem('dismissed_token_pwd_modal', '1');
+        const uid = window.currentUser ? window.currentUser.id : 'current';
+        const key = 'dismissed_token_pwd_modal_' + uid;
+        try { localStorage.setItem(key, '1'); } catch(e) {}
+        try { sessionStorage.setItem('dismissed_token_pwd_modal', '1'); } catch(e) {}
+        document.cookie = key + '=1; path=/; max-age=31536000; SameSite=Lax';
+        try { fetch('api.php?action=dismiss_token_password_modal'); } catch(e) {}
     }
 }
 
@@ -6827,7 +6817,7 @@ async function submitUbahPasswordToken(e) {
 
     if (btn) {
         btn.disabled = true;
-        btn.innerHTML = `<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> <span>Menyimpan...</span>`;
+        btn.innerText = 'Menyimpan...';
     }
 
     try {
@@ -6838,7 +6828,11 @@ async function submitUbahPasswordToken(e) {
             if (window.currentUser) {
                 window.currentUser.is_password_token = false;
             }
-            sessionStorage.setItem('dismissed_token_pwd_modal', '1');
+            const uid = window.currentUser ? window.currentUser.id : 'current';
+            const key = 'dismissed_token_pwd_modal_' + uid;
+            try { localStorage.setItem(key, '1'); } catch(e) {}
+            try { sessionStorage.setItem('dismissed_token_pwd_modal', '1'); } catch(e) {}
+            document.cookie = key + '=1; path=/; max-age=31536000; SameSite=Lax';
             closeModal('modalUbahPasswordToken');
         } else {
             showToast(data.message || 'Gagal mengubah kata sandi.', 'error');
@@ -6853,7 +6847,7 @@ async function submitUbahPasswordToken(e) {
     } finally {
         if (btn) {
             btn.disabled = false;
-            btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> <span>Save Changes</span>`;
+            btn.innerText = 'Save Changes';
         }
     }
 }
