@@ -352,105 +352,45 @@
         <form id="formMigrasiSiswa" onsubmit="handleMigrasiSiswaSubmit(event)" class="p-5 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
 
-            <!-- Notice Box -->
-            <div class="p-3.5 bg-slate-50 dark:bg-[#181818] border border-slate-200 dark:border-[#262626] rounded-2xl text-slate-700 dark:text-slate-300 space-y-1">
-                <div class="text-slate-900 dark:text-white font-bold text-xs">
-                    Pemberitahuan Migrasi Serentak
-                </div>
-                <p class="text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
-                    Sistem akan memproses kenaikan kelas seluruh siswa aktif secara serentak dalam satu kali eksekusi tanpa perlu memilih satu per satu:
-                </p>
-            </div>
+            <!-- Penjelasan Teks Bersih (Tanpa Card Box & Badge) -->
+            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                Sistem akan memproses kenaikan kelas seluruh siswa aktif secara serentak untuk tahun ajaran baru:
+            </p>
 
-            <!-- 3 Migration Steps Cards (Clean, No badges, Black & White) -->
-            <div class="space-y-2">
-                <!-- Step 1: Kelas 10 ke 11 -->
-                <div class="p-3.5 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-2xl flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-7 h-7 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 flex items-center justify-center font-bold text-xs shrink-0">
-                            1
-                        </div>
-                        <div>
-                            <div class="font-bold text-slate-800 dark:text-white text-xs flex items-center gap-1.5">
-                                <span>Kelas 10</span>
-                                <span class="text-slate-400">&rarr;</span>
-                                <span>Naik ke Kelas 11</span>
-                            </div>
-                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Misal: <code class="text-slate-700 dark:text-slate-300 font-semibold">10-TKJ</code> menjadi <code class="text-slate-900 dark:text-white font-bold">11-TKJ</code></p>
-                        </div>
-                    </div>
-                    <div class="text-right shrink-0">
-                        <span id="migrasiCountKelas10" class="text-xs font-bold text-slate-800 dark:text-slate-200">
-                            0 Siswa
-                        </span>
-                    </div>
+            <!-- Teks Alur Kenaikan Kelas (Hanya Teks) -->
+            <div class="space-y-2 py-0.5 text-xs text-slate-700 dark:text-slate-300">
+                <div class="flex items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800/60">
+                    <span>Kelas 10 &rarr; Naik ke Kelas 11</span>
+                    <span id="migrasiCountKelas10" class="font-bold text-slate-800 dark:text-slate-200">0 Siswa</span>
                 </div>
-
-                <!-- Step 2: Kelas 11 ke 12 -->
-                <div class="p-3.5 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-2xl flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-7 h-7 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 flex items-center justify-center font-bold text-xs shrink-0">
-                            2
-                        </div>
-                        <div>
-                            <div class="font-bold text-slate-800 dark:text-white text-xs flex items-center gap-1.5">
-                                <span>Kelas 11</span>
-                                <span class="text-slate-400">&rarr;</span>
-                                <span>Naik ke Kelas 12</span>
-                            </div>
-                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Misal: <code class="text-slate-700 dark:text-slate-300 font-semibold">11-TKJ</code> menjadi <code class="text-slate-900 dark:text-white font-bold">12-TKJ</code></p>
-                        </div>
-                    </div>
-                    <div class="text-right shrink-0">
-                        <span id="migrasiCountKelas11" class="text-xs font-bold text-slate-800 dark:text-slate-200">
-                            0 Siswa
-                        </span>
-                    </div>
+                <div class="flex items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800/60">
+                    <span>Kelas 11 &rarr; Naik ke Kelas 12</span>
+                    <span id="migrasiCountKelas11" class="font-bold text-slate-800 dark:text-slate-200">0 Siswa</span>
                 </div>
-
-                <!-- Step 3: Kelas 12 ke LULUS -->
-                <div class="p-3.5 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-2xl flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-7 h-7 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 flex items-center justify-center font-bold text-xs shrink-0">
-                            3
-                        </div>
-                        <div>
-                            <div class="font-bold text-slate-800 dark:text-white text-xs flex items-center gap-1.5">
-                                <span>Kelas 12</span>
-                                <span class="text-slate-400">&rarr;</span>
-                                <span class="font-bold">LULUS</span>
-                            </div>
-                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Siswa tingkat akhir dialihkan statusnya menjadi <code class="text-slate-900 dark:text-white font-bold">LULUS</code></p>
-                        </div>
-                    </div>
-                    <div class="text-right shrink-0">
-                        <span id="migrasiCountKelas12" class="text-xs font-bold text-slate-800 dark:text-slate-200">
-                            0 Siswa
-                        </span>
-                    </div>
+                <div class="flex items-center justify-between py-1.5">
+                    <span>Kelas 12 &rarr; Status LULUS</span>
+                    <span id="migrasiCountKelas12" class="font-bold text-slate-800 dark:text-slate-200">0 Siswa</span>
                 </div>
             </div>
 
             <!-- Scope & Target Settings -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                 <div>
-                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jurusan / Sasaran Migrasi</label>
-                    <select id="migrasi_jurusan_id" onchange="updateMigrasiCounts()" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 font-semibold focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Jurusan / Sasaran Migrasi</label>
+                    <select id="migrasi_jurusan_id" onchange="updateMigrasiCounts()" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 font-semibold focus:outline-none focus:border-slate-800 dark:focus:border-white">
                         <!-- Populated based on currentUser -->
                     </select>
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Target Tahun Ajaran Baru</label>
-                    <input type="text" id="migrasi_tahun_ajaran" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 font-semibold focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="contoh: 2027/2028">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Target Tahun Ajaran Baru</label>
+                    <input type="text" id="migrasi_tahun_ajaran" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 font-semibold focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="contoh: 2027/2028">
                 </div>
             </div>
 
-            <!-- Caution Warning -->
-            <div class="p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 rounded-xl text-[11px] text-slate-700 dark:text-slate-300 leading-relaxed">
-                <div>
-                    <strong>Konfirmasi:</strong> Pastikan Anda telah melakukan <strong>Export CSV</strong> terlebih dahulu sebagai arsip cadangan sebelum memproses migrasi.
-                </div>
-            </div>
+            <!-- Catatan Konfirmasi (Hanya Teks) -->
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed pt-0.5">
+                Pastikan Anda telah melakukan <strong class="text-slate-700 dark:text-slate-300">Export CSV</strong> terlebih dahulu sebagai arsip cadangan sebelum memproses migrasi.
+            </p>
 
             <!-- Buttons -->
             <div class="pt-3 flex items-center justify-between border-t border-slate-200 dark:border-slate-800">
