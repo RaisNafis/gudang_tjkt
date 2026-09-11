@@ -712,44 +712,42 @@
     </div>
 </div>
 
-<!-- 2.6. MODAL LIHAT DAFTAR BARANG DI RAK -->
-<div id="modalLihatBarangRak" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/40 backdrop-blur-sm animate-fade-in-up">
-    <div class="bg-white rounded-3xl border border-sage-200 shadow-2xl w-full max-w-3xl overflow-hidden">
-        <div class="p-6 bg-sage-50/80 border-b border-sage-100 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                </div>
-                <div>
-                    <h3 class="text-base font-bold text-slate-800" id="lihatRakTitle">Daftar Barang di Rak</h3>
-                    <p class="text-xs text-slate-500" id="lihatRakSubtitle">Barang inventaris yang tersimpan dalam rak ini</p>
-                </div>
-            </div>
-            <button onclick="closeModal('modalLihatBarangRak')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+<!-- 2.6. MODAL LIHAT DAFTAR BARANG DI RAK / LEMARI (Simple Minimalist, No Header Card, No Table Card) -->
+<div id="modalLihatBarangRak" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-[#1a1a1a] rounded-3xl border border-slate-200 dark:border-[#262626] shadow-2xl w-full max-w-2xl p-6 relative transition-all">
+        <!-- Close Button (X) -->
+        <button type="button" onclick="closeModal('modalLihatBarangRak')" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#252525] transition-colors" title="Tutup">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <!-- Title & Subtitle (Langsung di Konten Tanpa Header Box Terpisah) -->
+        <div class="mb-5 pr-8">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white" id="lihatRakTitle">Daftar Barang</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed" id="lihatRakSubtitle">Barang inventaris yang tersimpan di dalam lokasi ini</p>
         </div>
-        <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
-            <div class="overflow-x-auto border border-sage-200 rounded-2xl">
-                <table class="w-full text-left text-xs text-slate-600">
-                    <thead class="bg-sage-50 text-slate-700 font-bold border-b border-sage-200">
-                        <tr>
-                            <th class="py-3 px-4">No</th>
-                            <th class="py-3 px-4">Nama Barang</th>
-                            <th class="py-3 px-4">Kategori</th>
-                            <th class="py-3 px-4">Barcode</th>
-                            <th class="py-3 px-4 text-center">Stok Tersedia</th>
-                            <th class="py-3 px-4 text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="lihatRakBarangTbody" class="divide-y divide-slate-100">
-                        <tr><td colspan="6" class="py-4 text-center text-slate-400">Memuat data barang...</td></tr>
-                    </tbody>
-                </table>
-            </div>
+
+        <!-- Tabel Minimalis (Tanpa Table Card / Border Box Luar) -->
+        <div class="overflow-x-auto max-h-[60vh] overflow-y-auto mb-2">
+            <table class="w-full text-left text-xs">
+                <thead>
+                    <tr class="border-b border-slate-200 dark:border-[#2a2a2a] text-slate-400 dark:text-slate-500 text-[11px] font-bold uppercase tracking-wider">
+                        <th class="pb-2.5 px-2 w-10 text-center">No</th>
+                        <th class="pb-2.5 px-3">Nama Barang</th>
+                        <th class="pb-2.5 px-3">Kategori</th>
+                        <th class="pb-2.5 px-3">Barcode</th>
+                        <th class="pb-2.5 px-3 text-center">Stok</th>
+                        <th class="pb-2.5 px-2 text-right">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="lihatRakBarangTbody" class="divide-y divide-slate-100 dark:divide-[#252525]">
+                    <tr><td colspan="6" class="py-6 text-center text-slate-400 dark:text-slate-500">Memuat data barang...</td></tr>
+                </tbody>
+            </table>
         </div>
-        <div class="p-6 bg-slate-50 border-t border-sage-100 flex justify-end">
-            <button type="button" onclick="closeModal('modalLihatBarangRak')" class="px-5 py-2.5 bg-slate-700 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors text-xs">Tutup</button>
+
+        <!-- Action Footer (Clean Simple Button) -->
+        <div class="pt-4 mt-4 flex items-center justify-end border-t border-slate-100 dark:border-[#262626]">
+            <button type="button" onclick="closeModal('modalLihatBarangRak')" class="px-4 py-2 bg-slate-100 dark:bg-[#252525] hover:bg-slate-200 dark:hover:bg-[#2e2e2e] text-slate-700 dark:text-slate-200 font-bold rounded-xl transition-colors border border-slate-200/60 dark:border-[#333] text-xs">Tutup</button>
         </div>
     </div>
 </div>
@@ -5836,7 +5834,7 @@ async function showBarangInRakModal(rakId, rakName) {
 
     if (titleElem) titleElem.innerText = 'Daftar Barang di ' + rakName;
     if (subtitleElem) subtitleElem.innerText = 'Barang inventaris yang tersimpan di dalam ' + rakName;
-    if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-slate-400 font-semibold">Memuat data barang...</td></tr>';
+    if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="py-6 text-center text-slate-400 dark:text-slate-500 font-medium">Memuat data barang...</td></tr>';
 
     openModal('modalLihatBarangRak');
 
@@ -5845,18 +5843,17 @@ async function showBarangInRakModal(rakId, rakName) {
         const data = await res.json();
         if (data.success && data.items) {
             if (data.items.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="py-6 text-center text-slate-400 font-medium italic">Belum ada barang yang disimpan di rak ini.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-slate-400 dark:text-slate-500 font-medium italic">Belum ada barang yang disimpan di lokasi ini.</td></tr>';
             } else {
                 tbody.innerHTML = data.items.map((b, idx) => `
-                    <tr class="hover:bg-sage-50/50">
-                        <td class="py-3 px-4 text-center font-bold text-slate-500">${idx + 1}</td>
-                        <td class="py-3 px-4 font-bold text-slate-800">${b.nama_barang}</td>
-                        <td class="py-3 px-4 font-semibold text-slate-700">${b.nama_kategori || '-'}</td>
-                        <td class="py-3 px-4 font-mono text-sage-700">${b.barcode || '-'}</td>
-                        <td class="py-3 px-4 text-center font-extrabold text-sage-600">${b.stok_tersedia} / ${b.stok_total} ${b.satuan || 'Unit'}</td>
-                        <td class="py-3 px-4 text-center">
-                            <button type="button" onclick="navigateToBarangRow('${b.id}')" class="px-3 py-1.5 rounded-xl bg-sage-600 hover:bg-sage-700 text-white font-bold text-xs shadow-md shadow-sage-600/20 transition-all flex items-center justify-center gap-1.5 mx-auto">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                        <td class="py-3 px-2 text-center font-bold text-slate-400 dark:text-slate-500">${idx + 1}</td>
+                        <td class="py-3 px-3 font-bold text-slate-800 dark:text-slate-100">${escapeHtml(b.nama_barang)}</td>
+                        <td class="py-3 px-3 text-slate-600 dark:text-slate-400">${escapeHtml(b.nama_kategori || '-')}</td>
+                        <td class="py-3 px-3 font-mono text-slate-600 dark:text-slate-400">${escapeHtml(b.barcode || '-')}</td>
+                        <td class="py-3 px-3 text-center font-bold text-slate-800 dark:text-slate-100">${b.stok_tersedia} / ${b.stok_total} <span class="font-normal text-slate-400 text-[10px]">${escapeHtml(b.satuan || 'Unit')}</span></td>
+                        <td class="py-3 px-2 text-right">
+                            <button type="button" onclick="navigateToBarangRow('${b.id}')" class="px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 font-bold text-xs transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-sm">
                                 <span>View</span>
                             </button>
                         </td>
@@ -5864,10 +5861,10 @@ async function showBarangInRakModal(rakId, rakName) {
                 `).join('');
             }
         } else {
-            tbody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-red-500 font-semibold">Gagal memuat data barang rak.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="py-6 text-center text-rose-500 font-medium">Gagal memuat data barang.</td></tr>';
         }
     } catch (e) {
-        tbody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-red-500 font-semibold">Terjadi kesalahan koneksi server.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="py-6 text-center text-rose-500 font-medium">Terjadi kesalahan koneksi server.</td></tr>';
     }
 }
 
