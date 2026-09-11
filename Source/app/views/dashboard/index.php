@@ -2025,12 +2025,14 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             <h3 class="text-base font-bold text-slate-800">Master Data Rak & Lemari</h3>
                             <p class="text-xs text-slate-500">Kelola tata letak fisik rak atau lemari dan barang di dalamnya</p>
                         </div>
-                        <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
-                            <button onclick="exportTableToCSV('tableRak', 'data_rak_lemari.csv')" class="px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors" title="Download data sebagai CSV">
-                                <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                <span>Export CSV</span>
-                            </button>
-                            <button onclick="openModal('modalRak', 'Tambah Rak / Lemari Baru')" class="px-4 py-2 bg-sage-600 text-white rounded-xl font-bold text-xs shadow-md shadow-sage-600/20 hover:bg-sage-700 transition-colors">+ Tambah Rak / Lemari</button>
+                        <div class="flex flex-wrap items-center justify-end gap-2.5 sm:gap-3">
+                            <div class="flex items-center gap-2.5 shrink-0">
+                                <button onclick="exportTableToCSV('tableRak', 'data_rak_lemari.csv')" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-[#2a2a2a] rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors whitespace-nowrap" title="Download data sebagai CSV">
+                                    <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    <span>Export CSV</span>
+                                </button>
+                                <button onclick="openModal('modalRak', 'Tambah Rak / Lemari Baru')" class="px-4 py-2 bg-sage-600 text-white rounded-xl font-bold text-xs shadow-md shadow-sage-600/20 hover:bg-sage-700 transition-colors whitespace-nowrap">+ Tambah Rak / Lemari</button>
+                            </div>
                         </div>
                     </div>
                     <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100">
@@ -2064,12 +2066,8 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                                 <span><?= htmlspecialchars($rk['barcode'] ?? '-'); ?></span>
                                             </button>
                                         </td>
-                                        <td class="py-3.5 px-4 text-center">
-                                            <?php if ($isLemariRk): ?>
-                                                <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">Lemari</span>
-                                            <?php else: ?>
-                                                <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">Rak</span>
-                                            <?php endif; ?>
+                                        <td class="py-3.5 px-4 text-center font-semibold text-slate-800 dark:text-slate-100 text-xs">
+                                            <?= $isLemariRk ? 'Lemari' : 'Rak'; ?>
                                         </td>
                                         <td class="py-3.5 px-4 font-semibold text-slate-700"><?= htmlspecialchars($rk['kategori_rak'] ?? '-'); ?></td>
                                         <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><td class="py-3.5 px-4 font-bold text-sage-700"><?= htmlspecialchars($rk['nama_jurusan'] ?? 'Semua Jurusan'); ?></td><?php endif; ?>
@@ -2286,11 +2284,9 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         <td class="py-3.5 px-4 font-semibold text-slate-700"><?= htmlspecialchars($b['nama_kategori'] ?? '-'); ?></td>
                                         <td class="py-3.5 px-4 font-semibold text-slate-700">
                                             <?php if (!empty($b['nama_rak'])): ?>
-                                                <span class="inline-flex items-center gap-1">
-                                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-extrabold uppercase <?= $isLemariBarang ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300' : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'; ?>">
-                                                        <?= $isLemariBarang ? 'Lemari' : 'Rak'; ?>
-                                                    </span>
-                                                    <span><?= htmlspecialchars($b['nama_rak']); ?></span>
+                                                <span class="inline-flex items-center gap-1.5">
+                                                    <span class="text-xs font-bold text-slate-800 dark:text-slate-100">[<?= $isLemariBarang ? 'Lemari' : 'Rak'; ?>]</span>
+                                                    <span class="text-slate-700 dark:text-slate-200"><?= htmlspecialchars($b['nama_rak']); ?></span>
                                                 </span>
                                             <?php else: ?>
                                                 <span class="text-slate-400 font-normal">-</span>
@@ -5746,9 +5742,7 @@ function renderTableRak() {
     tbody.innerHTML = window.dbRak.map((rk, idx) => {
         const jurTd = isSuperAdmin ? `<td class="py-3.5 px-4 font-bold text-sage-700">${escapeHtml(rk.nama_jurusan || 'Semua Jurusan')}</td>` : '';
         const isLemari = String(rk.jenis || 'rak').toLowerCase() === 'lemari' || (rk.nama_rak && rk.nama_rak.toLowerCase().includes('lemari'));
-        const jenisBadge = isLemari
-            ? `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">Lemari</span>`
-            : `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">Rak</span>`;
+        const jenisText = isLemari ? 'Lemari' : 'Rak';
 
         return `<tr class="hover:bg-sage-50/50" data-jenis="${isLemari ? 'lemari' : 'rak'}">
             <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${rk.id}" onchange="updateBatchDeleteBar()"></td>
@@ -5760,7 +5754,7 @@ function renderTableRak() {
                     <span>${escapeHtml(rk.barcode || '-')}</span>
                 </button>
             </td>
-            <td class="py-3.5 px-4 text-center">${jenisBadge}</td>
+            <td class="py-3.5 px-4 text-center font-semibold text-slate-800 dark:text-slate-100 text-xs">${jenisText}</td>
             <td class="py-3.5 px-4 font-semibold text-slate-700">${escapeHtml(rk.kategori_rak || '-')}</td>
             ${jurTd}
             <td class="py-3.5 px-4">${escapeHtml(rk.keterangan || '-')}</td>
@@ -5836,7 +5830,7 @@ function renderTableBarang() {
 
             const isLemariBarang = (b.jenis_rak && String(b.jenis_rak).toLowerCase() === 'lemari') || (b.nama_rak && b.nama_rak.toLowerCase().includes('lemari'));
             const rakDisplay = b.nama_rak
-                ? `<span class="inline-flex items-center gap-1"><span class="px-1.5 py-0.5 rounded text-[10px] font-extrabold uppercase ${isLemariBarang ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300' : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'}">${isLemariBarang ? 'Lemari' : 'Rak'}</span> <span class="font-semibold text-slate-700 dark:text-slate-200">${escapeHtml(b.nama_rak)}</span></span>`
+                ? `<span class="inline-flex items-center gap-1.5"><span class="text-xs font-bold text-slate-800 dark:text-slate-100">[${isLemariBarang ? 'Lemari' : 'Rak'}]</span> <span class="text-slate-700 dark:text-slate-200">${escapeHtml(b.nama_rak)}</span></span>`
                 : '<span class="text-slate-400 font-normal">-</span>';
 
             return `<tr id="row-barang-${b.id}"
@@ -6936,9 +6930,9 @@ class TablePaginationManager {
                 if (this.table.id === 'tableRak') {
                     rakJenisFilterHtml = `
                         <select class="rak-jenis-filter-select px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-[#2a2a2a] rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-sage-600 transition-all cursor-pointer">
-                            <option value="">Semua Jenis (Rak & Lemari)</option>
-                            <option value="rak">Rak</option>
-                            <option value="lemari">Lemari</option>
+                            <option value="">Semua Jenis</option>
+                            <option value="rak">Rak Saja</option>
+                            <option value="lemari">Lemari Saja</option>
                         </select>
                     `;
                 }
@@ -6959,7 +6953,7 @@ class TablePaginationManager {
                     ${jurusanFilterHtml}
                     <div class="relative flex items-center shrink-0">
                         <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <input type="text" placeholder="Cari data..." class="table-search-input pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-[#2a2a2a] rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-sage-600 focus:bg-white dark:focus:bg-slate-700 transition-all w-44 focus:w-56">
+                        <input type="text" placeholder="Cari data..." class="table-search-input pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-[#2a2a2a] rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-sage-600 focus:bg-white dark:focus:bg-slate-700 transition-all w-36 sm:w-40 focus:w-48">
                     </div>
                 `;
 
