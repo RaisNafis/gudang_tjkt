@@ -1475,18 +1475,18 @@
     <div class="relative flex items-center justify-center cursor-default">
         <!-- TOMBOL AKSI & NAMA BARANG DISAMPING KANAN ATAS -->
         <div class="absolute -top-12 -right-2 md:-top-14 md:-right-2 flex items-center gap-2.5 z-20 max-w-[92vw]">
-            <!-- NAMA BARANG / JUDUL (DI UJUNG KIRI DARI DOWNLOAD ICON) -->
-            <div id="previewFotoTitleBox" class="hidden items-center px-4 py-2 rounded-full bg-slate-900/90 text-white border border-slate-700/80 shadow-2xl backdrop-blur-sm max-w-[200px] sm:max-w-[340px] md:max-w-[480px]">
-                <span id="previewFotoTitle" class="text-xs sm:text-sm font-bold truncate block"></span>
-            </div>
             <!-- TOMBOL DOWNLOAD IMAGE -->
-            <button type="button" onclick="downloadFotoPreview()" class="text-slate-300 hover:text-white p-2.5 rounded-full bg-slate-800/90 hover:bg-slate-700 transition-colors shadow-2xl border border-slate-700/80 flex items-center justify-center shrink-0" title="Unduh / Download Foto">
+            <button type="button" onclick="downloadFotoPreview()" class="text-slate-300 hover:text-white p-2.5 rounded-full bg-slate-800/90 hover:bg-slate-700 transition-colors shadow-2xl border border-slate-700/80 flex items-center justify-center shrink-0 cursor-pointer" title="Unduh / Download Foto">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
             </button>
             <!-- TOMBOL CLOSE X -->
-            <button type="button" onclick="closeModal('modalFotoPreview')" class="text-slate-300 hover:text-white p-2.5 rounded-full bg-slate-800/90 hover:bg-slate-700 transition-colors shadow-2xl border border-slate-700/80 flex items-center justify-center shrink-0" title="Tutup Preview (ESC)">
+            <button type="button" onclick="closeModal('modalFotoPreview')" class="text-slate-300 hover:text-white p-2.5 rounded-full bg-slate-800/90 hover:bg-slate-700 transition-colors shadow-2xl border border-slate-700/80 flex items-center justify-center shrink-0 cursor-pointer" title="Tutup Preview (ESC)">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
+            <!-- NAMA BARANG / JUDUL (DI UJUNG KANAN, HANYA TEKS TANPA CARD) -->
+            <div id="previewFotoTitleBox" class="hidden items-center pl-1 text-white max-w-[200px] sm:max-w-[340px] md:max-w-[480px]">
+                <span id="previewFotoTitle" class="text-xs sm:text-sm font-bold text-white drop-shadow-md truncate block"></span>
+            </div>
         </div>
         <!-- GAMBAR PREVIEW UKURAN BESAR MURNI TANPA BORDER RADIUS -->
         <img id="previewFotoImg" src="" alt="Bukti Foto" class="max-h-[92vh] max-w-[95vw] min-w-[320px] sm:min-w-[480px] md:min-w-[600px] w-auto h-auto object-contain rounded-none shadow-2xl block" loading="lazy" decoding="async">
