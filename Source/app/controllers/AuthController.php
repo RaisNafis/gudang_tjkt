@@ -33,14 +33,16 @@ class AuthController {
         $user = $this->penggunaModel->findByUsernameOrEmail($username);
         $isValidPass = $user && (
             password_verify($password, $user['kata_sandi_hash']) || 
-            $password === 'admin' || 
-            $password === 'admin123'
+            password_verify(strtoupper($password), $user['kata_sandi_hash']) || 
+            (!empty($user['token']) && (strtoupper($password) === strtoupper($user['token'])))
         );
         if ($isValidPass) {
             if (($user['peran'] ?? '') === 'siswa' || ($user['status_pengguna'] ?? '') === 'siswa') {
                 return ['success' => false, 'message' => 'Akses login untuk akun siswa sedang dinonaktifkan sementara.'];
             }
-            session_regenerate_id(true);
+            if (!headers_sent()) {
+                @session_regenerate_id(true);
+            }
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user'] = [
                 'id' => $user['id'],
@@ -109,9 +111,8 @@ class AuthController {
                         if ($user) {
                             $isValidPass = (
                                 password_verify($password, $user['kata_sandi_hash']) || 
-                                $password === 'admin' || 
-                                $password === 'admin123' ||
-                                (!empty($user['token']) && ($nama_pengguna === $user['token'] || $password === $user['token']))
+                                password_verify(strtoupper($password), $user['kata_sandi_hash']) || 
+                                (!empty($user['token']) && (strtoupper($password) === strtoupper($user['token']) || strtoupper($nama_pengguna) === strtoupper($user['token'])))
                             );
                         } else if ($guruByToken) {
                             $user = [
@@ -143,7 +144,9 @@ class AuthController {
                                 $error = 'Akses login untuk akun siswa sedang dinonaktifkan untuk sementara waktu.';
                             } else {
                                 // Session Fixation Protection
-                                session_regenerate_id(true);
+                                if (!headers_sent()) {
+                                    @session_regenerate_id(true);
+                                }
 
                                 $_SESSION['user_id'] = $user['id'];
                                 $_SESSION['user'] = [

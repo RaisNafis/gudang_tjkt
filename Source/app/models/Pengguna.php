@@ -148,6 +148,18 @@ class Pengguna {
     }
 
     /**
+     * Update kata sandi pengguna secara langsung
+     */
+    public function updatePassword($id, $newPassword) {
+        if (!$this->db) return false;
+        $stmt = $this->db->prepare("UPDATE pengguna SET kata_sandi_hash = :p, updated_at = CURRENT_TIMESTAMP WHERE id = :id");
+        return $stmt->execute([
+            ':id' => $id,
+            ':p' => password_hash($newPassword, PASSWORD_BCRYPT)
+        ]);
+    }
+
+    /**
      * Update pengguna oleh Admin
      */
     public function updateAdmin($id, $data) {

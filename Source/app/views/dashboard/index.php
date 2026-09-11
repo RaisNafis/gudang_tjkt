@@ -7209,6 +7209,15 @@ document.addEventListener('DOMContentLoaded', function() {
     filterTableBarang();
     filterTableLogAktivitas();
     if (typeof filterTableKabengMulti === 'function') filterTableKabengMulti();
+
+    // Cek jika akun masih menggunakan token default sebagai kata sandi
+    if (window.currentUser && window.currentUser.is_password_token) {
+        if (!sessionStorage.getItem('dismissed_token_pwd_modal')) {
+            setTimeout(() => {
+                openModal('modalUbahPasswordToken');
+            }, 350);
+        }
+    }
 });
 
 let searchBarangDebounceTimer = null;

@@ -901,6 +901,49 @@ try {
         exit;
     }
 
+    if ($action === 'ubah_password_dari_token') {
+        $currentUser = currentUser();
+        if (!$currentUser || empty($currentUser['id'])) {
+            echo json_encode(['success' => false, 'message' => 'Sesi pengguna tidak valid!']);
+            exit;
+        }
+
+        $newPassword = $_POST['password'] ?? '';
+        $confirmPassword = $_POST['confirm_password'] ?? '';
+
+        if (empty($newPassword)) {
+            echo json_encode(['success' => false, 'message' => 'Kata sandi baru wajib diisi!']);
+            exit;
+        }
+
+        if (strlen($newPassword) < 6) {
+            echo json_encode(['success' => false, 'message' => 'Kata sandi baru minimal harus 6 karakter!']);
+            exit;
+        }
+
+        if (!empty($confirmPassword) && $newPassword !== $confirmPassword) {
+            echo json_encode(['success' => false, 'message' => 'Konfirmasi kata sandi tidak cocok!']);
+            exit;
+        }
+
+        if (!empty($currentUser['token']) && (strtoupper($newPassword) === strtoupper($currentUser['token']))) {
+            echo json_encode(['success' => false, 'message' => 'Kata sandi baru tidak boleh sama dengan token bawaan!']);
+            exit;
+        }
+
+        $p = new Pengguna();
+        $ok = $p->updatePassword($currentUser['id'], $newPassword);
+
+        if ($ok) {
+            $_SESSION['password_is_token'] = false;
+            LogAktivitas::log('GANTI_PASSWORD', 'Pengguna ' . $currentUser['nama_pengguna'] . ' berhasil mengubah kata sandi dari token default', $currentUser['jurusan_id'] ?? null);
+            echo json_encode(['success' => true, 'message' => 'Kata sandi berhasil diperbarui! Silakan gunakan kata sandi baru Anda untuk login berikutnya.']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal mengubah kata sandi. Silakan coba lagi.']);
+        }
+        exit;
+    }
+
     if ($action === 'delete_pengguna') {
         $id = $_POST['id'] ?? '';
         $isSelf = !empty($_SESSION['user_id']) && $_SESSION['user_id'] === $id;

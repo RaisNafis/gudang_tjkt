@@ -77,6 +77,7 @@ function currentUser($refresh = false) {
         if ($db) {
             $stmt = $db->prepare("
                 SELECT p.id, p.jurusan_id, p.nama_pengguna, p.nama_lengkap, p.email, p.peran, p.nomor_telepon, p.foto_url,
+                       p.token, p.kata_sandi_hash,
                        j.nama_jurusan, j.kode_jurusan, j.warna_tema
                 FROM pengguna p
                 LEFT JOIN jurusan j ON p.jurusan_id = j.id
@@ -85,6 +86,14 @@ function currentUser($refresh = false) {
             $stmt->execute([':id' => $_SESSION['user_id']]);
             $u = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($u) {
+                // Cek apakah kata sandi saat ini masih berupa token bawaan
+                $isPasswordToken = false;
+                if (!empty($u['token']) && !empty($u['kata_sandi_hash'])) {
+                    $isPasswordToken = password_verify($u['token'], $u['kata_sandi_hash']) || password_verify(strtoupper($u['token']), $u['kata_sandi_hash']);
+                }
+                $u['is_password_token'] = $isPasswordToken;
+                unset($u['kata_sandi_hash']);
+
                 // Normalisasi peran backward-compatibility
                 if ($u['peran'] === 'admin_jurusan') $u['peran'] = 'kabeng';
                 if ($u['peran'] === 'petugas') $u['peran'] = 'guru_jurusan';

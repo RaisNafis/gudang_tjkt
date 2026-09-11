@@ -1563,6 +1563,77 @@
     </div>
 </div>
 
+<!-- MODAL UBAH PASSWORD DARI TOKEN -->
+<div id="modalUbahPasswordToken" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-[#1a1a1a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-sage-200/80 dark:border-[#262626] relative transition-all">
+        <!-- Close Button (X) -->
+        <button type="button" onclick="closeModalUbahPasswordToken(true)" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#252525] transition-colors" title="Tutup">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <!-- Header with Icon -->
+        <div class="flex items-start gap-3.5 mb-4">
+            <div class="w-11 h-11 rounded-xl bg-sage-100 dark:bg-sage-900/30 text-sage-600 dark:text-sage-400 flex items-center justify-center shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-base font-bold text-slate-800 dark:text-white">Ubah Password Akun</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Perbarui kata sandi default Anda untuk keamanan akun</p>
+            </div>
+        </div>
+
+        <!-- Information Notice Box -->
+        <div class="bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/40 rounded-xl p-3.5 mb-5 text-xs text-amber-900 dark:text-amber-200 leading-relaxed">
+            <p class="mb-2">Saat ini akun Anda masih menggunakan <strong>Token Bawaan</strong> sebagai kata sandi login. Silakan ubah ke kata sandi baru pribadi Anda yang aman dan mudah diingat.</p>
+            <div class="flex items-center gap-2 pt-2 border-t border-amber-200/60 dark:border-amber-800/40 text-[11px] text-amber-700 dark:text-amber-300">
+                <span>Token Bawaan Anda:</span>
+                <span id="labelUserTokenDisplay" class="font-mono font-bold text-amber-950 dark:text-amber-100 bg-white/80 dark:bg-[#181818] px-2 py-0.5 rounded border border-amber-300 dark:border-amber-700 select-all"><?= htmlspecialchars($user['token'] ?? '-'); ?></span>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <form id="formUbahPasswordToken" onsubmit="submitUbahPasswordToken(event)" class="space-y-4">
+            <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">Kata Sandi Baru <span class="text-red-500">*</span></label>
+                <div class="relative">
+                    <input type="password" id="inputTokenNewPassword" required minlength="6" placeholder="Minimal 6 karakter" class="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 dark:bg-[#222222] border border-slate-200 dark:border-[#2d2d2d] rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600 focus:bg-white dark:focus:bg-[#1a1a1a] transition-all">
+                    <button type="button" onclick="togglePasswordVisibility('inputTokenNewPassword', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                        <svg class="w-4 h-4 eyeOpenIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        <svg class="w-4 h-4 eyeCloseIcon hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">Konfirmasi Kata Sandi Baru <span class="text-red-500">*</span></label>
+                <div class="relative">
+                    <input type="password" id="inputTokenConfirmPassword" required minlength="6" placeholder="Ketik ulang kata sandi baru" class="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 dark:bg-[#222222] border border-slate-200 dark:border-[#2d2d2d] rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600 focus:bg-white dark:focus:bg-[#1a1a1a] transition-all">
+                    <button type="button" onclick="togglePasswordVisibility('inputTokenConfirmPassword', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                        <svg class="w-4 h-4 eyeOpenIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        <svg class="w-4 h-4 eyeCloseIcon hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
+                    </button>
+                </div>
+                <p id="tokenPasswordErrorText" class="text-[11px] text-red-500 mt-1 hidden"></p>
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-[#262626]">
+                <button type="button" onclick="closeModalUbahPasswordToken(true)" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#252525] rounded-xl transition-colors">
+                    Nanti Saja
+                </button>
+                <button type="submit" id="btnSubmitUbahPasswordToken" class="px-5 py-2 bg-sage-600 hover:bg-sage-700 text-white font-bold text-xs rounded-xl shadow-md shadow-sage-600/20 transition-all flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span>Save Changes</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- Modal Helper Functions in JavaScript -->
 <script>
 function parseJakartaDate(str) {
@@ -6703,6 +6774,86 @@ async function handleMultiJurusanSubmit(event) {
         if (btn) {
             btn.disabled = false;
             btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> <span>Simpan Akses Multi-Jurusan</span>`;
+        }
+    }
+}
+
+function closeModalUbahPasswordToken(rememberDismiss = false) {
+    closeModal('modalUbahPasswordToken');
+    if (rememberDismiss) {
+        sessionStorage.setItem('dismissed_token_pwd_modal', '1');
+    }
+}
+
+async function submitUbahPasswordToken(e) {
+    e.preventDefault();
+    const newPass = document.getElementById('inputTokenNewPassword')?.value || '';
+    const confirmPass = document.getElementById('inputTokenConfirmPassword')?.value || '';
+    const errText = document.getElementById('tokenPasswordErrorText');
+    const btn = document.getElementById('btnSubmitUbahPasswordToken');
+
+    if (errText) errText.classList.add('hidden');
+
+    if (newPass.length < 6) {
+        if (errText) {
+            errText.textContent = 'Kata sandi minimal harus 6 karakter!';
+            errText.classList.remove('hidden');
+        }
+        return;
+    }
+
+    if (newPass !== confirmPass) {
+        if (errText) {
+            errText.textContent = 'Konfirmasi kata sandi tidak cocok!';
+            errText.classList.remove('hidden');
+        }
+        return;
+    }
+
+    if (window.currentUser && window.currentUser.token && newPass.toUpperCase() === window.currentUser.token.toUpperCase()) {
+        if (errText) {
+            errText.textContent = 'Kata sandi baru tidak boleh sama dengan token bawaan!';
+            errText.classList.remove('hidden');
+        }
+        return;
+    }
+
+    const csrfInput = document.querySelector('#formUbahPasswordToken input[name="csrf_token"]');
+    const formData = new FormData();
+    formData.append('action', 'ubah_password_dari_token');
+    formData.append('password', newPass);
+    formData.append('confirm_password', confirmPass);
+    if (csrfInput) formData.append('csrf_token', csrfInput.value);
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> <span>Menyimpan...</span>`;
+    }
+
+    try {
+        const res = await fetch('api.php', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (data.success) {
+            showToast(data.message, 'success');
+            if (window.currentUser) {
+                window.currentUser.is_password_token = false;
+            }
+            sessionStorage.setItem('dismissed_token_pwd_modal', '1');
+            closeModal('modalUbahPasswordToken');
+        } else {
+            showToast(data.message || 'Gagal mengubah kata sandi.', 'error');
+            if (errText) {
+                errText.textContent = data.message || 'Gagal mengubah kata sandi.';
+                errText.classList.remove('hidden');
+            }
+        }
+    } catch (err) {
+        console.error(err);
+        showToast('Terjadi kesalahan jaringan.', 'error');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> <span>Save Changes</span>`;
         }
     }
 }
