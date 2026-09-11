@@ -489,6 +489,49 @@
 </div>
 <?php endif; ?>
 
+<!-- MODAL SINKRONISASI STOK BARANG (Simple Minimalist) -->
+<div id="modalSyncStok" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-[#1a1a1a] rounded-3xl border border-slate-200 dark:border-[#262626] shadow-2xl w-full max-w-lg p-6 relative transition-all">
+        <!-- Close Button (X) -->
+        <button type="button" onclick="closeModal('modalSyncStok')" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#252525] transition-colors" title="Tutup">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <!-- Title & Subtitle (Langsung di Konten Tanpa Header Terpisah) -->
+        <div class="mb-4 pr-8">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Sinkronisasi Stok Barang</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                Hitung ulang dan selaraskan stok total serta stok tersedia seluruh alat &amp; bahan
+            </p>
+        </div>
+
+        <!-- Body Penjelasan (Hanya Teks Bersih, Tanpa Card/Badge) -->
+        <div class="space-y-3 text-xs text-slate-600 dark:text-slate-300">
+            <p class="leading-relaxed">
+                Apakah Anda yakin ingin menyinkronkan ulang stok inventaris? Sistem akan menghitung ulang stok berdasarkan:
+            </p>
+            <div class="space-y-1.5 pl-3 border-l-2 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-xs">
+                <div>&bull; Stok awal pendaftaran data barang</div>
+                <div>&bull; Penambahan dari seluruh mutasi Barang Masuk</div>
+                <div>&bull; Pengurangan dari mutasi Barang Keluar</div>
+                <div>&bull; Pengurangan dari transaksi Peminjaman Alat yang berstatus aktif</div>
+            </div>
+            <p class="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed pt-1">
+                Data tabel dan ringkasan analitik akan langsung diperbarui secara otomatis setelah proses selesai.
+            </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="pt-5 mt-4 flex items-center justify-end gap-2.5 border-t border-slate-200 dark:border-slate-800">
+            <button type="button" onclick="closeModal('modalSyncStok')" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700 text-xs">Batal</button>
+            <button type="button" id="btnSubmitSyncStok" onclick="handleSyncStokSubmit()" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 shadow-sm transition-all flex items-center gap-2 text-xs">
+                <svg id="iconSyncStokSpin" class="w-3.5 h-3.5 hidden animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                <span>Ya, Sinkronkan Stok</span>
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- MODAL KELOLA AKSES MULTI-JURUSAN KEPALA BENGKEL -->
 <div id="modalMultiJurusanKabeng" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
     <div class="relative w-full max-w-xl bg-white dark:bg-[#1e1e1e] p-5 sm:p-6 rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
@@ -4735,6 +4778,14 @@ function closeModal(modalId) {
                 btn.disabled = false;
                 btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2m0 0l-4-4m4 4l4-4M3 10l4-4m-4 4l4 4"/></svg> <span>Ya, Rollback Migrasi</span>`;
             }
+        } else if (modalId === 'modalSyncStok') {
+            const btn = document.getElementById('btnSubmitSyncStok');
+            const spin = document.getElementById('iconSyncStokSpin');
+            if (btn) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-70', 'cursor-not-allowed');
+            }
+            if (spin) spin.classList.add('hidden');
         } else if (modalId === 'modalFotoPreview') {
             const titleBox = document.getElementById('previewFotoTitleBox');
             if (titleBox) {
@@ -6464,6 +6515,54 @@ async function handleRollbackMigrasiSubmit(e) {
         }
     }
 }
+
+// --- SINKRONISASI STOK ALAT & BAHAN ---
+async function handleSyncStokSubmit() {
+    const btn = document.getElementById('btnSubmitSyncStok');
+    const spin = document.getElementById('iconSyncStokSpin');
+    if (btn) {
+        btn.disabled = true;
+        btn.classList.add('opacity-70', 'cursor-not-allowed');
+    }
+    if (spin) spin.classList.remove('hidden');
+
+    try {
+        const formData = new FormData();
+        formData.append('action', 'sync_stok_barang');
+        const csrfInput = document.querySelector('input[name="csrf_token"]');
+        if (csrfInput) {
+            formData.append('csrf_token', csrfInput.value);
+        }
+
+        const res = await fetch('api.php', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+
+        if (data && data.success) {
+            showToast(data.message || 'Stok seluruh alat dan bahan berhasil disinkronkan!', 'success');
+            closeModal('modalSyncStok');
+            if (typeof fetchFreshDataAndRefreshUI === 'function') {
+                await fetchFreshDataAndRefreshUI('barang');
+            } else {
+                setTimeout(() => location.reload(), 800);
+            }
+        } else {
+            showToast(data.message || 'Gagal menyinkronkan stok barang.', 'error');
+        }
+    } catch (err) {
+        console.error('Error sync stok:', err);
+        showToast('Terjadi kesalahan saat menyinkronkan stok.', 'error');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.classList.remove('opacity-70', 'cursor-not-allowed');
+        }
+        if (spin) spin.classList.add('hidden');
+    }
+}
+
 // --- KELOLA AKSES MULTI-JURUSAN KEPALA BENGKEL ---
 function resolveJurusanThemeColor(colorVal) {
     if (!colorVal) return '#2E7D32';

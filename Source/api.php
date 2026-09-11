@@ -1385,8 +1385,28 @@ require_once __DIR__ . '/app/models/BarangKeluar.php';
 
         fclose($handle);
 
+        Barang::recalculateStok();
+
         LogAktivitas::log('IMPORT_BARANG', 'Mengimpor ' . $imported . ' data barang dari file CSV');
         echo json_encode(['success' => true, 'message' => "Berhasil mengimpor $imported data barang!"]);
+        exit;
+    }
+
+    if ($action === 'sync_stok_barang') {
+        $barangId = !empty($_POST['barang_id']) ? $_POST['barang_id'] : null;
+        $ok = Barang::recalculateStok($barangId);
+        if ($ok) {
+            LogAktivitas::log('SYNC_STOK', 'Sinkronisasi ulang stok seluruh alat & bahan inventaris');
+            echo json_encode([
+                'success' => true,
+                'message' => 'Stok seluruh alat dan bahan berhasil disinkronkan ulang!'
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Gagal menyinkronkan stok barang.'
+            ]);
+        }
         exit;
     }
 

@@ -7,7 +7,7 @@ class Barang {
         $db = Database::getInstance()->getConnection();
         if (!empty($jurusan_id)) {
             $stmt = $db->prepare("
-                SELECT b.*, b.stok_awal as stok_total, k.nama_kategori, j.nama_jurusan, r.nama_rak, r.kategori_rak,
+                SELECT b.*, k.nama_kategori, j.nama_jurusan, r.nama_rak, r.kategori_rak,
                        (SELECT COALESCE(SUM(pm.jumlah), 0) FROM peminjaman pm WHERE pm.barang_id = b.id AND pm.status != 'dikembalikan') as total_dipinjam,
                        (SELECT COALESCE(SUM(bk.jumlah), 0) FROM barang_keluar bk WHERE bk.barang_id = b.id) as total_keluar,
                        (SELECT COALESCE(SUM(bm.jumlah), 0) FROM barang_masuk bm WHERE bm.barang_id = b.id) as total_masuk
@@ -21,7 +21,7 @@ class Barang {
             $stmt->execute([':jid' => $jurusan_id]);
         } else {
             $stmt = $db->query("
-                SELECT b.*, b.stok_awal as stok_total, k.nama_kategori, j.nama_jurusan, r.nama_rak, r.kategori_rak,
+                SELECT b.*, k.nama_kategori, j.nama_jurusan, r.nama_rak, r.kategori_rak,
                        (SELECT COALESCE(SUM(pm.jumlah), 0) FROM peminjaman pm WHERE pm.barang_id = b.id AND pm.status != 'dikembalikan') as total_dipinjam,
                        (SELECT COALESCE(SUM(bk.jumlah), 0) FROM barang_keluar bk WHERE bk.barang_id = b.id) as total_keluar,
                        (SELECT COALESCE(SUM(bm.jumlah), 0) FROM barang_masuk bm WHERE bm.barang_id = b.id) as total_masuk
@@ -222,12 +222,18 @@ class Barang {
 
         $sql = "
             UPDATE barang b
-            SET b.stok_tersedia = GREATEST(0, 
-                b.stok_awal 
-                + (SELECT COALESCE(SUM(bm.jumlah), 0) FROM barang_masuk bm WHERE bm.barang_id = b.id)
-                - (SELECT COALESCE(SUM(bk.jumlah), 0) FROM barang_keluar bk WHERE bk.barang_id = b.id)
-                - (SELECT COALESCE(SUM(pm.jumlah), 0) FROM peminjaman pm WHERE pm.barang_id = b.id AND pm.status != 'dikembalikan')
-            )
+            SET 
+                b.stok_tersedia = GREATEST(0, 
+                    b.stok_awal 
+                    + (SELECT COALESCE(SUM(bm.jumlah), 0) FROM barang_masuk bm WHERE bm.barang_id = b.id)
+                    - (SELECT COALESCE(SUM(bk.jumlah), 0) FROM barang_keluar bk WHERE bk.barang_id = b.id)
+                    - (SELECT COALESCE(SUM(pm.jumlah), 0) FROM peminjaman pm WHERE pm.barang_id = b.id AND pm.status != 'dikembalikan')
+                ),
+                b.stok_total = GREATEST(0,
+                    b.stok_awal
+                    + (SELECT COALESCE(SUM(bm.jumlah), 0) FROM barang_masuk bm WHERE bm.barang_id = b.id)
+                    - (SELECT COALESCE(SUM(bk.jumlah), 0) FROM barang_keluar bk WHERE bk.barang_id = b.id)
+                )
         ";
         if (!empty($barangId)) {
             $sql .= " WHERE b.id = :bid";

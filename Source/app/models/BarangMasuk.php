@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../helpers/auth.php';
+require_once __DIR__ . '/Barang.php';
 
 class BarangMasuk {
     public static function getAll($jurusan_id = null) {
@@ -76,6 +77,7 @@ class BarangMasuk {
             $upd->execute([':jml' => $jumlah, ':bid' => $barang_id]);
 
             $db->commit();
+            Barang::recalculateStok($barang_id);
             return true;
         } catch (Exception $e) {
             $db->rollBack();
@@ -120,6 +122,7 @@ class BarangMasuk {
             }
 
             $db->commit();
+            Barang::recalculateStok($old['barang_id']);
             return ['success' => true, 'message' => 'Transaksi barang masuk berhasil diperbarui!'];
         } catch (Exception $e) {
             $db->rollBack();
@@ -143,6 +146,7 @@ class BarangMasuk {
             $del->execute([':id' => $id]);
 
             $db->commit();
+            Barang::recalculateStok($old['barang_id']);
             return true;
         } catch (Exception $e) {
             $db->rollBack();

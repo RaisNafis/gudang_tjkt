@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../helpers/auth.php';
+require_once __DIR__ . '/Barang.php';
 
 class Peminjaman {
     public static function getAll($jurusan_id = null) {
@@ -120,6 +121,7 @@ class Peminjaman {
             }
 
             $db->commit();
+            Barang::recalculateStok($barang_id);
             return ['success' => true, 'message' => 'Peminjaman alat berhasil disimpan!'];
         } catch (Exception $e) {
             $db->rollBack();
@@ -157,6 +159,7 @@ class Peminjaman {
             }
 
             $db->commit();
+            Barang::recalculateStok($pinjam['barang_id']);
             return ['success' => true, 'message' => 'Pengajuan pengembalian berhasil diunggah! Menunggu persetujuan admin/petugas.'];
         } catch (Exception $e) {
             $db->rollBack();
@@ -197,6 +200,7 @@ class Peminjaman {
             $upd->execute([':jml' => $pinjam['jumlah'], ':bid' => $pinjam['barang_id']]);
 
             $db->commit();
+            Barang::recalculateStok($pinjam['barang_id']);
             return ['success' => true, 'message' => 'Pengembalian barang berhasil disetujui! Stok barang telah dikembalikan.'];
         } catch (Exception $e) {
             $db->rollBack();
@@ -317,6 +321,7 @@ class Peminjaman {
             ]);
 
             $db->commit();
+            Barang::recalculateStok($old['barang_id']);
             return ['success' => true, 'message' => 'Data peminjaman berhasil diperbarui!'];
         } catch (Exception $e) {
             $db->rollBack();
@@ -341,6 +346,9 @@ class Peminjaman {
             $stmt->execute([':id' => $id]);
 
             $db->commit();
+            if ($old && !empty($old['barang_id'])) {
+                Barang::recalculateStok($old['barang_id']);
+            }
             return true;
         } catch (Exception $e) {
             $db->rollBack();

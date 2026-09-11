@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../helpers/auth.php';
+require_once __DIR__ . '/Barang.php';
 
 class BarangKeluar {
     public static function getAll($jurusan_id = null) {
@@ -83,6 +84,7 @@ class BarangKeluar {
             $upd->execute([':jml' => $jumlah, ':bid' => $barang_id]);
 
             $db->commit();
+            Barang::recalculateStok($barang_id);
             return ['success' => true, 'message' => 'Transaksi barang keluar berhasil disimpan!'];
         } catch (Exception $e) {
             $db->rollBack();
@@ -108,10 +110,10 @@ class BarangKeluar {
             if ($diff > 0) {
                 $check = $db->prepare("SELECT stok_tersedia FROM barang WHERE id = :bid LIMIT 1");
                 $check->execute([':bid' => $old['barang_id']]);
-                $brg = $check->fetch();
-                if (!$brg || $brg['stok_tersedia'] < $diff) {
+                $brg = $check->fetch(PDO::FETCH_ASSOC);
+                if (!$brg || (int)$brg['stok_tersedia'] < $diff) {
                     $db->rollBack();
-                    return ['success' => false, 'message' => 'Stok tidak mencukupi untuk penambahan jumlah keluar!'];
+                    return ['success' => false, 'message' => 'Stok tidak mencukupi untuk penambahan barang keluar! (Tersedia: ' . ($brg['stok_tersedia'] ?? 0) . ' Unit)'];
                 }
             }
 
@@ -127,6 +129,7 @@ class BarangKeluar {
             }
 
             $db->commit();
+            Barang::recalculateStok($old['barang_id']);
             return ['success' => true, 'message' => 'Transaksi barang keluar berhasil diperbarui!'];
         } catch (Exception $e) {
             $db->rollBack();
@@ -150,6 +153,7 @@ class BarangKeluar {
             $del->execute([':id' => $id]);
 
             $db->commit();
+            Barang::recalculateStok($old['barang_id']);
             return true;
         } catch (Exception $e) {
             $db->rollBack();
