@@ -2784,18 +2784,22 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                             <?php endif; ?>
                                         </td>
                                         <td class="py-3 px-4">
-                                            <?php if ($logPm['status'] === 'dikembalikan'): ?>
-                                                <?php if (!empty($user['peran']) && $user['peran'] !== 'siswa'): ?>
+                                            <div class="flex items-center gap-1.5">
+                                            <?php if (!empty($user['peran']) && $user['peran'] !== 'siswa'): ?>
+                                                <?php if ($logPm['status'] === 'dikembalikan'): ?>
                                                     <button type="button" onclick="editPeminjaman('<?= htmlspecialchars($logPm['id']); ?>')" class="p-1.5 rounded-lg bg-sage-600 hover:bg-sage-700 text-white shadow-sm transition-all flex items-center gap-1 text-xs font-bold px-2.5" title="Edit Status Peminjaman">
                                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 01-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                                         <span>Edit Status</span>
                                                     </button>
-                                                <?php else: ?>
-                                                    <span class="text-slate-400 font-normal">-</span>
                                                 <?php endif; ?>
+                                                <button type="button" onclick="deletePeminjaman('<?= htmlspecialchars($logPm['id']); ?>', '<?= htmlspecialchars(addslashes($logPm['nama_peminjam'] ?? $logPm['guru_peminjam'] ?? '')); ?>')" class="p-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm transition-all flex items-center gap-1 text-xs font-bold px-2.5" title="Hapus Riwayat Peminjaman">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                    <span>Hapus</span>
+                                                </button>
                                             <?php else: ?>
                                                 <span class="text-slate-400 font-normal">-</span>
                                             <?php endif; ?>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -5848,9 +5852,18 @@ function renderTableLogPeminjaman() {
             ? `<button type="button" onclick="showFotoPreview('${logPm.bukti_foto}', 'Bukti Foto Pengembalian Alat', 'Peminjam: ${escapeJsStr(logPm.nama_peminjam || logPm.guru_peminjam)} | Alat: ${escapeJsStr(logPm.nama_barang)}')" class="px-3 py-1 rounded-xl bg-sage-600 hover:bg-sage-700 text-white font-bold text-xs shadow-md shadow-sage-600/20 transition-all inline-flex items-center gap-1.5" title="Lihat Foto Bukti Pengembalian Alat"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg><span>View</span></button>`
             : '<span class="text-slate-400 font-normal">-</span>';
 
-        const actionBtn = (logPm.status === 'dikembalikan' && window.currentUser && window.currentUser.peran !== 'siswa')
-            ? `<button type="button" onclick="editPeminjaman('${logPm.id}')" class="p-1.5 rounded-lg bg-sage-600 hover:bg-sage-700 text-white shadow-sm transition-all flex items-center gap-1 text-xs font-bold px-2.5" title="Edit Status Peminjaman"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 01-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg><span>Edit Status</span></button>`
-            : '<span class="text-slate-400 font-normal">-</span>';
+        const canManage = window.currentUser && window.currentUser.peran !== 'siswa';
+        let actionBtn = '';
+        if (canManage) {
+            let btns = [];
+            if (logPm.status === 'dikembalikan') {
+                btns.push(`<button type="button" onclick="editPeminjaman('${logPm.id}')" class="p-1.5 rounded-lg bg-sage-600 hover:bg-sage-700 text-white shadow-sm transition-all flex items-center gap-1 text-xs font-bold px-2.5" title="Edit Status Peminjaman"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 01-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg><span>Edit Status</span></button>`);
+            }
+            btns.push(`<button type="button" onclick="deletePeminjaman('${logPm.id}', '${escapeJsStr(logPm.nama_peminjam || logPm.guru_peminjam)}')" class="p-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm transition-all flex items-center gap-1 text-xs font-bold px-2.5" title="Hapus Riwayat Peminjaman"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg><span>Hapus</span></button>`);
+            actionBtn = btns.join('');
+        } else {
+            actionBtn = '<span class="text-slate-400 font-normal">-</span>';
+        }
 
         const brgMatch = (window.dbBarang || []).find(b => String(b.id) === String(logPm.barang_id));
         const satuanDisplay = (brgMatch && brgMatch.satuan) ? brgMatch.satuan : (logPm.satuan || 'Unit');
