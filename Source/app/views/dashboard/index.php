@@ -2404,6 +2404,65 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                         </table>
                     </div>
                 </div>
+
+                <!-- LOGS RIWAYAT ALAT & BAHAN MASUK -->
+                <div class="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm p-6 mt-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-4 border-b border-sage-100 dark:border-[#262626] pb-3">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800 dark:text-white">
+                                Logs Riwayat Alat & Bahan Masuk
+                            </h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Histori kronologis seluruh pengadaan & transaksi penerimaan alat & bahan</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="exportTableToCSV('tableLogBarangMasuk', 'log_riwayat_alat_bahan_masuk.csv')" class="px-3.5 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-[#2a2a2a] rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors">
+                                <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                <span>Export Log CSV</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100 dark:border-[#262626]">
+                        <table id="tableLogBarangMasuk" class="w-full text-left text-xs text-slate-600">
+                            <thead class="bg-sage-50 text-slate-700 font-bold border-b border-sage-200">
+                                <tr>
+                                    <th class="py-3 px-4 w-12 text-center">No</th>
+                                    <th class="py-3 px-4">Alat / Bahan</th>
+                                    <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><th class="py-3 px-4">Jurusan</th><?php endif; ?>
+                                    <th class="py-3 px-4 text-center">Jumlah</th>
+                                    <th class="py-3 px-4">Pemasok / Sumber</th>
+                                    <th class="py-3 px-4">Petugas</th>
+                                    <th class="py-3 px-4">Tgl Masuk</th>
+                                    <th class="py-3 px-4">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <?php $bmLogNo = 1; foreach ($dbBarangMasuk as $bm): ?>
+                                    <tr class="hover:bg-sage-50/50">
+                                        <td class="py-3 px-4 text-center font-bold text-slate-500 row-number-cell"><?= $bmLogNo++; ?></td>
+                                        <td class="py-3 px-4 font-bold text-slate-800 dark:text-white"><?= htmlspecialchars($bm['nama_barang']); ?></td>
+                                        <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><td class="py-3 px-4 font-bold text-sage-700"><?= htmlspecialchars($bm['nama_jurusan'] ?? '-'); ?></td><?php endif; ?>
+                                        <td class="py-3 px-4 text-center font-medium text-slate-700 dark:text-slate-300"><?= htmlspecialchars($bm['jumlah']); ?> <?= htmlspecialchars($bm['satuan'] ?? 'Unit'); ?></td>
+                                        <td class="py-3 px-4 text-slate-600"><?= htmlspecialchars($bm['pemasok'] ?? $bm['catatan'] ?? '-'); ?></td>
+                                        <td class="py-3 px-4 text-slate-600"><?= htmlspecialchars($bm['nama_petugas'] ?? 'Petugas'); ?></td>
+                                        <td class="py-3 px-4 font-mono text-[11px] text-slate-600"><?= date('d M Y H:i', strtotime($bm['tanggal_masuk'] ?: $bm['created_at'])); ?></td>
+                                        <td class="py-3 px-4">
+                                            <div class="flex items-center gap-1.5">
+                                            <?php if (!empty($user['peran']) && $user['peran'] !== 'siswa'): ?>
+                                                <button type="button" onclick="deleteBarangMasuk('<?= htmlspecialchars($bm['id']); ?>', '<?= htmlspecialchars(addslashes($bm['nama_barang'])); ?>')" class="p-1.5 rounded-lg border border-slate-200 dark:border-[#2e2e2e] hover:border-red-500 text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 hover:bg-red-50/50 dark:hover:bg-red-500/10 transition-all flex items-center gap-1 text-xs font-medium px-2.5" title="Hapus Riwayat Barang Masuk">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                    <span>Hapus</span>
+                                                </button>
+                                            <?php else: ?>
+                                                <span class="text-slate-400 font-normal">-</span>
+                                            <?php endif; ?>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <!-- SECTION 6: TAB BARANG KELUAR (MySQL Live) -->
@@ -2498,6 +2557,67 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                                 <button type="button" onclick="deleteBarangKeluar('<?= htmlspecialchars($bk['id']); ?>', '<?= htmlspecialchars(addslashes($bk['nama_barang'])); ?>')" class="p-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm transition-all" title="Hapus Transaksi Barang Keluar">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                                 </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- LOGS RIWAYAT BAHAN KELUAR -->
+                <div class="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm p-6 mt-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-4 border-b border-sage-100 dark:border-[#262626] pb-3">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800 dark:text-white">
+                                Logs Riwayat Bahan Keluar
+                            </h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Histori kronologis seluruh pencatatan pengeluaran & pemakaian bahan inventaris</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="exportTableToCSV('tableLogBarangKeluar', 'log_riwayat_bahan_keluar.csv')" class="px-3.5 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-[#2a2a2a] rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors">
+                                <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                <span>Export Log CSV</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100 dark:border-[#262626]">
+                        <table id="tableLogBarangKeluar" class="w-full text-left text-xs text-slate-600">
+                            <thead class="bg-sage-50 text-slate-700 font-bold border-b border-sage-200">
+                                <tr>
+                                    <th class="py-3 px-4 w-12 text-center">No</th>
+                                    <th class="py-3 px-4">Bahan</th>
+                                    <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><th class="py-3 px-4">Jurusan</th><?php endif; ?>
+                                    <th class="py-3 px-4">Nama Penerima</th>
+                                    <th class="py-3 px-4 text-center">Jumlah</th>
+                                    <th class="py-3 px-4">Keterangan / Alasan</th>
+                                    <th class="py-3 px-4">Petugas</th>
+                                    <th class="py-3 px-4">Tgl Keluar</th>
+                                    <th class="py-3 px-4">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <?php $bkLogNo = 1; foreach ($dbBarangKeluar as $bk): ?>
+                                    <tr class="hover:bg-sage-50/50">
+                                        <td class="py-3 px-4 text-center font-bold text-slate-500 row-number-cell"><?= $bkLogNo++; ?></td>
+                                        <td class="py-3 px-4 font-bold text-slate-800 dark:text-white"><?= htmlspecialchars($bk['nama_barang']); ?></td>
+                                        <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><td class="py-3 px-4 font-bold text-sage-700"><?= htmlspecialchars($bk['nama_jurusan'] ?? '-'); ?></td><?php endif; ?>
+                                        <td class="py-3 px-4 text-slate-600"><?= htmlspecialchars($bk['nama_penerima'] ?? '-'); ?></td>
+                                        <td class="py-3 px-4 text-center font-medium text-slate-700 dark:text-slate-300"><?= htmlspecialchars($bk['jumlah']); ?> <?= htmlspecialchars($bk['satuan'] ?? 'Unit'); ?></td>
+                                        <td class="py-3 px-4 text-slate-600"><?= htmlspecialchars($bk['catatan'] ?? '-'); ?></td>
+                                        <td class="py-3 px-4 text-slate-600"><?= htmlspecialchars($bk['nama_petugas'] ?? 'Petugas'); ?></td>
+                                        <td class="py-3 px-4 font-mono text-[11px] text-slate-600"><?= date('d M Y H:i', strtotime($bk['tanggal_keluar'] ?: $bk['created_at'])); ?></td>
+                                        <td class="py-3 px-4">
+                                            <div class="flex items-center gap-1.5">
+                                            <?php if (!empty($user['peran']) && $user['peran'] !== 'siswa'): ?>
+                                                <button type="button" onclick="deleteBarangKeluar('<?= htmlspecialchars($bk['id']); ?>', '<?= htmlspecialchars(addslashes($bk['nama_barang'])); ?>')" class="p-1.5 rounded-lg border border-slate-200 dark:border-[#2e2e2e] hover:border-red-500 text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 hover:bg-red-50/50 dark:hover:bg-red-500/10 transition-all flex items-center gap-1 text-xs font-medium px-2.5" title="Hapus Riwayat Bahan Keluar">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                    <span>Hapus</span>
+                                                </button>
+                                            <?php else: ?>
+                                                <span class="text-slate-400 font-normal">-</span>
+                                            <?php endif; ?>
                                             </div>
                                         </td>
                                     </tr>
@@ -2708,20 +2828,22 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                 </div>
 
                 <!-- LOGS RIWAYAT PEMINJAMAN ALAT -->
-                <div class="bg-white rounded-2xl border border-sage-200/80 shadow-sm p-6 mt-6">
-                    <div class="flex items-center justify-between mb-4 border-b border-sage-100 pb-3">
+                <div class="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-sage-200/80 dark:border-[#262626] shadow-sm p-6 mt-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-4 border-b border-sage-100 dark:border-[#262626] pb-3">
                         <div>
-                            <h3 class="text-base font-bold text-slate-800">
+                            <h3 class="text-base font-bold text-slate-800 dark:text-white">
                                 Logs Riwayat Peminjaman Alat
                             </h3>
-                            <p class="text-xs text-slate-500">Histori kronologis seluruh pengajuan & transaksi pengembalian barang pinjaman</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Histori kronologis seluruh pengajuan & transaksi pengembalian barang pinjaman</p>
                         </div>
-                        <button onclick="exportTableToCSV('tableLogPeminjaman', 'log_riwayat_peminjaman.csv')" class="px-3.5 py-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors">
-                            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                            <span>Export Log CSV</span>
-                        </button>
+                        <div class="flex items-center gap-3">
+                            <button onclick="exportTableToCSV('tableLogPeminjaman', 'log_riwayat_peminjaman.csv')" class="px-3.5 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-[#2a2a2a] rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors">
+                                <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                <span>Export Log CSV</span>
+                            </button>
+                        </div>
                     </div>
-                    <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100">
+                    <div class="overflow-x-auto max-w-full w-full block align-middle rounded-xl border border-sage-100 dark:border-[#262626]">
                         <table id="tableLogPeminjaman" class="w-full text-left text-xs text-slate-600">
                             <thead class="bg-sage-50 text-slate-700 font-bold border-b border-sage-200">
                                 <tr>
@@ -3282,14 +3404,14 @@ function exportTableToCSV(tableId, filename) {
             'deskripsi', 'nama_kategori', 'nama_rak', 'nama_jurusan', 
             'barcode_path', 'created_at', 'updated_at'
         ];
-    } else if (tableId === 'tableBarangMasuk') {
+    } else if (tableId === 'tableBarangMasuk' || tableId === 'tableLogBarangMasuk') {
         dataset = window.dbBarangMasuk;
         tableSchema = [
             'id', 'barang_id', 'pengguna_id', 'jurusan_id', 'kode_barang', 'nama_barang', 
             'jumlah', 'tanggal_masuk', 'catatan', 'nama_petugas', 
             'nama_jurusan', 'created_at', 'updated_at'
         ];
-    } else if (tableId === 'tableBarangKeluar') {
+    } else if (tableId === 'tableBarangKeluar' || tableId === 'tableLogBarangKeluar') {
         dataset = window.dbBarangKeluar;
         tableSchema = [
             'id', 'barang_id', 'pengguna_id', 'jurusan_id', 'kode_barang', 'nama_barang', 
@@ -5745,6 +5867,73 @@ function renderTableBarangKeluar() {
     }).join('');
 }
 
+function renderTableLogBarangMasuk() {
+    const tbody = document.querySelector('#tableLogBarangMasuk tbody');
+    if (!tbody || !window.dbBarangMasuk) return;
+    const isSuperAdmin = window.currentUser && window.currentUser.peran === 'admin_sekolah';
+    const canManage = window.currentUser && window.currentUser.peran !== 'siswa';
+    const colSpan = isSuperAdmin ? 8 : 7;
+
+    if (window.dbBarangMasuk.length === 0) {
+        tbody.innerHTML = `<tr class="empty-filter-row"><td colspan="${colSpan}" class="py-8 text-center text-slate-400 font-medium">Belum ada riwayat transaksi barang masuk</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = window.dbBarangMasuk.map((bm, idx) => {
+        const jurTd = isSuperAdmin ? `<td class="py-3 px-4 font-bold text-sage-700">${escapeHtml(bm.nama_jurusan || '-')}</td>` : '';
+        const dateVal = bm.tanggal_masuk || bm.created_at;
+        const dateStr = dateVal ? formatJakartaDate(dateVal, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+        const deleteBtn = canManage
+            ? `<button type="button" onclick="deleteBarangMasuk('${bm.id}', '${escapeJsStr(bm.nama_barang)}')" class="p-1.5 rounded-lg border border-slate-200 dark:border-[#2e2e2e] hover:border-red-500 text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 hover:bg-red-50/50 dark:hover:bg-red-500/10 transition-all flex items-center gap-1 text-xs font-medium px-2.5" title="Hapus Log Riwayat"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg><span>Hapus</span></button>`
+            : '<span class="text-slate-400 font-normal">-</span>';
+
+        return `<tr class="hover:bg-sage-50/50">
+            <td class="py-3 px-4 text-center font-bold text-slate-500 row-number-cell">${idx + 1}</td>
+            <td class="py-3 px-4 font-bold text-slate-800 dark:text-white">${escapeHtml(bm.nama_barang)}</td>
+            ${jurTd}
+            <td class="py-3 px-4 text-center font-medium text-slate-700 dark:text-slate-300">${escapeHtml(bm.jumlah)} ${escapeHtml(bm.satuan || 'Unit')}</td>
+            <td class="py-3 px-4 text-slate-600 dark:text-slate-400">${escapeHtml(bm.pemasok || bm.catatan || '-')}</td>
+            <td class="py-3 px-4 text-slate-600 dark:text-slate-400">${escapeHtml(bm.nama_petugas || 'Petugas')}</td>
+            <td class="py-3 px-4 font-mono text-[11px] text-slate-600 dark:text-slate-400">${dateStr}</td>
+            <td class="py-3 px-4"><div class="flex items-center gap-1.5">${deleteBtn}</div></td>
+        </tr>`;
+    }).join('');
+}
+
+function renderTableLogBarangKeluar() {
+    const tbody = document.querySelector('#tableLogBarangKeluar tbody');
+    if (!tbody || !window.dbBarangKeluar) return;
+    const isSuperAdmin = window.currentUser && window.currentUser.peran === 'admin_sekolah';
+    const canManage = window.currentUser && window.currentUser.peran !== 'siswa';
+    const colSpan = isSuperAdmin ? 9 : 8;
+
+    if (window.dbBarangKeluar.length === 0) {
+        tbody.innerHTML = `<tr class="empty-filter-row"><td colspan="${colSpan}" class="py-8 text-center text-slate-400 font-medium">Belum ada riwayat transaksi bahan keluar</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = window.dbBarangKeluar.map((bk, idx) => {
+        const jurTd = isSuperAdmin ? `<td class="py-3 px-4 font-bold text-sage-700">${escapeHtml(bk.nama_jurusan || '-')}</td>` : '';
+        const dateVal = bk.tanggal_keluar || bk.created_at;
+        const dateStr = dateVal ? formatJakartaDate(dateVal, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+        const deleteBtn = canManage
+            ? `<button type="button" onclick="deleteBarangKeluar('${bk.id}', '${escapeJsStr(bk.nama_barang)}')" class="p-1.5 rounded-lg border border-slate-200 dark:border-[#2e2e2e] hover:border-red-500 text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 hover:bg-red-50/50 dark:hover:bg-red-500/10 transition-all flex items-center gap-1 text-xs font-medium px-2.5" title="Hapus Log Riwayat"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg><span>Hapus</span></button>`
+            : '<span class="text-slate-400 font-normal">-</span>';
+
+        return `<tr class="hover:bg-sage-50/50">
+            <td class="py-3 px-4 text-center font-bold text-slate-500 row-number-cell">${idx + 1}</td>
+            <td class="py-3 px-4 font-bold text-slate-800 dark:text-white">${escapeHtml(bk.nama_barang)}</td>
+            ${jurTd}
+            <td class="py-3 px-4 text-slate-600 dark:text-slate-400">${escapeHtml(bk.nama_penerima || '-')}</td>
+            <td class="py-3 px-4 text-center font-medium text-slate-700 dark:text-slate-300">${escapeHtml(bk.jumlah)} ${escapeHtml(bk.satuan || 'Unit')}</td>
+            <td class="py-3 px-4 text-slate-600 dark:text-slate-400">${escapeHtml(bk.catatan || '-')}</td>
+            <td class="py-3 px-4 text-slate-600 dark:text-slate-400">${escapeHtml(bk.nama_petugas || 'Petugas')}</td>
+            <td class="py-3 px-4 font-mono text-[11px] text-slate-600 dark:text-slate-400">${dateStr}</td>
+            <td class="py-3 px-4"><div class="flex items-center gap-1.5">${deleteBtn}</div></td>
+        </tr>`;
+    }).join('');
+}
+
 function renderTablePeminjaman() {
     const tbody = document.querySelector('#tablePeminjaman tbody');
     if (!tbody || !window.dbPeminjaman) return;
@@ -6278,12 +6467,18 @@ function renderActiveTabTable(tabId) {
         if (p2) p2.reinit();
     } else if (tabId === 'barang-masuk') {
         renderTableBarangMasuk();
-        const p = window.tablePaginators && window.tablePaginators['tableBarangMasuk'];
-        if (p) p.reinit();
+        renderTableLogBarangMasuk();
+        const p1 = window.tablePaginators && window.tablePaginators['tableBarangMasuk'];
+        if (p1) p1.reinit();
+        const p2 = window.tablePaginators && window.tablePaginators['tableLogBarangMasuk'];
+        if (p2) p2.reinit();
     } else if (tabId === 'barang-keluar') {
         renderTableBarangKeluar();
-        const p = window.tablePaginators && window.tablePaginators['tableBarangKeluar'];
-        if (p) p.reinit();
+        renderTableLogBarangKeluar();
+        const p1 = window.tablePaginators && window.tablePaginators['tableBarangKeluar'];
+        if (p1) p1.reinit();
+        const p2 = window.tablePaginators && window.tablePaginators['tableLogBarangKeluar'];
+        if (p2) p2.reinit();
     } else if (tabId === 'pengguna') {
         renderTablePengguna();
         if (typeof filterTableKabengMulti === 'function') filterTableKabengMulti();
@@ -6658,7 +6853,7 @@ class TablePaginationManager {
 
     renderControls() {
         if (this.table.id !== 'tableLogAktivitas' && this.table.id !== 'tableBarang') {
-            const cardHeader = this.table.closest('[class*="bg-white"]')?.querySelector('.flex.items-center.justify-between');
+            const cardHeader = this.table.closest('[class*="bg-white"]')?.querySelector('.flex.items-center.justify-between, .justify-between');
             if (cardHeader && !cardHeader.querySelector('.table-search-input')) {
                 const thList = Array.from(this.table.querySelectorAll('thead th'));
                 const jurusanColIndex = thList.findIndex(th => th.innerText.trim().toLowerCase() === 'jurusan');
@@ -6670,7 +6865,7 @@ class TablePaginationManager {
                 const isSuperAdmin = window.currentUser && window.currentUser.peran === 'admin_sekolah';
                 if (isSuperAdmin && jurusanColIndex !== -1 && window.dbJurusan && window.dbJurusan.length > 0) {
                     jurusanFilterHtml = `
-                        <select class="jurusan-filter-select px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:border-sage-600 transition-all">
+                        <select class="jurusan-filter-select px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-[#2a2a2a] rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-sage-600 transition-all">
                             <option value="">Semua Jurusan</option>
                             ${window.dbJurusan.map(j => `<option value="${j.nama_jurusan.toLowerCase()}">${j.nama_jurusan}</option>`).join('')}
                         </select>
@@ -6681,7 +6876,7 @@ class TablePaginationManager {
                     ${jurusanFilterHtml}
                     <div class="relative flex items-center shrink-0">
                         <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <input type="text" placeholder="Cari data..." class="table-search-input pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:border-sage-600 focus:bg-white transition-all w-44 focus:w-56">
+                        <input type="text" placeholder="Cari data..." class="table-search-input pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-[#2a2a2a] rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-sage-600 focus:bg-white dark:focus:bg-slate-700 transition-all w-44 focus:w-56">
                     </div>
                 `;
 
@@ -6706,8 +6901,8 @@ class TablePaginationManager {
                     }, 150);
                 });
 
-                const actionContainer = cardHeader.querySelector('.flex.items-center.gap-3') || cardHeader;
-                if (actionContainer !== cardHeader) {
+                const actionContainer = cardHeader.querySelector('.flex.items-center.gap-3, [class*="gap-3"], [class*="gap-2.5"]') || cardHeader;
+                if (actionContainer !== cardHeader && actionContainer !== cardHeader.firstElementChild) {
                     actionContainer.prepend(searchDiv);
                 } else {
                     cardHeader.appendChild(searchDiv);
@@ -7006,7 +7201,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Inisialisasi Pagination dan Live Search untuk seluruh tabel
     window.tablePaginators = window.tablePaginators || {};
-    ['tableJurusan', 'tableKategori', 'tableRak', 'tableBarang', 'tableBarangMasuk', 'tableBarangKeluar', 'tablePeminjaman', 'tableLogPeminjaman', 'tableLogAktivitas'].forEach(id => {
+    ['tableJurusan', 'tableKategori', 'tableRak', 'tableBarang', 'tableBarangMasuk', 'tableLogBarangMasuk', 'tableBarangKeluar', 'tableLogBarangKeluar', 'tablePeminjaman', 'tableLogPeminjaman', 'tableLogAktivitas'].forEach(id => {
         const defaultSize = (id === 'tableBarang') ? 10 : 5;
         window.tablePaginators[id] = new TablePaginationManager(id, defaultSize);
     });
