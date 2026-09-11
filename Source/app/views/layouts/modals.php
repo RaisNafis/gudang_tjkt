@@ -4036,17 +4036,29 @@ function renderBarangRakSelectOptions(jurId, selectedRakId = '', jenisFilter = '
 
         if (raks.length > 0) {
             html += '<optgroup label="Rak">';
-            html += raks.map(r => `<option value="${r.id}">[Rak] ${escapeHtml(r.nama_rak)}${r.kategori_rak ? ' (' + escapeHtml(r.kategori_rak) + ')' : ''}</option>`).join('');
+            html += raks.map(r => {
+                let cleanRk = (r.nama_rak || '').replace(/^(rak|lemari)\s*[:\-]?\s*/i, '').trim() || r.nama_rak;
+                const extra = r.kategori_rak ? ' - ' + r.kategori_rak : '';
+                return `<option value="${r.id}">Rak (${escapeHtml(cleanRk + extra)})</option>`;
+            }).join('');
             html += '</optgroup>';
         }
         if (lemaris.length > 0) {
             html += '<optgroup label="Lemari">';
-            html += lemaris.map(r => `<option value="${r.id}">[Lemari] ${escapeHtml(r.nama_rak)}${r.kategori_rak ? ' (' + escapeHtml(r.kategori_rak) + ')' : ''}</option>`).join('');
+            html += lemaris.map(r => {
+                let cleanRk = (r.nama_rak || '').replace(/^(rak|lemari)\s*[:\-]?\s*/i, '').trim() || r.nama_rak;
+                const extra = r.kategori_rak ? ' - ' + r.kategori_rak : '';
+                return `<option value="${r.id}">Lemari (${escapeHtml(cleanRk + extra)})</option>`;
+            }).join('');
             html += '</optgroup>';
         }
     } else {
-        const prefix = jenisFilter === 'lemari' ? '[Lemari] ' : '[Rak] ';
-        html += filteredRak.map(r => `<option value="${r.id}">${prefix}${escapeHtml(r.nama_rak)}${r.kategori_rak ? ' (' + escapeHtml(r.kategori_rak) + ')' : ''}</option>`).join('');
+        const jenisName = jenisFilter === 'lemari' ? 'Lemari' : 'Rak';
+        html += filteredRak.map(r => {
+            let cleanRk = (r.nama_rak || '').replace(/^(rak|lemari)\s*[:\-]?\s*/i, '').trim() || r.nama_rak;
+            const extra = r.kategori_rak ? ' - ' + r.kategori_rak : '';
+            return `<option value="${r.id}">${jenisName} (${escapeHtml(cleanRk + extra)})</option>`;
+        }).join('');
     }
 
     selectRak.innerHTML = html;

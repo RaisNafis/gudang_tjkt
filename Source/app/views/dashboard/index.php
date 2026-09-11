@@ -2197,15 +2197,23 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                     ?>
                                     <?php if (!empty($phpRaks)): ?>
                                         <optgroup label="Rak">
-                                            <?php foreach ($phpRaks as $rk): ?>
-                                                <option value="<?= htmlspecialchars(strval($rk['id'])); ?>">[Rak] <?= htmlspecialchars($rk['nama_rak'] . (!empty($rk['kategori_rak']) ? ' (' . $rk['kategori_rak'] . ')' : '')); ?></option>
+                                            <?php foreach ($phpRaks as $rk): 
+                                                $cleanRk = trim(preg_replace('/^(rak|lemari)\s*[:\-]?\s*/i', '', $rk['nama_rak'] ?? ''));
+                                                if ($cleanRk === '') $cleanRk = $rk['nama_rak'];
+                                                $extraRk = !empty($rk['kategori_rak']) ? ' - ' . $rk['kategori_rak'] : '';
+                                            ?>
+                                                <option value="<?= htmlspecialchars(strval($rk['id'])); ?>">Rak (<?= htmlspecialchars($cleanRk . $extraRk); ?>)</option>
                                             <?php endforeach; ?>
                                         </optgroup>
                                     <?php endif; ?>
                                     <?php if (!empty($phpLemaris)): ?>
                                         <optgroup label="Lemari">
-                                            <?php foreach ($phpLemaris as $rk): ?>
-                                                <option value="<?= htmlspecialchars(strval($rk['id'])); ?>">[Lemari] <?= htmlspecialchars($rk['nama_rak'] . (!empty($rk['kategori_rak']) ? ' (' . $rk['kategori_rak'] . ')' : '')); ?></option>
+                                            <?php foreach ($phpLemaris as $rk): 
+                                                $cleanRk = trim(preg_replace('/^(rak|lemari)\s*[:\-]?\s*/i', '', $rk['nama_rak'] ?? ''));
+                                                if ($cleanRk === '') $cleanRk = $rk['nama_rak'];
+                                                $extraRk = !empty($rk['kategori_rak']) ? ' - ' . $rk['kategori_rak'] : '';
+                                            ?>
+                                                <option value="<?= htmlspecialchars(strval($rk['id'])); ?>">Lemari (<?= htmlspecialchars($cleanRk . $extraRk); ?>)</option>
                                             <?php endforeach; ?>
                                         </optgroup>
                                     <?php endif; ?>
@@ -2283,10 +2291,14 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         <td class="py-3.5 px-4 font-semibold text-slate-700 dark:text-slate-300"><?= ucfirst(htmlspecialchars($b['jenis'] ?? 'alat')); ?></td>
                                         <td class="py-3.5 px-4 font-semibold text-slate-700"><?= htmlspecialchars($b['nama_kategori'] ?? '-'); ?></td>
                                         <td class="py-3.5 px-4 font-semibold text-slate-700">
-                                            <?php if (!empty($b['nama_rak'])): ?>
-                                                <span class="inline-flex items-center gap-1.5">
-                                                    <span class="text-xs font-bold text-slate-800 dark:text-slate-100">[<?= $isLemariBarang ? 'Lemari' : 'Rak'; ?>]</span>
-                                                    <span class="text-slate-700 dark:text-slate-200"><?= htmlspecialchars($b['nama_rak']); ?></span>
+                                            <?php if (!empty($b['nama_rak'])): 
+                                                $rawRakNama = $b['nama_rak'] ?? '';
+                                                $jenisRakPrefix = $isLemariBarang ? 'Lemari' : 'Rak';
+                                                $cleanRakNama = trim(preg_replace('/^(rak|lemari)\s*[:\-]?\s*/i', '', $rawRakNama));
+                                                if ($cleanRakNama === '') $cleanRakNama = $rawRakNama;
+                                            ?>
+                                                <span class="text-xs font-semibold text-slate-800 dark:text-slate-100 whitespace-nowrap">
+                                                    <?= $jenisRakPrefix; ?> (<?= htmlspecialchars($cleanRakNama); ?>)
                                                 </span>
                                             <?php else: ?>
                                                 <span class="text-slate-400 font-normal">-</span>
@@ -5829,9 +5841,13 @@ function renderTableBarang() {
                 : '<span class="text-slate-400 font-normal">-</span>';
 
             const isLemariBarang = (b.jenis_rak && String(b.jenis_rak).toLowerCase() === 'lemari') || (b.nama_rak && b.nama_rak.toLowerCase().includes('lemari'));
-            const rakDisplay = b.nama_rak
-                ? `<span class="inline-flex items-center gap-1.5"><span class="text-xs font-bold text-slate-800 dark:text-slate-100">[${isLemariBarang ? 'Lemari' : 'Rak'}]</span> <span class="text-slate-700 dark:text-slate-200">${escapeHtml(b.nama_rak)}</span></span>`
-                : '<span class="text-slate-400 font-normal">-</span>';
+            let rakDisplay = '<span class="text-slate-400 font-normal">-</span>';
+            if (b.nama_rak) {
+                const jenisPrefix = isLemariBarang ? 'Lemari' : 'Rak';
+                let cleanNama = b.nama_rak.replace(/^(rak|lemari)\s*[:\-]?\s*/i, '').trim();
+                if (!cleanNama) cleanNama = b.nama_rak;
+                rakDisplay = `<span class="text-xs font-semibold text-slate-800 dark:text-slate-100 whitespace-nowrap">${jenisPrefix} (${escapeHtml(cleanNama)})</span>`;
+            }
 
             return `<tr id="row-barang-${b.id}"
             data-jenis="${escapeHtml(String(b.jenis || 'alat').toLowerCase())}"
@@ -7471,16 +7487,18 @@ function refreshBarangFilterDropdowns() {
         if (rakItems.length > 0) {
             rakHtml += '<optgroup label="Rak">';
             rakItems.forEach(r => {
-                const extra = r.kategori_rak ? ` (${r.kategori_rak})` : '';
-                rakHtml += `<option value="${r.id}">[Rak] ${escapeHtml(r.nama_rak + extra)}</option>`;
+                let cleanRk = (r.nama_rak || '').replace(/^(rak|lemari)\s*[:\-]?\s*/i, '').trim() || r.nama_rak;
+                const extra = r.kategori_rak ? ` - ${r.kategori_rak}` : '';
+                rakHtml += `<option value="${r.id}">Rak (${escapeHtml(cleanRk + extra)})</option>`;
             });
             rakHtml += '</optgroup>';
         }
         if (lemariItems.length > 0) {
             rakHtml += '<optgroup label="Lemari">';
             lemariItems.forEach(r => {
-                const extra = r.kategori_rak ? ` (${r.kategori_rak})` : '';
-                rakHtml += `<option value="${r.id}">[Lemari] ${escapeHtml(r.nama_rak + extra)}</option>`;
+                let cleanRk = (r.nama_rak || '').replace(/^(rak|lemari)\s*[:\-]?\s*/i, '').trim() || r.nama_rak;
+                const extra = r.kategori_rak ? ` - ${r.kategori_rak}` : '';
+                rakHtml += `<option value="${r.id}">Lemari (${escapeHtml(cleanRk + extra)})</option>`;
             });
             rakHtml += '</optgroup>';
         }
