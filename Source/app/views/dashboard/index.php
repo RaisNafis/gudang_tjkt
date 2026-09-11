@@ -5330,8 +5330,11 @@ function renderTablePengguna() {
         const loginBtnHtml = (isSuperAdmin && p.id !== currentUserId && !isSiswa)
             ? `<button type="button" onclick="loginAsUser('${p.id}', '${escapeJsStr(p.nama_pengguna)}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-sm transition-all flex items-center gap-1" title="Login Sebagai Akun Ini"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg><span>Login Akun</span></button>`
             : '';
+        const isLulusPengguna = p.kelas && (p.kelas.toUpperCase().includes('LULUS') || p.kelas.toUpperCase().includes('ALUMNI'));
         const kelasText = (p.kelas && String(p.kelas).trim() !== '')
-            ? `<span class="font-bold text-slate-700 dark:text-slate-300 whitespace-nowrap">${escapeHtml(p.kelas)}</span>`
+            ? (isLulusPengguna
+                ? `<span class="font-extrabold text-slate-900 dark:text-white whitespace-nowrap">${escapeHtml(p.kelas)}</span>`
+                : `<span class="font-bold text-slate-700 dark:text-slate-300 whitespace-nowrap">${escapeHtml(p.kelas)}</span>`)
             : '<span class="text-slate-400 font-normal">-</span>';
 
         return `<tr class="hover:bg-sage-50/50 dark:hover:bg-[#222222]/40">
@@ -5620,7 +5623,7 @@ function renderTableSiswa() {
 
         const isLulus = s.kelas && (s.kelas.toUpperCase().includes('LULUS') || s.kelas.toUpperCase().includes('ALUMNI'));
         const kelasHtml = isLulus
-            ? `<span class="px-2 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-700/50">${escapeHtml(s.kelas)}</span>`
+            ? `<span class="font-extrabold text-slate-900 dark:text-white">${escapeHtml(s.kelas)}</span>`
             : escapeHtml(s.kelas || '-');
 
         return `<tr class="hover:bg-sage-50/50 dark:hover:bg-[#222222]/40">
