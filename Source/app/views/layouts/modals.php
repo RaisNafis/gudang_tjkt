@@ -1,278 +1,291 @@
 <!-- Modal Container Component - Soft Green & Soft White Theme -->
 
 <!-- 0.5. MODAL DATA JURUSAN (TAMBAH / EDIT) -->
-<div id="modalJurusan" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/40 backdrop-blur-sm animate-fade-in-up">
-    <div class="bg-white rounded-3xl border border-sage-200 shadow-2xl w-full max-w-lg overflow-hidden">
-        <div class="p-6 bg-sage-50/80 border-b border-sage-100 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0v-4c0-.883.39-1.683 1.018-2.227M13 17v-4c0-.883-.39-1.683-1.018-2.227"/></svg>
-                </div>
-                <h3 class="text-base font-bold text-slate-800" id="modalJurusanTitle">Tambah Data Jurusan</h3>
-            </div>
-            <button onclick="closeModal('modalJurusan')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+<div id="modalJurusan" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-[#1a1a1a] rounded-3xl border border-slate-200 dark:border-[#262626] shadow-2xl w-full max-w-lg p-6 relative transition-all">
+        <!-- Close Button (X) -->
+        <button type="button" onclick="closeModal('modalJurusan')" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#252525] transition-colors" title="Tutup">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <!-- Title & Subtitle (Langsung di Konten Tanpa Header Terpisah) -->
+        <div class="mb-4 pr-8">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white" id="modalJurusanTitle">Tambah Jurusan Baru</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Pengaturan profil dan identitas program keahlian</p>
         </div>
-        <form onsubmit="handleFormSubmit(event, 'Jurusan')" class="p-6 space-y-4 text-xs">
+
+        <form onsubmit="handleFormSubmit(event, 'Jurusan')" class="space-y-4 text-xs">
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
             <input type="hidden" id="jurusan_edit_id" value="">
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Nama Jurusan <span class="text-red-500">*</span></label>
-                <input type="text" id="jurusan_nama" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: Teknik Komputer dan Jaringan (TKJ)">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Nama Jurusan <span class="text-red-500">*</span></label>
+                <input type="text" id="jurusan_nama" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="contoh: Teknik Komputer dan Jaringan (TKJ)">
             </div>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Deskripsi Jurusan</label>
-                <textarea id="jurusan_deskripsi" rows="2" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-medium text-slate-800 focus:outline-none focus:border-sage-600" placeholder="Deskripsi mengenai keahlian atau lab jurusan ini..."></textarea>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Deskripsi Jurusan</label>
+                <textarea id="jurusan_deskripsi" rows="2" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="Deskripsi mengenai keahlian atau lab jurusan ini..."></textarea>
             </div>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Warna Tema Dashboard <span class="text-red-500">*</span></label>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Warna Tema Dashboard <span class="text-red-500">*</span></label>
                 <div class="flex items-center gap-3">
-                    <input type="color" id="jurusan_warna_tema_picker" value="#EAB308" oninput="syncThemeColorInput(this.value)" class="w-12 h-10 rounded-xl border border-sage-200 cursor-pointer bg-white p-1 shrink-0">
-                    <input type="text" id="jurusan_warna_tema" required value="#EAB308" oninput="syncThemeColorPicker(this.value)" placeholder="#EAB308" class="flex-1 px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-mono font-semibold text-slate-800 focus:outline-none focus:border-sage-600 uppercase">
+                    <input type="color" id="jurusan_warna_tema_picker" value="#EAB308" oninput="syncThemeColorInput(this.value)" class="w-12 h-10 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer bg-white dark:bg-slate-800 p-1 shrink-0">
+                    <input type="text" id="jurusan_warna_tema" required value="#EAB308" oninput="syncThemeColorPicker(this.value)" placeholder="#EAB308" class="flex-1 px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white uppercase">
                 </div>
             </div>
-            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100">
-                <button type="button" onclick="closeModal('modalJurusan')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
-                <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Jurusan</button>
+            <div class="pt-3 flex items-center justify-end gap-2.5 border-t border-slate-200 dark:border-slate-800">
+                <button type="button" onclick="closeModal('modalJurusan')" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700">Batal</button>
+                <button type="submit" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 shadow-sm transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span>Simpan Jurusan</span>
+                </button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- 1. MODAL DATA PENGGUNA (TAMBAH / EDIT) -->
-<!-- 1. MODAL DATA PENGGUNA (TAMBAH / EDIT) -->
-<div id="modalPengguna" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-sage-200 dark:border-slate-800 shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
-        <div class="p-6 bg-sage-50/80 dark:bg-slate-800/80 border-b border-sage-100 dark:border-slate-700 flex items-center justify-between shrink-0">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                </div>
-                <h3 class="text-base font-bold text-slate-800 dark:text-white" id="modalPenggunaTitle">Tambah Data Pengguna</h3>
-            </div>
-            <button onclick="closeModal('modalPengguna')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+<div id="modalPengguna" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-[#1a1a1a] rounded-3xl border border-slate-200 dark:border-[#262626] shadow-2xl w-full max-w-lg max-h-[90vh] p-6 relative transition-all flex flex-col">
+        <!-- Close Button (X) -->
+        <button type="button" onclick="closeModal('modalPengguna')" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#252525] transition-colors" title="Tutup">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <!-- Title & Subtitle (Langsung di Konten Tanpa Header Terpisah) -->
+        <div class="mb-4 pr-8 shrink-0">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white" id="modalPenggunaTitle">Tambah Data Pengguna</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Pengaturan akun pengguna dan hak akses sistem</p>
         </div>
-        <form onsubmit="handleFormSubmit(event, 'Pengguna')" class="p-6 space-y-4 text-xs overflow-y-auto flex-1">
+
+        <form onsubmit="handleFormSubmit(event, 'Pengguna')" class="flex flex-col min-h-0 flex-1 text-xs">
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
             <input type="hidden" id="pengguna_edit_id" value="">
             
-            <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Status Pengguna (Profil Profesi)</label>
-                <select id="pengguna_status_pengguna" onchange="handleStatusPenggunaChange(this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
-                    <option value="tidak_ada">-- Tidak Ada --</option>
-                    <option value="guru">Guru</option>
-                    <option value="siswa">Siswa</option>
-                </select>
-            </div>
+            <div class="space-y-4 overflow-y-auto flex-1 pr-1 pb-1">
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Status Pengguna (Profil Profesi)</label>
+                    <select id="pengguna_status_pengguna" onchange="handleStatusPenggunaChange(this.value)" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                        <option value="tidak_ada">-- Tidak Ada --</option>
+                        <option value="guru">Guru</option>
+                        <option value="siswa">Siswa</option>
+                    </select>
+                </div>
 
-            <!-- DROPDOWN PILIH DATA GURU (Tampil saat status = guru) -->
-            <div id="field_group_pilih_guru" class="hidden">
-                <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Pilih Data Guru</label>
-                <select id="pengguna_guru_id" onchange="onGuruSelectedInUserForm(this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
-                    <option value="">-- Pilih Guru --</option>
-                </select>
-            </div>
+                <!-- DROPDOWN PILIH DATA GURU (Tampil saat status = guru) -->
+                <div id="field_group_pilih_guru" class="hidden">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Pilih Data Guru</label>
+                    <select id="pengguna_guru_id" onchange="onGuruSelectedInUserForm(this.value)" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                        <option value="">-- Pilih Guru --</option>
+                    </select>
+                </div>
 
-            <!-- DROPDOWN PILIH DATA SISWA (Tampil saat status = siswa) -->
-            <div id="field_group_pilih_siswa" class="hidden">
-                <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Pilih Data Siswa</label>
-                <select id="pengguna_siswa_id" onchange="onSiswaSelectedInUserForm(this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
-                    <option value="">-- Pilih Siswa --</option>
-                </select>
-            </div>
+                <!-- DROPDOWN PILIH DATA SISWA (Tampil saat status = siswa) -->
+                <div id="field_group_pilih_siswa" class="hidden">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Pilih Data Siswa</label>
+                    <select id="pengguna_siswa_id" onchange="onSiswaSelectedInUserForm(this.value)" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                        <option value="">-- Pilih Siswa --</option>
+                    </select>
+                </div>
 
-            <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Nama Pengguna (Username) <span class="text-red-500">*</span></label>
-                <input type="text" id="pengguna_nama_pengguna" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600" placeholder="contoh: budiprasetyo">
-            </div>
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Nama Pengguna (Username) <span class="text-red-500">*</span></label>
+                    <input type="text" id="pengguna_nama_pengguna" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="contoh: budiprasetyo">
+                </div>
 
-            <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
-                <input type="text" id="pengguna_nama_lengkap" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600" placeholder="contoh: Budi Prasetyo, S.Pd.">
-            </div>
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Nama Lengkap <span class="text-red-500">*</span></label>
+                    <input type="text" id="pengguna_nama_lengkap" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="contoh: Budi Prasetyo, S.Pd.">
+                </div>
 
-            <div id="field_group_token_siswa" class="hidden">
-                <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1" id="pengguna_token_label">Token Login (Password)</label>
-                <input type="text" id="pengguna_token" readonly class="w-full px-3.5 py-2.5 bg-sage-100/70 dark:bg-slate-900 border border-sage-200 dark:border-slate-700 rounded-xl font-mono font-bold text-sage-900 dark:text-sage-300 text-sm tracking-widest focus:outline-none cursor-not-allowed select-all" placeholder="ABCDE">
-            </div>
+                <div id="field_group_token_siswa" class="hidden">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs" id="pengguna_token_label">Token Login (Password)</label>
+                    <input type="text" id="pengguna_token" readonly class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-mono font-bold text-slate-900 dark:text-slate-100 text-sm tracking-widest focus:outline-none cursor-not-allowed select-all" placeholder="ABCDE">
+                </div>
 
-            <div>
-                <label class="block font-bold text-slate-700 mb-1">Email <span class="text-slate-400 font-normal">(Opsional)</span></label>
-                <div class="flex items-center gap-2">
-                    <input type="text" id="pengguna_email_prefix" class="w-1/2 px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="nama_email">
-                    <span class="text-slate-400 font-bold text-sm">@</span>
-                    <input type="text" id="pengguna_email_domain" value="smk2pangkalpinang.sch.id" class="w-1/2 px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="smk2pangkalpinang.sch.id">
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Email <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="pengguna_email_prefix" class="w-1/2 px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="nama_email">
+                        <span class="text-slate-400 font-bold text-sm">@</span>
+                        <input type="text" id="pengguna_email_domain" value="smk2pangkalpinang.sch.id" class="w-1/2 px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="smk2pangkalpinang.sch.id">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Nomor Telepon / HP <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                    <input type="text" id="pengguna_telepon" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="contoh: 081234567890">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Jurusan / Departemen</label>
+                    <select id="pengguna_jurusan_id" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                        <option value="">-- Tidak Ada Jurusan --</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Peran Akses <span class="text-red-500">*</span></label>
+                    <select id="pengguna_peran" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                        <option value="siswa">Siswa</option>
+                        <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
+                            <option value="guru_umum">Guru Umum</option>
+                        <?php endif; ?>
+                        <option value="guru_jurusan">Guru Jurusan</option>
+                        <option value="kabeng">Kabeng (Kepala Bengkel)</option>
+                        <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
+                            <option value="admin_sekolah">Admin Sekolah</option>
+                        <?php endif; ?>
+                    </select>
+                </div>
+
+                <div id="field_group_password">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs" id="pengguna_password_label">Kata Sandi</label>
+                    <div class="relative flex items-center">
+                        <input type="password" id="pengguna_password" class="w-full px-3.5 py-2.5 pr-10 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="••••••••">
+                        <button type="button" onclick="togglePasswordVisibility('pengguna_password', this)" class="absolute right-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1" title="Tampilkan / Sembunyikan Kata Sandi">
+                            <svg class="eyeOpenIcon w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                            <svg class="eyeCloseIcon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908a10.025 10.025 0 014.122-.963c4.478 0 8.268 2.943 9.542 7a9.97 9.97 0 01-2.52 4.148M9.88 9.88a3 3 0 104.243 4.243M3 3l18 18"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-1 hidden" id="pengguna_password_hint">*Biarkan kosong jika tidak ingin mengubah kata sandi</p>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Foto Profil <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                    <input type="file" id="pengguna_foto" accept="image/png, image/jpeg, image/jpg, image/webp" class="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-slate-900 dark:file:bg-white file:text-white dark:file:text-slate-900 hover:file:bg-slate-800">
                 </div>
             </div>
 
-            <div>
-                <label class="block font-bold text-slate-700 mb-1">Nomor Telepon / HP <span class="text-slate-400 font-normal">(Opsional)</span></label>
-                <input type="text" id="pengguna_telepon" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: 081234567890">
-            </div>
-
-            <div>
-                <label class="block font-bold text-slate-700 mb-1">Jurusan / Departemen</label>
-                <select id="pengguna_jurusan_id" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
-                    <option value="">-- Tidak Ada Jurusan --</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="block font-bold text-slate-700 mb-1">Peran Akses <span class="text-red-500">*</span></label>
-                <select id="pengguna_peran" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
-                    <option value="siswa">Siswa</option>
-                    <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
-                        <option value="guru_umum">Guru Umum</option>
-                    <?php endif; ?>
-                    <option value="guru_jurusan">Guru Jurusan</option>
-                    <option value="kabeng">Kabeng (Kepala Bengkel)</option>
-                    <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
-                        <option value="admin_sekolah">Admin Sekolah</option>
-                    <?php endif; ?>
-                </select>
-            </div>
-
-            <div id="field_group_password">
-                <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1" id="pengguna_password_label">Kata Sandi</label>
-                <div class="relative flex items-center">
-                    <input type="password" id="pengguna_password" class="w-full px-3.5 py-2.5 pr-10 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600" placeholder="••••••••">
-                    <button type="button" onclick="togglePasswordVisibility('pengguna_password', this)" class="absolute right-3 text-slate-400 hover:text-sage-600 transition-colors p-1" title="Tampilkan / Sembunyikan Kata Sandi">
-                        <svg class="eyeOpenIcon w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                        </svg>
-                        <svg class="eyeCloseIcon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908a10.025 10.025 0 014.122-.963c4.478 0 8.268 2.943 9.542 7a9.97 9.97 0 01-2.52 4.148M9.88 9.88a3 3 0 104.243 4.243M3 3l18 18"/>
-                        </svg>
-                    </button>
-                </div>
-                <p class="text-[10px] text-slate-400 mt-1 hidden" id="pengguna_password_hint">*Biarkan kosong jika tidak ingin mengubah kata sandi</p>
-            </div>
-
-            <div>
-                <label class="block font-bold text-slate-700 mb-1">Foto Profil <span class="text-slate-400 font-normal">(Opsional)</span></label>
-                <input type="file" id="pengguna_foto" accept="image/png, image/jpeg, image/jpg, image/webp" class="w-full px-3.5 py-2 bg-sage-50/50 border border-sage-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-sage-600 file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-sage-600 file:text-white hover:file:bg-sage-700">
-            </div>
-
-            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100">
-                <button type="button" onclick="closeModal('modalPengguna')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
-                <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Data</button>
+            <div class="pt-3.5 mt-2 flex items-center justify-end gap-2.5 border-t border-slate-200 dark:border-slate-800 shrink-0">
+                <button type="button" onclick="closeModal('modalPengguna')" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700">Batal</button>
+                <button type="submit" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 shadow-sm transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span>Simpan Pengguna</span>
+                </button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- 1.1 MODAL DATA GURU (TAMBAH / EDIT) -->
-<div id="modalGuru" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-sage-200 dark:border-slate-800 shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
-        <div class="p-6 bg-sage-50/80 dark:bg-slate-800/80 border-b border-sage-100 dark:border-slate-700 flex items-center justify-between shrink-0">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/></svg>
-                </div>
-                <h3 class="text-base font-bold text-slate-800 dark:text-white" id="modalGuruTitle">Tambah Data Guru</h3>
-            </div>
-            <button onclick="closeModal('modalGuru')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+<div id="modalGuru" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-[#1a1a1a] rounded-3xl border border-slate-200 dark:border-[#262626] shadow-2xl w-full max-w-lg p-6 relative transition-all">
+        <!-- Close Button (X) -->
+        <button type="button" onclick="closeModal('modalGuru')" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#252525] transition-colors" title="Tutup">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <!-- Title & Subtitle (Langsung di Konten Tanpa Header Terpisah) -->
+        <div class="mb-4 pr-8">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white" id="modalGuruTitle">Tambah Data Guru</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Kelola data tenaga pendidik dan penugasan kejuruan</p>
         </div>
-        <form onsubmit="handleFormSubmit(event, 'Guru')" class="p-6 space-y-4 text-xs overflow-y-auto flex-1">
+
+        <form onsubmit="handleFormSubmit(event, 'Guru')" class="space-y-4 text-xs">
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
             <input type="hidden" id="guru_edit_id" value="">
             <input type="hidden" id="guru_token" value="">
 
             <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Nama Guru <span class="text-red-500">*</span></label>
-                <input type="text" id="guru_nama_guru" required oninput="autoFillGuruUsername(this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600" placeholder="contoh: Pak wahyu">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Nama Guru <span class="text-red-500">*</span></label>
+                <input type="text" id="guru_nama_guru" required oninput="autoFillGuruUsername(this.value)" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="contoh: Pak wahyu">
             </div>
 
             <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Nama Pengguna (Username) <span class="text-red-500">*</span></label>
-                <input type="text" id="guru_nama_pengguna" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600" placeholder="contoh: pakwahyu">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Nama Pengguna (Username) <span class="text-red-500">*</span></label>
+                <input type="text" id="guru_nama_pengguna" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="contoh: pakwahyu">
                 <span class="text-[10px] text-slate-400 mt-1 block">*Digunakan untuk login akun (huruf kecil & tanpa spasi)</span>
             </div>
 
             <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Kategori Mengajar <span class="text-red-500">*</span></label>
-                <select id="guru_mengajar" required onchange="handleGuruMengajarChange(this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Kategori Mengajar <span class="text-red-500">*</span></label>
+                <select id="guru_mengajar" required onchange="handleGuruMengajarChange(this.value)" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white">
                     <option value="bengkel">Bengkel (Jurusan Spesifik)</option>
                     <option value="umum">Umum (Tidak Ada Jurusan)</option>
                 </select>
             </div>
 
             <div id="group_guru_jurusan">
-                <label class="block font-bold text-slate-700 mb-1">Jurusan / Departemen <span class="text-red-500">*</span></label>
-                <select id="guru_jurusan_id" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Jurusan / Departemen <span class="text-red-500">*</span></label>
+                <select id="guru_jurusan_id" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white">
                     <option value="">-- Pilih Jurusan --</option>
                 </select>
             </div>
 
-            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100">
-                <button type="button" onclick="closeModal('modalGuru')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
-                <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Guru</button>
+            <div class="pt-3 flex items-center justify-end gap-2.5 border-t border-slate-200 dark:border-slate-800">
+                <button type="button" onclick="closeModal('modalGuru')" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700">Batal</button>
+                <button type="submit" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 shadow-sm transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span>Simpan Guru</span>
+                </button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- 1.2 MODAL DATA SISWA (TAMBAH / EDIT) -->
-<div id="modalSiswa" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-sage-200 dark:border-slate-800 shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
-        <div class="p-6 bg-sage-50/80 dark:bg-slate-800/80 border-b border-sage-100 dark:border-slate-700 flex items-center justify-between shrink-0">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/></svg>
-                </div>
-                <h3 class="text-base font-bold text-slate-800 dark:text-white" id="modalSiswaTitle">Tambah Data Siswa</h3>
-            </div>
-            <button onclick="closeModal('modalSiswa')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+<div id="modalSiswa" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-[#1a1a1a] rounded-3xl border border-slate-200 dark:border-[#262626] shadow-2xl w-full max-w-lg p-6 relative transition-all">
+        <!-- Close Button (X) -->
+        <button type="button" onclick="closeModal('modalSiswa')" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#252525] transition-colors" title="Tutup">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <!-- Title & Subtitle (Langsung di Konten Tanpa Header Terpisah) -->
+        <div class="mb-4 pr-8">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white" id="modalSiswaTitle">Tambah Data Siswa</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Kelola data siswa, rombel kelas, dan jurusan</p>
         </div>
-        <form onsubmit="handleFormSubmit(event, 'Siswa')" class="p-6 space-y-4 text-xs overflow-y-auto flex-1">
+
+        <form onsubmit="handleFormSubmit(event, 'Siswa')" class="space-y-4 text-xs">
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
             <input type="hidden" id="siswa_edit_id" value="">
             <input type="hidden" id="siswa_token" value="">
 
             <div>
-                <label class="block font-bold text-slate-700 mb-1">NISN (Nomor Induk Siswa Nasional)</label>
-                <input type="text" id="siswa_nisn" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: 0112586332">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">NISN (Nomor Induk Siswa Nasional)</label>
+                <input type="text" id="siswa_nisn" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="contoh: 0112586332">
             </div>
 
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Nama Lengkap Siswa <span class="text-red-500">*</span></label>
-                <input type="text" id="siswa_nama_lengkap" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: Rais Nafis">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Nama Lengkap Siswa <span class="text-red-500">*</span></label>
+                <input type="text" id="siswa_nama_lengkap" required oninput="autoFormatNamaSiswaUsername(this.value)" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="contoh: Rais Nafis">
             </div>
 
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Nama Siswa (Huruf Kecil & Tanpa Spasi) <span class="text-red-500">*</span></label>
-                <input type="text" id="siswa_nama_siswa" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: raisnafis">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Nama Siswa (Huruf Kecil & Tanpa Spasi) <span class="text-red-500">*</span></label>
+                <input type="text" id="siswa_nama_siswa" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="contoh: raisnafis">
             </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Kelas <span class="text-red-500">*</span></label>
-                    <input type="text" id="siswa_kelas" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="X TKJ 1">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Kelas <span class="text-red-500">*</span></label>
+                    <input type="text" id="siswa_kelas" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="X TKJ 1">
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Tahun Ajaran</label>
-                    <input type="text" id="siswa_tahun_ajaran" value="2025/2026" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="2025/2026">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Tahun Ajaran</label>
+                    <input type="text" id="siswa_tahun_ajaran" value="2025/2026" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="2025/2026">
                 </div>
             </div>
 
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Jurusan / Departemen</label>
-                <select id="siswa_jurusan_id" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Jurusan / Departemen</label>
+                <select id="siswa_jurusan_id" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white">
                     <option value="">-- Tidak Ada Jurusan (Umum / Staf) --</option>
                 </select>
             </div>
 
-            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100">
-                <button type="button" onclick="closeModal('modalSiswa')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
-                <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Siswa</button>
+            <div class="pt-3 flex items-center justify-end gap-2.5 border-t border-slate-200 dark:border-slate-800">
+                <button type="button" onclick="closeModal('modalSiswa')" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700">Batal</button>
+                <button type="submit" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 shadow-sm transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span>Simpan Siswa</span>
+                </button>
             </div>
         </form>
     </div>
