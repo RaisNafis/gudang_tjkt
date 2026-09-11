@@ -747,15 +747,15 @@
 
         <!-- Tabel Minimalis (Tanpa Table Card / Border Box Luar) -->
         <div class="overflow-x-auto max-h-[60vh] overflow-y-auto mb-2">
-            <table class="w-full text-left text-xs">
+            <table class="w-full text-center text-xs">
                 <thead>
                     <tr class="border-b border-slate-200 dark:border-[#2a2a2a] text-slate-400 dark:text-slate-500 text-[11px] font-bold uppercase tracking-wider">
                         <th class="pb-2.5 px-2 w-10 text-center">No</th>
-                        <th class="pb-2.5 px-3">Nama Barang</th>
-                        <th class="pb-2.5 px-3">Kategori</th>
-                        <th class="pb-2.5 px-3">Barcode</th>
+                        <th class="pb-2.5 px-3 text-center">Nama Barang</th>
+                        <th class="pb-2.5 px-3 text-center">Kategori</th>
+                        <th class="pb-2.5 px-3 text-center">Barcode</th>
                         <th class="pb-2.5 px-3 text-center">Stok</th>
-                        <th class="pb-2.5 px-2 text-right">Aksi</th>
+                        <th class="pb-2.5 px-2 text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="lihatRakBarangTbody" class="divide-y divide-slate-100 dark:divide-[#252525]">
@@ -5896,12 +5896,12 @@ async function showBarangInRakModal(rakId, rakName) {
                 tbody.innerHTML = data.items.map((b, idx) => `
                     <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
                         <td class="py-3 px-2 text-center font-bold text-slate-400 dark:text-slate-500">${idx + 1}</td>
-                        <td class="py-3 px-3 font-bold text-slate-800 dark:text-slate-100">${escapeHtml(b.nama_barang)}</td>
-                        <td class="py-3 px-3 text-slate-600 dark:text-slate-400">${escapeHtml(b.nama_kategori || '-')}</td>
-                        <td class="py-3 px-3 font-mono text-slate-600 dark:text-slate-400">${escapeHtml(b.barcode || '-')}</td>
+                        <td class="py-3 px-3 text-center font-bold text-slate-800 dark:text-slate-100">${escapeHtml(b.nama_barang)}</td>
+                        <td class="py-3 px-3 text-center text-slate-600 dark:text-slate-400">${escapeHtml(b.nama_kategori || '-')}</td>
+                        <td class="py-3 px-3 text-center font-mono text-slate-600 dark:text-slate-400">${escapeHtml(b.barcode || '-')}</td>
                         <td class="py-3 px-3 text-center font-bold text-slate-800 dark:text-slate-100">${b.stok_tersedia} / ${b.stok_total} <span class="font-normal text-slate-400 text-[10px]">${escapeHtml(b.satuan || 'Unit')}</span></td>
-                        <td class="py-3 px-2 text-right">
-                            <button type="button" onclick="navigateToBarangRow('${b.id}')" class="px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 font-bold text-xs transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-sm">
+                        <td class="py-3 px-2 text-center">
+                            <button type="button" onclick="navigateToBarangRow('${b.id}')" class="px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 font-bold text-xs transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer shadow-sm">
                                 <span>View</span>
                             </button>
                         </td>
