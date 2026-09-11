@@ -627,99 +627,105 @@
 </div>
 
 <!-- 2. MODAL KATEGORI BARANG (TAMBAH / EDIT) -->
-<div id="modalKategori" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/40 backdrop-blur-sm animate-fade-in-up">
-    <div class="bg-white rounded-3xl border border-sage-200 shadow-2xl w-full max-w-lg overflow-hidden">
-        <div class="p-6 bg-sage-50/80 border-b border-sage-100 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 11h.01M7 15h.01M11 7h8M11 11h8M11 15h8"/></svg>
-                </div>
-                <h3 class="text-base font-bold text-slate-800" id="modalKategoriTitle">Tambah Kategori Barang</h3>
-            </div>
-            <button onclick="closeModal('modalKategori')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+<div id="modalKategori" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-[#1a1a1a] rounded-3xl border border-slate-200 dark:border-[#262626] shadow-2xl w-full max-w-lg p-6 relative transition-all">
+        <!-- Close Button (X) -->
+        <button type="button" onclick="closeModal('modalKategori')" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#252525] transition-colors" title="Tutup">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <!-- Title & Subtitle (Langsung di Konten Tanpa Header Terpisah) -->
+        <div class="mb-4 pr-8">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white" id="modalKategoriTitle">Tambah Kategori Barang</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Kelola kelompok pengkategorian alat dan bahan inventaris</p>
         </div>
-        <form onsubmit="handleFormSubmit(event, 'Kategori')" class="p-6 space-y-4 text-xs">
+
+        <form onsubmit="handleFormSubmit(event, 'Kategori')" class="space-y-4 text-xs">
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
             <input type="hidden" id="kategori_edit_id" value="">
             <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Jurusan / Departemen</label>
-                <select id="kategori_jurusan_id" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Jurusan / Departemen</label>
+                <select id="kategori_jurusan_id" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white">
                     <option value="">-- Semua Jurusan / Sekolah --</option>
                 </select>
             </div>
             <?php endif; ?>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Nama Kategori <span class="text-red-500">*</span></label>
-                <input type="text" id="kategori_nama" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: Jaringan & Networking">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Nama Kategori <span class="text-red-500">*</span></label>
+                <input type="text" id="kategori_nama" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="contoh: Jaringan & Networking">
             </div>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Deskripsi Kategori</label>
-                <textarea id="kategori_deskripsi" rows="3" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-medium text-slate-800 focus:outline-none focus:border-sage-600" placeholder="Keterangan singkat mengenai kategori barang ini..."></textarea>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Deskripsi Kategori</label>
+                <textarea id="kategori_deskripsi" rows="3" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="Keterangan singkat mengenai kategori barang ini..."></textarea>
             </div>
-            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100">
-                <button type="button" onclick="closeModal('modalKategori')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
-                <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Kategori</button>
+            <div class="pt-3 flex items-center justify-end gap-2.5 border-t border-slate-200 dark:border-slate-800">
+                <button type="button" onclick="closeModal('modalKategori')" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700">Batal</button>
+                <button type="submit" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 shadow-sm transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span>Simpan Kategori</span>
+                </button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- 2.5. MODAL DATA RAK PENYIMPANAN (TAMBAH / EDIT) -->
-<div id="modalRak" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/40 backdrop-blur-sm animate-fade-in-up">
-    <div class="bg-white rounded-3xl border border-sage-200 shadow-2xl w-full max-w-lg overflow-hidden">
-        <div class="p-6 bg-sage-50/80 border-b border-sage-100 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
-                </div>
-                <h3 class="text-base font-bold text-slate-800" id="modalRakTitle">Tambah Rak / Lemari</h3>
-            </div>
-            <button onclick="closeModal('modalRak')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+<div id="modalRak" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-[#1a1a1a] rounded-3xl border border-slate-200 dark:border-[#262626] shadow-2xl w-full max-w-lg p-6 relative transition-all">
+        <!-- Close Button (X) -->
+        <button type="button" onclick="closeModal('modalRak')" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#252525] transition-colors" title="Tutup">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <!-- Title & Subtitle (Langsung di Konten Tanpa Header Terpisah) -->
+        <div class="mb-4 pr-8">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white" id="modalRakTitle">Tambah Rak / Lemari</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Atur lokasi penyimpanan inventaris rak atau lemari</p>
         </div>
-        <form onsubmit="handleFormSubmit(event, 'Rak')" class="p-6 space-y-4 text-xs">
+
+        <form onsubmit="handleFormSubmit(event, 'Rak')" class="space-y-4 text-xs">
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
             <input type="hidden" id="rak_edit_id" value="">
             <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Jurusan / Departemen</label>
-                <select id="rak_jurusan_id" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Jurusan / Departemen</label>
+                <select id="rak_jurusan_id" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white">
                     <option value="">-- Semua Jurusan / Sekolah --</option>
                 </select>
             </div>
             <?php endif; ?>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Jenis Penyimpanan <span class="text-red-500">*</span></label>
-                    <select id="rak_jenis" required onchange="onRakJenisModalChange(this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Jenis Penyimpanan <span class="text-red-500">*</span></label>
+                    <select id="rak_jenis" required onchange="onRakJenisModalChange(this.value)" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white">
                         <option value="rak">Rak</option>
                         <option value="lemari">Lemari</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Kode Barcode</label>
-                    <input type="text" id="rak_barcode" readonly class="w-full px-3.5 py-2.5 bg-slate-100/70 dark:bg-neutral-900/80 border border-sage-200 rounded-xl font-mono font-bold text-slate-700 dark:text-slate-300 cursor-not-allowed focus:outline-none" placeholder="899300100001">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Kode Barcode</label>
+                    <input type="text" id="rak_barcode" readonly class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-mono font-bold text-slate-700 dark:text-slate-300 text-xs cursor-not-allowed focus:outline-none" placeholder="899300100001">
                 </div>
             </div>
             <div>
-                <label class="block font-bold text-slate-700 mb-1" id="rak_nama_label">Nama Rak / Lemari <span class="text-red-500">*</span></label>
-                <input type="text" id="rak_nama" required class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: Rak A1 - Jaringan atau Lemari Besi B2">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs" id="rak_nama_label">Nama Rak / Lemari <span class="text-red-500">*</span></label>
+                <input type="text" id="rak_nama" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="contoh: Rak A1 - Jaringan atau Lemari Besi B2">
             </div>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Kategori / Peruntukan</label>
-                <input type="text" id="rak_kategori" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-sage-600" placeholder="contoh: Toolset, Kabel & Connector, Komponen PC...">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Kategori / Peruntukan</label>
+                <input type="text" id="rak_kategori" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="contoh: Toolset, Kabel & Connector, Komponen PC...">
             </div>
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Keterangan / Deskripsi Lokasi</label>
-                <textarea id="rak_keterangan" rows="2" class="w-full px-3.5 py-2.5 bg-sage-50/50 border border-sage-200 rounded-xl font-medium text-slate-800 focus:outline-none focus:border-sage-600" placeholder="Keterangan letak fisik rak / lemari di dalam lab gudang..."></textarea>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Keterangan / Deskripsi Lokasi</label>
+                <textarea id="rak_keterangan" rows="2" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="Keterangan letak fisik rak / lemari di dalam lab gudang..."></textarea>
             </div>
-            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100">
-                <button type="button" onclick="closeModal('modalRak')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
-                <button type="submit" id="btnSubmitRak" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Data</button>
+            <div class="pt-3 flex items-center justify-end gap-2.5 border-t border-slate-200 dark:border-slate-800">
+                <button type="button" onclick="closeModal('modalRak')" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700">Batal</button>
+                <button type="submit" id="btnSubmitRak" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 shadow-sm transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span>Simpan Data</span>
+                </button>
             </div>
         </form>
     </div>
@@ -766,628 +772,657 @@
 </div>
 
 <!-- 3. MODAL MASTER BARANG & BARCODE (TAMBAH / EDIT) -->
-<div id="modalBarang" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-sage-200 dark:border-slate-800 shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
-        <div class="p-6 bg-sage-50/80 dark:bg-slate-800/80 border-b border-sage-100 dark:border-slate-700 flex items-center justify-between shrink-0">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                </div>
-                <h3 class="text-base font-bold text-slate-800 dark:text-white" id="modalBarangTitle">Tambah Alat / Bahan & Barcode</h3>
-            </div>
-            <button onclick="closeModal('modalBarang')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+<div id="modalBarang" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-[#1a1a1a] rounded-3xl border border-slate-200 dark:border-[#262626] shadow-2xl w-full max-w-lg max-h-[90vh] p-6 relative transition-all flex flex-col">
+        <!-- Close Button (X) -->
+        <button type="button" onclick="closeModal('modalBarang')" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#252525] transition-colors" title="Tutup">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <!-- Title & Subtitle (Langsung di Konten Tanpa Header Terpisah) -->
+        <div class="mb-4 pr-8 shrink-0">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white" id="modalBarangTitle">Tambah Alat / Bahan & Barcode</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Kelola data master inventaris alat dan bahan laboratorium</p>
         </div>
-        <form onsubmit="handleFormSubmit(event, 'Barang')" class="p-6 space-y-4 text-xs overflow-y-auto flex-1">
+
+        <form onsubmit="handleFormSubmit(event, 'Barang')" class="flex flex-col min-h-0 flex-1 text-xs">
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
             <input type="hidden" id="barang_edit_id" value="">
             <input type="hidden" id="barang_remove_image" value="0">
-            <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
-            <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jurusan / Departemen <span class="text-red-500">*</span></label>
-                <select id="barang_jurusan_id" onchange="filterKategoriAndRakByJurusan(this.value)" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
-                    <option value="">-- Pilih Jurusan --</option>
-                </select>
-            </div>
-            <?php endif; ?>
-            <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Kode Barcode</label>
-                <input type="text" id="barang_barcode" readonly class="w-full px-3.5 py-2.5 bg-slate-100/70 dark:bg-slate-800/80 border border-sage-200 dark:border-slate-700 rounded-xl font-mono font-bold text-slate-700 dark:text-slate-300 cursor-not-allowed focus:outline-none" placeholder="899100100004">
-            </div>
-            <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Alat / Bahan <span class="text-red-500">*</span></label>
-                <input type="text" id="barang_nama" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600" placeholder="contoh: Router Mikrotik Hex Gr3 / Kabel UTP">
-            </div>
-            <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jenis Inventaris <span class="text-red-500">*</span></label>
-                <select id="barang_jenis" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
-                    <option value="alat">Alat (Dapat dipinjam & dikembalikan)</option>
-                    <option value="bahan">Bahan (Material habis pakai)</option>
-                </select>
-            </div>
-            <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Kategori</label>
-                <select id="barang_kategori_id" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
-                    <option value="">-- Pilih Kategori --</option>
-                </select>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jenis Rak / Lemari</label>
-                    <select id="barang_filter_jenis_rak" onchange="filterBarangRakOptions()" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
-                        <option value="">Semua (Rak & Lemari)</option>
-                        <option value="rak">Rak</option>
-                        <option value="lemari">Lemari</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Lokasi Rak / Lemari</label>
-                    <select id="barang_rak_id" onchange="syncBarangJenisRakWithSelectedRak()" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
-                        <option value="">-- Pilih Rak / Lemari --</option>
-                    </select>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Merek / Brand</label>
-                    <input type="text" id="barang_merek" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600" placeholder="Mikrotik">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Stok Awal</label>
-                    <input type="number" id="barang_stok" min="0" value="10" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Satuan <span class="text-red-500">*</span></label>
-                    <input type="text" id="barang_satuan" required value="Unit" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600" placeholder="Unit, Meter, Pcs...">
-                </div>
-            </div>
 
-            <!-- FOTO / GAMBAR BARANG (MAKSIMAL 1 FOTO) -->
-            <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1.5">Foto / Gambar Barang <span class="text-slate-400 font-normal">(Maksimal 1 Foto - Opsional)</span></label>
-                <div class="flex items-center gap-3">
-                    <label for="barang_image_input" class="cursor-pointer px-4 py-2 bg-sage-600 hover:bg-sage-700 active:bg-sage-800 text-white rounded-xl font-bold text-xs inline-flex items-center gap-2 transition-all shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                        <span>Pilih Gambar</span>
-                    </label>
-                    <input type="file" id="barang_image_input" accept="image/png,image/jpeg,image/webp,image/jpg" class="hidden" onchange="previewBarangImage(this)">
-                    <div id="barang_image_preview_box" class="hidden items-center gap-2">
-                        <img id="barang_image_preview" src="" alt="Preview" class="w-8 h-8 rounded-lg object-cover border border-sage-200 dark:border-slate-700 shadow-xs cursor-pointer" onclick="if(this.src) showImageModal(this.src)" title="Klik untuk memperbesar">
-                        <button type="button" id="btn_remove_barang_image" onclick="removeBarangImage()" class="px-2.5 py-1 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg font-bold transition-colors">Hapus</button>
+            <div class="space-y-4 overflow-y-auto flex-1 pr-1 pb-1">
+                <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Jurusan / Departemen <span class="text-red-500">*</span></label>
+                    <select id="barang_jurusan_id" onchange="filterKategoriAndRakByJurusan(this.value)" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                        <option value="">-- Pilih Jurusan --</option>
+                    </select>
+                </div>
+                <?php endif; ?>
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Kode Barcode</label>
+                    <input type="text" id="barang_barcode" readonly class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl font-mono font-bold text-slate-600 dark:text-slate-300 cursor-not-allowed focus:outline-none text-xs" placeholder="899100100004">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Nama Alat / Bahan <span class="text-red-500">*</span></label>
+                    <input type="text" id="barang_nama" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="contoh: Router Mikrotik Hex Gr3 / Kabel UTP">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Jenis Inventaris <span class="text-red-500">*</span></label>
+                    <select id="barang_jenis" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                        <option value="alat">Alat (Dapat dipinjam & dikembalikan)</option>
+                        <option value="bahan">Bahan (Material habis pakai)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Kategori</label>
+                    <select id="barang_kategori_id" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                        <option value="">-- Pilih Kategori --</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Jenis Rak / Lemari</label>
+                        <select id="barang_filter_jenis_rak" onchange="filterBarangRakOptions()" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                            <option value="">Semua (Rak & Lemari)</option>
+                            <option value="rak">Rak</option>
+                            <option value="lemari">Lemari</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Lokasi Rak / Lemari</label>
+                        <select id="barang_rak_id" onchange="syncBarangJenisRakWithSelectedRak()" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                            <option value="">-- Pilih Rak / Lemari --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Merek / Brand</label>
+                        <input type="text" id="barang_merek" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="Mikrotik">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Stok Awal</label>
+                        <input type="number" id="barang_stok" min="0" value="10" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Satuan <span class="text-red-500">*</span></label>
+                        <input type="text" id="barang_satuan" required value="Unit" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="Unit, Meter, Pcs...">
+                    </div>
+                </div>
+
+                <!-- FOTO / GAMBAR BARANG (MAKSIMAL 1 FOTO) -->
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1.5 text-xs">Foto / Gambar Barang <span class="text-slate-400 font-normal">(Maksimal 1 Foto - Opsional)</span></label>
+                    <div class="flex items-center gap-3">
+                        <label for="barang_image_input" class="cursor-pointer px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs inline-flex items-center gap-2 transition-all shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span>Pilih Gambar</span>
+                        </label>
+                        <input type="file" id="barang_image_input" accept="image/png,image/jpeg,image/webp,image/jpg" class="hidden" onchange="previewBarangImage(this)">
+                        <div id="barang_image_preview_box" class="hidden items-center gap-2">
+                            <img id="barang_image_preview" src="" alt="Preview" class="w-8 h-8 rounded-lg object-cover border border-slate-200 dark:border-slate-700 shadow-xs cursor-pointer" onclick="if(this.src) showImageModal(this.src)" title="Klik untuk memperbesar">
+                            <button type="button" id="btn_remove_barang_image" onclick="removeBarangImage()" class="px-2.5 py-1 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg font-bold transition-colors">Hapus</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100 dark:border-slate-800">
-                <button type="button" onclick="closeModal('modalBarang')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
-                <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Data</button>
+            <!-- Action Footer (Pinned Bottom) -->
+            <div class="pt-3.5 mt-2 flex items-center justify-end gap-2.5 border-t border-slate-200 dark:border-slate-800 shrink-0">
+                <button type="button" onclick="closeModal('modalBarang')" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700">Batal</button>
+                <button type="submit" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 shadow-sm transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span>Simpan Data</span>
+                </button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- 4. MODAL BARANG MASUK -->
-<div id="modalBarangMasuk" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-sage-200 dark:border-slate-800 shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
-        <div class="p-6 bg-sage-50/80 dark:bg-slate-800/80 border-b border-sage-100 dark:border-slate-700 flex items-center justify-between shrink-0">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                </div>
-                <h3 class="text-base font-bold text-slate-800 dark:text-white" id="modalBarangMasukTitle">Catat Transaksi Alat & Bahan Masuk</h3>
-            </div>
-            <button onclick="closeModal('modalBarangMasuk')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+<div id="modalBarangMasuk" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-[#1a1a1a] rounded-3xl border border-slate-200 dark:border-[#262626] shadow-2xl w-full max-w-lg max-h-[90vh] p-6 relative transition-all flex flex-col">
+        <!-- Close Button (X) -->
+        <button type="button" onclick="closeModal('modalBarangMasuk')" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#252525] transition-colors" title="Tutup">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <!-- Title & Subtitle (Langsung di Konten Tanpa Header Terpisah) -->
+        <div class="mb-4 pr-8 shrink-0">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white" id="modalBarangMasukTitle">Catat Transaksi Alat & Bahan Masuk</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Pencatatan pengadaan atau penambahan stok alat dan bahan</p>
         </div>
-        <form onsubmit="handleFormSubmit(event, 'Barang Masuk')" class="p-6 space-y-4 text-xs overflow-y-auto flex-1">
+
+        <form onsubmit="handleFormSubmit(event, 'Barang Masuk')" class="flex flex-col min-h-0 flex-1 text-xs">
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
             <input type="hidden" id="masuk_edit_id" value="">
 
-            <!-- Checklist: Apakah ingin mencatat masuk menggunakan scan barcode/QR code data alat & bahannya? -->
-            <div class="p-3 bg-sage-50/60 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
-                <label class="flex items-center gap-2.5 cursor-pointer select-none">
-                    <input type="checkbox" id="masuk_use_barcode" onchange="toggleMasukBarcodeScanner(this.checked)" class="w-4 h-4 rounded accent-sage-600 cursor-pointer">
-                    <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">
-                        Catat Masuk Menggunakan Scan Barcode / QR Code Barang
-                    </span>
-                </label>
-            </div>
-
-            <!-- CONTAINER SCANNER BARCODE (TAMPIL JIKA CHECKBOX DICENTANG) -->
-            <div id="section_scan_barcode_masuk" class="hidden space-y-3 py-1 px-0 bg-transparent rounded-2xl animate-fade-in-up">
-                <!-- Tab Pilihan Metode Scan -->
-                <div class="flex items-center justify-between pb-1">
-                    <span class="font-bold text-slate-700 dark:text-slate-200 text-[11px] uppercase tracking-wider">
-                        Metode Scan Barcode
-                    </span>
-                    <div class="flex items-center bg-slate-100/40 dark:bg-slate-800/40 rounded-xl p-1 border border-slate-200 dark:border-slate-700 text-xs">
-                        <button type="button" id="btn_mode_kamera_masuk" onclick="switchMasukScanMode('kamera')" class="px-3 py-1 rounded-lg font-bold transition-all bg-sage-600 text-white shadow-sm">Kamera</button>
-                        <button type="button" id="btn_mode_file_masuk" onclick="switchMasukScanMode('file')" class="px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-sage-600 dark:hover:text-sage-400 transition-all">Pilih Gambar</button>
-                    </div>
-                </div>
-
-                <!-- 1. MODE KAMERA LIVE -->
-                <div id="masuk_scan_camera_pane" class="space-y-3">
-                    <div id="masuk_camera_select_wrap" class="hidden">
-                        <select id="masuk_camera_select" onchange="changeMasukCamera(this.value)" class="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:border-sage-600">
-                            <option value="">Pilih Kamera...</option>
-                        </select>
-                    </div>
-
-                    <div id="masuk_camera_view_wrap" class="hidden relative w-full max-w-sm mx-auto overflow-hidden rounded-2xl bg-transparent min-h-[220px] flex items-center justify-center border border-slate-200 dark:border-slate-700">
-                        <div id="masuk_barcode_reader" class="w-full h-full min-h-[220px] bg-transparent"></div>
-                    </div>
-                    <div id="masuk_camera_placeholder" class="hidden"></div>
-
-                    <div class="flex items-center justify-start py-2">
-                        <button type="button" id="btn_toggle_camera_masuk" onclick="toggleMasukCameraStream()" class="px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer" style="box-shadow: none !important;">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            <span>Nyalakan Kamera</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 2. MODE PILIH GAMBAR (CHOOSE FILE) -->
-                <div id="masuk_scan_file_pane" class="hidden space-y-3">
-                    <input type="file" id="masuk_barcode_file_input" accept="image/*" class="hidden" onchange="handleMasukBarcodeFileUpload(this)">
-                    <div class="flex items-center justify-start py-2">
-                        <button type="button" onclick="document.getElementById('masuk_barcode_file_input').click()" class="px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer" style="box-shadow: none !important;">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            <span>Pilih Berkas Gambar</span>
-                        </button>
-                    </div>
-                    <div id="masuk_file_scan_status" class="hidden text-left py-1.5">
-                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-sage-600 dark:text-sage-400">
-                            <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
-                            Menganalisis dan memindai barcode pada gambar...
+            <div class="space-y-4 overflow-y-auto flex-1 pr-1 pb-1">
+                <!-- Checklist: Apakah ingin mencatat masuk menggunakan scan barcode/QR code data alat & bahannya? -->
+                <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
+                    <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                        <input type="checkbox" id="masuk_use_barcode" onchange="toggleMasukBarcodeScanner(this.checked)" class="w-4 h-4 rounded accent-slate-900 dark:accent-white cursor-pointer">
+                        <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">
+                            Catat Masuk Menggunakan Scan Barcode / QR Code Barang
                         </span>
-                    </div>
-                </div>
-
-                <!-- 3. KOTAK FEEDBACK HASIL SCAN & SINKRONISASI -->
-                <div id="masuk_scan_feedback" class="hidden p-3 rounded-2xl text-xs transition-all"></div>
-            </div>
-
-            <!-- BAGIAN INPUT MANUAL (JURUSAN, JENIS, INVENTARIS) - OTOMATIS DISEMBUNYIKAN SAAT SCAN BARCODE AKTIF -->
-            <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
-            <div id="wrap_masuk_jurusan">
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jurusan / Departemen</label>
-                <select id="masuk_jurusan_id" onchange="filterBarangMasukOptions()" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
-                    <option value="">-- Semua Jurusan --</option>
-                </select>
-            </div>
-            <?php endif; ?>
-            <div id="wrap_masuk_jenis">
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Pilih Jenis Barang <span class="text-red-500">*</span></label>
-                <select id="masuk_jenis" onchange="filterBarangMasukOptions()" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
-                    <option value="">-- Semua Jenis (Alat dan Bahan) --</option>
-                    <option value="alat">Alat</option>
-                    <option value="bahan">Bahan</option>
-                </select>
-            </div>
-            <div id="wrap_masuk_barang" class="relative">
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1" id="masuk_barang_label">Pilih Alat dan Bahan <span class="text-red-500">*</span></label>
-                <select id="masuk_barang_id" class="hidden">
-                    <option value="">-- Pilih Alat dan Bahan --</option>
-                </select>
-                <div class="relative">
-                    <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    </div>
-                    <input type="text" id="masuk_barang_search" autocomplete="off" placeholder="Ketik untuk mencari Alat dan Bahan masuk..." class="w-full pl-9 pr-16 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-sage-600 focus:ring-1 focus:ring-sage-600 transition-all cursor-pointer">
-                    <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                        <button type="button" id="masuk_barang_clear" tabindex="-1" class="hidden p-1 text-slate-400 hover:text-red-500 rounded-lg transition-colors" title="Hapus pilihan">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                        <button type="button" id="masuk_barang_chevron" tabindex="-1" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg transition-transform">
-                            <svg class="w-4 h-4 transform transition-transform duration-200" id="masuk_barang_chevron_icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                        </button>
-                    </div>
-                    <div id="masuk_barang_menu" class="hidden absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl shadow-xl divide-y divide-slate-100 dark:divide-slate-700/50 text-xs"></div>
-                </div>
-            </div>
-            <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jumlah Masuk <span class="text-red-500">*</span></label>
-                <input type="number" id="masuk_jumlah" min="1" value="5" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-bold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
-            </div>
-            <div>
-                <div class="flex items-center justify-between mb-1.5">
-                    <label class="block font-bold text-slate-700 dark:text-slate-300">Tanggal Masuk <span class="text-red-500">*</span></label>
-                    <label class="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-400 cursor-pointer select-none">
-                        <input type="checkbox" id="masuk_tgl_auto" checked onchange="toggleAutoDateMasuk(this.checked)" class="w-3.5 h-3.5 rounded accent-sage-600 cursor-pointer">
-                        <span>Sinkron Otomatis (Hari Ini)</span>
                     </label>
                 </div>
-                <div class="relative flex items-center">
-                    <input type="date" id="masuk_tanggal" value="<?= date('Y-m-d'); ?>" required onclick="openNativeDatePicker(this)" class="w-full pl-3.5 pr-10 py-2.5 bg-slate-100 dark:bg-slate-800/60 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white focus:outline-none focus:border-sage-600 transition-colors cursor-not-allowed opacity-75 dark:[color-scheme:dark]" disabled>
-                    <button type="button" id="masuk_tgl_picker_btn" onclick="triggerDatePick('masuk_tanggal')" class="absolute right-2.5 p-1.5 text-slate-400 hover:text-sage-600 dark:hover:text-white rounded-lg transition-colors cursor-pointer" title="Pilih Tanggal dari Kalender">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    </button>
+
+                <!-- CONTAINER SCANNER BARCODE (TAMPIL JIKA CHECKBOX DICENTANG) -->
+                <div id="section_scan_barcode_masuk" class="hidden space-y-3 py-1 px-0 bg-transparent rounded-2xl animate-fade-in-up">
+                    <!-- Tab Pilihan Metode Scan -->
+                    <div class="flex items-center justify-between pb-1">
+                        <span class="font-bold text-slate-700 dark:text-slate-200 text-[11px] uppercase tracking-wider">
+                            Metode Scan Barcode
+                        </span>
+                        <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1 border border-slate-200 dark:border-slate-700 text-xs">
+                            <button type="button" id="btn_mode_kamera_masuk" onclick="switchMasukScanMode('kamera')" class="px-3 py-1 rounded-lg font-bold transition-all bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm">Kamera</button>
+                            <button type="button" id="btn_mode_file_masuk" onclick="switchMasukScanMode('file')" class="px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all">Pilih Gambar</button>
+                        </div>
+                    </div>
+
+                    <!-- 1. MODE KAMERA LIVE -->
+                    <div id="masuk_scan_camera_pane" class="space-y-3">
+                        <div id="masuk_camera_select_wrap" class="hidden">
+                            <select id="masuk_camera_select" onchange="changeMasukCamera(this.value)" class="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                                <option value="">Pilih Kamera...</option>
+                            </select>
+                        </div>
+
+                        <div id="masuk_camera_view_wrap" class="hidden relative w-full max-w-sm mx-auto overflow-hidden rounded-2xl bg-transparent min-h-[220px] flex items-center justify-center border border-slate-200 dark:border-slate-700">
+                            <div id="masuk_barcode_reader" class="w-full h-full min-h-[220px] bg-transparent"></div>
+                        </div>
+                        <div id="masuk_camera_placeholder" class="hidden"></div>
+
+                        <div class="flex items-center justify-start py-2">
+                            <button type="button" id="btn_toggle_camera_masuk" onclick="toggleMasukCameraStream()" class="px-4 py-2 bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer" style="box-shadow: none !important;">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span>Nyalakan Kamera</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 2. MODE PILIH GAMBAR (CHOOSE FILE) -->
+                    <div id="masuk_scan_file_pane" class="hidden space-y-3">
+                        <input type="file" id="masuk_barcode_file_input" accept="image/*" class="hidden" onchange="handleMasukBarcodeFileUpload(this)">
+                        <div class="flex items-center justify-start py-2">
+                            <button type="button" onclick="document.getElementById('masuk_barcode_file_input').click()" class="px-4 py-2 bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer" style="box-shadow: none !important;">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <span>Pilih Berkas Gambar</span>
+                            </button>
+                        </div>
+                        <div id="masuk_file_scan_status" class="hidden text-left py-1.5">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                                <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                                Menganalisis dan memindai barcode pada gambar...
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- 3. KOTAK FEEDBACK HASIL SCAN & SINKRONISASI -->
+                    <div id="masuk_scan_feedback" class="hidden p-3 rounded-2xl text-xs transition-all"></div>
+                </div>
+
+                <!-- BAGIAN INPUT MANUAL (JURUSAN, JENIS, INVENTARIS) - OTOMATIS DISEMBUNYIKAN SAAT SCAN BARCODE AKTIF -->
+                <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
+                <div id="wrap_masuk_jurusan">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Jurusan / Departemen</label>
+                    <select id="masuk_jurusan_id" onchange="filterBarangMasukOptions()" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                        <option value="">-- Semua Jurusan --</option>
+                    </select>
+                </div>
+                <?php endif; ?>
+                <div id="wrap_masuk_jenis">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Pilih Jenis Barang <span class="text-red-500">*</span></label>
+                    <select id="masuk_jenis" onchange="filterBarangMasukOptions()" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                        <option value="">-- Semua Jenis (Alat dan Bahan) --</option>
+                        <option value="alat">Alat</option>
+                        <option value="bahan">Bahan</option>
+                    </select>
+                </div>
+                <div id="wrap_masuk_barang" class="relative">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs" id="masuk_barang_label">Pilih Alat dan Bahan <span class="text-red-500">*</span></label>
+                    <select id="masuk_barang_id" class="hidden">
+                        <option value="">-- Pilih Alat dan Bahan --</option>
+                    </select>
+                    <div class="relative">
+                        <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <input type="text" id="masuk_barang_search" autocomplete="off" placeholder="Ketik untuk mencari Alat dan Bahan masuk..." class="w-full pl-9 pr-16 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-slate-800 dark:focus:border-white transition-all cursor-pointer">
+                        <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                            <button type="button" id="masuk_barang_clear" tabindex="-1" class="hidden p-1 text-slate-400 hover:text-red-500 rounded-lg transition-colors" title="Hapus pilihan">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                            <button type="button" id="masuk_barang_chevron" tabindex="-1" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg transition-transform">
+                                <svg class="w-4 h-4 transform transition-transform duration-200" id="masuk_barang_chevron_icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                        </div>
+                        <div id="masuk_barang_menu" class="hidden absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white dark:bg-[#202020] border border-slate-200 dark:border-[#2f2f2f] rounded-2xl shadow-xl divide-y divide-slate-100 dark:divide-slate-800 text-xs"></div>
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Jumlah Masuk <span class="text-red-500">*</span></label>
+                    <input type="number" id="masuk_jumlah" min="1" value="5" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 text-xs">Tanggal Masuk <span class="text-red-500">*</span></label>
+                        <label class="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-400 cursor-pointer select-none">
+                            <input type="checkbox" id="masuk_tgl_auto" checked onchange="toggleAutoDateMasuk(this.checked)" class="w-3.5 h-3.5 rounded accent-slate-900 dark:accent-white cursor-pointer">
+                            <span>Sinkron Otomatis (Hari Ini)</span>
+                        </label>
+                    </div>
+                    <div class="relative flex items-center">
+                        <input type="date" id="masuk_tanggal" value="<?= date('Y-m-d'); ?>" required onclick="openNativeDatePicker(this)" class="w-full pl-3.5 pr-10 py-2.5 bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white transition-colors cursor-not-allowed opacity-75 dark:[color-scheme:dark]" disabled>
+                        <button type="button" id="masuk_tgl_picker_btn" onclick="triggerDatePick('masuk_tanggal')" class="absolute right-2.5 p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg transition-colors cursor-pointer" title="Pilih Tanggal dari Kalender">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100 dark:border-slate-700">
-                <button type="button" onclick="closeModal('modalBarangMasuk')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
-                <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Alat & Bahan Masuk</button>
+
+            <!-- Action Footer (Pinned Bottom) -->
+            <div class="pt-3.5 mt-2 flex items-center justify-end gap-2.5 border-t border-slate-200 dark:border-slate-800 shrink-0">
+                <button type="button" onclick="closeModal('modalBarangMasuk')" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700">Batal</button>
+                <button type="submit" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 shadow-sm transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span>Simpan Alat & Bahan Masuk</span>
+                </button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- 4.5. MODAL BARANG KELUAR -->
-<div id="modalBarangKeluar" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-sage-200 dark:border-slate-800 shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
-        <div class="p-6 bg-sage-50/80 dark:bg-slate-800/80 border-b border-sage-100 dark:border-slate-700 flex items-center justify-between shrink-0">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12"/></svg>
-                </div>
-                <h3 class="text-base font-bold text-slate-800 dark:text-white" id="modalBarangKeluarTitle">Catat Transaksi Bahan Keluar</h3>
-            </div>
-            <button onclick="closeModal('modalBarangKeluar')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+<div id="modalBarangKeluar" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-[#1a1a1a] rounded-3xl border border-slate-200 dark:border-[#262626] shadow-2xl w-full max-w-lg max-h-[90vh] p-6 relative transition-all flex flex-col">
+        <!-- Close Button (X) -->
+        <button type="button" onclick="closeModal('modalBarangKeluar')" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#252525] transition-colors" title="Tutup">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <!-- Title & Subtitle (Langsung di Konten Tanpa Header Terpisah) -->
+        <div class="mb-4 pr-8 shrink-0">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white" id="modalBarangKeluarTitle">Catat Transaksi Bahan Keluar</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Pencatatan pemakaian bahan habis pakai laboratorium</p>
         </div>
-        <form onsubmit="handleFormSubmit(event, 'Barang Keluar')" class="p-6 space-y-4 text-xs overflow-y-auto flex-1">
+
+        <form onsubmit="handleFormSubmit(event, 'Barang Keluar')" class="flex flex-col min-h-0 flex-1 text-xs">
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
             <input type="hidden" id="keluar_edit_id" value="">
 
-            <!-- Checklist: Apakah ingin mencatat keluar menggunakan scan barcode/QR code data bahan? -->
-            <div class="p-3 bg-sage-50/60 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
-                <label class="flex items-center gap-2.5 cursor-pointer select-none">
-                    <input type="checkbox" id="keluar_use_barcode" onchange="toggleKeluarBarcodeScanner(this.checked)" class="w-4 h-4 rounded accent-sage-600 cursor-pointer">
-                    <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">
-                        Catat Keluar Menggunakan Scan Barcode / QR Code Bahan
-                    </span>
-                </label>
-            </div>
-
-            <!-- CONTAINER SCANNER BARCODE (TAMPIL JIKA CHECKBOX DICENTANG) -->
-            <div id="section_scan_barcode_keluar" class="hidden space-y-3 py-1 px-0 bg-transparent rounded-2xl animate-fade-in-up">
-                <!-- Tab Pilihan Metode Scan -->
-                <div class="flex items-center justify-between pb-1">
-                    <span class="font-bold text-slate-700 dark:text-slate-200 text-[11px] uppercase tracking-wider">
-                        Metode Scan Barcode
-                    </span>
-                    <div class="flex items-center bg-slate-100/40 dark:bg-slate-800/40 rounded-xl p-1 border border-slate-200 dark:border-slate-700 text-xs">
-                        <button type="button" id="btn_mode_kamera_keluar" onclick="switchKeluarScanMode('kamera')" class="px-3 py-1 rounded-lg font-bold transition-all bg-sage-600 text-white shadow-sm">Kamera</button>
-                        <button type="button" id="btn_mode_file_keluar" onclick="switchKeluarScanMode('file')" class="px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-sage-600 dark:hover:text-sage-400 transition-all">Pilih Gambar</button>
-                    </div>
-                </div>
-
-                <!-- 1. MODE KAMERA LIVE -->
-                <div id="keluar_scan_camera_pane" class="space-y-3">
-                    <div id="keluar_camera_select_wrap" class="hidden">
-                        <select id="keluar_camera_select" onchange="changeKeluarCamera(this.value)" class="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:border-sage-600">
-                            <option value="">Pilih Kamera...</option>
-                        </select>
-                    </div>
-
-                    <div id="keluar_camera_view_wrap" class="hidden relative w-full max-w-sm mx-auto overflow-hidden rounded-2xl bg-transparent min-h-[220px] flex items-center justify-center border border-slate-200 dark:border-slate-700">
-                        <div id="keluar_barcode_reader" class="w-full h-full min-h-[220px] bg-transparent"></div>
-                    </div>
-                    <div id="keluar_camera_placeholder" class="hidden"></div>
-
-                    <div class="flex items-center justify-start py-2">
-                        <button type="button" id="btn_toggle_camera_keluar" onclick="toggleKeluarCameraStream()" class="px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer" style="box-shadow: none !important;">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            <span>Nyalakan Kamera</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 2. MODE PILIH GAMBAR (CHOOSE FILE) -->
-                <div id="keluar_scan_file_pane" class="hidden space-y-3">
-                    <input type="file" id="keluar_barcode_file_input" accept="image/*" class="hidden" onchange="handleKeluarBarcodeFileUpload(this)">
-                    <div class="flex items-center justify-start py-2">
-                        <button type="button" onclick="document.getElementById('keluar_barcode_file_input').click()" class="px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer" style="box-shadow: none !important;">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            <span>Pilih Berkas Gambar</span>
-                        </button>
-                    </div>
-                    <div id="keluar_file_scan_status" class="hidden text-left py-1.5">
-                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-sage-600 dark:text-sage-400">
-                            <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
-                            Menganalisis dan memindai barcode pada gambar...
+            <div class="space-y-4 overflow-y-auto flex-1 pr-1 pb-1">
+                <!-- Checklist: Apakah ingin mencatat keluar menggunakan scan barcode/QR code data bahan? -->
+                <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
+                    <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                        <input type="checkbox" id="keluar_use_barcode" onchange="toggleKeluarBarcodeScanner(this.checked)" class="w-4 h-4 rounded accent-slate-900 dark:accent-white cursor-pointer">
+                        <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">
+                            Catat Keluar Menggunakan Scan Barcode / QR Code Bahan
                         </span>
-                    </div>
-                </div>
-
-                <!-- 3. KOTAK FEEDBACK HASIL SCAN & SINKRONISASI -->
-                <div id="keluar_scan_feedback" class="hidden p-3 rounded-2xl text-xs transition-all"></div>
-            </div>
-
-            <!-- BAGIAN INPUT MANUAL (JURUSAN, BAHAN) - OTOMATIS DISEMBUNYIKAN SAAT SCAN BARCODE AKTIF -->
-            <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
-            <div id="wrap_keluar_jurusan">
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jurusan / Departemen</label>
-                <select id="keluar_jurusan_id" onchange="filterBarangKeluarOptions()" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
-                    <option value="">-- Semua Jurusan --</option>
-                </select>
-            </div>
-            <?php endif; ?>
-            <div id="wrap_keluar_barang" class="relative">
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1" id="keluar_barang_label">Pilih Bahan <span class="text-red-500">*</span></label>
-                <select id="keluar_barang_id" class="hidden">
-                    <option value="">-- Pilih Bahan --</option>
-                    <?php if (!empty($dbBarang)): ?>
-                        <?php foreach ($dbBarang as $b): ?>
-                            <?php if (strtolower($b['jenis'] ?? 'alat') === 'bahan'): ?>
-                                <option value="<?= htmlspecialchars($b['id']); ?>"><?= htmlspecialchars($b['nama_barang']); ?> (Tersedia: <?= htmlspecialchars($b['stok_tersedia']); ?> <?= htmlspecialchars($b['satuan'] ?? 'Unit'); ?>)</option>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </select>
-                <div class="relative">
-                    <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    </div>
-                    <input type="text" id="keluar_barang_search" autocomplete="off" placeholder="Ketik untuk mencari Bahan keluar..." class="w-full pl-9 pr-16 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-sage-600 focus:ring-1 focus:ring-sage-600 transition-all cursor-pointer">
-                    <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                        <button type="button" id="keluar_barang_clear" tabindex="-1" class="hidden p-1 text-slate-400 hover:text-red-500 rounded-lg transition-colors" title="Hapus pilihan">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                        <button type="button" id="keluar_barang_chevron" tabindex="-1" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg transition-transform">
-                            <svg class="w-4 h-4 transform transition-transform duration-200" id="keluar_barang_chevron_icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                        </button>
-                    </div>
-                    <div id="keluar_barang_menu" class="hidden absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl shadow-xl divide-y divide-slate-100 dark:divide-slate-700/50 text-xs"></div>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Penerima / Peruntukan <span class="text-red-500">*</span></label>
-                    <input type="text" id="keluar_penerima" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600" placeholder="contoh: Lab Komputer 2 / Ahmad">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jumlah Keluar <span class="text-red-500">*</span></label>
-                    <input type="number" id="keluar_jumlah" min="1" value="1" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-bold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
-                </div>
-            </div>
-            <div>
-                <div class="flex items-center justify-between mb-1.5">
-                    <label class="block font-bold text-slate-700 dark:text-slate-300">Tanggal Keluar <span class="text-red-500">*</span></label>
-                    <label class="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-400 cursor-pointer select-none">
-                        <input type="checkbox" id="keluar_tgl_auto" checked onchange="toggleAutoDateKeluar(this.checked)" class="w-3.5 h-3.5 rounded accent-sage-600 cursor-pointer">
-                        <span>Sinkron Otomatis (Hari Ini)</span>
                     </label>
                 </div>
-                <div class="relative flex items-center">
-                    <input type="date" id="keluar_tanggal" value="<?= date('Y-m-d'); ?>" required onclick="openNativeDatePicker(this)" class="w-full pl-3.5 pr-10 py-2.5 bg-slate-100 dark:bg-slate-800/60 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white focus:outline-none focus:border-sage-600 transition-colors cursor-not-allowed opacity-75 dark:[color-scheme:dark]" disabled>
-                    <button type="button" id="keluar_tgl_picker_btn" onclick="triggerDatePick('keluar_tanggal')" class="absolute right-2.5 p-1.5 text-slate-400 hover:text-sage-600 dark:hover:text-white rounded-lg transition-colors cursor-pointer" title="Pilih Tanggal dari Kalender">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    </button>
+
+                <!-- CONTAINER SCANNER BARCODE (TAMPIL JIKA CHECKBOX DICENTANG) -->
+                <div id="section_scan_barcode_keluar" class="hidden space-y-3 py-1 px-0 bg-transparent rounded-2xl animate-fade-in-up">
+                    <!-- Tab Pilihan Metode Scan -->
+                    <div class="flex items-center justify-between pb-1">
+                        <span class="font-bold text-slate-700 dark:text-slate-200 text-[11px] uppercase tracking-wider">
+                            Metode Scan Barcode
+                        </span>
+                        <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1 border border-slate-200 dark:border-slate-700 text-xs">
+                            <button type="button" id="btn_mode_kamera_keluar" onclick="switchKeluarScanMode('kamera')" class="px-3 py-1 rounded-lg font-bold transition-all bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm">Kamera</button>
+                            <button type="button" id="btn_mode_file_keluar" onclick="switchKeluarScanMode('file')" class="px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all">Pilih Gambar</button>
+                        </div>
+                    </div>
+
+                    <!-- 1. MODE KAMERA LIVE -->
+                    <div id="keluar_scan_camera_pane" class="space-y-3">
+                        <div id="keluar_camera_select_wrap" class="hidden">
+                            <select id="keluar_camera_select" onchange="changeKeluarCamera(this.value)" class="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                                <option value="">Pilih Kamera...</option>
+                            </select>
+                        </div>
+
+                        <div id="keluar_camera_view_wrap" class="hidden relative w-full max-w-sm mx-auto overflow-hidden rounded-2xl bg-transparent min-h-[220px] flex items-center justify-center border border-slate-200 dark:border-slate-700">
+                            <div id="keluar_barcode_reader" class="w-full h-full min-h-[220px] bg-transparent"></div>
+                        </div>
+                        <div id="keluar_camera_placeholder" class="hidden"></div>
+
+                        <div class="flex items-center justify-start py-2">
+                            <button type="button" id="btn_toggle_camera_keluar" onclick="toggleKeluarCameraStream()" class="px-4 py-2 bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer" style="box-shadow: none !important;">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span>Nyalakan Kamera</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 2. MODE PILIH GAMBAR (CHOOSE FILE) -->
+                    <div id="keluar_scan_file_pane" class="hidden space-y-3">
+                        <input type="file" id="keluar_barcode_file_input" accept="image/*" class="hidden" onchange="handleKeluarBarcodeFileUpload(this)">
+                        <div class="flex items-center justify-start py-2">
+                            <button type="button" onclick="document.getElementById('keluar_barcode_file_input').click()" class="px-4 py-2 bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer" style="box-shadow: none !important;">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <span>Pilih Berkas Gambar</span>
+                            </button>
+                        </div>
+                        <div id="keluar_file_scan_status" class="hidden text-left py-1.5">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                                <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                                Menganalisis dan memindai barcode pada gambar...
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- 3. KOTAK FEEDBACK HASIL SCAN & SINKRONISASI -->
+                    <div id="keluar_scan_feedback" class="hidden p-3 rounded-2xl text-xs transition-all"></div>
+                </div>
+
+                <!-- BAGIAN INPUT MANUAL (JURUSAN, BAHAN) - OTOMATIS DISEMBUNYIKAN SAAT SCAN BARCODE AKTIF -->
+                <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
+                <div id="wrap_keluar_jurusan">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Jurusan / Departemen</label>
+                    <select id="keluar_jurusan_id" onchange="filterBarangKeluarOptions()" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                        <option value="">-- Semua Jurusan --</option>
+                    </select>
+                </div>
+                <?php endif; ?>
+                <div id="wrap_keluar_barang" class="relative">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs" id="keluar_barang_label">Pilih Bahan <span class="text-red-500">*</span></label>
+                    <select id="keluar_barang_id" class="hidden">
+                        <option value="">-- Pilih Bahan --</option>
+                        <?php if (!empty($dbBarang)): ?>
+                            <?php foreach ($dbBarang as $b): ?>
+                                <?php if (strtolower($b['jenis'] ?? 'alat') === 'bahan'): ?>
+                                    <option value="<?= htmlspecialchars($b['id']); ?>"><?= htmlspecialchars($b['nama_barang']); ?> (Tersedia: <?= htmlspecialchars($b['stok_tersedia']); ?> <?= htmlspecialchars($b['satuan'] ?? 'Unit'); ?>)</option>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                    <div class="relative">
+                        <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <input type="text" id="keluar_barang_search" autocomplete="off" placeholder="Ketik untuk mencari Bahan keluar..." class="w-full pl-9 pr-16 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-slate-800 dark:focus:border-white transition-all cursor-pointer">
+                        <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                            <button type="button" id="keluar_barang_clear" tabindex="-1" class="hidden p-1 text-slate-400 hover:text-red-500 rounded-lg transition-colors" title="Hapus pilihan">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                            <button type="button" id="keluar_barang_chevron" tabindex="-1" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg transition-transform">
+                                <svg class="w-4 h-4 transform transition-transform duration-200" id="keluar_barang_chevron_icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                        </div>
+                        <div id="keluar_barang_menu" class="hidden absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white dark:bg-[#202020] border border-slate-200 dark:border-[#2f2f2f] rounded-2xl shadow-xl divide-y divide-slate-100 dark:divide-slate-800 text-xs"></div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Nama Penerima / Peruntukan <span class="text-red-500">*</span></label>
+                        <input type="text" id="keluar_penerima" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="contoh: Lab Komputer 2 / Ahmad">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Jumlah Keluar <span class="text-red-500">*</span></label>
+                        <input type="number" id="keluar_jumlah" min="1" value="1" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 text-xs">Tanggal Keluar <span class="text-red-500">*</span></label>
+                        <label class="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-400 cursor-pointer select-none">
+                            <input type="checkbox" id="keluar_tgl_auto" checked onchange="toggleAutoDateKeluar(this.checked)" class="w-3.5 h-3.5 rounded accent-slate-900 dark:accent-white cursor-pointer">
+                            <span>Sinkron Otomatis (Hari Ini)</span>
+                        </label>
+                    </div>
+                    <div class="relative flex items-center">
+                        <input type="date" id="keluar_tanggal" value="<?= date('Y-m-d'); ?>" required onclick="openNativeDatePicker(this)" class="w-full pl-3.5 pr-10 py-2.5 bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white transition-colors cursor-not-allowed opacity-75 dark:[color-scheme:dark]" disabled>
+                        <button type="button" id="keluar_tgl_picker_btn" onclick="triggerDatePick('keluar_tanggal')" class="absolute right-2.5 p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg transition-colors cursor-pointer" title="Pilih Tanggal dari Kalender">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Keterangan / Alasan</label>
+                    <textarea id="keluar_keterangan" rows="2" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="contoh: Pemakaian bahan praktik jaringan"></textarea>
                 </div>
             </div>
-            <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Keterangan / Alasan</label>
-                <textarea id="keluar_keterangan" rows="2" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600" placeholder="contoh: Pemakaian bahan praktik jaringan"></textarea>
-            </div>
-            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100 dark:border-slate-700">
-                <button type="button" onclick="closeModal('modalBarangKeluar')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
-                <button type="submit" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Simpan Bahan Keluar</button>
+
+            <!-- Action Footer (Pinned Bottom) -->
+            <div class="pt-3.5 mt-2 flex items-center justify-end gap-2.5 border-t border-slate-200 dark:border-slate-800 shrink-0">
+                <button type="button" onclick="closeModal('modalBarangKeluar')" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700">Batal</button>
+                <button type="submit" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 shadow-sm transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span>Simpan Bahan Keluar</span>
+                </button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- 5. MODAL PEMINJAMAN ALAT -->
-<div id="modalPeminjaman" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-sage-200 dark:border-slate-800 shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
-        <div class="p-6 bg-sage-50/80 dark:bg-slate-800/80 border-b border-sage-100 dark:border-slate-700 flex items-center justify-between shrink-0">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
-                </div>
-                <h3 class="text-base font-bold text-slate-800 dark:text-white" id="modalPeminjamanTitle">Tambah Transaksi Peminjaman</h3>
-            </div>
-            <button onclick="closeModal('modalPeminjaman')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+<div id="modalPeminjaman" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-[#1a1a1a] rounded-3xl border border-slate-200 dark:border-[#262626] shadow-2xl w-full max-w-lg max-h-[90vh] p-6 relative transition-all flex flex-col">
+        <!-- Close Button (X) -->
+        <button type="button" onclick="closeModal('modalPeminjaman')" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#252525] transition-colors" title="Tutup">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <!-- Title & Subtitle (Langsung di Konten Tanpa Header Terpisah) -->
+        <div class="mb-4 pr-8 shrink-0">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white" id="modalPeminjamanTitle">Tambah Transaksi Peminjaman</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Pencatatan peminjaman alat praktik laboratorium</p>
         </div>
-        <form onsubmit="handleFormSubmit(event, 'Peminjaman Alat')" class="p-6 space-y-4 text-xs overflow-y-auto flex-1">
+
+        <form onsubmit="handleFormSubmit(event, 'Peminjaman Alat')" class="flex flex-col min-h-0 flex-1 text-xs">
             <input type="hidden" name="csrf_token" value="<?= getCsrfToken(); ?>">
             <input type="hidden" id="pinjam_edit_id" value="">
-            <!-- Checklist: Apakah ingin meminjam menggunakan scan barcode/QR code data alat & bahannya? -->
-            <div class="p-3 bg-sage-50/60 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
-                <label class="flex items-center gap-2.5 cursor-pointer select-none">
-                    <input type="checkbox" id="pinjam_use_barcode" onchange="togglePinjamBarcodeScanner(this.checked)" class="w-4 h-4 rounded accent-sage-600 cursor-pointer">
-                    <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">
-                        Pinjam Menggunakan Scan Barcode / QR Code Barang
-                    </span>
-                </label>
-            </div>
 
-            <!-- CONTAINER SCANNER BARCODE (TAMPIL JIKA CHECKBOX DICENTANG) -->
-            <div id="section_scan_barcode_peminjaman" class="hidden space-y-3 py-1 px-0 bg-transparent rounded-2xl animate-fade-in-up">
-                <!-- Tab Pilihan Metode Scan -->
-                <div class="flex items-center justify-between pb-1">
-                    <span class="font-bold text-slate-700 dark:text-slate-200 text-[11px] uppercase tracking-wider">
-                        Metode Scan Barcode
-                    </span>
-                    <div class="flex items-center bg-slate-100/40 dark:bg-slate-800/40 rounded-xl p-1 border border-slate-200 dark:border-slate-700 text-xs">
-                        <button type="button" id="btn_mode_kamera" onclick="switchPinjamScanMode('kamera')" class="px-3 py-1 rounded-lg font-bold transition-all bg-sage-600 text-white shadow-sm">Kamera</button>
-                        <button type="button" id="btn_mode_file" onclick="switchPinjamScanMode('file')" class="px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-sage-600 dark:hover:text-sage-400 transition-all">Pilih Gambar</button>
-                    </div>
-                </div>
-
-                <!-- 1. MODE KAMERA LIVE -->
-                <div id="pinjam_scan_camera_pane" class="space-y-3">
-                    <div id="pinjam_camera_select_wrap" class="hidden">
-                        <select id="pinjam_camera_select" onchange="changePinjamCamera(this.value)" class="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:border-sage-600">
-                            <option value="">Pilih Kamera...</option>
-                        </select>
-                    </div>
-
-                    <div id="pinjam_camera_view_wrap" class="hidden relative w-full max-w-sm mx-auto overflow-hidden rounded-2xl bg-transparent min-h-[220px] flex items-center justify-center border border-slate-200 dark:border-slate-700">
-                        <div id="pinjam_barcode_reader" class="w-full h-full min-h-[220px] bg-transparent"></div>
-                    </div>
-                    <div id="pinjam_camera_placeholder" class="hidden"></div>
-
-                    <div class="flex items-center justify-start py-2">
-                        <button type="button" id="btn_toggle_camera" onclick="togglePinjamCameraStream()" class="px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer" style="box-shadow: none !important;">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            <span>Nyalakan Kamera</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 2. MODE PILIH GAMBAR (CHOOSE FILE) -->
-                <div id="pinjam_scan_file_pane" class="hidden space-y-3">
-                    <input type="file" id="pinjam_barcode_file_input" accept="image/*" class="hidden" onchange="handlePinjamBarcodeFileUpload(this)">
-                    <div class="flex items-center justify-start py-2">
-                        <button type="button" onclick="document.getElementById('pinjam_barcode_file_input').click()" class="px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer" style="box-shadow: none !important;">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            <span>Pilih Berkas Gambar</span>
-                        </button>
-                    </div>
-                    <div id="pinjam_file_scan_status" class="hidden text-left py-1.5">
-                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-sage-600 dark:text-sage-400">
-                            <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
-                            Menganalisis dan memindai barcode pada gambar...
+            <div class="space-y-4 overflow-y-auto flex-1 pr-1 pb-1">
+                <!-- Checklist: Apakah ingin meminjam menggunakan scan barcode/QR code data alat & bahannya? -->
+                <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
+                    <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                        <input type="checkbox" id="pinjam_use_barcode" onchange="togglePinjamBarcodeScanner(this.checked)" class="w-4 h-4 rounded accent-slate-900 dark:accent-white cursor-pointer">
+                        <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">
+                            Pinjam Menggunakan Scan Barcode / QR Code Barang
                         </span>
-                    </div>
+                    </label>
                 </div>
 
-                <!-- 3. KOTAK FEEDBACK HASIL SCAN & SINKRONISASI -->
-                <div id="pinjam_scan_feedback" class="hidden p-3 rounded-2xl text-xs transition-all"></div>
-            </div>
+                <!-- CONTAINER SCANNER BARCODE (TAMPIL JIKA CHECKBOX DICENTANG) -->
+                <div id="section_scan_barcode_peminjaman" class="hidden space-y-3 py-1 px-0 bg-transparent rounded-2xl animate-fade-in-up">
+                    <!-- Tab Pilihan Metode Scan -->
+                    <div class="flex items-center justify-between pb-1">
+                        <span class="font-bold text-slate-700 dark:text-slate-200 text-[11px] uppercase tracking-wider">
+                            Metode Scan Barcode
+                        </span>
+                        <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1 border border-slate-200 dark:border-slate-700 text-xs">
+                            <button type="button" id="btn_mode_kamera" onclick="switchPinjamScanMode('kamera')" class="px-3 py-1 rounded-lg font-bold transition-all bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm">Kamera</button>
+                            <button type="button" id="btn_mode_file" onclick="switchPinjamScanMode('file')" class="px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all">Pilih Gambar</button>
+                        </div>
+                    </div>
 
-            <!-- BAGIAN INPUT MANUAL (JURUSAN, JENIS, INVENTARIS) - OTOMATIS DISEMBUNYIKAN SAAT SCAN BARCODE AKTIF -->
-            <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
-            <div id="wrap_pinjam_jurusan">
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jurusan / Departemen</label>
-                <select id="pinjam_jurusan_id" onchange="filterBarangPinjamOptions(); filterGuruPinjamOptions(); filterSiswaPinjamOptions();" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
-                    <option value="">-- Semua Jurusan --</option>
-                </select>
-            </div>
-            <?php endif; ?>
-            <div id="wrap_pinjam_jenis">
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Pilih Jenis Barang <span class="text-red-500">*</span></label>
-                <select id="pinjam_jenis" disabled class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold text-slate-600 dark:text-slate-400 cursor-not-allowed">
-                    <option value="alat" selected>Alat</option>
-                </select>
-            </div>
-            <div id="wrap_pinjam_barang" class="relative">
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1" id="pinjam_barang_label">Pilih Alat <span class="text-red-500">*</span></label>
-                <select id="pinjam_barang_id" class="hidden">
-                    <option value="">-- Pilih Alat --</option>
-                </select>
-                <div class="relative">
-                    <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <!-- 1. MODE KAMERA LIVE -->
+                    <div id="pinjam_scan_camera_pane" class="space-y-3">
+                        <div id="pinjam_camera_select_wrap" class="hidden">
+                            <select id="pinjam_camera_select" onchange="changePinjamCamera(this.value)" class="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                                <option value="">Pilih Kamera...</option>
+                            </select>
+                        </div>
+
+                        <div id="pinjam_camera_view_wrap" class="hidden relative w-full max-w-sm mx-auto overflow-hidden rounded-2xl bg-transparent min-h-[220px] flex items-center justify-center border border-slate-200 dark:border-slate-700">
+                            <div id="pinjam_barcode_reader" class="w-full h-full min-h-[220px] bg-transparent"></div>
+                        </div>
+                        <div id="pinjam_camera_placeholder" class="hidden"></div>
+
+                        <div class="flex items-center justify-start py-2">
+                            <button type="button" id="btn_toggle_camera" onclick="togglePinjamCameraStream()" class="px-4 py-2 bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer" style="box-shadow: none !important;">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span>Nyalakan Kamera</span>
+                            </button>
+                        </div>
                     </div>
-                    <input type="text" id="pinjam_barang_search" autocomplete="off" placeholder="Ketik untuk mencari Alat..." class="w-full pl-9 pr-16 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-sage-600 focus:ring-1 focus:ring-sage-600 transition-all cursor-pointer">
-                    <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                        <button type="button" id="pinjam_barang_clear" tabindex="-1" class="hidden p-1 text-slate-400 hover:text-red-500 rounded-lg transition-colors" title="Hapus pilihan">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                        <button type="button" id="pinjam_barang_chevron" tabindex="-1" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg transition-transform">
-                            <svg class="w-4 h-4 transform transition-transform duration-200" id="pinjam_barang_chevron_icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                        </button>
+
+                    <!-- 2. MODE PILIH GAMBAR (CHOOSE FILE) -->
+                    <div id="pinjam_scan_file_pane" class="hidden space-y-3">
+                        <input type="file" id="pinjam_barcode_file_input" accept="image/*" class="hidden" onchange="handlePinjamBarcodeFileUpload(this)">
+                        <div class="flex items-center justify-start py-2">
+                            <button type="button" onclick="document.getElementById('pinjam_barcode_file_input').click()" class="px-4 py-2 bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer" style="box-shadow: none !important;">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <span>Pilih Berkas Gambar</span>
+                            </button>
+                        </div>
+                        <div id="pinjam_file_scan_status" class="hidden text-left py-1.5">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                                <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                                Menganalisis dan memindai barcode pada gambar...
+                            </span>
+                        </div>
                     </div>
-                    <div id="pinjam_barang_menu" class="hidden absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl shadow-xl divide-y divide-slate-100 dark:divide-slate-700/50 text-xs"></div>
+
+                    <!-- 3. KOTAK FEEDBACK HASIL SCAN & SINKRONISASI -->
+                    <div id="pinjam_scan_feedback" class="hidden p-3 rounded-2xl text-xs transition-all"></div>
                 </div>
-            </div>
-            <div id="wrap_pinjam_guru" class="relative">
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1" id="pinjam_guru_label">Guru Peminjam</label>
-                <select id="pinjam_guru_peminjam_select" onchange="toggleGuruPeminjamMode(this.value)" class="hidden">
-                    <option value="">-- Pilih Guru Peminjam --</option>
-                </select>
-                <div class="relative">
-                    <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    </div>
-                    <input type="text" id="pinjam_guru_search" autocomplete="off" placeholder="Ketik untuk mencari Guru Peminjam..." class="w-full pl-9 pr-16 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-sage-600 focus:ring-1 focus:ring-sage-600 transition-all cursor-pointer">
-                    <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                        <button type="button" id="pinjam_guru_clear" tabindex="-1" class="hidden p-1 text-slate-400 hover:text-red-500 rounded-lg transition-colors" title="Hapus pilihan">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                        <button type="button" id="pinjam_guru_chevron" tabindex="-1" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg transition-transform">
-                            <svg class="w-4 h-4 transform transition-transform duration-200" id="pinjam_guru_chevron_icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                        </button>
-                    </div>
-                    <div id="pinjam_guru_menu" class="hidden absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl shadow-xl divide-y divide-slate-100 dark:divide-slate-700/50 text-xs"></div>
+
+                <!-- BAGIAN INPUT MANUAL (JURUSAN, JENIS, INVENTARIS) - OTOMATIS DISEMBUNYIKAN SAAT SCAN BARCODE AKTIF -->
+                <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
+                <div id="wrap_pinjam_jurusan">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Jurusan / Departemen</label>
+                    <select id="pinjam_jurusan_id" onchange="filterBarangPinjamOptions(); filterGuruPinjamOptions(); filterSiswaPinjamOptions();" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                        <option value="">-- Semua Jurusan --</option>
+                    </select>
                 </div>
-                <input type="text" id="pinjam_guru_peminjam_custom" placeholder="Ketik nama guru peminjam manual..." class="mt-2 hidden w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
-            </div>
-
-            <!-- Checklist: Apakah dipinjamkan untuk siswa? -->
-            <div class="p-3 bg-sage-50/60 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
-                <label class="flex items-center gap-2.5 cursor-pointer select-none">
-                    <input type="checkbox" id="pinjam_untuk_siswa" onchange="togglePinjamUntukSiswa(this.checked)" class="w-4 h-4 rounded accent-sage-600 cursor-pointer">
-                    <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">Apakah dipinjamkan untuk siswa?</span>
-                </label>
-                <span id="pinjam_untuk_siswa_badge" class="text-xs font-medium text-slate-400 dark:text-slate-400">Tidak (Guru Langsung)</span>
-            </div>
-
-            <!-- Bagian Data Siswa (Hanya tampil jika checklist dicentang) -->
-            <div id="section_siswa_peminjam" class="hidden space-y-3">
-                <div id="wrap_pinjam_siswa" class="relative">
-                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1" id="pinjam_siswa_label">Siswa Peminjam <span class="text-red-500">*</span></label>
-                    <select id="pinjam_peminjam_select" onchange="onSiswaSelectedInPeminjamanForm(this.value)" class="hidden">
-                        <option value="">-- Pilih Siswa Peminjam --</option>
+                <?php endif; ?>
+                <div id="wrap_pinjam_jenis">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Pilih Jenis Barang <span class="text-red-500">*</span></label>
+                    <select id="pinjam_jenis" disabled class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-600 dark:text-slate-400 cursor-not-allowed">
+                        <option value="alat" selected>Alat</option>
+                    </select>
+                </div>
+                <div id="wrap_pinjam_barang" class="relative">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs" id="pinjam_barang_label">Pilih Alat <span class="text-red-500">*</span></label>
+                    <select id="pinjam_barang_id" class="hidden">
+                        <option value="">-- Pilih Alat --</option>
                     </select>
                     <div class="relative">
                         <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         </div>
-                        <input type="text" id="pinjam_siswa_search" autocomplete="off" placeholder="Ketik untuk mencari Siswa Peminjam..." class="w-full pl-9 pr-16 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-sage-600 focus:ring-1 focus:ring-sage-600 transition-all cursor-pointer">
+                        <input type="text" id="pinjam_barang_search" autocomplete="off" placeholder="Ketik untuk mencari Alat..." class="w-full pl-9 pr-16 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-slate-800 dark:focus:border-white transition-all cursor-pointer">
                         <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                            <button type="button" id="pinjam_siswa_clear" tabindex="-1" class="hidden p-1 text-slate-400 hover:text-red-500 rounded-lg transition-colors" title="Hapus pilihan">
+                            <button type="button" id="pinjam_barang_clear" tabindex="-1" class="hidden p-1 text-slate-400 hover:text-red-500 rounded-lg transition-colors" title="Hapus pilihan">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                             </button>
-                            <button type="button" id="pinjam_siswa_chevron" tabindex="-1" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg transition-transform">
-                                <svg class="w-4 h-4 transform transition-transform duration-200" id="pinjam_siswa_chevron_icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            <button type="button" id="pinjam_barang_chevron" tabindex="-1" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg transition-transform">
+                                <svg class="w-4 h-4 transform transition-transform duration-200" id="pinjam_barang_chevron_icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                             </button>
                         </div>
-                        <div id="pinjam_siswa_menu" class="hidden absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-2xl shadow-xl divide-y divide-slate-100 dark:divide-slate-700/50 text-xs"></div>
+                        <div id="pinjam_barang_menu" class="hidden absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white dark:bg-[#202020] border border-slate-200 dark:border-[#2f2f2f] rounded-2xl shadow-xl divide-y divide-slate-100 dark:divide-slate-800 text-xs"></div>
                     </div>
-                    <input type="text" id="pinjam_peminjam_custom" placeholder="Ketik nama siswa peminjam..." class="mt-2 hidden w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
+                </div>
+                <div id="wrap_pinjam_guru" class="relative">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs" id="pinjam_guru_label">Guru Peminjam</label>
+                    <select id="pinjam_guru_peminjam_select" onchange="toggleGuruPeminjamMode(this.value)" class="hidden">
+                        <option value="">-- Pilih Guru Peminjam --</option>
+                    </select>
+                    <div class="relative">
+                        <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <input type="text" id="pinjam_guru_search" autocomplete="off" placeholder="Ketik untuk mencari Guru Peminjam..." class="w-full pl-9 pr-16 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-slate-800 dark:focus:border-white transition-all cursor-pointer">
+                        <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                            <button type="button" id="pinjam_guru_clear" tabindex="-1" class="hidden p-1 text-slate-400 hover:text-red-500 rounded-lg transition-colors" title="Hapus pilihan">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                            <button type="button" id="pinjam_guru_chevron" tabindex="-1" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg transition-transform">
+                                <svg class="w-4 h-4 transform transition-transform duration-200" id="pinjam_guru_chevron_icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                        </div>
+                        <div id="pinjam_guru_menu" class="hidden absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white dark:bg-[#202020] border border-slate-200 dark:border-[#2f2f2f] rounded-2xl shadow-xl divide-y divide-slate-100 dark:divide-slate-800 text-xs"></div>
+                    </div>
+                    <input type="text" id="pinjam_guru_peminjam_custom" placeholder="Ketik nama guru peminjam manual..." class="mt-2 hidden w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                </div>
+
+                <!-- Checklist: Apakah dipinjamkan untuk siswa? -->
+                <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
+                    <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                        <input type="checkbox" id="pinjam_untuk_siswa" onchange="togglePinjamUntukSiswa(this.checked)" class="w-4 h-4 rounded accent-slate-900 dark:accent-white cursor-pointer">
+                        <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">Apakah dipinjamkan untuk siswa?</span>
+                    </label>
+                    <span id="pinjam_untuk_siswa_badge" class="text-xs font-medium text-slate-400 dark:text-slate-400">Tidak (Guru Langsung)</span>
+                </div>
+
+                <!-- Bagian Data Siswa (Hanya tampil jika checklist dicentang) -->
+                <div id="section_siswa_peminjam" class="hidden space-y-3">
+                    <div id="wrap_pinjam_siswa" class="relative">
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs" id="pinjam_siswa_label">Siswa Peminjam <span class="text-red-500">*</span></label>
+                        <select id="pinjam_peminjam_select" onchange="onSiswaSelectedInPeminjamanForm(this.value)" class="hidden">
+                            <option value="">-- Pilih Siswa Peminjam --</option>
+                        </select>
+                        <div class="relative">
+                            <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            </div>
+                            <input type="text" id="pinjam_siswa_search" autocomplete="off" placeholder="Ketik untuk mencari Siswa Peminjam..." class="w-full pl-9 pr-16 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-slate-800 dark:focus:border-white transition-all cursor-pointer">
+                            <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                                <button type="button" id="pinjam_siswa_clear" tabindex="-1" class="hidden p-1 text-slate-400 hover:text-red-500 rounded-lg transition-colors" title="Hapus pilihan">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                                <button type="button" id="pinjam_siswa_chevron" tabindex="-1" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg transition-transform">
+                                    <svg class="w-4 h-4 transform transition-transform duration-200" id="pinjam_siswa_chevron_icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                            </div>
+                            <div id="pinjam_siswa_menu" class="hidden absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white dark:bg-[#202020] border border-slate-200 dark:border-[#2f2f2f] rounded-2xl shadow-xl divide-y divide-slate-100 dark:divide-slate-800 text-xs"></div>
+                        </div>
+                        <input type="text" id="pinjam_peminjam_custom" placeholder="Ketik nama siswa peminjam..." class="mt-2 hidden w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">NISN Siswa</label>
+                            <input type="text" id="pinjam_nisn" readonly class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl font-mono font-bold text-xs text-slate-600 dark:text-slate-300 cursor-not-allowed" placeholder="Nisn">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Tahun Ajaran (Siswa) <span class="text-red-500">*</span></label>
+                            <input type="text" id="pinjam_tahun_ajaran" value="2026/2027" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="2026/2027">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Jumlah Pinjam <span class="text-red-500">*</span></label>
+                        <input type="number" id="pinjam_jumlah" min="1" value="1" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Tugas / Keperluan Praktik</label>
+                        <input type="text" id="pinjam_tugas" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white" placeholder="contoh: Praktik Jaringan Komputer">
+                    </div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">NISN Siswa</label>
-                        <input type="text" id="pinjam_nisn" readonly class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800/80 border border-sage-200 dark:border-slate-700 rounded-xl font-mono font-bold text-slate-600 dark:text-slate-300 cursor-not-allowed" placeholder="Nisn">
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Tanggal Meminjam</label>
+                        <input type="datetime-local" id="pinjam_tanggal_pinjam" value="<?= date('Y-m-d\TH:i'); ?>" onclick="try{this.showPicker()}catch(e){}" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white cursor-pointer dark:[color-scheme:dark]">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tahun Ajaran (Siswa) <span class="text-red-500">*</span></label>
-                        <input type="text" id="pinjam_tahun_ajaran" value="2026/2027" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600" placeholder="2026/2027">
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Tanggal Pengembalian (Balik)</label>
+                        <input type="datetime-local" id="pinjam_tanggal_kembali" onclick="try{this.showPicker()}catch(e){}" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold text-xs text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white cursor-pointer dark:[color-scheme:dark]">
                     </div>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Status Peminjaman</label>
+                    <select id="pinjam_status" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                        <option value="dipinjam">Dipinjam (Masih Dipinjam)</option>
+                        <option value="dikembalikan">Dikembalikan (Sudah Kembali)</option>
+                    </select>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jumlah Pinjam <span class="text-red-500">*</span></label>
-                    <input type="number" id="pinjam_jumlah" min="1" value="1" required class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-bold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tugas / Keperluan Praktik</label>
-                    <input type="text" id="pinjam_tugas" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600" placeholder="contoh: Praktik Jaringan Komputer">
-                </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tanggal Meminjam</label>
-                    <input type="datetime-local" id="pinjam_tanggal_pinjam" value="<?= date('Y-m-d\TH:i'); ?>" onclick="try{this.showPicker()}catch(e){}" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600 cursor-pointer">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tanggal Pengembalian (Balik)</label>
-                    <input type="datetime-local" id="pinjam_tanggal_kembali" onclick="try{this.showPicker()}catch(e){}" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600 cursor-pointer">
-                </div>
-            </div>
-            <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Status Peminjaman</label>
-                <select id="pinjam_status" class="w-full px-3.5 py-2.5 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-slate-700 rounded-xl font-bold text-slate-800 dark:text-white focus:outline-none focus:border-sage-600">
-                    <option value="dipinjam">Dipinjam (Masih Dipinjam)</option>
-                    <option value="dikembalikan">Dikembalikan (Sudah Kembali)</option>
-                </select>
-            </div>
-            <div class="pt-3 flex justify-end gap-3 border-t border-sage-100 dark:border-slate-800">
-                <button type="button" onclick="closeModal('modalPeminjaman')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">Batal</button>
-                <button type="submit" id="modalPeminjamanSubmitBtn" class="px-5 py-2 bg-sage-600 text-white font-bold rounded-xl shadow-md shadow-sage-600/20 hover:bg-sage-700">Kirim Pengajuan</button>
+            <!-- Action Footer (Pinned Bottom) -->
+            <div class="pt-3.5 mt-2 flex items-center justify-end gap-2.5 border-t border-slate-200 dark:border-slate-800 shrink-0">
+                <button type="button" onclick="closeModal('modalPeminjaman')" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700">Batal</button>
+                <button type="submit" id="modalPeminjamanSubmitBtn" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 shadow-sm transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span>Kirim Pengajuan</span>
+                </button>
             </div>
         </form>
     </div>
@@ -2544,19 +2579,19 @@ function switchMasukScanMode(mode) {
 
     if (mode === 'kamera') {
         if (btnKamera) {
-            btnKamera.className = 'px-3 py-1 rounded-lg font-bold transition-all bg-sage-600 text-white shadow-sm';
+            btnKamera.className = 'px-3 py-1 rounded-lg font-bold transition-all bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm';
         }
         if (btnFile) {
-            btnFile.className = 'px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-sage-600 dark:hover:text-sage-400 transition-all';
+            btnFile.className = 'px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all';
         }
         if (paneKamera) paneKamera.classList.remove('hidden');
         if (paneFile) paneFile.classList.add('hidden');
     } else {
         if (btnFile) {
-            btnFile.className = 'px-3 py-1 rounded-lg font-bold transition-all bg-sage-600 text-white shadow-sm';
+            btnFile.className = 'px-3 py-1 rounded-lg font-bold transition-all bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm';
         }
         if (btnKamera) {
-            btnKamera.className = 'px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-sage-600 dark:hover:text-sage-400 transition-all';
+            btnKamera.className = 'px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all';
         }
         if (paneFile) paneFile.classList.remove('hidden');
         if (paneKamera) paneKamera.classList.add('hidden');
@@ -2628,7 +2663,7 @@ async function startMasukCameraStream(preferDeviceId = null) {
         if (cameraWrap) cameraWrap.classList.remove('hidden');
         if (placeholder) placeholder.classList.add('hidden');
         if (btnToggle) {
-            btnToggle.className = 'px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer';
+            btnToggle.className = 'px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer';
             btnToggle.style.boxShadow = 'none';
             btnToggle.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg><span>Hentikan Kamera</span>`;
         }
@@ -2654,7 +2689,7 @@ async function stopMasukCameraStream() {
     if (cameraWrap) cameraWrap.classList.add('hidden');
     if (placeholder) placeholder.classList.remove('hidden');
     if (btnToggle) {
-        btnToggle.className = 'px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer';
+        btnToggle.className = 'px-4 py-2 bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer';
         btnToggle.style.boxShadow = 'none';
         btnToggle.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span>Nyalakan Kamera</span>`;
     }
@@ -2921,19 +2956,19 @@ function switchPinjamScanMode(mode) {
 
     if (mode === 'kamera') {
         if (btnKamera) {
-            btnKamera.className = 'px-3 py-1 rounded-lg font-bold transition-all bg-sage-600 text-white shadow-sm';
+            btnKamera.className = 'px-3 py-1 rounded-lg font-bold transition-all bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm';
         }
         if (btnFile) {
-            btnFile.className = 'px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-sage-600 dark:hover:text-sage-400 transition-all';
+            btnFile.className = 'px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all';
         }
         if (paneKamera) paneKamera.classList.remove('hidden');
         if (paneFile) paneFile.classList.add('hidden');
     } else {
         if (btnFile) {
-            btnFile.className = 'px-3 py-1 rounded-lg font-bold transition-all bg-sage-600 text-white shadow-sm';
+            btnFile.className = 'px-3 py-1 rounded-lg font-bold transition-all bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm';
         }
         if (btnKamera) {
-            btnKamera.className = 'px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-sage-600 dark:hover:text-sage-400 transition-all';
+            btnKamera.className = 'px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all';
         }
         if (paneFile) paneFile.classList.remove('hidden');
         if (paneKamera) paneKamera.classList.add('hidden');
@@ -3005,7 +3040,7 @@ async function startPinjamCameraStream(preferDeviceId = null) {
         if (cameraWrap) cameraWrap.classList.remove('hidden');
         if (placeholder) placeholder.classList.add('hidden');
         if (btnToggle) {
-            btnToggle.className = 'px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer';
+            btnToggle.className = 'px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer';
             btnToggle.style.boxShadow = 'none';
             btnToggle.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg><span>Hentikan Kamera</span>`;
         }
@@ -3031,7 +3066,7 @@ async function stopPinjamCameraStream() {
     if (cameraWrap) cameraWrap.classList.add('hidden');
     if (placeholder) placeholder.classList.remove('hidden');
     if (btnToggle) {
-        btnToggle.className = 'px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer';
+        btnToggle.className = 'px-4 py-2 bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer';
         btnToggle.style.boxShadow = 'none';
         btnToggle.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span>Nyalakan Kamera</span>`;
     }
@@ -3401,19 +3436,19 @@ function switchKeluarScanMode(mode) {
 
     if (mode === 'kamera') {
         if (btnKamera) {
-            btnKamera.className = 'px-3 py-1 rounded-lg font-bold transition-all bg-sage-600 text-white shadow-sm';
+            btnKamera.className = 'px-3 py-1 rounded-lg font-bold transition-all bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm';
         }
         if (btnFile) {
-            btnFile.className = 'px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-sage-600 dark:hover:text-sage-400 transition-all';
+            btnFile.className = 'px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all';
         }
         if (paneKamera) paneKamera.classList.remove('hidden');
         if (paneFile) paneFile.classList.add('hidden');
     } else {
         if (btnFile) {
-            btnFile.className = 'px-3 py-1 rounded-lg font-bold transition-all bg-sage-600 text-white shadow-sm';
+            btnFile.className = 'px-3 py-1 rounded-lg font-bold transition-all bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm';
         }
         if (btnKamera) {
-            btnKamera.className = 'px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-sage-600 dark:hover:text-sage-400 transition-all';
+            btnKamera.className = 'px-3 py-1 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all';
         }
         if (paneFile) paneFile.classList.remove('hidden');
         if (paneKamera) paneKamera.classList.add('hidden');
@@ -3485,7 +3520,7 @@ async function startKeluarCameraStream(preferDeviceId = null) {
         if (cameraWrap) cameraWrap.classList.remove('hidden');
         if (placeholder) placeholder.classList.add('hidden');
         if (btnToggle) {
-            btnToggle.className = 'px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer';
+            btnToggle.className = 'px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer';
             btnToggle.style.boxShadow = 'none';
             btnToggle.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg><span>Hentikan Kamera</span>`;
         }
@@ -3511,7 +3546,7 @@ async function stopKeluarCameraStream() {
     if (cameraWrap) cameraWrap.classList.add('hidden');
     if (placeholder) placeholder.classList.remove('hidden');
     if (btnToggle) {
-        btnToggle.className = 'px-5 py-2.5 bg-sage-600 hover:bg-sage-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer';
+        btnToggle.className = 'px-4 py-2 bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold rounded-xl text-xs flex items-center gap-2 shadow-none hover:shadow-none transition-colors cursor-pointer';
         btnToggle.style.boxShadow = 'none';
         btnToggle.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span>Nyalakan Kamera</span>`;
     }
