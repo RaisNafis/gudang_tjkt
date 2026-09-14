@@ -1739,6 +1739,86 @@
     </div>
 </div>
 
+<!-- MODAL CETAK QR CODE MASSAL (BATCH QR CODE PRINT) -->
+<div id="modalBatchPrintQR" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-[#141414] rounded-2xl border border-slate-200/80 dark:border-[#222222] shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
+        <!-- Header -->
+        <div class="px-5 py-4 border-b border-slate-100 dark:border-[#202020] flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-[#181818]/60">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">Cetak QR Code Massal</h3>
+                    <p id="batchQrSubtitle" class="text-[11px] text-slate-500 dark:text-slate-400">Memproses label aset QR Code untuk data yang dipilih</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeModal('modalBatchPrintQR')" class="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-[#202020] transition-colors" title="Tutup">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <!-- Progress Container (During Generation) -->
+        <div id="batchQrProgressBox" class="p-4 bg-emerald-50/60 dark:bg-emerald-950/20 border-b border-emerald-100 dark:border-emerald-900/30 shrink-0">
+            <div class="flex items-center justify-between text-xs font-semibold mb-1.5">
+                <span id="batchQrStatusText" class="text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
+                    <svg id="batchQrSpinner" class="w-4 h-4 animate-spin shrink-0 text-emerald-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <span>Memproses pembuatan QR code 1 persatu...</span>
+                </span>
+                <span id="batchQrPercentText" class="font-mono text-emerald-700 dark:text-emerald-400 font-bold">0%</span>
+            </div>
+            <div class="w-full h-2 bg-emerald-200/60 dark:bg-emerald-900/40 rounded-full overflow-hidden">
+                <div id="batchQrProgressBar" class="h-full bg-emerald-600 transition-all duration-300" style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <!-- Print Options & Layout Toolbar -->
+        <div class="px-5 py-2.5 bg-slate-50 dark:bg-[#181818] border-b border-slate-200/60 dark:border-[#222222] flex flex-wrap items-center justify-between gap-3 text-xs shrink-0">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-slate-700 dark:text-slate-300">Format Halaman:</span>
+                <select id="batchQrPageMode" onchange="toggleBatchQrPageMode(this.value)" class="px-2.5 py-1 bg-white dark:bg-[#222] border border-slate-200 dark:border-[#333] rounded-lg text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer">
+                    <option value="grid">Lembar A4 / Kertas Stiker (Grid Rapi)</option>
+                    <option value="per_page">Printer Label Thermal / 1 Label 1 Halaman</option>
+                </select>
+            </div>
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Dilengkapi logo & singkatan jurusan otomatis</span>
+            </div>
+        </div>
+
+        <!-- Body / Scrollable QR Cards Preview Container -->
+        <div class="p-5 overflow-y-auto flex-1 bg-slate-100/60 dark:bg-[#0f0f0f]">
+            <div id="batchQrCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <!-- Cards will be dynamically injected here 1 by 1 -->
+            </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="px-5 py-3.5 bg-white dark:bg-[#141414] border-t border-slate-100 dark:border-[#202020] flex flex-col sm:flex-row items-center justify-between gap-2.5 shrink-0">
+            <div class="text-[11px] text-slate-500 dark:text-slate-400">
+                Total: <strong id="batchQrTotalCount" class="text-slate-800 dark:text-slate-200 font-bold">0</strong> label siap dicetak
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <button type="button" onclick="closeModal('modalBatchPrintQR')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#202020] dark:hover:bg-[#282828] text-slate-600 dark:text-slate-300 font-semibold text-xs rounded-xl transition-colors cursor-pointer">
+                    Batal
+                </button>
+                <button type="button" id="btnDownloadAllQrPng" onclick="downloadAllBatchQrImages()" disabled class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#222] dark:hover:bg-[#2a2a2a] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#333] font-semibold text-xs rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    <span>Download Semua (PNG)</span>
+                </button>
+                <button type="button" id="btnPrintAllQrNow" onclick="printBatchQRLabels()" disabled class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow-md shadow-emerald-600/20 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                    <span>Cetak Sekarang (Print)</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <!-- FULL PREVIEW IMAGE ONLY (TANPA MODAL CARD, FLOATING CLOSE & DOWNLOAD ICONS, NO BORDER RADIUS, EXTRA LARGE DISPLAY) -->
 <div id="modalFotoPreview" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto md:p-8 bg-slate-950/90 cursor-pointer" onclick="if(event.target === this) closeModal('modalFotoPreview')">
@@ -5895,6 +5975,9 @@ function updateBatchDeleteBar() {
     const checkedBoxes = activeTable.querySelectorAll('.row-checkbox:checked');
     const toast = document.getElementById('batchDeleteToast');
     const countText = document.getElementById('batchDeleteCountText');
+    const btnBatchPrintQr = document.getElementById('btnBatchPrintQr');
+
+    const isBarcodeTable = (activeTable.id === 'tableBarang' || activeTable.id === 'tableRak');
 
     if (checkedBoxes.length > 0) {
         if (countText) countText.innerText = `${checkedBoxes.length} data dipilih`;
@@ -5902,10 +5985,23 @@ function updateBatchDeleteBar() {
             toast.classList.remove('hidden');
             toast.classList.add('flex');
         }
+        if (btnBatchPrintQr) {
+            if (isBarcodeTable) {
+                btnBatchPrintQr.classList.remove('hidden');
+                btnBatchPrintQr.classList.add('inline-flex');
+            } else {
+                btnBatchPrintQr.classList.add('hidden');
+                btnBatchPrintQr.classList.remove('inline-flex');
+            }
+        }
     } else {
         if (toast) {
             toast.classList.add('hidden');
             toast.classList.remove('flex');
+        }
+        if (btnBatchPrintQr) {
+            btnBatchPrintQr.classList.add('hidden');
+            btnBatchPrintQr.classList.remove('inline-flex');
         }
     }
 
@@ -7428,6 +7524,469 @@ function submitCetakLaporan(format = 'pdf') {
 
     closeModal('modalCetakLaporan');
 }
+
+// ==================== FITUR CETAK QR CODE MASSAL ====================
+window.generatedBatchQrCanvases = [];
+window.isBatchQrGenerating = false;
+
+function toggleBatchQrPageMode(mode) {
+    // Mode switcher untuk format halaman cetak
+}
+
+async function executeBatchPrintQR() {
+    const activeTabContent = document.querySelector('.tab-content:not(.hidden)');
+    if (!activeTabContent) return;
+
+    const activeTable = activeTabContent.querySelector('table');
+    if (!activeTable) return;
+
+    const checkedBoxes = Array.from(activeTable.querySelectorAll('.row-checkbox:checked'));
+    if (checkedBoxes.length === 0) {
+        showToast('Pilih minimal 1 data untuk mencetak QR Code.', 'error');
+        return;
+    }
+
+    const isBarang = (activeTable.id === 'tableBarang');
+    const isRak = (activeTable.id === 'tableRak');
+
+    if (!isBarang && !isRak) {
+        showToast('Cetak QR Code hanya tersedia untuk Alat & Bahan atau Rak.', 'error');
+        return;
+    }
+
+    const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+    // Kumpulkan data item yang dipilih
+    const itemsToProcess = [];
+    checkedBoxes.forEach(cb => {
+        const id = cb.value;
+        if (isBarang) {
+            const b = (window.dbBarang || []).find(x => String(x.id) === String(id));
+            if (b) {
+                itemsToProcess.push({
+                    type: 'barang',
+                    id: b.id,
+                    nama: b.nama_barang || ('Barang #' + b.id),
+                    barcode: b.barcode || ('BRG-' + b.id),
+                    jurusan: b.nama_jurusan || '-',
+                    kategori: b.nama_kategori || '-',
+                    lokasi: b.nama_rak || '-',
+                    satuan: b.satuan || 'Unit'
+                });
+            } else {
+                const tr = cb.closest('tr');
+                const nameText = tr?.querySelector('td:nth-child(3)')?.innerText?.trim() || ('Barang #' + id);
+                const codeText = tr?.querySelector('td:nth-child(8)')?.innerText?.trim() || ('BRG-' + id);
+                itemsToProcess.push({
+                    type: 'barang',
+                    id: id,
+                    nama: nameText,
+                    barcode: codeText,
+                    jurusan: '-',
+                    kategori: '-',
+                    lokasi: '-',
+                    satuan: 'Unit'
+                });
+            }
+        } else if (isRak) {
+            const r = (window.dbRak || []).find(x => String(x.id) === String(id));
+            if (r) {
+                itemsToProcess.push({
+                    type: 'rak',
+                    id: r.id,
+                    nama: r.nama_rak || ('Rak #' + r.id),
+                    barcode: r.barcode || ('RAK-' + r.id),
+                    jurusan: r.nama_jurusan || 'Semua Jurusan',
+                    kategori: r.kategori_rak || r.jenis_penyimpanan || 'Rak',
+                    lokasi: r.lokasi_ruangan || r.nama_ruangan || '-',
+                    satuan: ''
+                });
+            } else {
+                const tr = cb.closest('tr');
+                const nameText = tr?.querySelector('td:nth-child(3)')?.innerText?.trim() || ('Rak #' + id);
+                const codeText = tr?.querySelector('td:nth-child(4)')?.innerText?.trim() || ('RAK-' + id);
+                itemsToProcess.push({
+                    type: 'rak',
+                    id: id,
+                    nama: nameText,
+                    barcode: codeText,
+                    jurusan: 'Semua Jurusan',
+                    kategori: 'Rak',
+                    lokasi: '-',
+                    satuan: ''
+                });
+            }
+        }
+    });
+
+    if (itemsToProcess.length === 0) {
+        showToast('Data barang/rak yang dipilih tidak ditemukan.', 'error');
+        return;
+    }
+
+    const total = itemsToProcess.length;
+    window.generatedBatchQrCanvases = [];
+    window.isBatchQrGenerating = true;
+
+    // Reset dan Buka Modal
+    const subtitleEl = document.getElementById('batchQrSubtitle');
+    if (subtitleEl) {
+        subtitleEl.innerText = `Memproses ${total} label aset QR Code untuk dicetak`;
+    }
+    const totalCountEl = document.getElementById('batchQrTotalCount');
+    if (totalCountEl) totalCountEl.innerText = total;
+
+    const cardsContainer = document.getElementById('batchQrCardsContainer');
+    if (cardsContainer) cardsContainer.innerHTML = '';
+
+    const progressBox = document.getElementById('batchQrProgressBox');
+    const progressBar = document.getElementById('batchQrProgressBar');
+    const percentText = document.getElementById('batchQrPercentText');
+    const statusText = document.getElementById('batchQrStatusText');
+    const spinner = document.getElementById('batchQrSpinner');
+
+    if (progressBox) progressBox.classList.remove('hidden');
+    if (progressBar) progressBar.style.width = '0%';
+    if (percentText) percentText.innerText = '0%';
+    if (spinner) spinner.classList.remove('hidden');
+
+    const btnPrint = document.getElementById('btnPrintAllQrNow');
+    const btnDownload = document.getElementById('btnDownloadAllQrPng');
+    if (btnPrint) btnPrint.disabled = true;
+    if (btnDownload) btnDownload.disabled = true;
+
+    openModal('modalBatchPrintQR');
+
+    // Proses 1 per 1 secara berurutan
+    for (let i = 0; i < total; i++) {
+        const item = itemsToProcess[i];
+        const currentIdx = i + 1;
+        const percent = Math.round((currentIdx / total) * 100);
+
+        if (progressBar) progressBar.style.width = percent + '%';
+        if (percentText) percentText.innerText = percent + '%';
+        if (statusText) {
+            statusText.innerHTML = `
+                <svg class="w-4 h-4 animate-spin shrink-0 text-emerald-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <span>Memproses label <strong>${currentIdx} dari ${total}</strong>: <span class="font-bold">${esc(item.nama)}</span>...</span>
+            `;
+        }
+
+        // Buat card placeholder di UI
+        const cardId = `batch_qr_card_${i}`;
+        const canvasId = `batch_canvas_${i}`;
+        const subInfo = (item.type === 'barang')
+            ? `Kat: ${esc(item.kategori || '-')} • Rak: ${esc(item.lokasi || '-')}`
+            : `Jenis: ${esc(item.kategori || 'Rak')} • ${esc(item.lokasi || '-')}`;
+
+        const cardHtml = `
+            <div id="${cardId}" class="bg-white dark:bg-[#1a1a1a] border border-slate-200/80 dark:border-[#282828] rounded-2xl p-4 shadow-sm flex flex-col items-center text-center relative group transition-all animate-fade-in-up">
+                <button type="button" onclick="downloadSingleBatchQr(${i})" class="absolute top-2.5 right-2.5 p-1.5 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-lg hover:bg-slate-100 dark:hover:bg-[#252525] transition-colors cursor-pointer" title="Download QR PNG ini">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                </button>
+                <div class="text-[9px] font-black tracking-wider text-slate-400 dark:text-slate-500 uppercase mb-0.5">SMK NEGERI 2 PANGKALPINANG</div>
+                <div class="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 max-w-[90%] truncate mb-2">${esc(item.jurusan)}</div>
+                <div class="p-2 bg-white border border-slate-200/70 rounded-xl shadow-inner flex items-center justify-center">
+                    <canvas id="${canvasId}" width="220" height="220" class="w-36 h-36 max-w-full rounded-none block"></canvas>
+                </div>
+                <span class="font-mono font-black text-xs tracking-widest text-slate-800 dark:text-white mt-2.5 block">${esc(item.barcode)}</span>
+                <h4 class="font-bold text-xs text-slate-800 dark:text-slate-100 mt-1 line-clamp-1 max-w-full" title="${esc(item.nama)}">${esc(item.nama)}</h4>
+                <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">${subInfo}</p>
+            </div>
+        `;
+
+        if (cardsContainer) {
+            cardsContainer.insertAdjacentHTML('beforeend', cardHtml);
+        }
+
+        // Sedikit jeda untuk memberikan efek proses 1 per 1 yang jelas
+        await new Promise(r => setTimeout(r, 120));
+
+        // Render QR Code pada Canvas
+        const canvas = document.getElementById(canvasId);
+        if (canvas) {
+            const baseUrl = window.location.origin || 'http://localhost:8000';
+            const qrApiUrl = (item.type === 'barang')
+                ? `${baseUrl}/api/scan.php?barang_id=${encodeURIComponent(item.id || item.barcode)}`
+                : `${baseUrl}/api/scan.php?rak_id=${encodeURIComponent(item.id || item.barcode)}`;
+            const labelText = getSingkatanJurusan(item.jurusan);
+
+            await new Promise(resolve => {
+                if (typeof QRCode !== 'undefined' && typeof QRCode.toCanvas === 'function') {
+                    QRCode.toCanvas(canvas, qrApiUrl, { width: 220, margin: 2, errorCorrectionLevel: 'H' }, function(err) {
+                        if (err) console.error(err);
+                        drawCenterLabelOnCanvas(canvas, labelText);
+                        resolve();
+                    });
+                } else {
+                    const ctx = canvas.getContext('2d');
+                    const img = new Image();
+                    img.crossOrigin = "Anonymous";
+                    img.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&ecc=H&margin=2&data=${encodeURIComponent(qrApiUrl)}`;
+                    img.onload = function() {
+                        canvas.width = 220;
+                        canvas.height = 220;
+                        ctx.drawImage(img, 0, 0, 220, 220);
+                        drawCenterLabelOnCanvas(canvas, labelText);
+                        resolve();
+                    };
+                    img.onerror = function() {
+                        resolve();
+                    };
+                }
+            });
+
+            window.generatedBatchQrCanvases.push({ item, canvas });
+        }
+    }
+
+    // Selesai seluruh proses
+    window.isBatchQrGenerating = false;
+    if (statusText) {
+        statusText.innerHTML = `
+            <span class="text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                <span>Seluruh ${total} label QR Code berhasil dibuat dan siap dicetak!</span>
+            </span>
+        `;
+    }
+    if (btnPrint) btnPrint.disabled = false;
+    if (btnDownload) btnDownload.disabled = false;
+
+    showToast(`${total} label QR Code berhasil diproses!`, 'success');
+}
+
+function downloadSingleBatchQr(index) {
+    const entry = (window.generatedBatchQrCanvases || [])[index];
+    if (!entry) return;
+    const { item, canvas } = entry;
+    const a = document.createElement('a');
+    a.download = `qrcode_${item.barcode}.png`;
+    a.href = canvas.toDataURL('image/png');
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    showToast(`Gambar QR Code ${item.barcode} berhasil diunduh!`, 'success');
+}
+
+async function downloadAllBatchQrImages() {
+    const items = window.generatedBatchQrCanvases || [];
+    if (items.length === 0) return;
+
+    showToast(`Mengunduh ${items.length} gambar QR Code...`, 'info');
+    for (let i = 0; i < items.length; i++) {
+        const { item, canvas } = items[i];
+        const a = document.createElement('a');
+        const cleanName = (item.nama || 'item').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 20);
+        a.download = `qrcode_${item.barcode}_${cleanName}.png`;
+        a.href = canvas.toDataURL('image/png');
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        await new Promise(r => setTimeout(r, 180));
+    }
+    showToast(`${items.length} gambar QR Code berhasil diunduh!`, 'success');
+}
+
+function printBatchQRLabels() {
+    const items = window.generatedBatchQrCanvases || [];
+    if (items.length === 0) {
+        showToast('Belum ada label QR code yang siap dicetak.', 'error');
+        return;
+    }
+
+    const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const pageMode = document.getElementById('batchQrPageMode')?.value || 'grid';
+    const isPerPage = (pageMode === 'per_page');
+
+    const printWin = window.open('', '_blank', 'width=950,height=750');
+    if (!printWin) {
+        showToast('Izinkan pop-up browser untuk mencetak label QR Code.', 'error');
+        return;
+    }
+
+    let cardsHtml = '';
+    items.forEach(({ item, canvas }) => {
+        const dataUrl = canvas.toDataURL('image/png');
+        const subInfo = (item.type === 'barang')
+            ? `Kat: ${esc(item.kategori || '-')} • Rak: ${esc(item.lokasi || '-')}`
+            : `Jenis: ${esc(item.kategori || 'Rak')} • ${esc(item.lokasi || '-')}`;
+
+        cardsHtml += `
+            <div class="qr-label-card ${isPerPage ? 'page-break-item' : ''}">
+                <div class="header-text">SMK NEGERI 2 PANGKALPINANG</div>
+                <div class="jurusan-text">${esc(item.jurusan || 'INVENTARIS SEKOLAH')}</div>
+                <div class="qr-img-wrapper">
+                    <img src="${dataUrl}" alt="QR Code ${esc(item.barcode)}">
+                </div>
+                <div class="barcode-text">${esc(item.barcode)}</div>
+                <div class="item-name">${esc(item.nama)}</div>
+                <div class="meta-text">${subInfo}</div>
+            </div>
+        `;
+    });
+
+    const docContent = '<!DOCTYPE html>' +
+        '<html lang="id">' +
+        '<head>' +
+        '    <meta charset="UTF-8">' +
+        '    <title>Cetak QR Code Massal - SMK Negeri 2 Pangkalpinang</title>' +
+        '    <style>' +
+        '        * { box-sizing: border-box; margin: 0; padding: 0; }' +
+        '        body {' +
+        '            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;' +
+        '            background: #f8fafc;' +
+        '            color: #0f172a;' +
+        '            padding: 20px;' +
+        '        }' +
+        '        .no-print-toolbar {' +
+        '            max-width: 900px;' +
+        '            margin: 0 auto 20px auto;' +
+        '            display: flex;' +
+        '            align-items: center;' +
+        '            justify-content: space-between;' +
+        '            background: #1e293b;' +
+        '            color: #fff;' +
+        '            padding: 12px 20px;' +
+        '            border-radius: 12px;' +
+        '            box-shadow: 0 4px 12px rgba(0,0,0,0.1);' +
+        '        }' +
+        '        .btn-print {' +
+        '            background: #059669;' +
+        '            color: #fff;' +
+        '            border: none;' +
+        '            padding: 8px 18px;' +
+        '            border-radius: 8px;' +
+        '            font-weight: bold;' +
+        '            font-size: 13px;' +
+        '            cursor: pointer;' +
+        '            display: inline-flex;' +
+        '            align-items: center;' +
+        '            gap: 6px;' +
+        '        }' +
+        '        .btn-print:hover { background: #047857; }' +
+        '        .btn-close {' +
+        '            background: #475569;' +
+        '            color: #fff;' +
+        '            border: none;' +
+        '            padding: 8px 14px;' +
+        '            border-radius: 8px;' +
+        '            font-size: 13px;' +
+        '            cursor: pointer;' +
+        '        }' +
+        '        .btn-close:hover { background: #334155; }' +
+        '        .labels-container {' +
+        '            max-width: 900px;' +
+        '            margin: 0 auto;' +
+        '            display: grid;' +
+        '            grid-template-columns: ' + (isPerPage ? '1fr' : 'repeat(auto-fill, minmax(210px, 1fr))') + ';' +
+        '            gap: 16px;' +
+        '        }' +
+        '        .qr-label-card {' +
+        '            background: #fff;' +
+        '            border: 1.5px solid #cbd5e1;' +
+        '            border-radius: 12px;' +
+        '            padding: 12px 10px;' +
+        '            text-align: center;' +
+        '            page-break-inside: avoid;' +
+        '            break-inside: avoid;' +
+        '            display: flex;' +
+        '            flex-direction: column;' +
+        '            align-items: center;' +
+        '            justify-content: center;' +
+        '            width: ' + (isPerPage ? '260px' : 'auto') + ';' +
+        '            margin: ' + (isPerPage ? '0 auto 20px auto' : '0') + ';' +
+        '        }' +
+        '        .header-text {' +
+        '            font-size: 7.5pt;' +
+        '            font-weight: 800;' +
+        '            letter-spacing: 0.8px;' +
+        '            color: #475569;' +
+        '            text-transform: uppercase;' +
+        '        }' +
+        '        .jurusan-text {' +
+        '            font-size: 8pt;' +
+        '            font-weight: 700;' +
+        '            color: #059669;' +
+        '            margin-bottom: 6px;' +
+        '            max-width: 100%;' +
+        '            overflow: hidden;' +
+        '            text-overflow: ellipsis;' +
+        '            white-space: nowrap;' +
+        '        }' +
+        '        .qr-img-wrapper {' +
+        '            padding: 6px;' +
+        '            background: #fff;' +
+        '            border: 1px solid #e2e8f0;' +
+        '            border-radius: 8px;' +
+        '        }' +
+        '        .qr-img-wrapper img {' +
+        '            width: 150px;' +
+        '            height: 150px;' +
+        '            display: block;' +
+        '            margin: 0 auto;' +
+        '        }' +
+        '        .barcode-text {' +
+        '            font-family: monospace;' +
+        '            font-size: 9.5pt;' +
+        '            font-weight: 900;' +
+        '            letter-spacing: 1.5px;' +
+        '            color: #0f172a;' +
+        '            margin-top: 6px;' +
+        '        }' +
+        '        .item-name {' +
+        '            font-size: 9pt;' +
+        '            font-weight: 700;' +
+        '            color: #1e293b;' +
+        '            margin-top: 3px;' +
+        '            line-height: 1.2;' +
+        '            max-width: 100%;' +
+        '            overflow: hidden;' +
+        '            text-overflow: ellipsis;' +
+        '            display: -webkit-box;' +
+        '            -webkit-line-clamp: 2;' +
+        '            -webkit-box-orient: vertical;' +
+        '        }' +
+        '        .meta-text {' +
+        '            font-size: 7.5pt;' +
+        '            color: #64748b;' +
+        '            margin-top: 4px;' +
+        '        }' +
+        '        @media print {' +
+        '            body { background: transparent; padding: 0; }' +
+        '            .no-print-toolbar { display: none !important; }' +
+        '            .labels-container { max-width: 100%; gap: 10px; }' +
+        '            .page-break-item {' +
+        '                page-break-after: always;' +
+        '                break-after: page;' +
+        '                margin-bottom: 0;' +
+        '            }' +
+        '            @page {' +
+        '                size: ' + (isPerPage ? '80mm 60mm' : 'A4') + ';' +
+        '                margin: ' + (isPerPage ? '2mm' : '8mm') + ';' +
+        '            }' +
+        '        }' +
+        '    </style>' +
+        '</head>' +
+        '<body>' +
+        '    <div class="no-print-toolbar">' +
+        '        <div>' +
+        '            <strong>Pratinjau Cetak Label QR Code</strong> (' + items.length + ' label)' +
+        '        </div>' +
+        '        <div style="display:flex;gap:8px;">' +
+        '            <button class="btn-print" onclick="window.print()">🖨️ Cetak Sekarang</button>' +
+        '            <button class="btn-close" onclick="window.close()">Tutup</button>' +
+        '        </div>' +
+        '    </div>' +
+        '    <div class="labels-container">' +
+        cardsHtml +
+        '    </div>' +
+        '</body>' +
+        '</html>';
+
+    printWin.document.write(docContent);
+    printWin.document.close();
+}
 </script>
 
 <!-- 9. FLOATING BATCH DELETE TOAST NOTIFICATION CONTAINER -->
@@ -7437,6 +7996,10 @@ function submitCetakLaporan(format = 'pdf') {
         <span id="batchDeleteCountText" class="font-bold text-xs">0 data dipilih</span>
     </div>
     <div class="flex items-center gap-2 ml-2">
+        <button type="button" id="btnBatchPrintQr" onclick="executeBatchPrintQR()" class="hidden px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition-all items-center gap-1.5 cursor-pointer" title="Cetak QR Code untuk data yang dipilih">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+            <span>Cetak QR Code</span>
+        </button>
         <button type="button" onclick="executeBatchDelete()" class="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
             <span>Hapus Pilihan</span>
