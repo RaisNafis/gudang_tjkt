@@ -212,9 +212,19 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
             <div id="tab-dashboard" class="tab-content animate-fade-in-up space-y-6">
                 
                 <!-- TOP GREETING HEADER -->
-                <div class="mb-1">
-                    <h1 class="text-2xl sm:text-3xl font-black text-slate-800 dark:text-white tracking-tight">Dashboard</h1>
-                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Selamat datang, <?= htmlspecialchars($user['nama_lengkap'] ?? $user['nama_pengguna'] ?? 'Admin'); ?>! Berikut ringkasan data inventaris SMK Negeri 2 Pangkalpinang.</p>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-1">
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-black text-slate-800 dark:text-white tracking-tight">Dashboard</h1>
+                        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Selamat datang, <?= htmlspecialchars($user['nama_lengkap'] ?? $user['nama_pengguna'] ?? 'Admin'); ?>! Berikut ringkasan data inventaris SMK Negeri 2 Pangkalpinang.</p>
+                    </div>
+                    <?php if ($isSuperAdmin || (!empty($user['peran']) && in_array($user['peran'], ['admin_sekolah', 'admin_jurusan', 'kabeng', 'admin']))): ?>
+                    <div class="flex items-center gap-2.5 shrink-0">
+                        <button type="button" onclick="openModalBackupDatabase()" class="px-4 py-2 sm:py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md shadow-emerald-600/20 flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer whitespace-nowrap" title="Backup Seluruh Database SQL">
+                            <svg class="w-4 h-4 text-emerald-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
+                            <span>Backup Database</span>
+                        </button>
+                    </div>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Statistics Cards Row Live from MySQL Database -->

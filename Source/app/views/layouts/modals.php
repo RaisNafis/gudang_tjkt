@@ -1580,6 +1580,51 @@
     </div>
 </div>
 
+<!-- MODAL KONFIRMASI BACKUP DATABASE (CLEAN & MINIMALIS) -->
+<div id="modalConfirmBackupDatabase" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-[#141414] rounded-2xl border border-slate-200/80 dark:border-[#222222] shadow-xl w-full max-w-sm overflow-hidden">
+        <div class="p-5 text-center">
+            <input type="hidden" id="backup_csrf_token" value="<?= getCsrfToken(); ?>">
+
+            <div class="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-2.5">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+                </svg>
+            </div>
+
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Backup Database SQL</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-4 leading-relaxed">
+                Apakah Anda yakin ingin membackup seluruh database inventaris? File dump SQL lengkap akan diunduh ke perangkat Anda.
+            </p>
+
+            <div class="p-3 bg-slate-50 dark:bg-[#1a1a1a] rounded-xl border border-slate-200/60 dark:border-[#262626] text-left text-[11px] text-slate-600 dark:text-slate-400 space-y-1.5 mb-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-400">Database:</span>
+                    <span class="font-bold text-slate-700 dark:text-slate-200">gudang_tkj</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-400">Cakupan Data:</span>
+                    <span class="font-semibold text-emerald-600 dark:text-emerald-400">Seluruh Tabel & Data</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-400">Format:</span>
+                    <span class="font-mono font-semibold text-slate-700 dark:text-slate-200">.sql</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 pt-1">
+                <button type="button" onclick="closeModal('modalConfirmBackupDatabase')" class="w-1/2 py-2 px-3.5 bg-slate-100 hover:bg-slate-200/80 dark:bg-[#202020] dark:hover:bg-[#282828] text-slate-600 dark:text-slate-300 font-semibold text-xs rounded-xl transition-colors cursor-pointer">
+                    Batal
+                </button>
+                <button type="button" id="btnExecuteBackupDatabase" onclick="executeBackupDatabase()" class="w-1/2 py-2 px-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow-none transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    <span>Download SQL</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- FULL PREVIEW IMAGE ONLY (TANPA MODAL CARD, FLOATING CLOSE & DOWNLOAD ICONS, NO BORDER RADIUS, EXTRA LARGE DISPLAY) -->
 <div id="modalFotoPreview" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto md:p-8 bg-slate-950/90 cursor-pointer" onclick="if(event.target === this) closeModal('modalFotoPreview')">
     <div class="relative flex items-center justify-center cursor-default">
@@ -7077,6 +7122,84 @@ async function submitUbahPasswordToken(e) {
         if (btn) {
             btn.disabled = false;
             btn.innerText = 'Save Changes';
+        }
+    }
+}
+
+function openModalBackupDatabase() {
+    openModal('modalConfirmBackupDatabase');
+}
+
+async function executeBackupDatabase() {
+    const btn = document.getElementById('btnExecuteBackupDatabase');
+    let originalHtml = '';
+    if (btn) {
+        originalHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = `<svg class="w-3.5 h-3.5 animate-spin shrink-0" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Memproses...</span>`;
+    }
+
+    try {
+        const csrfToken = document.getElementById('backup_csrf_token')?.value || document.querySelector('input[name="csrf_token"]')?.value || '';
+        const res = await fetch('backup.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                action: 'backup_database',
+                csrf_token: csrfToken
+            })
+        });
+
+        if (!res.ok) {
+            let errorMsg = 'Gagal membuat backup database.';
+            try {
+                const errData = await res.json();
+                if (errData.message) errorMsg = errData.message;
+            } catch (e) {}
+            showToast(errorMsg, 'error');
+            return;
+        }
+
+        const contentType = res.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+            const data = await res.json();
+            if (!data.success) {
+                showToast(data.message || 'Gagal membuat backup database.', 'error');
+                return;
+            }
+        }
+
+        const blob = await res.blob();
+        let filename = 'backup_gudang_tkj_' + new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-') + '.sql';
+        const disposition = res.headers.get('Content-Disposition');
+        if (disposition && disposition.indexOf('filename=') !== -1) {
+            const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+            if (matches != null && matches[1]) {
+                filename = matches[1].replace(/['"]/g, '');
+            }
+        }
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+
+        closeModal('modalConfirmBackupDatabase');
+        showToast('Database ' + filename + ' berhasil dibackup dan diunduh!', 'success');
+    } catch (err) {
+        console.error(err);
+        showToast('Terjadi kesalahan saat memproses backup database.', 'error');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
         }
     }
 }
