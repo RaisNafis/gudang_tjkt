@@ -75,7 +75,8 @@ class Rak {
         $db = Database::getInstance()->getConnection();
         $id = generateUuid();
         $barcode = !empty($data['barcode']) ? $data['barcode'] : self::generateNextBarcode();
-        $jenis = (!empty($data['jenis']) && strtolower($data['jenis']) === 'lemari') ? 'lemari' : 'rak';
+        $inJenis = strtolower($data['jenis'] ?? 'rak');
+        $jenis = in_array($inJenis, ['lemari', 'ruangan'], true) ? $inJenis : 'rak';
         $stmt = $db->prepare("
             INSERT INTO rak (id, jurusan_id, nama_rak, jenis, barcode, kategori_rak, keterangan) 
             VALUES (:id, :jid, :nama, :jenis, :barcode, :kat, :ket)
@@ -93,7 +94,8 @@ class Rak {
 
     public static function update($id, $data) {
         $db = Database::getInstance()->getConnection();
-        $jenis = (!empty($data['jenis']) && strtolower($data['jenis']) === 'lemari') ? 'lemari' : 'rak';
+        $inJenis = strtolower($data['jenis'] ?? 'rak');
+        $jenis = in_array($inJenis, ['lemari', 'ruangan'], true) ? $inJenis : 'rak';
         $stmt = $db->prepare("
             UPDATE rak 
             SET jurusan_id = :jid, 

@@ -1070,8 +1070,9 @@ try {
         $id = $_POST['id'] ?? '';
         $isSuperAdmin = ($_SESSION['user']['peran'] ?? '') === 'admin_sekolah';
         $jurusan_id = $isSuperAdmin ? (!empty($_POST['jurusan_id']) ? $_POST['jurusan_id'] : null) : ($_SESSION['user']['jurusan_id'] ?? null);
-        $jenis = (!empty($_POST['jenis']) && strtolower($_POST['jenis']) === 'lemari') ? 'lemari' : 'rak';
-        $labelJenis = $jenis === 'lemari' ? 'Lemari' : 'Rak';
+        $inJenis = strtolower($_POST['jenis'] ?? 'rak');
+        $jenis = in_array($inJenis, ['lemari', 'ruangan'], true) ? $inJenis : 'rak';
+        $labelJenis = $jenis === 'lemari' ? 'Lemari' : ($jenis === 'ruangan' ? 'Ruangan' : 'Rak');
         $data = [
             'jurusan_id' => $jurusan_id,
             'nama_rak' => trim($_POST['nama_rak'] ?? ''),

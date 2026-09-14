@@ -2011,19 +2011,19 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                     <div class="bg-white p-5 rounded-2xl border border-sage-200/80 shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Rak & Lemari</span>
+                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Rak, Lemari & Ruangan</span>
                             <div class="w-10 h-10 rounded-xl bg-sage-600 text-white flex items-center justify-center font-bold">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
                             </div>
                         </div>
-                        <h3 id="statTabRakTotal" class="text-2xl font-extrabold text-slate-800"><?= number_format(count($dbRak)); ?> Rak & Lemari</h3>
+                        <h3 id="statTabRakTotal" class="text-2xl font-extrabold text-slate-800"><?= number_format(count($dbRak)); ?> Lokasi Penyimpanan</h3>
                     </div>
                 </div>
                 <div class="bg-white rounded-2xl border border-sage-200/80 shadow-sm p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-5">
                         <div>
-                            <h3 class="text-base font-bold text-slate-800">Master Data Rak & Lemari</h3>
-                            <p class="text-xs text-slate-500">Kelola tata letak fisik rak atau lemari dan barang di dalamnya</p>
+                            <h3 class="text-base font-bold text-slate-800">Master Data Rak, Lemari & Ruangan</h3>
+                            <p class="text-xs text-slate-500">Kelola tata letak fisik rak, lemari, atau ruangan dan barang di dalamnya</p>
                         </div>
                         <div class="flex flex-wrap items-center justify-end gap-2.5 sm:gap-3">
                             <div class="flex items-center gap-2.5 shrink-0">
@@ -2031,7 +2031,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                     <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                     <span>Export CSV</span>
                                 </button>
-                                <button onclick="openModal('modalRak', 'Tambah Rak / Lemari Baru')" class="px-4 py-2 bg-sage-600 text-white rounded-xl font-bold text-xs shadow-md shadow-sage-600/20 hover:bg-sage-700 transition-colors whitespace-nowrap">+ Tambah Rak / Lemari</button>
+                                <button onclick="openModal('modalRak', 'Tambah Lokasi Penyimpanan Baru')" class="px-4 py-2 bg-sage-600 text-white rounded-xl font-bold text-xs shadow-md shadow-sage-600/20 hover:bg-sage-700 transition-colors whitespace-nowrap">+ Tambah Rak / Lemari / Ruangan</button>
                             </div>
                         </div>
                     </div>
@@ -2041,7 +2041,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 <tr>
                                     <th class="py-3 px-3 w-10 text-center"><input type="checkbox" class="select-all-checkbox rounded accent-sage-600 cursor-pointer" onchange="toggleSelectAll(this)"></th>
                                     <th class="py-3 px-4 w-12 text-center">No</th>
-                                    <th class="py-3 px-4">Nama Rak / Lemari</th>
+                                    <th class="py-3 px-4">Nama Rak / Lemari / Ruangan</th>
                                     <th class="py-3 px-4">Barcode</th>
                                     <th class="py-3 px-4 text-center">Jenis</th>
                                     <th class="py-3 px-4">Kategori</th>
@@ -2054,9 +2054,19 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             </thead>
                             <tbody class="divide-y divide-slate-100">
                                 <?php $no = 1; foreach ($dbRak as $rk): 
-                                    $isLemariRk = (!empty($rk['jenis']) && strtolower($rk['jenis']) === 'lemari') || (stripos($rk['nama_rak'] ?? '', 'lemari') !== false);
+                                    $rawJenisRk = strtolower($rk['jenis'] ?? '');
+                                    if ($rawJenisRk === 'ruangan' || stripos($rk['nama_rak'] ?? '', 'ruangan') !== false || stripos($rk['nama_rak'] ?? '', 'ruang ') !== false || stripos($rk['nama_rak'] ?? '', 'lab ') !== false) {
+                                        $jenisRk = 'ruangan';
+                                        $labelJenisRk = 'Ruangan';
+                                    } elseif ($rawJenisRk === 'lemari' || stripos($rk['nama_rak'] ?? '', 'lemari') !== false) {
+                                        $jenisRk = 'lemari';
+                                        $labelJenisRk = 'Lemari';
+                                    } else {
+                                        $jenisRk = 'rak';
+                                        $labelJenisRk = 'Rak';
+                                    }
                                 ?>
-                                    <tr class="hover:bg-sage-50/50" data-jenis="<?= $isLemariRk ? 'lemari' : 'rak'; ?>">
+                                    <tr class="hover:bg-sage-50/50" data-jenis="<?= $jenisRk; ?>">
                                         <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="<?= htmlspecialchars($rk['id']); ?>" onchange="updateBatchDeleteBar()"></td>
                                         <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell"><?= $no++; ?></td>
                                         <td class="py-3.5 px-4 font-bold text-slate-800"><?= htmlspecialchars($rk['nama_rak']); ?></td>
@@ -2067,7 +2077,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                             </button>
                                         </td>
                                         <td class="py-3.5 px-4 text-center font-semibold text-slate-800 dark:text-slate-100 text-xs">
-                                            <?= $isLemariRk ? 'Lemari' : 'Rak'; ?>
+                                            <?= $labelJenisRk; ?>
                                         </td>
                                         <td class="py-3.5 px-4 font-semibold text-slate-700"><?= htmlspecialchars($rk['kategori_rak'] ?? '-'); ?></td>
                                         <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><td class="py-3.5 px-4 font-bold text-sage-700"><?= htmlspecialchars($rk['nama_jurusan'] ?? 'Semua Jurusan'); ?></td><?php endif; ?>
@@ -2190,15 +2200,16 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                             </div>
                             <div>
                                 <select id="filter_barang_rak" onchange="filterTableBarang()" class="w-full px-3 py-2 bg-sage-50/50 dark:bg-slate-800 border border-sage-200 dark:border-[#2a2a2a] rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sage-600 font-semibold cursor-pointer">
-                                    <option value="">Semua Rak & Lemari</option>
+                                    <option value="">Semua Lokasi Penyimpanan</option>
                                     <?php 
                                         $phpRaks = array_filter($dbRak, fn($r) => ($r['jenis'] ?? 'rak') === 'rak');
                                         $phpLemaris = array_filter($dbRak, fn($r) => ($r['jenis'] ?? 'rak') === 'lemari');
+                                        $phpRuangans = array_filter($dbRak, fn($r) => ($r['jenis'] ?? 'rak') === 'ruangan');
                                     ?>
                                     <?php if (!empty($phpRaks)): ?>
                                         <optgroup label="Rak">
                                             <?php foreach ($phpRaks as $rk): 
-                                                $cleanRk = trim(preg_replace('/^(rak|lemari)\s*[:\-]?\s*/i', '', $rk['nama_rak'] ?? ''));
+                                                $cleanRk = trim(preg_replace('/^(rak|lemari|ruangan)\s*[:\-]?\s*/i', '', $rk['nama_rak'] ?? ''));
                                                 if ($cleanRk === '') $cleanRk = $rk['nama_rak'];
                                                 $extraRk = !empty($rk['kategori_rak']) ? ' - ' . $rk['kategori_rak'] : '';
                                             ?>
@@ -2209,11 +2220,22 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                     <?php if (!empty($phpLemaris)): ?>
                                         <optgroup label="Lemari">
                                             <?php foreach ($phpLemaris as $rk): 
-                                                $cleanRk = trim(preg_replace('/^(rak|lemari)\s*[:\-]?\s*/i', '', $rk['nama_rak'] ?? ''));
+                                                $cleanRk = trim(preg_replace('/^(rak|lemari|ruangan)\s*[:\-]?\s*/i', '', $rk['nama_rak'] ?? ''));
                                                 if ($cleanRk === '') $cleanRk = $rk['nama_rak'];
                                                 $extraRk = !empty($rk['kategori_rak']) ? ' - ' . $rk['kategori_rak'] : '';
                                             ?>
                                                 <option value="<?= htmlspecialchars(strval($rk['id'])); ?>">Lemari (<?= htmlspecialchars($cleanRk . $extraRk); ?>)</option>
+                                            <?php endforeach; ?>
+                                        </optgroup>
+                                    <?php endif; ?>
+                                    <?php if (!empty($phpRuangans)): ?>
+                                        <optgroup label="Ruangan">
+                                            <?php foreach ($phpRuangans as $rk): 
+                                                $cleanRk = trim(preg_replace('/^(rak|lemari|ruangan)\s*[:\-]?\s*/i', '', $rk['nama_rak'] ?? ''));
+                                                if ($cleanRk === '') $cleanRk = $rk['nama_rak'];
+                                                $extraRk = !empty($rk['kategori_rak']) ? ' - ' . $rk['kategori_rak'] : '';
+                                            ?>
+                                                <option value="<?= htmlspecialchars(strval($rk['id'])); ?>">Ruangan (<?= htmlspecialchars($cleanRk . $extraRk); ?>)</option>
                                             <?php endforeach; ?>
                                         </optgroup>
                                     <?php endif; ?>
@@ -2249,7 +2271,7 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                     <th class="py-3 px-4 text-center">Images</th>
                                     <th class="py-3 px-4">Jenis</th>
                                     <th class="py-3 px-4">Kategori</th>
-                                    <th class="py-3 px-4">Rak / Lemari</th>
+                                    <th class="py-3 px-4">Lokasi Penyimpanan</th>
                                     <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?><th class="py-3 px-4">Jurusan</th><?php endif; ?>
                                     <th class="py-3 px-4">Merek</th>
                                     <th class="py-3 px-4">Barcode</th>
@@ -2262,13 +2284,23 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                 <?php $no = 1; foreach ($dbBarang as $b): ?>
                                     <?php 
                                         $jColor = (!empty($b['jurusan_id']) && isset($jurusanColors[$b['jurusan_id']])) ? $jurusanColors[$b['jurusan_id']] : '#2E7D32';
-                                        $isLemariBarang = (!empty($b['jenis_rak']) && strtolower($b['jenis_rak']) === 'lemari') || (!empty($b['nama_rak']) && stripos($b['nama_rak'], 'lemari') !== false);
+                                        $rawBarangJenisRak = strtolower($b['jenis_rak'] ?? '');
+                                        if ($rawBarangJenisRak === 'ruangan' || (!empty($b['nama_rak']) && (stripos($b['nama_rak'], 'ruangan') !== false || stripos($b['nama_rak'], 'ruang ') !== false || stripos($b['nama_rak'], 'lab ') !== false))) {
+                                            $jenisBarangRak = 'ruangan';
+                                            $labelBarangJenisRak = 'Ruangan';
+                                        } elseif ($rawBarangJenisRak === 'lemari' || (!empty($b['nama_rak']) && stripos($b['nama_rak'], 'lemari') !== false)) {
+                                            $jenisBarangRak = 'lemari';
+                                            $labelBarangJenisRak = 'Lemari';
+                                        } else {
+                                            $jenisBarangRak = 'rak';
+                                            $labelBarangJenisRak = 'Rak';
+                                        }
                                     ?>
                                     <tr id="row-barang-<?= htmlspecialchars($b['id']); ?>" 
                                         data-jenis="<?= htmlspecialchars(strtolower($b['jenis'] ?? 'alat')); ?>"
                                         data-kategori-id="<?= htmlspecialchars(strval($b['kategori_id'] ?? '')); ?>"
                                         data-rak-id="<?= htmlspecialchars(strval($b['rak_id'] ?? '')); ?>"
-                                        data-jenis-rak="<?= $isLemariBarang ? 'lemari' : 'rak'; ?>"
+                                        data-jenis-rak="<?= $jenisBarangRak; ?>"
                                         data-jurusan-id="<?= htmlspecialchars(strval($b['jurusan_id'] ?? '')); ?>"
                                         data-dipinjam="<?= !empty($b['total_dipinjam']) && intval($b['total_dipinjam']) > 0 ? '1' : '0'; ?>"
                                         data-keluar="<?= !empty($b['total_keluar']) && intval($b['total_keluar']) > 0 ? '1' : '0'; ?>"
@@ -2293,12 +2325,11 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         <td class="py-3.5 px-4 font-semibold text-slate-700">
                                             <?php if (!empty($b['nama_rak'])): 
                                                 $rawRakNama = $b['nama_rak'] ?? '';
-                                                $jenisRakPrefix = $isLemariBarang ? 'Lemari' : 'Rak';
-                                                $cleanRakNama = trim(preg_replace('/^(rak|lemari)\s*[:\-]?\s*/i', '', $rawRakNama));
+                                                $cleanRakNama = trim(preg_replace('/^(rak|lemari|ruangan)\s*[:\-]?\s*/i', '', $rawRakNama));
                                                 if ($cleanRakNama === '') $cleanRakNama = $rawRakNama;
                                             ?>
                                                 <span class="text-xs font-semibold text-slate-800 dark:text-slate-100 whitespace-nowrap">
-                                                    <?= $jenisRakPrefix; ?> (<?= htmlspecialchars($cleanRakNama); ?>)
+                                                    <?= $labelBarangJenisRak; ?> (<?= htmlspecialchars($cleanRakNama); ?>)
                                                 </span>
                                             <?php else: ?>
                                                 <span class="text-slate-400 font-normal">-</span>
@@ -5148,7 +5179,7 @@ function updateStatCardsData() {
     // Tab-specific Stat Cards
     setTxt('statTabJurusanTotal', fmt(totalJurusan) + ' Jurusan');
     setTxt('statTabKategoriTotal', fmt(totalKategori) + ' Kategori');
-    setTxt('statTabRakTotal', fmt(totalRak) + ' Rak & Lemari');
+    setTxt('statTabRakTotal', fmt(totalRak) + ' Lokasi Penyimpanan');
 
     setTxt('statTabBarangTotalItem', fmt(totalBarangItems) + ' Item');
     setTxt('statTabBarangTotalStok', fmt(totalStokTersedia) + ' Unit');
@@ -5896,10 +5927,17 @@ function renderTableRak() {
 
     tbody.innerHTML = window.dbRak.map((rk, idx) => {
         const jurTd = isSuperAdmin ? `<td class="py-3.5 px-4 font-bold text-sage-700">${escapeHtml(rk.nama_jurusan || 'Semua Jurusan')}</td>` : '';
-        const isLemari = String(rk.jenis || 'rak').toLowerCase() === 'lemari' || (rk.nama_rak && rk.nama_rak.toLowerCase().includes('lemari'));
-        const jenisText = isLemari ? 'Lemari' : 'Rak';
+        let jenisVal = String(rk.jenis || '').toLowerCase();
+        if (jenisVal === 'ruangan' || (rk.nama_rak && (rk.nama_rak.toLowerCase().includes('ruangan') || rk.nama_rak.toLowerCase().includes('ruang ') || rk.nama_rak.toLowerCase().includes('lab ')))) {
+            jenisVal = 'ruangan';
+        } else if (jenisVal === 'lemari' || (rk.nama_rak && rk.nama_rak.toLowerCase().includes('lemari'))) {
+            jenisVal = 'lemari';
+        } else {
+            jenisVal = 'rak';
+        }
+        const jenisText = jenisVal === 'ruangan' ? 'Ruangan' : (jenisVal === 'lemari' ? 'Lemari' : 'Rak');
 
-        return `<tr class="hover:bg-sage-50/50" data-jenis="${isLemari ? 'lemari' : 'rak'}">
+        return `<tr class="hover:bg-sage-50/50" data-jenis="${jenisVal}">
             <td class="py-3.5 px-3 text-center"><input type="checkbox" class="row-checkbox rounded accent-sage-600 cursor-pointer" value="${rk.id}" onchange="updateBatchDeleteBar()"></td>
             <td class="py-3.5 px-4 text-center font-bold text-slate-500 row-number-cell">${idx + 1}</td>
             <td class="py-3.5 px-4 font-bold text-slate-800">${escapeHtml(rk.nama_rak)}</td>
@@ -5983,11 +6021,19 @@ function renderTableBarang() {
                 ? `<button type="button" onclick="showFotoPreview('${escapeHtml(b.image)}', '${escapeJsStr(b.nama_barang)}')" class="p-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all inline-flex items-center justify-center group cursor-pointer" title="Lihat Foto ${escapeHtml(b.nama_barang)}"><svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>`
                 : '<span class="text-slate-400 font-normal">-</span>';
 
-            const isLemariBarang = (b.jenis_rak && String(b.jenis_rak).toLowerCase() === 'lemari') || (b.nama_rak && b.nama_rak.toLowerCase().includes('lemari'));
+            let jenisBarangRakVal = String(b.jenis_rak || '').toLowerCase();
+            if (jenisBarangRakVal === 'ruangan' || (b.nama_rak && (b.nama_rak.toLowerCase().includes('ruangan') || b.nama_rak.toLowerCase().includes('ruang ') || b.nama_rak.toLowerCase().includes('lab ')))) {
+                jenisBarangRakVal = 'ruangan';
+            } else if (jenisBarangRakVal === 'lemari' || (b.nama_rak && b.nama_rak.toLowerCase().includes('lemari'))) {
+                jenisBarangRakVal = 'lemari';
+            } else {
+                jenisBarangRakVal = 'rak';
+            }
+
             let rakDisplay = '<span class="text-slate-400 font-normal">-</span>';
             if (b.nama_rak) {
-                const jenisPrefix = isLemariBarang ? 'Lemari' : 'Rak';
-                let cleanNama = b.nama_rak.replace(/^(rak|lemari)\s*[:\-]?\s*/i, '').trim();
+                const jenisPrefix = jenisBarangRakVal === 'ruangan' ? 'Ruangan' : (jenisBarangRakVal === 'lemari' ? 'Lemari' : 'Rak');
+                let cleanNama = b.nama_rak.replace(/^(rak|lemari|ruangan)\s*[:\-]?\s*/i, '').trim();
                 if (!cleanNama) cleanNama = b.nama_rak;
                 rakDisplay = `<span class="text-xs font-semibold text-slate-800 dark:text-slate-100 whitespace-nowrap">${jenisPrefix} (${escapeHtml(cleanNama)})</span>`;
             }
@@ -5996,7 +6042,7 @@ function renderTableBarang() {
             data-jenis="${escapeHtml(String(b.jenis || 'alat').toLowerCase())}"
             data-kategori-id="${escapeHtml(String(b.kategori_id || ''))}"
             data-rak-id="${escapeHtml(String(b.rak_id || ''))}"
-            data-jenis-rak="${isLemariBarang ? 'lemari' : 'rak'}"
+            data-jenis-rak="${jenisBarangRakVal}"
             data-jurusan-id="${escapeHtml(String(b.jurusan_id || ''))}"
             data-dipinjam="${totalDipinjam > 0 ? '1' : '0'}"
             data-keluar="${totalKeluar > 0 ? '1' : '0'}"
@@ -7092,6 +7138,7 @@ class TablePaginationManager {
                             <option value="">Semua Jenis</option>
                             <option value="rak">Rak Saja</option>
                             <option value="lemari">Lemari Saja</option>
+                            <option value="ruangan">Ruangan Saja</option>
                         </select>
                     `;
                 }
@@ -7623,14 +7670,15 @@ function refreshBarangFilterDropdowns() {
         if (jurVal) {
             filteredRak = filteredRak.filter(r => String(r.jurusan_id) === String(jurVal));
         }
-        let rakHtml = '<option value="">Semua Rak & Lemari</option>';
-        const rakItems = filteredRak.filter(r => (r.jenis || 'rak').toLowerCase() !== 'lemari');
+        let rakHtml = '<option value="">Semua Lokasi Penyimpanan</option>';
+        const rakItems = filteredRak.filter(r => (r.jenis || 'rak').toLowerCase() === 'rak');
         const lemariItems = filteredRak.filter(r => (r.jenis || 'rak').toLowerCase() === 'lemari');
+        const ruanganItems = filteredRak.filter(r => (r.jenis || 'rak').toLowerCase() === 'ruangan');
 
         if (rakItems.length > 0) {
             rakHtml += '<optgroup label="Rak">';
             rakItems.forEach(r => {
-                let cleanRk = (r.nama_rak || '').replace(/^(rak|lemari)\s*[:\-]?\s*/i, '').trim() || r.nama_rak;
+                let cleanRk = (r.nama_rak || '').replace(/^(rak|lemari|ruangan)\s*[:\-]?\s*/i, '').trim() || r.nama_rak;
                 const extra = r.kategori_rak ? ` - ${r.kategori_rak}` : '';
                 rakHtml += `<option value="${r.id}">Rak (${escapeHtml(cleanRk + extra)})</option>`;
             });
@@ -7639,9 +7687,18 @@ function refreshBarangFilterDropdowns() {
         if (lemariItems.length > 0) {
             rakHtml += '<optgroup label="Lemari">';
             lemariItems.forEach(r => {
-                let cleanRk = (r.nama_rak || '').replace(/^(rak|lemari)\s*[:\-]?\s*/i, '').trim() || r.nama_rak;
+                let cleanRk = (r.nama_rak || '').replace(/^(rak|lemari|ruangan)\s*[:\-]?\s*/i, '').trim() || r.nama_rak;
                 const extra = r.kategori_rak ? ` - ${r.kategori_rak}` : '';
                 rakHtml += `<option value="${r.id}">Lemari (${escapeHtml(cleanRk + extra)})</option>`;
+            });
+            rakHtml += '</optgroup>';
+        }
+        if (ruanganItems.length > 0) {
+            rakHtml += '<optgroup label="Ruangan">';
+            ruanganItems.forEach(r => {
+                let cleanRk = (r.nama_rak || '').replace(/^(rak|lemari|ruangan)\s*[:\-]?\s*/i, '').trim() || r.nama_rak;
+                const extra = r.kategori_rak ? ` - ${r.kategori_rak}` : '';
+                rakHtml += `<option value="${r.id}">Ruangan (${escapeHtml(cleanRk + extra)})</option>`;
             });
             rakHtml += '</optgroup>';
         }
