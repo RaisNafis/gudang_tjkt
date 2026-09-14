@@ -1625,6 +1625,121 @@
     </div>
 </div>
 
+<!-- MODAL CETAK & EXPORT LAPORAN TRANSAKSI (CLEAN & MODERN) -->
+<div id="modalCetakLaporan" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/50 backdrop-blur-sm animate-fade-in-up">
+    <div class="bg-white dark:bg-[#141414] rounded-2xl border border-slate-200/80 dark:border-[#222222] shadow-xl w-full max-w-lg overflow-hidden transition-all">
+        <!-- Modal Header -->
+        <div class="px-5 py-4 border-b border-slate-100 dark:border-[#202020] flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">Cetak & Export Laporan</h3>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400">Pilih jenis transaksi, periode tanggal, dan format keluaran</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeModal('modalCetakLaporan')" class="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-[#202020] transition-colors" title="Tutup">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <form id="formCetakLaporan" onsubmit="event.preventDefault();" class="p-5 space-y-4">
+            <!-- Jenis Laporan -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">Jenis Laporan <span class="text-red-500">*</span></label>
+                <select id="laporan_jenis" onchange="onLaporanJenisChange()" class="w-full px-3 py-2 bg-slate-50 dark:bg-[#222222] border border-slate-200 dark:border-[#2d2d2d] rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-600 focus:bg-white dark:focus:bg-[#1a1a1a] transition-all cursor-pointer">
+                    <option value="barang_masuk">Transaksi Alat & Bahan Masuk</option>
+                    <option value="barang_keluar">Transaksi Bahan Keluar</option>
+                    <option value="peminjaman">Sirkulasi Peminjaman Alat</option>
+                </select>
+            </div>
+
+            <!-- Jurusan Filter (Admin Sekolah atau jika memiliki daftar jurusan) -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">Jurusan</label>
+                <select id="laporan_jurusan_id" class="w-full px-3 py-2 bg-slate-50 dark:bg-[#222222] border border-slate-200 dark:border-[#2d2d2d] rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-600 focus:bg-white dark:focus:bg-[#1a1a1a] transition-all cursor-pointer">
+                    <?php if (!empty($user['peran']) && $user['peran'] === 'admin_sekolah'): ?>
+                        <option value="">Semua Jurusan</option>
+                        <?php if (!empty($dbJurusan)): ?>
+                            <?php foreach ($dbJurusan as $jItem): ?>
+                                <option value="<?= htmlspecialchars($jItem['id']); ?>"><?= htmlspecialchars($jItem['nama_jurusan']); ?></option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <?php if (!empty($user['nama_jurusan'])): ?>
+                            <option value="<?= htmlspecialchars($user['jurusan_id'] ?? ''); ?>"><?= htmlspecialchars($user['nama_jurusan']); ?></option>
+                        <?php else: ?>
+                            <option value="">Semua Jurusan</option>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </select>
+            </div>
+
+            <!-- Status Peminjaman (Conditional for Peminjaman) -->
+            <div id="laporan_status_wrapper" class="hidden">
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">Status Peminjaman</label>
+                <select id="laporan_status" class="w-full px-3 py-2 bg-slate-50 dark:bg-[#222222] border border-slate-200 dark:border-[#2d2d2d] rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-600 focus:bg-white dark:focus:bg-[#1a1a1a] transition-all cursor-pointer">
+                    <option value="semua">Semua Status</option>
+                    <option value="dipinjam">Sedang Dipinjam</option>
+                    <option value="dikembalikan">Sudah Dikembalikan</option>
+                    <option value="terlambat">Terlambat</option>
+                </select>
+            </div>
+
+            <!-- Preset Periode Cepat -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">Pilihan Periode Cepat</label>
+                <select id="laporan_preset" onchange="onPresetPeriodeChange(this.value)" class="w-full px-3 py-2 bg-slate-50 dark:bg-[#222222] border border-slate-200 dark:border-[#2d2d2d] rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-600 focus:bg-white dark:focus:bg-[#1a1a1a] transition-all cursor-pointer">
+                    <option value="bulan_ini">Bulan Ini</option>
+                    <option value="bulan_lalu">Bulan Lalu</option>
+                    <option value="semester_ganjil">Semester Ganjil (Juli - Desember)</option>
+                    <option value="semester_genap">Semester Genap (Januari - Juni)</option>
+                    <option value="tahun_ini">Tahun Ini</option>
+                    <option value="semua">Semua Waktu (Tanpa Filter Tanggal)</option>
+                    <option value="custom">Kustom (Pilih Tanggal Bebas)</option>
+                </select>
+            </div>
+
+            <!-- Rentang Tanggal Mulai & Selesai -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">Tanggal Mulai</label>
+                    <input type="date" id="laporan_tgl_mulai" class="w-full px-3 py-2 bg-slate-50 dark:bg-[#222222] border border-slate-200 dark:border-[#2d2d2d] rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-600 focus:bg-white dark:focus:bg-[#1a1a1a] transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">Tanggal Selesai</label>
+                    <input type="date" id="laporan_tgl_selesai" class="w-full px-3 py-2 bg-slate-50 dark:bg-[#222222] border border-slate-200 dark:border-[#2d2d2d] rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-600 focus:bg-white dark:focus:bg-[#1a1a1a] transition-all">
+                </div>
+            </div>
+
+            <div class="p-3 bg-slate-50 dark:bg-[#1a1a1a] rounded-xl border border-slate-200/60 dark:border-[#262626] text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
+                <p>• <strong>Cetak / PDF</strong>: Membuka format cetak resmi berkop surat SMK Negeri 2 Pangkalpinang siap cetak atau simpan PDF.</p>
+                <p>• <strong>Export Excel</strong>: Mengunduh file spreadsheet (.xls) lengkap dengan kalkulasi dan total data.</p>
+            </div>
+
+            <!-- Tombol Aksi -->
+            <div class="flex flex-col sm:flex-row items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-[#202020]">
+                <button type="button" onclick="closeModal('modalCetakLaporan')" class="w-full sm:w-auto px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#202020] dark:hover:bg-[#282828] text-slate-600 dark:text-slate-300 font-semibold text-xs rounded-xl transition-colors cursor-pointer">
+                    Batal
+                </button>
+                <button type="button" onclick="submitCetakLaporan('excel')" class="w-full sm:w-auto px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer" title="Download data sebagai file Excel (.xls)">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>Export Excel</span>
+                </button>
+                <button type="button" onclick="submitCetakLaporan('pdf')" class="w-full sm:w-auto px-4 py-2 bg-slate-800 hover:bg-slate-900 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer" title="Lihat dan Cetak Laporan Resmi (PDF)">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                    <span>Cetak / PDF</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
 <!-- FULL PREVIEW IMAGE ONLY (TANPA MODAL CARD, FLOATING CLOSE & DOWNLOAD ICONS, NO BORDER RADIUS, EXTRA LARGE DISPLAY) -->
 <div id="modalFotoPreview" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto md:p-8 bg-slate-950/90 cursor-pointer" onclick="if(event.target === this) closeModal('modalFotoPreview')">
     <div class="relative flex items-center justify-center cursor-default">
@@ -7202,6 +7317,116 @@ async function executeBackupDatabase() {
             btn.innerHTML = originalHtml;
         }
     }
+}
+
+// ==================== FITUR CETAK & EXPORT LAPORAN ====================
+function openModalCetakLaporan(defaultJenis = 'barang_masuk') {
+    const jenisEl = document.getElementById('laporan_jenis');
+    if (jenisEl && defaultJenis) {
+        jenisEl.value = defaultJenis;
+    }
+    onLaporanJenisChange();
+
+    const presetEl = document.getElementById('laporan_preset');
+    if (presetEl) {
+        presetEl.value = 'bulan_ini';
+        onPresetPeriodeChange('bulan_ini');
+    }
+
+    openModal('modalCetakLaporan');
+}
+
+function onLaporanJenisChange() {
+    const jenis = document.getElementById('laporan_jenis')?.value || 'barang_masuk';
+    const statusWrapper = document.getElementById('laporan_status_wrapper');
+    if (statusWrapper) {
+        if (jenis === 'peminjaman') {
+            statusWrapper.classList.remove('hidden');
+        } else {
+            statusWrapper.classList.add('hidden');
+        }
+    }
+}
+
+function onPresetPeriodeChange(val) {
+    const today = new Date();
+    const curYear = today.getFullYear();
+    const curMonth = today.getMonth();
+
+    function fmt(d) {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+    }
+
+    let start = '';
+    let end = '';
+
+    if (val === 'bulan_ini') {
+        start = fmt(new Date(curYear, curMonth, 1));
+        end = fmt(new Date(curYear, curMonth + 1, 0));
+    } else if (val === 'bulan_lalu') {
+        start = fmt(new Date(curYear, curMonth - 1, 1));
+        end = fmt(new Date(curYear, curMonth, 0));
+    } else if (val === 'semester_ganjil') {
+        start = `${curYear}-07-01`;
+        end = `${curYear}-12-31`;
+    } else if (val === 'semester_genap') {
+        start = `${curYear}-01-01`;
+        end = `${curYear}-06-30`;
+    } else if (val === 'tahun_ini') {
+        start = `${curYear}-01-01`;
+        end = `${curYear}-12-31`;
+    } else if (val === 'semua') {
+        start = '';
+        end = '';
+    } else if (val === 'custom') {
+        return;
+    }
+
+    const startInput = document.getElementById('laporan_tgl_mulai');
+    const endInput = document.getElementById('laporan_tgl_selesai');
+    if (startInput) startInput.value = start;
+    if (endInput) endInput.value = end;
+}
+
+function submitCetakLaporan(format = 'pdf') {
+    const jenis = document.getElementById('laporan_jenis')?.value || 'barang_masuk';
+    const jurusanId = document.getElementById('laporan_jurusan_id')?.value || '';
+    const status = document.getElementById('laporan_status')?.value || 'semua';
+    const tglMulai = document.getElementById('laporan_tgl_mulai')?.value || '';
+    const tglSelesai = document.getElementById('laporan_tgl_selesai')?.value || '';
+
+    if (tglMulai && tglSelesai && tglMulai > tglSelesai) {
+        showToast('Tanggal mulai tidak boleh lebih besar dari tanggal selesai.', 'error');
+        return;
+    }
+
+    const params = new URLSearchParams({
+        jenis: jenis,
+        jurusan_id: jurusanId,
+        status: status,
+        tgl_mulai: tglMulai,
+        tgl_selesai: tglSelesai,
+        format: format
+    });
+
+    const targetUrl = `laporan.php?${params.toString()}`;
+
+    if (format === 'excel') {
+        const downloadLink = document.createElement('a');
+        downloadLink.href = targetUrl;
+        downloadLink.download = '';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        downloadLink.remove();
+        showToast('Mengunduh laporan Excel...', 'info');
+    } else {
+        window.open(targetUrl, '_blank');
+    }
+
+    closeModal('modalCetakLaporan');
 }
 </script>
 
