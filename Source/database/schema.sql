@@ -130,6 +130,7 @@ CREATE TABLE `peminjaman` (
     `tanggal_pinjam` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `tanggal_kembali` DATETIME DEFAULT NULL,
     `status` ENUM('dipinjam', 'dikembalikan', 'terlambat') NOT NULL DEFAULT 'dipinjam',
+    `tempat_pemakaian` VARCHAR(255) DEFAULT NULL,
     `catatan` TEXT DEFAULT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

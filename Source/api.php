@@ -1432,6 +1432,7 @@ require_once __DIR__ . '/app/models/BarangKeluar.php';
 
         $jumlah = (int)($_POST['jumlah'] ?? 1);
         $tugas = trim($_POST['tugas'] ?? '');
+        $tempat_pemakaian = trim($_POST['tempat_pemakaian'] ?? '');
         $tahun_ajaran = $untuk_siswa ? trim($_POST['tahun_ajaran'] ?? '2026/2027') : null;
         $tanggal_pinjam = $_POST['tanggal_pinjam'] ?? '';
         $tanggal_kembali = $_POST['tanggal_kembali'] ?? '';
@@ -1451,7 +1452,7 @@ require_once __DIR__ . '/app/models/BarangKeluar.php';
         $labelPeminjam = !empty($peminjam) ? $peminjam : ($guru_peminjam . ' (Guru)');
 
         if (!empty($id)) {
-            $res = Peminjaman::update($id, $peminjam, $jumlah, $tanggal_pinjam, $tanggal_kembali, $tugas, $status, $tahun_ajaran, $guru_peminjam, $nisn);
+            $res = Peminjaman::update($id, $peminjam, $jumlah, $tanggal_pinjam, $tanggal_kembali, $tugas, $status, $tahun_ajaran, $guru_peminjam, $nisn, $tempat_pemakaian);
             if ($res['success']) {
                 LogAktivitas::log('EDIT_PEMINJAMAN', 'Mengubah transaksi peminjaman oleh ' . $labelPeminjam);
             }
@@ -1499,7 +1500,7 @@ require_once __DIR__ . '/app/models/BarangKeluar.php';
             }
 
             $statusVal = !empty($status) ? $status : 'dipinjam';
-            $res = Peminjaman::create($barang_id, $pengguna_id, $jumlah, $peminjam, null, $tanggal_pinjam, $tanggal_kembali, $tugas, $tahun_ajaran, $guru_peminjam, $nisn, $statusVal);
+            $res = Peminjaman::create($barang_id, $pengguna_id, $jumlah, $peminjam, null, $tanggal_pinjam, $tanggal_kembali, $tugas, $tahun_ajaran, $guru_peminjam, $nisn, $statusVal, $tempat_pemakaian);
             if ($res['success']) {
                 LogAktivitas::log('PEMINJAMAN_ALAT', 'Peminjaman alat oleh ' . $labelPeminjam . ' (Jumlah: ' . $jumlah . ' Unit)');
             }

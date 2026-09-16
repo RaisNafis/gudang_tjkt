@@ -137,6 +137,7 @@ try {
         $namaPeminjam = $params['nama_peminjam'] ?? null;
         $jumlah = intval($params['jumlah'] ?? 1);
         $tugas = $params['tugas'] ?? $params['keperluan'] ?? null;
+        $tempatPemakaian = $params['tempat_pemakaian'] ?? null;
         $catatan = $params['catatan'] ?? null;
         $tanggalPinjam = $params['tanggal_pinjam'] ?? null;
         $tanggalKembali = $params['tanggal_kembali'] ?? null;
@@ -175,7 +176,10 @@ try {
         }
 
         $tahunAjaran = $params['tahun_ajaran'] ?? '2025/2026';
-        $res = Peminjaman::create($barangId, $userId, $jumlah, $namaPeminjam, $catatan, $tanggalPinjam, $tanggalKembali, $tugas, $tahunAjaran);
+        $guruPeminjam = $params['guru_peminjam'] ?? null;
+        $nisn = $params['nisn'] ?? null;
+        $statusVal = $params['status'] ?? 'dipinjam';
+        $res = Peminjaman::create($barangId, $userId, $jumlah, $namaPeminjam, $catatan, $tanggalPinjam, $tanggalKembali, $tugas, $tahunAjaran, $guruPeminjam, $nisn, $statusVal, $tempatPemakaian);
 
         if ($res['success']) {
             LogAktivitas::log('TAMBAH_PEMINJAMAN', 'Menambahkan peminjaman barang ' . $namaPeminjam);

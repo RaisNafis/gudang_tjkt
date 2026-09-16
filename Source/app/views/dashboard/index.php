@@ -2855,7 +2855,15 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                         $satuanDisplay = !empty($brgMatch['satuan']) ? $brgMatch['satuan'] : (!empty($pm['satuan']) ? $pm['satuan'] : 'Unit');
                                         ?>
                                         <td class="py-3.5 px-4 font-semibold"><?= htmlspecialchars($pm['jumlah']); ?> <?= htmlspecialchars($satuanDisplay); ?></td>
-                                        <td class="py-3.5 px-4 font-semibold text-slate-700"><?= htmlspecialchars($pm['tugas'] ?? '-'); ?></td>
+                                        <td class="py-3.5 px-4">
+                                            <div class="font-semibold text-slate-700 dark:text-slate-200"><?= htmlspecialchars($pm['tugas'] ?? '-'); ?></div>
+                                            <?php if (!empty($pm['tempat_pemakaian'])): ?>
+                                                <div class="inline-flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 mt-0.5" title="Tempat Pemakaian">
+                                                    <svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                                    <span><?= htmlspecialchars($pm['tempat_pemakaian']); ?></span>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
                                         <td class="py-3.5 px-4 font-semibold text-sage-700"><?= !empty($pm['nama_peminjam']) ? htmlspecialchars($pm['tahun_ajaran'] ?? '2026/2027') : '-'; ?></td>
                                         <td class="py-3.5 px-4"><?= date('d M Y', strtotime($pm['tanggal_pinjam'])); ?></td>
                                         <td class="py-3.5 px-4 font-mono">
@@ -2997,7 +3005,15 @@ $todayFormatted = $daysIndo[(int)date('w')] . ', ' . (int)date('j') . ' ' . $mon
                                                 <span class="font-extrabold" style="color: <?= $activeThemePalette['600'] ?? '#2e7d32'; ?>;">Dikembalikan</span>
                                             <?php endif; ?>
                                         </td>
-                                        <td class="py-3 px-4 text-slate-600"><?= htmlspecialchars($logPm['tugas'] ?? $logPm['catatan'] ?? '-'); ?></td>
+                                        <td class="py-3 px-4 text-slate-600">
+                                            <div><?= htmlspecialchars($logPm['tugas'] ?? $logPm['catatan'] ?? '-'); ?></div>
+                                            <?php if (!empty($logPm['tempat_pemakaian'])): ?>
+                                                <div class="inline-flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 mt-0.5" title="Tempat Pemakaian">
+                                                    <svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                                    <span><?= htmlspecialchars($logPm['tempat_pemakaian']); ?></span>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
                                         <td class="py-3 px-4">
                                             <?php if (!empty($logPm['bukti_foto'])): ?>
                                                 <button type="button" onclick="showFotoPreview('<?= htmlspecialchars($logPm['bukti_foto']); ?>', 'Bukti Foto Pengembalian Alat', 'Peminjam: <?= htmlspecialchars(addslashes($logPm['nama_peminjam'] ?? '')); ?> | Alat: <?= htmlspecialchars(addslashes($logPm['nama_barang'] ?? '')); ?>')" class="px-3 py-1 rounded-xl bg-sage-600 hover:bg-sage-700 text-white font-bold text-xs shadow-md shadow-sage-600/20 transition-all inline-flex items-center gap-1.5" title="Lihat Foto Bukti Pengembalian Alat">
@@ -6287,7 +6303,10 @@ function renderTablePeminjaman() {
             ${siswaHtml}
             <td class="py-3.5 px-4 font-semibold text-slate-700">${escapeHtml(pm.nama_petugas || '-')}</td>
             <td class="py-3.5 px-4 font-semibold">${parseInt(pm.jumlah || 1)} ${escapeHtml(satuanDisplay)}</td>
-            <td class="py-3.5 px-4 font-semibold text-slate-700">${escapeHtml(pm.tugas || '-')}</td>
+            <td class="py-3.5 px-4">
+                <div class="font-semibold text-slate-700 dark:text-slate-200">${escapeHtml(pm.tugas || '-')}</div>
+                ${pm.tempat_pemakaian ? `<div class="inline-flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 mt-0.5" title="Tempat Pemakaian"><svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span>${escapeHtml(pm.tempat_pemakaian)}</span></div>` : ''}
+            </td>
             <td class="py-3.5 px-4 font-semibold text-sage-700">${thnAjaranDisplay}</td>
             <td class="py-3.5 px-4">${tglPinjam}</td>
             <td class="py-3.5 px-4 font-mono">${tglKembali}</td>
@@ -6354,7 +6373,10 @@ function renderTableLogPeminjaman() {
             <td class="py-3 px-4 font-mono text-[11px] text-slate-600">${tglPinjam}</td>
             <td class="py-3 px-4 font-mono text-[11px] text-slate-600">${tglKembali}</td>
             <td class="py-3 px-4 text-center font-bold">${statusHtml}</td>
-            <td class="py-3 px-4 text-slate-600">${escapeHtml(logPm.tugas || logPm.catatan || '-')}</td>
+            <td class="py-3 px-4 text-slate-600">
+                <div>${escapeHtml(logPm.tugas || logPm.catatan || '-')}</div>
+                ${logPm.tempat_pemakaian ? `<div class="inline-flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 mt-0.5" title="Tempat Pemakaian"><svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span>${escapeHtml(logPm.tempat_pemakaian)}</span></div>` : ''}
+            </td>
             <td class="py-3 px-4">${fotoBtn}</td>
             <td class="py-3 px-4"><div class="flex items-center gap-1.5">${actionBtn}</div></td>
         </tr>`;

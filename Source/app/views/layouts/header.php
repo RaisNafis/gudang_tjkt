@@ -242,6 +242,70 @@
         }
 
         /* =========================================================
+           SOFT DIMMED LIGHT THEME (Teduh, Lembut, Nyaman di Mata & Tidak Menyilaukan)
+           ========================================================= */
+        html:not(.dark) body {
+            background-color: #f1f5f9 !important; /* Soft Slate 100 canvas (redup, tidak putih menyilaukan) */
+            color: #1e293b !important;
+        }
+
+        /* Redupkan kontainer aksen lembut di mode terang agar tidak neon/menyilaukan */
+        html:not(.dark) .bg-sage-50,
+        html:not(.dark) .bg-sage-50\/50,
+        html:not(.dark) .bg-sage-50\/60,
+        html:not(.dark) .bg-sage-50\/80 {
+            background-color: #f1f5f9 !important;
+        }
+
+        /* Card & Sidebar di mode terang tetap bersih di atas kanvas redup */
+        html:not(.dark) header,
+        html:not(.dark) #mainSidebar,
+        html:not(.dark) .bg-white {
+            background-color: #ffffff;
+            border-color: #e2e8f0;
+        }
+
+        /* Input, Select, Textarea di mode terang: lebih redup dan tidak menyilaukan */
+        html:not(.dark) input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+        html:not(.dark) select,
+        html:not(.dark) textarea {
+            background-color: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
+        }
+        html:not(.dark) input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]):focus,
+        html:not(.dark) select:focus,
+        html:not(.dark) textarea:focus {
+            background-color: #ffffff !important;
+            border-color: #475569 !important;
+            box-shadow: 0 0 0 1px #475569 !important;
+        }
+        html:not(.dark) input::placeholder,
+        html:not(.dark) textarea::placeholder {
+            color: #94a3b8 !important;
+        }
+
+        /* Border halus di mode terang */
+        html:not(.dark) .border-sage-100,
+        html:not(.dark) .border-sage-200,
+        html:not(.dark) .border-sage-200\/80 {
+            border-color: #e2e8f0 !important;
+        }
+
+        /* Table header di mode terang dengan nuansa soft slate teduh */
+        html:not(.dark) table thead {
+            background-color: #f8fafc !important;
+            border-color: #e2e8f0 !important;
+            color: #334155 !important;
+        }
+        html:not(.dark) table thead th {
+            color: #334155 !important;
+        }
+        html:not(.dark) table tbody tr:hover {
+            background-color: #f1f5f9 !important;
+        }
+
+        /* =========================================================
            OLED FULL DARK THEME (#000000 Pure Black + Soft Emerald)
            ========================================================= */
         html.dark body {

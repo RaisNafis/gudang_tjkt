@@ -336,7 +336,12 @@ if ($format === 'excel') {
                                 <td class="text-center"><?= !empty($row['tanggal_kembali']) ? tglIndo($row['tanggal_kembali']) : '-'; ?></td>
                                 <td class="text-center"><?= ucfirst(htmlspecialchars($row['status'])); ?></td>
                                 <td><?= htmlspecialchars($row['nama_petugas']); ?></td>
-                                <td><?= htmlspecialchars($row['tugas'] ?? $row['catatan'] ?? '-'); ?></td>
+                                <td>
+                                    <?= htmlspecialchars($row['tugas'] ?? $row['catatan'] ?? '-'); ?>
+                                    <?php if (!empty($row['tempat_pemakaian'])): ?>
+                                        <br><small style="color: #64748b;">(Lokasi: <?= htmlspecialchars($row['tempat_pemakaian']); ?>)</small>
+                                    <?php endif; ?>
+                                </td>
                             <?php endif; ?>
                         </tr>
                     <?php endforeach; ?>
@@ -816,7 +821,12 @@ if ($format === 'excel') {
                                         <?= ucfirst(htmlspecialchars($row['status'])); ?>
                                     </span>
                                 </td>
-                                <td><?= htmlspecialchars($row['tugas'] ?? $row['catatan'] ?? '-'); ?></td>
+                                <td>
+                                    <?= htmlspecialchars($row['tugas'] ?? $row['catatan'] ?? '-'); ?>
+                                    <?php if (!empty($row['tempat_pemakaian'])): ?>
+                                        <div style="font-size: 8pt; color: #475569; margin-top: 3px;"><strong>Lokasi:</strong> <?= htmlspecialchars($row['tempat_pemakaian']); ?></div>
+                                    <?php endif; ?>
+                                </td>
                             <?php endif; ?>
                         </tr>
                     <?php endforeach; ?>

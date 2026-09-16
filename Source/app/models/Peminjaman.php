@@ -48,7 +48,25 @@ class Peminjaman {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public static function create($barang_id, $pengguna_id, $jumlah, $nama_peminjam = null, $catatan = null, $tanggal_pinjam = null, $tanggal_kembali = null, $tugas = null, $tahun_ajaran = '2026/2027', $guru_peminjam = null, $nisn = null, $status = 'dipinjam') {
+    private static function ensureTempatPemakaianColumn() {
+        static $checked = false;
+        if ($checked) return;
+        try {
+            $db = Database::getInstance()->getConnection();
+            if ($db) {
+                $chk = $db->query("SHOW COLUMNS FROM peminjaman LIKE 'tempat_pemakaian'")->fetch();
+                if (!$chk) {
+                    $db->exec("ALTER TABLE peminjaman ADD COLUMN tempat_pemakaian VARCHAR(255) NULL DEFAULT NULL AFTER status");
+                }
+            }
+        } catch (Exception $e) {
+            // Silently ignore if already exists or permission issue
+        }
+        $checked = true;
+    }
+
+    public static function create($barang_id, $pengguna_id, $jumlah, $nama_peminjam = null, $catatan = null, $tanggal_pinjam = null, $tanggal_kembali = null, $tugas = null, $tahun_ajaran = '2026/2027', $guru_peminjam = null, $nisn = null, $status = 'dipinjam', $tempat_pemakaian = null) {
+        self::ensureTempatPemakaianColumn();
         $db = Database::getInstance()->getConnection();
         $id = generateUuid();
 
@@ -91,8 +109,8 @@ class Peminjaman {
             }
 
             $stmt = $db->prepare("
-                INSERT INTO peminjaman (id, jurusan_id, barang_id, pengguna_id, guru_peminjam, nama_peminjam, nisn, jumlah, status, catatan, tugas, tahun_ajaran, tanggal_pinjam, tanggal_kembali)
-                VALUES (:id, :jid, :bid, :pid, :guru_peminjam, :peminjam, :nisn, :jumlah, :status, :catatan, :tugas, :thn_ajaran, :tgl_pinjam, :tgl_kembali)
+                INSERT INTO peminjaman (id, jurusan_id, barang_id, pengguna_id, guru_peminjam, nama_peminjam, nisn, jumlah, status, tempat_pemakaian, catatan, tugas, tahun_ajaran, tanggal_pinjam, tanggal_kembali)
+                VALUES (:id, :jid, :bid, :pid, :guru_peminjam, :peminjam, :nisn, :jumlah, :status, :tempat_pemakaian, :catatan, :tugas, :thn_ajaran, :tgl_pinjam, :tgl_kembali)
             ");
             $stmt->execute([
                 ':id' => $id,
@@ -104,6 +122,7 @@ class Peminjaman {
                 ':nisn' => !empty($nama_peminjam) ? $nisn : null,
                 ':jumlah' => $jumlah,
                 ':status' => $status,
+                ':tempat_pemakaian' => !empty($tempat_pemakaian) ? $tempat_pemakaian : null,
                 ':catatan' => $catatan,
                 ':tugas' => $tugas,
                 ':thn_ajaran' => $thnAjaran,
@@ -241,7 +260,8 @@ class Peminjaman {
         }
     }
 
-    public static function update($id, $nama_peminjam, $jumlah, $tanggal_pinjam = null, $tanggal_kembali = null, $tugas = null, $status = null, $tahun_ajaran = null, $guru_peminjam = null, $nisn = null) {
+    public static function update($id, $nama_peminjam, $jumlah, $tanggal_pinjam = null, $tanggal_kembali = null, $tugas = null, $status = null, $tahun_ajaran = null, $guru_peminjam = null, $nisn = null, $tempat_pemakaian = null) {
+        self::ensureTempatPemakaianColumn();
         $db = Database::getInstance()->getConnection();
         $db->beginTransaction();
         try {
@@ -301,6 +321,7 @@ class Peminjaman {
                     nisn = :nisn, 
                     jumlah = :jumlah, 
                     status = :status, 
+                    tempat_pemakaian = :tempat_pemakaian,
                     tugas = :tugas, 
                     tahun_ajaran = :thn_ajaran, 
                     tanggal_pinjam = :tgl_pinjam, 
@@ -314,6 +335,7 @@ class Peminjaman {
                 ':nisn' => !empty($nama_peminjam) ? $nisn : null,
                 ':jumlah' => $jumlah,
                 ':status' => $newStatus,
+                ':tempat_pemakaian' => !empty($tempat_pemakaian) ? $tempat_pemakaian : null,
                 ':tugas' => $tugas,
                 ':thn_ajaran' => $thnAjaran,
                 ':tgl_pinjam' => $tglPinjam,

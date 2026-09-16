@@ -1416,6 +1416,10 @@
                         <option value="dikembalikan">Dikembalikan (Sudah Kembali)</option>
                     </select>
                 </div>
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Tempat Pemakaian</label>
+                    <input type="text" id="pinjam_tempat_pemakaian" placeholder="contoh: Lab Komputer 1, Bengkel TKJ, Ruang Kelas XII, dll." class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-slate-800 dark:focus:border-white">
+                </div>
             </div>
 
             <!-- Action Footer (Pinned Bottom) -->
@@ -4732,6 +4736,7 @@ function openModal(modalId, customTitle = null, editData = null) {
                 const elTglPinjam = document.getElementById('pinjam_tanggal_pinjam');
                 const elTglKembali = document.getElementById('pinjam_tanggal_kembali');
                 const elStatus = document.getElementById('pinjam_status');
+                const elTempat = document.getElementById('pinjam_tempat_pemakaian');
                 const elNisn = document.getElementById('pinjam_nisn');
                 const elCheckSiswa = document.getElementById('pinjam_untuk_siswa');
 
@@ -4752,6 +4757,7 @@ function openModal(modalId, customTitle = null, editData = null) {
 
                 if (elJumlah) elJumlah.value = editData.jumlah || 1;
                 if (elTugas) elTugas.value = editData.tugas || editData.keperluan_tugas || '';
+                if (elTempat) elTempat.value = editData.tempat_pemakaian || '';
                 if (elTglPinjam) elTglPinjam.value = formatForDateTimeLocal(editData.tanggal_pinjam);
                 if (elTglKembali) elTglKembali.value = formatForDateTimeLocal(editData.tanggal_kembali);
                 if (elStatus) elStatus.value = editData.status || 'dipinjam';
@@ -5035,6 +5041,7 @@ function openModal(modalId, customTitle = null, editData = null) {
                 const elTglPinjam = document.getElementById('pinjam_tanggal_pinjam');
                 const elTglKembali = document.getElementById('pinjam_tanggal_kembali');
                 const elStatus = document.getElementById('pinjam_status');
+                const elTempat = document.getElementById('pinjam_tempat_pemakaian');
 
                 const checkUntukSiswa = document.getElementById('pinjam_untuk_siswa');
                 const selectSiswa = document.getElementById('pinjam_peminjam_select');
@@ -5048,7 +5055,7 @@ function openModal(modalId, customTitle = null, editData = null) {
                 const searchPinjam = document.getElementById('pinjam_barang_search');
                 const searchGuru = document.getElementById('pinjam_guru_search');
                 const searchSiswa = document.getElementById('pinjam_siswa_search');
-                [elJurusan, elJenis, elBarang, selectSiswa, customSiswa, elJumlah, elTugas, elTglPinjam, elTglKembali, elStatus, checkUntukSiswa, selectGuru, customGuru, inputNisn, inputTA, searchPinjam, searchGuru, searchSiswa].forEach(el => {
+                [elJurusan, elJenis, elBarang, selectSiswa, customSiswa, elJumlah, elTugas, elTempat, elTglPinjam, elTglKembali, elStatus, checkUntukSiswa, selectGuru, customGuru, inputNisn, inputTA, searchPinjam, searchGuru, searchSiswa].forEach(el => {
                     if (el) {
                         el.disabled = false;
                         el.classList.remove('bg-slate-100/80', 'cursor-not-allowed');
@@ -5086,6 +5093,7 @@ function openModal(modalId, customTitle = null, editData = null) {
 
                 if (elJumlah) elJumlah.value = 1;
                 if (elTugas) elTugas.value = '';
+                if (elTempat) elTempat.value = '';
                 if (elTglPinjam) elTglPinjam.value = formatForDateTimeLocal(new Date());
                 if (elTglKembali) elTglKembali.value = '';
                 if (elStatus) elStatus.value = 'dipinjam';
@@ -5434,6 +5442,7 @@ async function handleFormSubmit(event, actionName) {
         formData.append('tanggal_pinjam', document.getElementById('pinjam_tanggal_pinjam')?.value || '');
         formData.append('tanggal_kembali', document.getElementById('pinjam_tanggal_kembali')?.value || '');
         formData.append('status', document.getElementById('pinjam_status')?.value || 'dipinjam');
+        formData.append('tempat_pemakaian', document.getElementById('pinjam_tempat_pemakaian')?.value || '');
     } else if (actionName === 'Guru') {
         apiAction = 'save_guru';
         formData.append('id', document.getElementById('guru_edit_id')?.value || '');
